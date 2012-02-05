@@ -123,7 +123,7 @@ void tsk_Meter(void *args)
 	p->chl = chlRS485;
 
 	chl_Init(chlRS485);
-	chl_Bind(chlRS485, CHL_T_RS232, 0, OS_TMO_FOREVER);
+//	chl_Bind(chlRS485, CHL_T_RS232, 0, OS_TMO_FOREVER);
 
 	acm_Init();
 
