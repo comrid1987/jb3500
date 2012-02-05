@@ -14,8 +14,7 @@ void Display_Number (signed long d, unsigned char c, unsigned char p)			//wei:p 
 {
     unsigned char non_zero = FALSE;             // Suppress leading zeros.
     unsigned short i, digit[ MAX_DIGITS ];
-	unsigned char * d_temp;
-	* d_temp=0;
+	unsigned char d_temp = 0;
 
 //    if (beat)
 //    ht1621_Write (iDPS, LCD_Data_Read (iDPS) | DP_7); // LCD XFER Beat.
@@ -25,7 +24,7 @@ void Display_Number (signed long d, unsigned char c, unsigned char p)			//wei:p 
     if (d < 0)
     {
        ht1621_Write (c, MINUS);     // Minus sign, make room for sign. //wei:œ‘ æ∏∫∫≈
-       *d_temp=1;
+       d_temp=1;
 	   d = -d;
     }
 //	c--;
@@ -35,9 +34,9 @@ void Display_Number (signed long d, unsigned char c, unsigned char p)			//wei:p 
        d /= 10;							//d“‘ ÆΩ¯÷∆∏Ò Ω”““∆“ªŒª
     }
 
-    for(i=(c-*d_temp);i<=8;i++)
+    for(i=(c-d_temp);i<=8;i++)
 	{  
-	   ht1621_Write ((c-*d_temp) , BLANK);		//≤ªœ‘ æŒª
+	   ht1621_Write ((c-d_temp) , BLANK);		//≤ªœ‘ æŒª
 	}
 	if (0 == d)
     {
@@ -373,7 +372,7 @@ uint_t g_sys_status = 3;
 void tsk_Display(void *args)
 {
 	os_que que;
-    uint_t nCnt, nKey, nSel = 21;
+	uint_t nBlCnt = 0, nCycle = 0, nSel = 21, nKey;
 	time_t tTime;
 
     Display_Number(bcd2bin16(VER_SOFT), 8, 4);
@@ -383,30 +382,33 @@ void tsk_Display(void *args)
 			CLRBIT(g_sys_status, 0);
 		os_que_Release(que);
 	}
-    for (nCnt = 0; ; ) {
+    for (; ; ) {
 		if (tTime != rtc_GetTimet()) {
 			tTime = rtc_GetTimet();
-			nCnt += 1;
-			if (nCnt > 30)
+			nBlCnt += 1;
+			nCycle += 1;
+			if (nCycle > 5) {
+				nCycle = 0;
+				nSel = cycle(nSel, 0, 21, 1);
+			}
+			if (nBlCnt > 30) {
+				nBlCnt = 0;
 				LCD_BL(0);
+			}
 		}
 		que = os_que_Wait(QUE_EVT_KEYBOARD, NULL, 1000);
 		if (que != NULL) {
+			nBlCnt = 0;
+			nCycle = 0;
 			nKey = que->data->val;
 			os_que_Release(que);
 			switch (nKey) {
 			case 1:
-				if (nSel >= 22)
-					nSel = 0;
-				else
-					nSel += 1;
+				nSel = cycle(nSel, 0, 21, 1);
 				LCD_BL(1);
 				break;
 			case 2:
-				if (nSel == 0)
-					nSel = 22;
-				else 
-					nSel -= 1;
+				nSel = cycle(nSel, 0, 21, -1);
 			    LCD_BL(1);
 				break;
 			case 3:
@@ -421,7 +423,7 @@ void tsk_Display(void *args)
 				break;
 			}
 		}
-        disp_Handle(nSel);
+		disp_Handle(nSel);
     }
 }
 
