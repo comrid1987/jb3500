@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <litecore.h>
@@ -7,8 +8,6 @@
 
 //Private Defines
 #define ICP_LOCK_ENABLE			0
-#define ConfigIni               "Config.ini"
-#define ConfigLen               100
 
 //Private Typedefs
 
@@ -254,49 +253,36 @@ void icp_Init()
 
 void icp_UdiskLoad(void)
 {
-#if USB_ENABLE
-    static uint8_t isfirst = 1;
 	t_afn04_f1 xF1;
 	t_afn04_f3 xF3;
-	t_afn04_f85 xF85;
 	DIR_POSIX *d;
-	char str[128], sAddr[20], sFile[20], sTemp[20];
+	char str[128];
 	int fd;
-	uint_t i, nLen ,ulen ,ui;
-    if(1 == isfirst){
-        isfirst = 0;
-    	d = fs_opendir(FS_USBMSC_PATH);
-    	if (d == NULL)
-    		return;
-    	fs_closedir(d);
-        BEEP(1);
-    	icp_ParaRead(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
-    	sprintf(sAddr, FS_USBMSC_PATH"%04X%04X/", xF85.area, xF85.addr);
-     	d = fs_opendir(sAddr);
-    	if (d == NULL)
-    		return;
-    	fs_closedir(d);
-    	icp_ParaRead(4, 1, TERMINAL, &xF1, sizeof(t_afn04_f1));
-    	icp_ParaRead(4, 3, TERMINAL, &xF3, sizeof(t_afn04_f3));
-    	//sprintf(str, "%s%s", sAddr, "Config.ini");
-    	fd = fs_open("/pb325_cf.ini", O_RDONLY, 0);
-    	if (fd >= 0) {
-    	    ulen = fs_read(fd, str, ConfigLen) ; 
-            xF1.span = bin2bcd8(atoi(&str[50]));
-            xF3.ip1[0] = (atoi(&str[11]));
-            xF3.ip1[1] = (atoi(&str[15]));
-            xF3.ip1[2] = (atoi(&str[19]));
-            xF3.ip1[3] = (atoi(&str[23]));
-            xF3.port1 = (atoi(&str[33]));
-            for(ui = 0; ui < (ulen-58); ui++)
-                xF3.apn[ui] = str[58 + ui];
-            xF3.apn[(ulen-58)] = 0;
-        	icp_ParaWrite(4, 1, TERMINAL, &xF1, sizeof(t_afn04_f1));
-        	icp_ParaWrite(4, 3, TERMINAL, &xF3, sizeof(t_afn04_f3));
-    		fs_close(fd);
-    	}
-        BEEP(0);
-    }
-#endif
+	uint_t ulen, ui;
+
+	d = fs_opendir(FS_USBMSC_PATH);
+	if (d == NULL)
+		return;
+	fs_closedir(d);
+    BEEP(1);
+	icp_ParaRead(4, 1, TERMINAL, &xF1, sizeof(t_afn04_f1));
+	icp_ParaRead(4, 3, TERMINAL, &xF3, sizeof(t_afn04_f3));
+	fd = fs_open(FS_USBMSC_PATH"pb325_cf.ini", O_RDONLY, 0);
+	if (fd >= 0) {
+	    ulen = fs_read(fd, str, sizeof(str)) ; 
+        xF1.span = bin2bcd8(atoi(&str[50]));
+        xF3.ip1[0] = (atoi(&str[11]));
+        xF3.ip1[1] = (atoi(&str[15]));
+        xF3.ip1[2] = (atoi(&str[19]));
+        xF3.ip1[3] = (atoi(&str[23]));
+        xF3.port1 = (atoi(&str[33]));
+        for(ui = 0; ui < (ulen-58); ui++)
+            xF3.apn[ui] = str[58 + ui];
+        xF3.apn[(ulen-58)] = 0;
+    	icp_ParaWrite(4, 1, TERMINAL, &xF1, sizeof(t_afn04_f1));
+    	icp_ParaWrite(4, 3, TERMINAL, &xF3, sizeof(t_afn04_f3));
+		fs_close(fd);
+	}
+    BEEP(0);
 }
 

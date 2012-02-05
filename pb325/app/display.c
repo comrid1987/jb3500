@@ -180,15 +180,7 @@ static void Display_BCD_Addr(uint32_t addr_5)
 		ht1621_Write(i, disp_tblHex[tmp[i]]);
 }
 
-
-
-void FirstDispaly(void)
-{
-    Display_Number(bcd2bin16(VER_SOFT), 8, 4);
-    os_thd_Sleep(1000);    
-}
-
-void disp_Handle(uint_t nSel)
+static void disp_Handle(uint_t nSel)
 {
 	int nTemp;
 	t_afn04_f85 xF85;
@@ -377,21 +369,27 @@ void disp_Handle(uint_t nSel)
     }
 }
 
-
+uint_t g_sys_status = 3;
 void tsk_Display(void *args)
 {
 	os_que que;
-    uint_t nKey, nSel = 21;
+    uint_t nCnt, nKey, nSel = 21;
+	time_t tTime;
 
-	FirstDispaly();
-	que = os_que_Wait(QUE_EVT_KEYBOARD, NULL, 100);
+    Display_Number(bcd2bin16(VER_SOFT), 8, 4);
+	que = os_que_Wait(QUE_EVT_KEYBOARD, NULL, 1000);
 	if (que != NULL) {
-		if (que->data->val == 1) {
-			
-		}
+		if (que->data->val == 1)
+			CLRBIT(g_sys_status, 0);
 		os_que_Release(que);
 	}
-    for (; ; ) {
+    for (nCnt = 0; ; ) {
+		if (tTime != rtc_GetTimet()) {
+			tTime = rtc_GetTimet();
+			nCnt += 1;
+			if (nCnt > 30)
+				LCD_BL(0);
+		}
 		que = os_que_Wait(QUE_EVT_KEYBOARD, NULL, 1000);
 		if (que != NULL) {
 			nKey = que->data->val;
@@ -402,18 +400,22 @@ void tsk_Display(void *args)
 					nSel = 0;
 				else
 					nSel += 1;
-				LCD_BL(0);
+				LCD_BL(1);
 				break;
 			case 2:
 				if (nSel == 0)
 					nSel = 22;
 				else 
 					nSel -= 1;
-			    LCD_BL(0);
+			    LCD_BL(1);
 				break;
 			case 3:
-				LCD_BL(1);
-                icp_UdiskLoad();
+				LCD_BL(0);
+				if (g_sys_status & BITMASK(1)) {
+					CLRBIT(g_sys_status, 1);
+					icp_UdiskLoad();
+					data_Copy2Udisk();
+				}
 				break;
 			default:
 				break;

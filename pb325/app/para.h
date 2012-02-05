@@ -13,9 +13,9 @@ extern "C" {
 
 
 //HC595 OutPut
-#define LED_RUN(x)      gpio_Set(0, x)		//低电平有效
-#define LCD_BL(x)       gpio_Set(2, x)		//低电平有效
-#define BEEP(x)         gpio_Set(3, x)		//高电平有效
+#define LED_RUN(x)      gpio_Set(0, x)			//低电平有效
+#define LCD_BL(x)       gpio_Set(2, (x) ^ 1)	//低电平有效
+#define BEEP(x)         gpio_Set(3, x)			//高电平有效
 
 
 //Public Typedefs
