@@ -127,7 +127,6 @@ void tsk_Meter(void *args)
 
 	acm_Init();
 
-	data_Copy2Udisk();
 	for (nCnt = 0; ; nCnt++) {
 		//√Îcount
 		os_thd_Sleep(1000);
