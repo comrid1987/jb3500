@@ -180,7 +180,15 @@ static void Display_BCD_Addr(uint32_t addr_5)
 		ht1621_Write(i, disp_tblHex[tmp[i]]);
 }
 
-static void disp_Handle(uint_t nSel)
+
+
+void FirstDispaly(void)
+{
+    Display_Number(bcd2bin16(VER_SOFT), 8, 4);
+    os_thd_Sleep(1000);    
+}
+
+void disp_Handle(uint_t nSel)
 {
 	int nTemp;
 	t_afn04_f85 xF85;
@@ -375,8 +383,8 @@ void tsk_Display(void *args)
 	os_que que;
     uint_t nKey, nSel = 21;
 
-    Display_Number(bcd2bin16(VER_SOFT), 8, 4);
-	que = os_que_Wait(QUE_EVT_KEYBOARD, NULL, 1000);
+	FirstDispaly();
+	que = os_que_Wait(QUE_EVT_KEYBOARD, NULL, 100);
 	if (que != NULL) {
 		if (que->data->val == 1) {
 			
