@@ -389,7 +389,7 @@ void tsk_Display(void *args)
 			nCycle += 1;
 			if (nCycle > 5) {
 				nCycle = 0;
-				nSel = cycle(nSel, 0, 21, 1);
+				nSel = cycle(nSel, 0, 22, 1);
 			}
 			if (nBlCnt > 30) {
 				nBlCnt = 0;
@@ -404,11 +404,11 @@ void tsk_Display(void *args)
 			os_que_Release(que);
 			switch (nKey) {
 			case 1:
-				nSel = cycle(nSel, 0, 21, 1);
+				nSel = cycle(nSel, 0, 22, 1);
 				LCD_BL(1);
 				break;
 			case 2:
-				nSel = cycle(nSel, 0, 21, -1);
+				nSel = cycle(nSel, 0, 22, -1);
 			    LCD_BL(1);
 				break;
 			case 3:
