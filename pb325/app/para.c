@@ -255,8 +255,9 @@ void icp_UdiskLoad(void)
 {
 	t_afn04_f1 xF1;
 	t_afn04_f3 xF3;
+	t_afn04_f85 xF85;
 	DIR_POSIX *d;
-	char str[128];
+	char str[128], sAddr[12];
 	int fd;
 	uint_t ulen, ui;
 
@@ -281,6 +282,15 @@ void icp_UdiskLoad(void)
         xF3.apn[(ulen-58)] = 0;
     	icp_ParaWrite(4, 1, TERMINAL, &xF1, sizeof(t_afn04_f1));
     	icp_ParaWrite(4, 3, TERMINAL, &xF3, sizeof(t_afn04_f3));
+		fs_close(fd);
+	}
+    
+	icp_ParaRead(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
+	sprintf(sAddr, FS_USBMSC_PATH"%04X%04X/", xF85.area, xF85.addr);
+	sprintf(str, "%s%s", sAddr, "pb325_cf.ini");
+	fd = fs_open(str, O_WRONLY | O_CREAT | O_TRUNC, 0);
+	if (fd >= 0) {
+		fs_write(fd, str, sprintf(str, "[para]\r\nIP=%03d.%03d.%03d.%03d\r\nPORT=%05d\r\nHeartbeat=%02d\r\nAPN=%s", xF3.ip1[0], xF3.ip1[1], xF3.ip1[2], xF3.ip1[3], xF3.port1, xF1.span, &xF3.apn));
 		fs_close(fd);
 	}
     BEEP(0);
