@@ -68,7 +68,7 @@ static void Display_Vrms (unsigned long Vrms)
 {
 	ht1621_Write (iConCheck, BLANK);
 	ht1621_Write (iConList, VO);			
-	ht1621_Write (iConUnit, IconV|Usb);
+	ht1621_Write (iConUnit, IconV);
 //	unsigned short p=*a;
 //	ht1621_Write (iCons, SEG_V);    			// No Colons.
     ht1621_Write (iDPS, DP_4);        		// Three decimal places.
@@ -79,7 +79,7 @@ static void Display_Irms (unsigned long Irms)
 {
 //	ht1621_Write (iCons, SEG_A);    		// No Colons.
 	ht1621_Write (iConList, CU);
-	ht1621_Write (iConUnit, IconA|Usb);
+	ht1621_Write (iConUnit, IconA);
     ht1621_Write (iDPS, DP_4);        	// Three decimal places.
     Display_Number (Irms, 6, 4);     
 }
@@ -88,7 +88,7 @@ static void Display_Irms (unsigned long Irms)
 static void Display_Power_P (unsigned long Power)
 {
 	ht1621_Write (iConList, PPOWER);
-	ht1621_Write (iConUnit, IconKW|Usb);
+	ht1621_Write (iConUnit, IconKW);
 	ht1621_Write (iDPS, DP_4);
 	Display_Number (Power, 6, 4);
 //	if(*d<0) *d=-(*d);
@@ -102,7 +102,7 @@ static void Display_Power_P (unsigned long Power)
 static void Display_Power_Q (unsigned long Power)
 {
 	ht1621_Write (iConList, PUPOWER);
-	ht1621_Write (iConUnit, Iconkvar|Usb);
+	ht1621_Write (iConUnit, Iconkvar);
 	ht1621_Write (iDPS, DP_4);
 	Display_Number (Power, 6, 4);
 //	if(*d<0) *d=-(*d);
@@ -301,6 +301,7 @@ static void disp_Handle(uint_t nSel)
 		Display_Power_Q(nTemp); 	
         break;
 	case Dis_PQa:		//PQ_A
+	    ht1621_Write(iConUnit, BLANK);
 		ht1621_Write(iDPS, DP_4);			
 		nTemp = pD->cos[1] * 1000;
 		ht1621_Write(iConList, PPF);
@@ -357,6 +358,7 @@ static void disp_Handle(uint_t nSel)
 		Display_Time(rtc_pTm());
         break;
 	case Dis_Date:		//Date
+	    ht1621_Write(iConUnit, BLANK);
 	    ht1621_Write(iConPhase, BLANK);
 		ht1621_Write(iConList, BLANK);
 	    ht1621_Write(iConCheck, IconDay);
