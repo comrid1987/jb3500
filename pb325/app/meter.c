@@ -160,6 +160,7 @@ void tsk_Meter(void *args)
 //				acm_DaySave(p->time);
 			}
 		}
+#if 0
 		if ((g_sys_status & BITMASK(0))) {
 			switch (p->ste) {
 			case ECL_TASK_S_IDLE:
@@ -212,6 +213,7 @@ void tsk_Meter(void *args)
 				break;
 			}
 		}
+#endif
 	}
 }
 

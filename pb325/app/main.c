@@ -24,13 +24,17 @@ os_thd_declare(Meter, 1280);
 
 void tsk_Daemon(void *args)
 {
-	uint_t nTick;
+	uint_t nTick, nSpan;
 
     for (nTick = 0; ; nTick++) {
-		os_thd_Sleep(200);
-		if (nTick & 2)
-			LED_RUN(1);
+		os_thd_Sleep(100);
+		if (g_sys_status & BITMASK(0))
+			nSpan = 7;
 		else
+			nSpan = 3;
+		if ((nTick & nSpan) == 0)
+			LED_RUN(1);
+		if ((nTick & nSpan) == 1)
 			LED_RUN(0);
 	}
 }
