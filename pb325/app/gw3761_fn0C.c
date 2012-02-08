@@ -397,7 +397,7 @@ int gw3761_ResponseData1(p_gw3761 p)
 	int res = 0;
 	u_word2 uDu;
 	uint_t i, j, nDa, nDaQty, nFn;
-	uint8_t *pData, *pEnd, aBuf[ECL_RT_LEVEL_QTY * 6];
+	uint8_t *pData, *pEnd, aBuf[24];
 	buf b = {0};
 
 	pData = p->rmsg.data->p;

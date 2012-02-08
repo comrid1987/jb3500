@@ -1,4 +1,5 @@
 #include <litecore.h>
+#include "system.h"
 #include "para.h"
 #include "acm.h"
 #include "display.h"
@@ -370,7 +371,6 @@ static void disp_Handle(uint_t nSel)
     }
 }
 
-uint_t g_sys_status = 3;
 void tsk_Display(void *args)
 {
 	os_que que;

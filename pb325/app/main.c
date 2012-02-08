@@ -1,9 +1,17 @@
 #include <litecore.h>
 #include <drivers/tdk6515.h>
+#include "system.h"
 #include "display.h"
 #include "upcomm.h"
 #include "meter.h"
 #include "para.h"
+
+
+
+//Public Variables
+volatile uint_t g_sys_status = 3;
+
+
 
 
 //OS thread declares

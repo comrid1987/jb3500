@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <litecore.h>
-#include <cp/gw376/gw3762.h>
+#include "system.h"
 #include "data.h"
 #include "meter.h"
 #include "alarm.h"
@@ -84,6 +84,8 @@ sys_res ecl_485_RealRead(buf b, uint_t nBaud, uint_t nTmo)
 	t_ecl_task *p = &ecl_Task485;
 	buf bTx = {0};
 
+	if ((g_sys_status & BITMASK(0)) == 0)
+		return SYS_R_ERR;
 	for (nTmo *= (1000 / OS_TICK_MS); nTmo; nTmo--) {
 		if (p->ste == ECL_TASK_S_IDLE) {
 			p->ste = ECL_TASK_S_REAL;
@@ -119,14 +121,14 @@ void tsk_Meter(void *args)
 	t_ecl_task *p = &ecl_Task485;
 	buf b = {0};
 
-	memset(p, 0, sizeof(t_ecl_task));
-	p->chl = chlRS485;
-
-	chl_Init(chlRS485);
-//	chl_Bind(chlRS485, CHL_T_RS232, 0, OS_TMO_FOREVER);
-
 	acm_Init();
 
+	memset(p, 0, sizeof(t_ecl_task));
+	if (g_sys_status & BITMASK(0)) {
+		p->chl = chlRS485;
+		chl_Init(chlRS485);
+		chl_Bind(chlRS485, CHL_T_RS232, 0, OS_TMO_FOREVER);
+	}
 	for (nCnt = 0; ; nCnt++) {
 		//秒count
 		os_thd_Sleep(1000);
@@ -158,58 +160,58 @@ void tsk_Meter(void *args)
 //				acm_DaySave(p->time);
 			}
 		}
-#if 0
-		switch (p->ste) {
-		case ECL_TASK_S_IDLE:
-			if ((rtc_GetTimet() - tTime) > 60) {
-				if (p->ste == ECL_TASK_S_IDLE) {
-					p->ste = ECL_TASK_S_AUTO;
-					tTime = rtc_GetTimet();
-				}
-			}
-			break;
-		case ECL_TASK_S_AUTO:
-			monthprev(tTime, p->time, 1);
-			for (p->sn = 1; p->sn < ECL_SN_MAX; p->sn++) {
-				//下一个有效电表
-				if (icp_MeterRead(p->sn, &p->f10) == 0)
-					continue;
-				if (p->f10.port != ECL_PORT_RS485)
-					continue;
-				if (p->f10.prtl == ECL_PRTL_DLT645_97) {
-					nLen = 2;
-					nCode = DLT645_CODE_READ97;
-					nBaud = 1200;
-				} else {
-					nLen = 4;
-					nCode = DLT645_CODE_READ07;
-					nBaud = 2400;
-				}
-				chl_rs232_Config(chlRS485, nBaud, UART_PARI_EVEN, UART_DATA_8D, UART_STOP_1D);
-				data_DayRead(p->f10.tn, p->f10.madr, p->time, &xEnergy);
-				if (xEnergy.time == 0xEEEEEEEE) {
-					if (p->f10.prtl == ECL_PRTL_DLT645_97)
-						p->di = 0x901F;
-					else
-						p->di = 0x05060101;
-					dlt645_Packet2Buf(b, p->f10.madr, nCode, &p->di, nLen);
-					res = dlt645_Transmit2Meter(chlRS485, b, p->f10.madr, b->p, b->len, 3000);
-					if ((res == SYS_R_OK) && (b->p[8] == (nCode | BITMASK(7)))) {
-						nRecDI = 0;
-						pTemp = &b->p[10];
-						memcpy(&nRecDI, pTemp, nLen);
-						pTemp += nLen;
-						ecl_DataHandler(p->f10.tn, p->f10.madr, p->time, nRecDI, pTemp);
+		if ((g_sys_status & BITMASK(0))) {
+			switch (p->ste) {
+			case ECL_TASK_S_IDLE:
+				if ((rtc_GetTimet() - tTime) > 60) {
+					if (p->ste == ECL_TASK_S_IDLE) {
+						p->ste = ECL_TASK_S_AUTO;
+						tTime = rtc_GetTimet();
 					}
-					buf_Release(b);
 				}
+				break;
+			case ECL_TASK_S_AUTO:
+				monthprev(tTime, p->time, 1);
+				for (p->sn = 1; p->sn < ECL_SN_MAX; p->sn++) {
+					//下一个有效电表
+					if (icp_MeterRead(p->sn, &p->f10) == 0)
+						continue;
+					if (p->f10.port != ECL_PORT_RS485)
+						continue;
+					if (p->f10.prtl == ECL_PRTL_DLT645_97) {
+						nLen = 2;
+						nCode = DLT645_CODE_READ97;
+						nBaud = 1200;
+					} else {
+						nLen = 4;
+						nCode = DLT645_CODE_READ07;
+						nBaud = 2400;
+					}
+					chl_rs232_Config(chlRS485, nBaud, UART_PARI_EVEN, UART_DATA_8D, UART_STOP_1D);
+					data_DayRead(p->f10.tn, p->f10.madr, p->time, &xEnergy);
+					if (xEnergy.time == 0xEEEEEEEE) {
+						if (p->f10.prtl == ECL_PRTL_DLT645_97)
+							p->di = 0x901F;
+						else
+							p->di = 0x05060101;
+						dlt645_Packet2Buf(b, p->f10.madr, nCode, &p->di, nLen);
+						res = dlt645_Transmit2Meter(chlRS485, b, p->f10.madr, b->p, b->len, 3000);
+						if ((res == SYS_R_OK) && (b->p[8] == (nCode | BITMASK(7)))) {
+							nRecDI = 0;
+							pTemp = &b->p[10];
+							memcpy(&nRecDI, pTemp, nLen);
+							pTemp += nLen;
+							ecl_DataHandler(p->f10.tn, p->f10.madr, p->time, nRecDI, pTemp);
+						}
+						buf_Release(b);
+					}
+				}
+				p->ste = ECL_TASK_S_IDLE;
+				break;
+			default:
+				break;
 			}
-			p->ste = ECL_TASK_S_IDLE;
-			break;
-		default:
-			break;
 		}
-#endif
 	}
 }
 

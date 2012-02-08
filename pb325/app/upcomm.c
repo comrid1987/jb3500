@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <litecore.h>
+#include "system.h"
 #include "para.h"
 
 
 //Private Variables
-static t_gw3761 rcp_aGw3761[4];
+static t_gw3761 rcp_aGw3761[5];
 
 
 sys_res rcp_IsLogin()
@@ -74,7 +75,7 @@ void dbg_trace(const char *fmt, ...)
 static gd5100 rcp_GD5100;
 void tsk_Upcom2(void *args)
 {
-	p_gw3761 p;
+	p_gw3761 p, pEnd;
 	t_afn04_f85 xF85;
 
 	icp_ParaRead(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
@@ -91,10 +92,15 @@ void tsk_Upcom2(void *args)
 	dlrcp_SetChl(&rcp_aGw3761[1].parent, CHL_T_SOC_TS, 9000, 0, 0, 0, 0);
 	//远程GW3761规约端口8000
 	dlrcp_SetChl(&rcp_aGw3761[2].parent, CHL_T_SOC_TS, 8000, 0, 0, 0, 0);
-	//串口GW3761规约
-	dlrcp_SetChl(&rcp_aGw3761[3].parent, CHL_T_RS232, 0, 9600, UART_PARI_EVEN, UART_DATA_8D, UART_STOP_1D);
 	//红外GW3761规约
-	//dlrcp_SetChl(&rcp_aGw3761[4].parent, CHL_T_RS232, 4, 1200, UART_PARI_EVEN, UART_DATA_8D, UART_STOP_1D);
+	dlrcp_SetChl(&rcp_aGw3761[3].parent, CHL_T_RS232, 4, 1200, UART_PARI_EVEN, UART_DATA_8D, UART_STOP_1D);
+	//串口GW3761规约(开机按键启用)
+	if ((g_sys_status & BITMASK(0))) {
+		pEnd = &rcp_aGw3761[3];
+	} else {
+		pEnd = &rcp_aGw3761[4];
+		dlrcp_SetChl(&pEnd->parent, CHL_T_RS232, 0, 9600, UART_PARI_EVEN, UART_DATA_8D, UART_STOP_1D);
+	}
 
 	gd5100_Init(rcp_GD5100);
 	p->rtua = xF85.area;
@@ -107,7 +113,7 @@ void tsk_Upcom2(void *args)
 	dlrcp_SetChl(&rcp_GD5100->parent, CHL_T_SOC_TS, 777, 0, 0, 0, 0);
 
 	for (; ; ) {
-		for (p = &rcp_aGw3761[1]; p < ARR_ENDADR(rcp_aGw3761); p++)
+		for (p = &rcp_aGw3761[1]; p <= pEnd; p++)
 			gw3761_Handler(p);
 		if (gd5100_Handler(rcp_GD5100) == SYS_R_OK)
 			gd5100_Response(rcp_GD5100);
