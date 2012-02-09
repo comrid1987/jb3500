@@ -59,8 +59,11 @@ typedef struct {
 #define UART_T_VK321X			3
 
 #define UART_FUN_NORMAL			0
-#define UART_FUN_IRDA			1
-#define UART_FUN_SC				2
+#define UART_FUN_SC				1
+#define UART_FUN_IRDA			2
+
+#define IRDA_MODE_PWM			0
+#define IRDA_MODE_TIM			1
 
 #define UART_MODE_POLL			0
 #define UART_MODE_IRQ			1

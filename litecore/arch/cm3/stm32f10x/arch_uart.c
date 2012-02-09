@@ -115,10 +115,8 @@ void arch_UartInit(p_dev_uart p)
 	xUartClock.USART_LastBit = USART_LastBit_Enable;
 	USART_ClockInit(pUart, &xUartClock);
 	//Fun
-#if SMARTCARD_ENABLE | IRDA_ENABLE
-	switch (p->def->fun) {
-	case UART_FUN_IRDA:
-	case UART_FUN_SC:
+#if SMARTCARD_ENABLE
+	if (p->def->fun == UART_FUN_SC) {
 		xGpio.GPIO_Pin = BITMASK(p->def->fpin);
 		stm32_GpioClockEnable(p->def->fport);
 		if (p->def->outmode == DEV_PIN_OD)
@@ -126,9 +124,6 @@ void arch_UartInit(p_dev_uart p)
 		else
 			xGpio.GPIO_Mode = GPIO_Mode_AF_PP;
 		GPIO_Init(arch_GpioPortBase(p->def->fport), &xGpio);
-		break;
-	default:
-		break;
 	}
 #endif
 	xUart.baud = 9677;

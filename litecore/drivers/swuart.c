@@ -2,22 +2,9 @@
 #include <drivers/swuart.h>
 
 
-
-
-//Private Typedef
-typedef struct {
-	p_dev_uart	parent;
-	uint8_t		rxint;
-	uint8_t		rxste;
-	uint8_t		rxdata;
-	uint8_t		txste;
-	uint8_t		txdata;
-	uint8_t		txpari;
-	uint16_t	tick;
-}t_swuart;
-
-
 //Private Defines
+#define SWUART_ISO7816_BAUD		4800
+
 #define SWUART_IDLE				0
 #define SWUART_START_BIT		1
 #define SWUART_DATA_1			2
@@ -50,6 +37,22 @@ typedef struct {
 
 
 
+
+//Private Typedef
+typedef struct {
+	p_dev_uart	parent;
+	uint8_t		rxint;
+	uint8_t		rxste;
+	uint8_t		rxdata;
+	uint8_t		txste;
+	uint8_t		txdata;
+	uint8_t		txpari;
+	uint8_t		txv;
+	uint16_t	tick;
+}t_swuart;
+
+
+
 //Private Variables
 static t_swuart swuart_aDev[SWUART_QTY];
 
@@ -64,16 +67,33 @@ static void swuart_RxStart(void *args)
 	irq_ExtDisable(p->rxint);
 }
 
+static void swuart_IrdaTimer(void *args)
+{
+	t_swuart *p = (t_swuart *)args;
+	p_uart_def pDef = p->parent->def;
+
+	p->txv ^= 1;
+	arch_GpioSet(pDef->txport, pDef->txpin, p->txv);
+}
 
 static void swuart_TxOut(uint_t nFun, uint_t nPort, uint_t nPin, uint_t nValue)
 {
 
+#if IRDA_ENABLE
 	if (nFun == UART_FUN_IRDA) {
+#if IRDA_MODE == IRDA_MODE_TIM
+		if (nValue)
+			irq_TimerStart(nPort, arch_TimerClockGet() / 76000);
+		else
+			irq_TimerStop(nPort);
+#else
 		if (nValue)
 			arch_PwmStop(nPort, nPin);
 		else
 			arch_PwmStart(nPort, nPin);
+#endif
 	} else
+#endif
 		arch_GpioSet(nPort, nPin, nValue);
 }
 
@@ -274,7 +294,6 @@ static void swuart_RxTx(void *args)
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-#define SWUART_ISO7816_BAUD			4800
 void swuart_Init(p_dev_uart p)
 {
 	uint_t nMode;
@@ -308,7 +327,11 @@ void swuart_Init(p_dev_uart p)
 #endif
 #if IRDA_ENABLE
 	case UART_FUN_IRDA:
+#if IRDA_MODE == IRDA_MODE_TIM
+		irq_TimerRegister(pDef->txport, swuart_IrdaTimer, &swuart_aDev[pDef->id]);
+#else
 		arch_PwmConf(pDef->txport, pDef->txpin, nMode, 38000);
+#endif
 		xUart.baud = 1200;
 		break;
 #endif
