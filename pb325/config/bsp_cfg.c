@@ -274,6 +274,8 @@ UART1           PC7	SAMP_TXD
                 PC6	SAMP_RXD
 UART2           PD1	G_TXD
                 PD0	G_RXD
+IR              rx PE4
+                tx PC4
 *****************************************************************************/
 //-------------------------------------------------------------------------
 //UART Interface Functions
@@ -283,7 +285,7 @@ UART2           PD1	G_TXD
 		UART_T_INT,		0,	GPIO_P0,	1,	UART_MODE_IRQ,	GPIO_P0,	0,	UART_MODE_IRQ,	NULL,		NULL,	UART_FUN_NORMAL,	DEV_PIN_PP,
 		UART_T_INT,		1,	GPIO_P2,	7,	UART_MODE_IRQ,	GPIO_P2,	6,	UART_MODE_IRQ,	NULL,		NULL,	UART_FUN_NORMAL,	DEV_PIN_PP,
 		UART_T_INT,		2,	GPIO_P3,	1,	UART_MODE_IRQ,	GPIO_P3,	0,	UART_MODE_IRQ,	NULL,		NULL,	UART_FUN_NORMAL,	DEV_PIN_PP,
-		UART_T_TIMER,	0,	GPIO_P5,	4,	UART_MODE_IRQ,	GPIO_P5,	5,	UART_MODE_IRQ,	NULL,		NULL,	UART_FUN_NORMAL,	DEV_PIN_PP,
+		UART_T_TIMER,	0,	GPIO_P2,	4,	UART_MODE_IRQ,	GPIO_P4,	4,	UART_MODE_IRQ,	NULL,		NULL,	UART_FUN_NORMAL,	DEV_PIN_PP,
 	};
 #endif
 
