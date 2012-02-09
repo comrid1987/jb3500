@@ -93,7 +93,7 @@ void tsk_Upcom2(void *args)
 	//远程GW3761规约端口8000
 	dlrcp_SetChl(&rcp_aGw3761[2].parent, CHL_T_SOC_TS, 8000, 0, 0, 0, 0);
 	//红外GW3761规约
-	dlrcp_SetChl(&rcp_aGw3761[3].parent, CHL_T_RS232, 4, 1200, UART_PARI_EVEN, UART_DATA_8D, UART_STOP_1D);
+	dlrcp_SetChl(&rcp_aGw3761[3].parent, CHL_T_RS232, 3, 1200, UART_PARI_EVEN, UART_DATA_8D, UART_STOP_1D);
 	//串口GW3761规约(开机按键启用)
 	os_thd_Sleep(1000);
 	if ((g_sys_status & BITMASK(0))) {

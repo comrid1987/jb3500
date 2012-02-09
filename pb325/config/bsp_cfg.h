@@ -256,10 +256,10 @@
 //UART使能
 #define UART_ENABLE						1
 #if UART_ENABLE
-	#define BSP_UART_QTY				3
+	#define BSP_UART_QTY				4
 	extern t_uart_def tbl_bspUartDef[BSP_UART_QTY];
 	//Timer Uart使能
-	#define SWUART_ENABLE				0
+	#define SWUART_ENABLE				1
 	#if SWUART_ENABLE
 		#define SWUART_QTY				1
 	#endif

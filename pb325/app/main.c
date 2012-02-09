@@ -66,7 +66,7 @@ void hold()
 int main(void)
 {
 
-//	hold();
+	hold();
 	sys_Start();
 }
 
