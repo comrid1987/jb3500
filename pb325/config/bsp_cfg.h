@@ -271,7 +271,10 @@
 	#endif
 
 	//IRDA使能
-	#define IRDA_ENABLE 				0
+	#define IRDA_ENABLE 				1
+	#if IRDA_ENABLE
+		#define IRDA_MODE				IRDA_MODE_TIM
+	#endif
 
 	//RS485使能
 	#define RS485_ENABLE				0
