@@ -100,7 +100,7 @@ void tsk_Upcom2(void *args)
 		pEnd = &rcp_aGw3761[3];
 	} else {
 		pEnd = &rcp_aGw3761[4];
-		dlrcp_SetChl(&pEnd->parent, CHL_T_RS232, 0, 9600, UART_PARI_EVEN, UART_DATA_8D, UART_STOP_1D);
+		dlrcp_SetChl(&pEnd->parent, CHL_T_RS232, 0, 1200, UART_PARI_EVEN, UART_DATA_8D, UART_STOP_1D);
 	}
 
 	gd5100_Init(rcp_GD5100);

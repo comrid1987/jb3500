@@ -103,6 +103,8 @@ static sys_res gw3761_RmsgAnalyze(void *args)
 					continue;
 				if (pH->len1 != pH->len2)
 					continue;
+				if (pH->c.dir == GW3761_DIR_SEND)
+					continue;
 				break;
 			}
 		}

@@ -60,7 +60,7 @@
 #define MCU_HSI_ENABLE					0
 
 //MCUÆµÂÊ
-#define MCU_FREQUENCY					MCU_SPEED_FULL
+#define MCU_FREQUENCY					MCU_SPEED_HALF
 
 //Internal SRAM End Address
 #define MCU_SRAM_BASE_ADR				0x20000000

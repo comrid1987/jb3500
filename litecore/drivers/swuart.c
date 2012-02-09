@@ -83,9 +83,9 @@ static void swuart_TxOut(uint_t nFun, uint_t nPort, uint_t nPin, uint_t nValue)
 	if (nFun == UART_FUN_IRDA) {
 #if IRDA_MODE == IRDA_MODE_TIM
 		if (nValue)
-			irq_TimerStart(nPort, arch_TimerClockGet() / 76000);
-		else
 			irq_TimerStop(nPort);
+		else
+			irq_TimerStart(nPort, arch_TimerClockGet() / 76000);
 #else
 		if (nValue)
 			arch_PwmStop(nPort, nPin);
@@ -328,6 +328,7 @@ void swuart_Init(p_dev_uart p)
 #if IRDA_ENABLE
 	case UART_FUN_IRDA:
 #if IRDA_MODE == IRDA_MODE_TIM
+		arch_GpioConf(pDef->txport, pDef->txpin, nMode, GPIO_INIT_HIGH);
 		irq_TimerRegister(pDef->txport, swuart_IrdaTimer, &swuart_aDev[pDef->id]);
 #else
 		arch_PwmConf(pDef->txport, pDef->txpin, nMode, 38000);
