@@ -54,7 +54,7 @@ static t_ecl_task ecl_Task485;
 
 
 
-
+#if 0
 void ecl_DataHandler(uint_t nTn, const uint8_t *pAdr, const uint8_t *pTime, uint32_t nRecDI, const void *pData)
 {
 	t_ecl_energy xEnergy;
@@ -74,10 +74,9 @@ void ecl_DataHandler(uint_t nTn, const uint8_t *pAdr, const uint8_t *pTime, uint
 		break;
 	}
 }
+#endif
 
 
-
-//485通讯抄表任务
 sys_res ecl_485_RealRead(buf b, uint_t nBaud, uint_t nTmo)
 {
 	sys_res res;
