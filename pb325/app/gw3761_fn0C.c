@@ -445,6 +445,10 @@ int gw3761_ResponseData1(p_gw3761 p)
 					buf_PushData(b, 0, 4);
 					buf_PushData(b, 0, 4);
 					break;
+				case 15:
+					//配电扩展,100次遥信
+					data_YXRead(b);
+					break;
 				case 16:
 					//配电扩展,10次上电时间
 					data_RuntimeRead(b);

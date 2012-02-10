@@ -49,10 +49,7 @@ void tsk_Upcom1(void *args)
 			tTime = rtc_GetTimet();
 			nCnt += 1;
 		}
-		if (gw3761_Handler(p) == SYS_R_OK) {
-//			reg_OperateAdd(TERMINAL, nID_TerFlowD, p->rmsg.data->len + GW3761_HEADER_SIZE + 2, 0);
-//			reg_OperateAdd(TERMINAL, nID_TerFlowM, p->rmsg.data->len + GW3761_HEADER_SIZE + 2, 0);
-		}
+		gw3761_Handler(p);
 	}
 }
 

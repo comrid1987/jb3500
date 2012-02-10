@@ -118,9 +118,9 @@ by arnold
 
 #if PULSE_COL_ENABLE
 	t_gpio_def _tbl_bspPulse[] = {
-		GPIO_T_HC165,	GPIO_P0,	7,		GPIO_M_IN_PU,		GPIO_INIT_NULL, 		//0 pulse1
-		GPIO_T_HC165,	GPIO_P0,	6,		GPIO_M_IN_PU,		GPIO_INIT_NULL, 		//1 pulse2
-		GPIO_T_HC165,	GPIO_P0,	5,		GPIO_M_IN_PU,		GPIO_INIT_NULL, 		//2 pulse3 
+		GPIO_T_HC165,	GPIO_P0,	7,		GPIO_M_IN_PU,		GPIO_INIT_NULL, 		// 0 pulse1
+		GPIO_T_HC165,	GPIO_P0,	6,		GPIO_M_IN_PU,		GPIO_INIT_NULL, 		// 1 pulse2
+		GPIO_T_HC165,	GPIO_P0,	5,		GPIO_M_IN_PU,		GPIO_INIT_NULL, 		// 2 pulse3 
 	};
 	tbl_gpio_def tbl_bspPulse[] = {_tbl_bspPulse, ARR_ENDADR(_tbl_bspPulse)};
 #endif

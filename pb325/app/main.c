@@ -24,17 +24,26 @@ os_thd_declare(Meter, 1280);
 
 void tsk_Daemon(void *args)
 {
-	uint_t nTick, nSpan;
+	uint_t i, nCnt, nSpan;
+	os_que que;
 
-    for (nTick = 0; ; nTick++) {
-		os_thd_Sleep(100);
+    for (nCnt = 0; ; nCnt++) {
+		que = os_que_Wait(QUE_EVT_PULSE, NULL, 200);
+		if (que != NULL) {
+			nSpan = que->data->val;
+			for (i = 0; i < 3; i++) {
+				if (nSpan & BITMASK(i))
+					data_YXWrite(i + 1);
+			}
+			os_que_Release(que);
+		}
 		if (g_sys_status & BITMASK(0))
-			nSpan = 7;
-		else
 			nSpan = 3;
-		if ((nTick & nSpan) == 0)
+		else
+			nSpan = 1;
+		if ((nCnt & nSpan) == 0)
 			LED_RUN(1);
-		if ((nTick & nSpan) == 1)
+		if ((nCnt & nSpan) == 1)
 			LED_RUN(0);
 	}
 }
