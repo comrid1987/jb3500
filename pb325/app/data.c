@@ -350,15 +350,15 @@ void data_Copy2Udisk()
 	fd1 = fs_open(str, O_WRONLY | O_CREAT | O_TRUNC, 0);
 	if (fd1 >= 0) {
 		data_RuntimeRead(b);
-		fs_write(fd1, str, sprintf(str, "[RunTime]\r\n");
+		fs_write(fd1, str, sprintf(str, "[RunTime]\r\n"));
 		for (i = 0; i < 10; i++) {
 			pTemp = &b->p[i * 12];
-			if (memtest(pTemp, GW3761_DATA_INVALID, 10) == 0)
-				fs_write(fd1, str, sprintf(str, "%02d=\r\n", i + 1);
+			if (memtest(pTemp, GW3761_DATA_INVALID, 10))
+				fs_write(fd1, str, sprintf(str, "%02d=[on]20%02X-%02X-%02X %02X:%02X:%02X [off]20%02X-%02X-%02X %02X:%02X:%02X\r\n", i + 1, pTemp[5], pTemp[4], pTemp[3], pTemp[2], pTemp[1], pTemp[0], pTemp[11], pTemp[10], pTemp[9], pTemp[8], pTemp[7], pTemp[6]));
 			else
-				fs_write(fd1, str, sprintf(str, "%02d=[on]20%02X-%02X-%02X %02X:%02X:%02X [off]20%02X-%02X-%02X %02X:%02X:%02X\r\n", i, pTemp[5], pTemp[4], pTemp[3], pTemp[2], pTemp[1]), pTemp[0], pTemp[11], pTemp[10], pTemp[9], pTemp[8], pTemp[7]), pTemp[6]);
+				fs_write(fd1, str, sprintf(str, "%02d=\r\n", i + 1));
 		}		
-		fs_write(fd1, str, sprintf(str, "[end]\r\n");
+		fs_write(fd1, str, sprintf(str, "[end]\r\n"));
 		fs_close(fd1);
 	}
 	LED_UDISK(0);
