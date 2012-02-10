@@ -359,7 +359,7 @@ void data_Copy2Udisk()
 		fs_write(fd1, str, sprintf(str, "[RunTime]\r\n"));
 		for (i = 0; i < 10; i++) {
 			pTemp = &b->p[i * 12];
-			if (memtest(pTemp, GW3761_DATA_INVALID, 12))
+			if (memtest(pTemp, 0xEE, 12))
 				fs_write(fd1, str, sprintf(str, "%02d=[on]20%02X-%02X-%02X %02X:%02X:%02X [off]20%02X-%02X-%02X %02X:%02X:%02X\r\n", i + 1, pTemp[5], pTemp[4], pTemp[3], pTemp[2], pTemp[1], pTemp[0], pTemp[11], pTemp[10], pTemp[9], pTemp[8], pTemp[7], pTemp[6]));
 			else
 				fs_write(fd1, str, sprintf(str, "%02d=\r\n", i + 1));
@@ -375,7 +375,7 @@ void data_Copy2Udisk()
 		data_YXRead(b);
 		for (i = 0; i < 100; i++) {
 			pTemp = &b->p[i * 7];
-			if (memtest(pTemp, GW3761_DATA_INVALID, 7))
+			if (memtest(pTemp, 0xEE, 7))
 				fs_write(fd1, str, sprintf(str, "%03d=[%d]20%02X-%02X-%02X %02X:%02X:%02X\r\n", i + 1, pTemp[0], pTemp[6], pTemp[5], pTemp[4], pTemp[3], pTemp[2], pTemp[1]));
 			else
 				fs_write(fd1, str, sprintf(str, "%03d=\r\n", i + 1));

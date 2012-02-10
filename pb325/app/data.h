@@ -40,6 +40,11 @@ void data_QuarterRead(const uint8_t *pTime, t_data_quarter *pData);
 void data_QuarterWrite(const uint8_t *pTime, t_data_quarter *pData);
 void data_DayRead(uint_t nTn, const uint8_t *pAdr, const uint8_t *pTime, t_ecl_energy *pData);
 void data_DayWrite(uint_t nTn, const uint8_t *pAdr, const uint8_t *pTime, t_ecl_energy *pData);
+void data_RuntimeRead(buf b);
+void data_RuntimeWrite(void);
+void data_YXRead(buf b);
+void data_YXWrite(uint_t nId);
+void data_Copy2Udisk(void);
 
 
 

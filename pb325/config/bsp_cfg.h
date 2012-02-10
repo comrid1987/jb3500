@@ -77,6 +77,8 @@
 //看门狗使能
 #define WDG_ENABLE						0
 #if WDG_ENABLE
+	//片内看门狗使能
+	#define WDT_INT_ENABLE				1
 	//片外看门狗使能
 	#define WDG_T_EXTERNEL				0
 	#if WDG_T_EXTERNEL
