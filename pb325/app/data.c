@@ -9,6 +9,8 @@
 
 
 //Private Defines
+#define ECL_DATA_MAGIC_WORD		0x52318761
+
 #define ECL_DATA_MADR_BASE		(98 * 0x1000)
 
 #define ECL_DATA_DAY_BASE		(100 * 0x1000)
@@ -25,6 +27,15 @@
 #define ECL_DATA_MIN_HEADER		16
 #define ECL_DATA_MIN_MSIZE		sizeof(t_data_min)
 #define ECL_DATA_MIN_ALLSIZE	(ECL_DATA_MIN_HEADER + 1440 * ECL_DATA_MIN_MSIZE)
+
+#define ECL_DATA_YX_BASE		(324 * 0x1000)
+#define ECL_DATA_YX_HEADER		16
+#define ECL_DATA_YX_MSIZE		8
+
+#define ECL_DATA_ONOFF_BASE		(325 * 0x1000)
+#define ECL_DATA_ONOFF_HEADER	16
+#define ECL_DATA_ONOFF_SIZE		12
+
 
 
 //Private Macros
@@ -102,7 +113,7 @@ void data_QuarterWrite(const uint8_t *pTime, t_data_quarter *pData)
 	spif_Write(nAdr, pData, sizeof(t_data_quarter));
 }
 
-
+#if 0
 void data_DayRead(uint_t nTn, const uint8_t *pAdr, const uint8_t *pTime, t_ecl_energy *pData)
 {
 	uint_t nAdr;
@@ -152,22 +163,65 @@ void data_DayWrite(uint_t nTn, const uint8_t *pAdr, const uint8_t *pTime, t_ecl_
 	nAdr += (ECL_DATA_DAY_HEADER + (nTn - 1) * ECL_DATA_DAY_MSIZE);
 	spif_Write(nAdr, pData, sizeof(t_ecl_energy));
 }
+#endif
 
-
-void data_RunTime()
+void data_RuntimeRead(buf b)
 {
-	time_t tTime;
+	uint8_t aBuf[10 * ECL_DATA_ONOFF_SIZE];
 
-	if (icp_RunTimeRead(&tTime) == 0)
-		return;
-	
-
-
-
+	spif_Read(ECL_DATA_ONOFF_BASE + ECL_DATA_ONOFF_HEADER, aBuf, sizeof(aBuf));
+	buf_Push(b, aBuf, sizeof(aBuf));
 }
 
+void data_RuntimeWrite()
+{
+	time_t tTime;
+	uint32_t nMagic;
+	uint8_t aBuf[10 * ECL_DATA_ONOFF_SIZE];
 
+	spif_Read(ECL_DATA_ONOFF_BASE, &nMagic, 4);
+	if (nMagic != ECL_DATA_MAGIC_WORD) {
+		nMagic = ECL_DATA_MAGIC_WORD;
+		spif_Fill(ECL_DATA_ONOFF_BASE, ECL_DATA_ONOFF_BASE + ECL_DATA_ONOFF_HEADER + ECL_DATA_ONOFF_SIZE * 10, GW3761_DATA_INVALID);
+		spif_Write(ECL_DATA_ONOFF_BASE, &nMagic, 4);
+	}
+	if (icp_RunTimeRead(&tTime)) {
+		spif_Read(ECL_DATA_ONOFF_BASE + ECL_DATA_ONOFF_HEADER, aBuf, sizeof(aBuf));
+		memmove(&aBuf[ECL_DATA_ONOFF_SIZE], aBuf, 9 * ECL_DATA_ONOFF_SIZE);
+		gw3761_ConvertData_01(aBuf, rtc_GetTimet());
+		gw3761_ConvertData_01(&aBuf[ECL_DATA_ONOFF_SIZE / 2], tTime);
+		spif_Write(ECL_DATA_ONOFF_BASE + ECL_DATA_ONOFF_HEADER, aBuf, sizeof(aBuf));
+	}
+}
 
+void data_YXRead(buf b)
+{
+	uint8_t aBuf[10 * ECL_DATA_ONOFF_SIZE];
+
+	spif_Read(ECL_DATA_ONOFF_BASE + ECL_DATA_ONOFF_HEADER, aBuf, sizeof(aBuf));
+	buf_Push(b, aBuf, sizeof(aBuf));
+}
+
+void data_YXWrite()
+{
+	time_t tTime;
+	uint32_t nMagic;
+	uint8_t aBuf[10 * ECL_DATA_ONOFF_SIZE];
+
+	spif_Read(ECL_DATA_ONOFF_BASE, &nMagic, 4);
+	if (nMagic != ECL_DATA_MAGIC_WORD) {
+		nMagic = ECL_DATA_MAGIC_WORD;
+		spif_Fill(ECL_DATA_ONOFF_BASE, ECL_DATA_ONOFF_BASE + ECL_DATA_ONOFF_HEADER + ECL_DATA_ONOFF_SIZE * 10, GW3761_DATA_INVALID);
+		spif_Write(ECL_DATA_ONOFF_BASE, &nMagic, 4);
+	}
+	if (icp_RunTimeRead(&tTime)) {
+		spif_Read(ECL_DATA_ONOFF_BASE + ECL_DATA_ONOFF_HEADER, aBuf, sizeof(aBuf));
+		memmove(&aBuf[ECL_DATA_ONOFF_SIZE], aBuf, 9 * ECL_DATA_ONOFF_SIZE);
+		gw3761_ConvertData_01(aBuf, rtc_GetTimet());
+		gw3761_ConvertData_01(&aBuf[ECL_DATA_ONOFF_SIZE / 2], tTime);
+		spif_Write(ECL_DATA_ONOFF_BASE + ECL_DATA_ONOFF_HEADER, aBuf, sizeof(aBuf));
+	}
+}
 
 void data_Copy2Udisk()
 {
@@ -180,6 +234,7 @@ void data_Copy2Udisk()
 	time_t tNow, tTime;
 	t_data_min xMin;
 	t_data_quarter xQuar;
+	buf b = {0};
 
 	d = fs_opendir(FS_USBMSC_PATH);
 	if (d == NULL)
@@ -289,6 +344,21 @@ void data_Copy2Udisk()
 	fd1 = fs_open(str, O_WRONLY | O_CREAT | O_TRUNC, 0);
 	if (fd1 >= 0) {
 		fs_write(fd1, str, sprintf(str, "20%02X-%02X-%02X %02X:%02X:00\r\n", aTime[5], aTime[4], aTime[3], aTime[2], aTime[1]));
+		fs_close(fd1);
+	}
+	sprintf(str, "%s%s", sAddr, "pb325_rt.txt");
+	fd1 = fs_open(str, O_WRONLY | O_CREAT | O_TRUNC, 0);
+	if (fd1 >= 0) {
+		data_RuntimeRead(b);
+		fs_write(fd1, str, sprintf(str, "[RunTime]\r\n");
+		for (i = 0; i < 10; i++) {
+			pTemp = &b->p[i * 12];
+			if (memtest(pTemp, GW3761_DATA_INVALID, 10) == 0)
+				fs_write(fd1, str, sprintf(str, "%02d=\r\n", i + 1);
+			else
+				fs_write(fd1, str, sprintf(str, "%02d=[on]20%02X-%02X-%02X %02X:%02X:%02X [off]20%02X-%02X-%02X %02X:%02X:%02X\r\n", i, pTemp[5], pTemp[4], pTemp[3], pTemp[2], pTemp[1]), pTemp[0], pTemp[11], pTemp[10], pTemp[9], pTemp[8], pTemp[7]), pTemp[6]);
+		}		
+		fs_write(fd1, str, sprintf(str, "[end]\r\n");
 		fs_close(fd1);
 	}
 	LED_UDISK(0);

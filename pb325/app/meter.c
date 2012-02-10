@@ -123,6 +123,8 @@ void tsk_Meter(void *args)
 
 	acm_Init();
 
+	data_RuntimeWrite();
+
 	memset(p, 0, sizeof(t_ecl_task));
 	if (g_sys_status & BITMASK(0)) {
 		p->chl = chlRS485;
