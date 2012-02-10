@@ -39,8 +39,10 @@ uint_t gw3761_ConvertDt2Fn(uint_t nDt)
 	for (i = 0; i < 8; i++)
 		if (nDt & BITMASK(i))
 			break;
-	if (i < 8)
-		return ((nDt >> 5) & 0x7F8) | i + 1;
+	if (i < 8) {
+		nDt >>= 8;
+		return ((nDt << 3) | i) + 1;
+	}
 	return 0;
 }
 

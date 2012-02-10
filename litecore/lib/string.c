@@ -72,7 +72,7 @@ void bcd2str8(uint_t n, char *pc)
 //-------------------------------------------------------------------------
 //字符串是否全为某值
 //-------------------------------------------------------------------------
-int memtest(const void *s, int c, int len)
+int memtest(const void *s, uint8_t c, int len)
 {
 	uint_t i;
 	uint8_t *p = (uint8_t *)s;

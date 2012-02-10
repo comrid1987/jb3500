@@ -70,7 +70,7 @@ void bcd2str32(uint32_t n, char *pc);
 void int2str32(uint32_t n, char *pc);
 void bcd2str16(uint_t n, char *pc);
 void bcd2str8(uint_t n, char *pc);
-int memtest(const void *s, int c, int len);
+int memtest(const void *s, uint8_t c, int len);
 
 
 
