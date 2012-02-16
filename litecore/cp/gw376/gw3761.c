@@ -336,20 +336,17 @@ sys_res gw3761_Handler(p_gw3761 p)
 				case GW3761_AFN_DATA_L2:
 					res += gw3761_ResponseData2(p, b, &uDu, &pData);
 					break;
-#if 0
 				case GW3761_AFN_DATA_L3:
 					res += gw3761_ResponseData3(p, b, &uDu, &pData);
 					break;
-#endif
 				case GW3761_AFN_FILE_TRANS:
 					res += gw3761_ResponseFileTrans(p, b, &uDu, &pData);
 					break;
-#if 0
 				case GW3761_AFN_DATA_TRANS:
 					res += gw3761_ResponseTransmit(p, b, &uDu, &pData);
 					break;
-#endif
 				default:
+					buf_Unpush(b, 4);
 					break;
 				}
 			}
