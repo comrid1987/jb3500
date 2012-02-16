@@ -43,7 +43,7 @@ void sys_IOHandle(void *args)
 #endif
 #if PULSE_COL_ENABLE
 	//Âö³å²É¼¯
-	if ((nCnt & 0x00) == 0) {
+	if ((nCnt & 0x07) == 0) {
 		i = pulse_Read();
 		if (i)
 			os_que_Send(QUE_EVT_PULSE, NULL, &i, sizeof(uint_t), 200);
