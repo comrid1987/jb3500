@@ -32,8 +32,12 @@ void tsk_Daemon(void *args)
 		if (que != NULL) {
 			nSpan = que->data->val;
 			for (i = 0; i < 3; i++) {
-				if (nSpan & BITMASK(i))
-					data_YXWrite(i + 1);
+				if (nSpan & BITMASK(i)){
+                    BEEP(1);
+                    data_YXWrite(i + 1);
+	                os_thd_Sleep(100);
+                    BEEP(0);
+				}
 			}
 			os_que_Release(que);
 		}

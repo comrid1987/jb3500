@@ -170,12 +170,12 @@ static void Display_BCD_Addr(uint32_t addr_5)
 	ht1621_Write(iDPS, BLANK);
 	ht1621_Write(iDIGIT7, BLANK);
 	ht1621_Write(iDIGIT6, BLANK);
-    addr_5 = bin2bcd32(addr_5) &0x000FFFFF;
-	tmp[4]=(unsigned char)((addr_5&0xF000)>>16);	
-	tmp[3]=(unsigned char)((addr_5&0xF000)>>12);	
-	tmp[2]=(unsigned char)((addr_5&0x0F00)>>8);
-	tmp[1]=(unsigned char)((addr_5&0x00F0)>>4);
-	tmp[0]=(unsigned char)((addr_5&0x000F));
+    addr_5 = bin2bcd32(addr_5) & 0x000FFFFF;
+	tmp[4]=(unsigned char)((addr_5&0xF0000)>>16);	
+	tmp[3]=(unsigned char)((addr_5&0x0F000)>>12);	
+	tmp[2]=(unsigned char)((addr_5&0x00F00)>>8);
+	tmp[1]=(unsigned char)((addr_5&0x000F0)>>4);
+	tmp[0]=(unsigned char)((addr_5&0x0000F));
 	for (i = 0; i <5; i++)
 		ht1621_Write(i, disp_tblHex[tmp[i]]);
 }
@@ -189,8 +189,17 @@ static void disp_Handle(uint_t nSel)
 	ht1621_Write(iDIGIT8, BLANK);
 	ht1621_Write(iDIGIT7, BLANK);
 #if MODEM_ENABLE
-	if (modem_IsOnline() == SYS_R_OK)
-		ht1621_Write(iConGprs, 0x0F);
+    nTemp = modem_GetSignal();
+    if((nTemp > 0)&&(nTemp != 99)){
+        if(nTemp < 2)
+            ht1621_Write(iConGprs, 0x01);   
+        if((nTemp < 5)&&(nTemp >= 2))
+            ht1621_Write(iConGprs, 0x03);   
+        if((nTemp < 10)&&(nTemp >= 5))
+             ht1621_Write(iConGprs, 0x07);   
+        if(nTemp >= 10)
+             ht1621_Write(iConGprs, 0x0F);   
+    }
 	else
 		ht1621_Write(iConGprs, BLANK);
 	if (rcp_IsLogin() == SYS_R_OK)
@@ -417,9 +426,10 @@ void tsk_Display(void *args)
 				LCD_BL(0);
 				if (g_sys_status & BITMASK(1)) {
 					CLRBIT(g_sys_status, 1);
-					icp_UdiskLoad();
 					data_Copy2Udisk();
 				}
+                else
+					icp_UdiskLoad();
 				break;
 			default:
 				break;

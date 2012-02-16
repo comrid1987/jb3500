@@ -188,8 +188,8 @@ void data_RuntimeWrite()
 	if (icp_RunTimeRead(&tTime)) {
 		spif_Read(ECL_DATA_ONOFF_BASE + ECL_DATA_ONOFF_HEADER, aBuf, sizeof(aBuf));
 		memmove(&aBuf[ECL_DATA_ONOFF_SIZE], aBuf, 9 * ECL_DATA_ONOFF_SIZE);
-		gw3761_ConvertData_01(aBuf, rtc_GetTimet());
-		gw3761_ConvertData_01(&aBuf[ECL_DATA_ONOFF_SIZE / 2], tTime);
+        timet2array(rtc_GetTimet(), aBuf, 1);
+        timet2array(tTime, &aBuf[ECL_DATA_ONOFF_SIZE / 2], 1);
 		spif_Write(ECL_DATA_ONOFF_BASE + ECL_DATA_ONOFF_HEADER, aBuf, sizeof(aBuf));
 	}
 }
@@ -222,7 +222,7 @@ void data_YXWrite(uint_t nId)
 		spif_Read(ECL_DATA_YX_BASE + ECL_DATA_YX_HEADER, pBuf, 100 * ECL_DATA_YX_SIZE);
 		memmove(&pBuf[ECL_DATA_YX_SIZE], pBuf, 99 * ECL_DATA_YX_SIZE);
 		pBuf[0] = nId;
-		gw3761_ConvertData_01(&pBuf[1], rtc_GetTimet());
+        timet2array(rtc_GetTimet(), &pBuf[1], 1);
 		spif_Write(ECL_DATA_YX_BASE + ECL_DATA_YX_HEADER, pBuf, 100 * ECL_DATA_YX_SIZE);
 		mem_Free(pBuf);
 	}
