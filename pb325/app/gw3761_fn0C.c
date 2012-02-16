@@ -23,13 +23,13 @@
 
 //Private Consts
 static t_ecl_rtdi tbl_Di_Afn0CF25[] = {
-	0,	ECL_RTR_T_POWER,		0x901F,	0x0203FF00,	//有功功率
-	0,	ECL_RTR_T_POWER,		0x901F,	0x0204FF00,	//无功功率
-	0,	ECL_RTR_T_PF,			0x901F,	0x0206FF00,	//功率因数
-	0,	ECL_RTR_T_VOL,			0x901F,	0x0201FF00,	//电压
-	0,	ECL_RTR_T_CUR,			0x901F,	0x0202FF00,	//电流
-	0,	ECL_RTR_T_CUR0,			0x901F,	0x02080001,	//零序电流
-	0,	ECL_RTR_T_POWER,		0x901F,	0x0205FF00,	//视在功率
+	0,	ECL_RTR_T_POWER,		0xB63F,	0x0203FF00,	//有功功率
+	0,	ECL_RTR_T_POWER,		0xB64F,	0x0204FF00,	//无功功率
+	0,	ECL_RTR_T_PF,			0xB65F,	0x0206FF00,	//功率因数
+	0,	ECL_RTR_T_VOL,			0xB61F,	0x0201FF00,	//电压
+	0,	ECL_RTR_T_CUR,			0xB62F,	0x0202FF00,	//电流
+	0,	ECL_RTR_T_CUR0,			0xB620,	0x02080001,	//零序电流
+	0,	ECL_RTR_T_POWER,		0xB63F,	0x0205FF00,	//视在功率,97表无
 };
 
 static t_ecl_rtdi tbl_Di_Afn0CF33[] = {

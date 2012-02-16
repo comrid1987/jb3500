@@ -461,9 +461,19 @@
               <FilePath>.\app\gw3761_fn0D.c</FilePath>
             </File>
             <File>
+              <FileName>gw3761_fn0E.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\app\gw3761_fn0E.c</FilePath>
+            </File>
+            <File>
               <FileName>gw3761_fn0F.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\app\gw3761_fn0F.c</FilePath>
+            </File>
+            <File>
+              <FileName>gw3761_fn10.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\app\gw3761_fn10.c</FilePath>
             </File>
             <File>
               <FileName>upcomm.c</FileName>

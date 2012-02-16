@@ -329,14 +329,14 @@ void data_Copy2Udisk()
 					fs_write(fd2, str, sprintf(str, "20%02X-%02X-%02X %02X:%02X:00", aTime[5], aTime[4], aTime[3], aTime[2], aTime[1]));
 					for (i = 0; i < 66; i++) {
 						pTemp = &xQuar.data[i * 2];
-						fs_write(fd2, str, sprintf(str, ",%1X.%1X%1X%1X", pTemp[1] >> 4, pTemp[1] & 0xF, pTemp[0] >> 4, pTemp[0] & 0xF));
+						fs_write(fd2, str, sprintf(str, ",%1X.%1X%02X", pTemp[1] >> 4, pTemp[1] & 0xF, pTemp[0]));
 					}
 					for (i = 0; i < 6; i++) {
 						pTemp = &xQuar.data[132 + i * 2];
-						fs_write(fd2, str, sprintf(str, ",%1X%1X%1X.%1X", pTemp[1] >> 4, pTemp[1] & 0xF, pTemp[0] >> 4, pTemp[0] & 0xF));
+						fs_write(fd2, str, sprintf(str, ",%02X%1X.%1X", pTemp[1], pTemp[0] >> 4, pTemp[0] & 0xF));
 					}
 					pTemp = &xQuar.data[144];
-					fs_write(fd2, str, sprintf(str, ",%1X%1X.%1X%1X\r\n", pTemp[1] >> 4, pTemp[1] & 0xF, pTemp[0] >> 4, pTemp[0] & 0xF));
+					fs_write(fd2, str, sprintf(str, ",%02X.%02X\r\n", pTemp[1], pTemp[0]));
 				}
 			}
 		}

@@ -64,7 +64,7 @@ void ecl_DataHandler(uint_t nTn, const uint8_t *pAdr, const uint8_t *pTime, uint
 	case 0x05060101:
 		//ÈÕ¶³½á
 		data_DayRead(nTn, pAdr, pTime, &xEnergy);
-		if (xEnergy.time == 0xEEEEEEEE) {
+		if (xEnergy.time == GW3761_DATA_INVALID) {
 			xEnergy.time = rtc_GetTimet();
 			memcpy(&xEnergy.data, pData, 20);
 			data_DayWrite(nTn, pAdr, pTime, &xEnergy);
@@ -191,7 +191,7 @@ void tsk_Meter(void *args)
 					}
 					chl_rs232_Config(chlRS485, nBaud, UART_PARI_EVEN, UART_DATA_8D, UART_STOP_1D);
 					data_DayRead(p->f10.tn, p->f10.madr, p->time, &xEnergy);
-					if (xEnergy.time == 0xEEEEEEEE) {
+					if (xEnergy.time == GW3761_DATA_INVALID) {
 						if (p->f10.prtl == ECL_PRTL_DLT645_97)
 							p->di = 0x901F;
 						else
