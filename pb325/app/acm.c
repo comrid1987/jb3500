@@ -180,7 +180,7 @@ void acm_QuarterSave(const uint8_t *pTime)
 		if (i < 3)
 			pX = &acm_uxb[i];
 		else
-			pX = &acm_ixb[i];
+			pX = &acm_ixb[i-3];
 		for (j = 0; j < 11; j++) {
 			gw3761_ConvertData_05(aBuf, FLOAT2FIX(pX->xbrate[j]), 0);
 			memcpy(pTemp, aBuf, 2);
