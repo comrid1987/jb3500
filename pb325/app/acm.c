@@ -126,13 +126,13 @@ void acm_XBRead()
 				if (i & 1) {
 					switch (i) {
 					case 3:
-						pD = &acm_uxb[0];
+						pD = &acm_uxb[1];
 						break;
 					case 5:
 						pD = &acm_uxb[2];
 						break;
 					default:
-						pD = &acm_uxb[i];
+						pD = &acm_uxb[0];
 						break;
 					}
 				} else
