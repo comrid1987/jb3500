@@ -192,13 +192,13 @@ static void disp_Handle(uint_t nSel)
     nTemp = modem_GetSignal();
     if((nTemp > 0)&&(nTemp != 99)){
         if(nTemp < 2)
-            ht1621_Write(iConGprs, 0x01);   
+            ht1621_Write(iConGprs, 0x01);
         if((nTemp < 5)&&(nTemp >= 2))
-            ht1621_Write(iConGprs, 0x03);   
+            ht1621_Write(iConGprs, 0x03);
         if((nTemp < 10)&&(nTemp >= 5))
-             ht1621_Write(iConGprs, 0x07);   
+             ht1621_Write(iConGprs, 0x07);
         if(nTemp >= 10)
-             ht1621_Write(iConGprs, 0x0F);   
+             ht1621_Write(iConGprs, 0x0F);
     }
 	else
 		ht1621_Write(iConGprs, BLANK);
