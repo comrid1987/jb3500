@@ -383,7 +383,7 @@ static void disp_Handle(uint_t nSel)
 void tsk_Display(void *args)
 {
 	os_que que;
-	uint_t nBlCnt = 0, nCycle = 0, nSel = 21, nKey;
+	uint_t nFlushCnt = 0, nBlCnt = 0, nCycle = 0, nSel = 21, nKey;
 	time_t tTime;
 
     Display_Number(bcd2bin16(VER_SOFT), 8, 4);
@@ -398,6 +398,7 @@ void tsk_Display(void *args)
 			tTime = rtc_GetTimet();
 			nBlCnt += 1;
 			nCycle += 1;
+			nFlushCnt += 1;
 			if (nCycle > 5) {
 				nCycle = 0;
 				nSel = cycle(nSel, 0, 22, 1);
@@ -435,8 +436,12 @@ void tsk_Display(void *args)
 				break;
 			}
 		}
+		if (nFlushCnt > 7) {
+			nFlushCnt = 0;
+			ht1621_Init();
+		}
 		disp_Handle(nSel);
-    }
+	}
 }
 
 
