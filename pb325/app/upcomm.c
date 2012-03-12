@@ -94,10 +94,10 @@ void tsk_Upcom2(void *args)
 	//串口GW3761规约(开机按键启用)
 	os_thd_Sleep(500);
 	if ((g_sys_status & BITMASK(0))) {
-		pEnd = &rcp_aGw3761[4];
+		pEnd = &rcp_aGw3761[3];
 	} else {
-		pEnd = &rcp_aGw3761[5];
-		dlrcp_SetChl(rcp_aGw3761.parent, CHL_T_RS232, 0, 9600, UART_PARI_EVEN, UART_DATA_8D, UART_STOP_1D);
+		pEnd = &rcp_aGw3761[4];
+		dlrcp_SetChl(&pEnd->parent, CHL_T_RS232, 0, 9600, UART_PARI_EVEN, UART_DATA_8D, UART_STOP_1D);
 	}
 
 	gd5100_Init(rcp_GD5100);
@@ -111,7 +111,7 @@ void tsk_Upcom2(void *args)
 	dlrcp_SetChl(&rcp_GD5100->parent, CHL_T_SOC_TS, 777, 0, 0, 0, 0);
 
 	for (; ; ) {
-		for (p = &rcp_aGw3761[1]; p < pEnd; p++)
+		for (p = &rcp_aGw3761[1]; p <= pEnd; p++)
 			gw3761_Handler(p);
 		if (gd5100_Handler(rcp_GD5100) == SYS_R_OK)
 			gd5100_Response(rcp_GD5100);
