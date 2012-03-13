@@ -1,7 +1,7 @@
 /*
  * File      : dfs_def.h
  * This file is part of Device File System in RT-Thread RTOS
- * COPYRIGHT (C) 2004-2010, RT-Thread Development Team
+ * COPYRIGHT (C) 2004-2011, RT-Thread Development Team
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
@@ -13,11 +13,11 @@
  * 2004-10-14     Beranard     Clean up the code.
  * 2005-01-22     Beranard     Clean up the code, port to MinGW
  */
+ 
 #ifndef __DFS_DEF_H__
 #define __DFS_DEF_H__
 
 #include <os/rtt/rtthread.h>
-#include <fs/dfs_config.h>
 
 #ifndef __D_FS__
 #define __D_FS__
@@ -33,6 +33,32 @@
 #define DFS_F_DIRECTORY		0x02000000
 #define DFS_F_EOF			0x04000000
 #define DFS_F_ERR			0x08000000
+
+#ifndef DFS_PATH_MAX
+#define DFS_PATH_MAX 			256
+#endif
+
+#ifndef SECTOR_SIZE
+#define SECTOR_SIZE				512
+#endif
+
+#ifndef DFS_FILESYSTEM_TYPES_MAX
+#define DFS_FILESYSTEM_TYPES_MAX	4
+#endif
+
+#define DFS_DEBUG_INFO				0x01
+#define DFS_DEBUG_WARNING			0x02
+#define DFS_DEBUG_ERROR				0x04
+#define DFS_DEBUG_LEVEL				(DFS_DEBUG_INFO | DFS_DEBUG_WARNING | DFS_DEBUG_ERROR)
+
+/* #define DFS_DEBUG */
+#ifdef DFS_DEBUG
+#define dfs_log(level, x)		do { if (level & DFS_DEBUG_LEVEL) 	\
+	{rt_kprintf("DFS %s, %d:", __FUNCTION__, __LINE__); rt_kprintf x;	\
+	rt_kprintf ("\n");}}while (0)
+#else
+#define dfs_log(level, x)
+#endif
 
 #if defined(RT_USING_NEWLIB) 
 #include <string.h>
@@ -121,12 +147,12 @@
 #define DFS_DT_DIR				DT_DIR
 
 #else
-#ifdef RT_USING_MINILIBC
-#include <string.h>
-#else
-typedef long off_t;
-typedef int mode_t;
-#endif
+	#ifdef RT_USING_MINILIBC
+		#include <string.h>
+	#else
+		typedef long off_t;
+		typedef int mode_t;
+	#endif
 
 /* Device error codes */
 #define DFS_STATUS_OK			0		/* no error */
@@ -134,7 +160,7 @@ typedef int mode_t;
 #define DFS_STATUS_EIO		 	5		/* I/O error */
 #define DFS_STATUS_ENXIO		6		/* No such device or address */
 #define DFS_STATUS_EBADF		9		/* Bad file number */
-#define DFS_STATUS_EAGIAN		11		/* Try again */
+#define DFS_STATUS_EAGAIN		11		/* Try again */
 #define DFS_STATUS_ENOMEM		12		/* no memory */
 #define DFS_STATUS_EBUSY		16		/* Device or resource busy */
 #define DFS_STATUS_EEXIST		17		/* File exists */
@@ -149,15 +175,15 @@ typedef int mode_t;
 #define DFS_STATUS_ENOTEMPTY	39		/* Directory not empty */
 
 /* Operation flags */
-#define DFS_O_RDONLY		0000000
-#define DFS_O_WRONLY		0000001
-#define DFS_O_RDWR			0000002
-#define DFS_O_ACCMODE		0000003
-#define DFS_O_CREAT			0000100
-#define DFS_O_EXCL			0000200
-#define DFS_O_TRUNC			0001000
-#define DFS_O_APPEND		0002000
-#define DFS_O_DIRECTORY		0200000
+#define DFS_O_RDONLY		0x0000000
+#define DFS_O_WRONLY		0x0000001
+#define DFS_O_RDWR			0x0000002
+#define DFS_O_ACCMODE		0x0000003
+#define DFS_O_CREAT			0x0000100
+#define DFS_O_EXCL			0x0000200
+#define DFS_O_TRUNC			0x0001000
+#define DFS_O_APPEND		0x0002000
+#define DFS_O_DIRECTORY		0x0200000
 
 /* File flags */
 #define DFS_F_OPEN			0x01000000
@@ -166,9 +192,16 @@ typedef int mode_t;
 #define DFS_F_ERR			0x08000000
 
 /* Seek flags */
+#ifdef __CC_ARM
+#include <stdio.h>
+#define DFS_SEEK_SET		SEEK_SET
+#define DFS_SEEK_CUR		SEEK_CUR
+#define DFS_SEEK_END		SEEK_END
+#else
 #define DFS_SEEK_SET         0
 #define DFS_SEEK_CUR         1
 #define DFS_SEEK_END         2
+#endif
 
 /* Stat codes */
 #define DFS_S_IFMT		00170000
@@ -245,11 +278,11 @@ struct dirent
 /* file descriptor */
 struct dfs_fd
 {
-    char* path;					/* Name (below mount point) */
+    char *path;					/* Name (below mount point) */
     int type;					/* Type (regular or socket) */
     int ref_count;				/* Descriptor reference count */
 
-    struct dfs_filesystem* fs;	/* Resident file system */
+    struct dfs_filesystem *fs;	/* Resident file system */
 
     rt_uint32_t flags;			/* Descriptor flags */
     rt_size_t 	size;			/* Size in bytes */

@@ -67,7 +67,7 @@ sys_res fs_init()
 	dfs_romfs_init();
 	/* mount romfs as root directory */
 	if (dfs_mount(RT_NULL, "/", "rom", 0, &romfs_root)) {
-		rt_kprintf("Rom FileSystem initialzation failed!\n");
+		rt_kprintf("Rom FileSystem mount failed!\n");
 		return SYS_R_ERR;
 	}
 #endif
@@ -85,7 +85,7 @@ sys_res fs_init()
 	nftl_dev_Init();
 	/* mount nand fat partition 0 as nf0 directory */
 	if (dfs_mount("nftl0", FS_NAND_PATH, "elm", 0, 0)) {
-		rt_kprintf("Nand FileSystem initialzation failed!\n");
+		rt_kprintf("Nand FileSystem mount failed!\n");
 		return SYS_R_ERR;
 	}
 #endif
@@ -95,7 +95,7 @@ sys_res fs_init()
 	spif_dev_Init();
 	/* mount spiflash fat partition 0 as sf0 directory */
 	if (dfs_mount("spif0", FS_SPIF_PATH, "elm", 0, 0)) {
-		rt_kprintf("SpiFlash FileSystem initialzation failed!\n");
+		rt_kprintf("SpiFlash FileSystem mount failed!\n");
 		return SYS_R_ERR;
 	}
 #endif
@@ -103,15 +103,35 @@ sys_res fs_init()
 #if USBMSC_ENABLE
 	/* init the USB Mass Storage layer */
 	usbmsc_dev_Init();
-	/* mount usb mass storage fat partition 0 as um0 directory */
-	if (dfs_mount("usbmsc0", FS_USBMSC_PATH, "elm", 0, 0)) {
-		rt_kprintf("USB Mass Storage FileSystem initialzation failed!\n");
-		return SYS_R_ERR;
-	}
 #endif
 
 	return SYS_R_OK;
 }
+
+#if USBMSC_ENABLE
+sys_res fs_usb_Mount()
+{
+
+	/* mount usb mass storage fat partition 0 as um0 directory */
+	if (dfs_mount("usbmsc0", FS_USBMSC_PATH, "elm", 0, 0)) {
+		rt_kprintf("USB Mass Storage mount failed!\n");
+		return SYS_R_ERR;
+	}
+	return SYS_R_OK;
+}
+
+sys_res fs_usb_Unmount()
+{
+
+	/* unmount usb mass storage fat partition 0 as um0 directory */
+	if (dfs_unmount(FS_USBMSC_PATH)) {
+		rt_kprintf("USB Mass Storage unmount failed!\n");
+		return SYS_R_ERR;
+	}
+	return SYS_R_OK;
+}
+#endif
+
 
 
 #endif

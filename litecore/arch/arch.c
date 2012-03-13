@@ -82,6 +82,7 @@
 #include <arch/cm3/lm3s/arch_emac.c>
 #include <arch/cm3/lm3s/arch_flash.c>
 #include <arch/cm3/lm3s/arch_gpio.c>
+#include <arch/cm3/lm3s/arch_iwdg.c>
 #include <arch/cm3/lm3s/arch_it.c>
 #include <arch/cm3/lm3s/arch_pwm.c>
 #include <arch/cm3/lm3s/arch_serial.c>

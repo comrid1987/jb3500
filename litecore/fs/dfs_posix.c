@@ -1,7 +1,7 @@
 /*
  * File      : dfs_posix.c
  * This file is part of Device File System in RT-Thread RTOS
- * COPYRIGHT (C) 2004-2010, RT-Thread Development Team
+ * COPYRIGHT (C) 2004-2012, RT-Thread Development Team
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
@@ -33,21 +33,22 @@
 int open(const char *file, int flags, int mode)
 {
 	int fd, result;
-	struct dfs_fd* d;
+	struct dfs_fd *d;
 
 	/* allocate a fd */
 	fd = fd_new();
-	if (fd < 0) return -1;
+	if (fd < 0)
+		return -1;
 	d  = fd_get(fd);
 
 	result = dfs_file_open(d, file, flags);
 	if (result < 0)
 	{
-		rt_set_errno(result);
-
 		/* release the ref-count of fd */
 		fd_put(d);
 		fd_put(d);
+		
+		rt_set_errno(result);
 
 		return -1;
 	}
@@ -68,7 +69,7 @@ int open(const char *file, int flags, int mode)
 int close(int fd)
 {
 	int result;
-	struct dfs_fd* d;
+	struct dfs_fd *d;
 
 	d = fd_get(fd);
 	if (d == RT_NULL)
@@ -103,7 +104,7 @@ int close(int fd)
 int read(int fd, void *buf, size_t len)
 {
 	int result;
-	struct dfs_fd* d;
+	struct dfs_fd *d;
 
 	/* get the fd */
 	d  = fd_get(fd);
@@ -116,8 +117,8 @@ int read(int fd, void *buf, size_t len)
 	result = dfs_file_read(d, buf, len);
 	if (result < 0)
 	{
-		rt_set_errno(result);
 		fd_put(d);
+		rt_set_errno(result);
 
 		return -1;
 	}
@@ -128,7 +129,7 @@ int read(int fd, void *buf, size_t len)
 }
 
 /**
- * this function is a POSIX compliant version, which will write pecified data buffer
+ * this function is a POSIX compliant version, which will write specified data buffer
  * length for an open file descriptor.
  *
  * @param fd the file descriptor
@@ -140,7 +141,7 @@ int read(int fd, void *buf, size_t len)
 int write(int fd, const void *buf, size_t len)
 {
 	int result;
-	struct dfs_fd* d;
+	struct dfs_fd *d;
 
 	/* get the fd */
 	d  = fd_get(fd);
@@ -153,8 +154,8 @@ int write(int fd, const void *buf, size_t len)
 	result = dfs_file_write(d, buf, len);
 	if (result < 0)
 	{
-		rt_set_errno(result);
 		fd_put(d);
+		rt_set_errno(result);
 
 		return -1;
 	}
@@ -177,9 +178,9 @@ int write(int fd, const void *buf, size_t len)
 off_t lseek(int fd, off_t offset, int whence)
 {
 	int result;
-	struct dfs_fd* d;
+	struct dfs_fd *d;
 
-	d  = fd_get(fd);
+	d = fd_get(fd);
 	if (d == RT_NULL)
 	{
 		rt_set_errno(-RT_ERROR);
@@ -198,13 +199,23 @@ off_t lseek(int fd, off_t offset, int whence)
 	case DFS_SEEK_END:
 		offset += d->size;
 		break;
+
+	default:
+		rt_set_errno(-DFS_STATUS_EINVAL);
+		return -1;
+
 	}
 
+	if (offset < 0)
+	{
+		rt_set_errno(-DFS_STATUS_EINVAL);
+		return -1;
+	}
 	result = dfs_file_lseek(d, offset);
 	if (result < 0)
 	{
-		rt_set_errno(result);
 		fd_put(d);
+		rt_set_errno(result);
 		return -1;
 	}
 
@@ -224,7 +235,7 @@ off_t lseek(int fd, off_t offset, int whence)
  *
  * note: the old and new file name must be belong to a same file system.
  */
-int rename(const char* old, const char* new)
+int rename(const char *old, const char *new)
 {
 	int result;
 
@@ -287,10 +298,10 @@ int stat(const char *file, struct stat *buf)
  */
 int fstat(int fildes, struct stat *buf)
 {
-	struct dfs_fd* d;
+	struct dfs_fd *d;
 
 	/* get the fd */
-	d  = fd_get(fildes);
+	d = fd_get(fildes);
 	if (d == RT_NULL)
 	{
 		rt_set_errno(-RT_ERROR);
@@ -298,7 +309,7 @@ int fstat(int fildes, struct stat *buf)
 	}
 
 	/* it's the root directory */
-	buf->st_dev   = 0;
+	buf->st_dev = 0;
 
 	buf->st_mode = DFS_S_IFREG | DFS_S_IRUSR | DFS_S_IRGRP | DFS_S_IROTH |
 			DFS_S_IWUSR | DFS_S_IWGRP | DFS_S_IWOTH;
@@ -348,14 +359,18 @@ int statfs(const char *path, struct statfs *buf)
  *
  * @return 0 on successful, others on failed.
  */
-int mkdir (const char *path, mode_t mode)
+int mkdir(const char *path, mode_t mode)
 {
 	int fd;
-	struct dfs_fd* d;
+	struct dfs_fd *d;
 	int result;
 
 	fd = fd_new();
-	if (fd == -1) { rt_kprintf("no fd\n"); return -1; }
+	if (fd == -1)
+	{
+		rt_kprintf("no fd\n");
+		return -1;
+	}
 
 	d = fd_get(fd);
 
@@ -363,8 +378,8 @@ int mkdir (const char *path, mode_t mode)
 
 	if (result < 0)
 	{
-		rt_set_errno(result);
 		fd_put(d);
+		rt_set_errno(result);
 		return -1;
 	}
 
@@ -373,7 +388,7 @@ int mkdir (const char *path, mode_t mode)
 	return 0;
 }
 #ifdef RT_USING_FINSH
-#include <hi/finsh/finsh.h>
+#include <finsh.h>
 FINSH_FUNCTION_EXPORT(mkdir, create a directory);
 #endif
 
@@ -405,24 +420,28 @@ int rmdir(const char *pathname)
  *
  * @return the DIR pointer of directory, NULL on open failed.
  */
-DIR_POSIX* opendir(const char* name)
+DIR_POSIX *opendir(const char *name)
 {
-	struct dfs_fd* d;
+	struct dfs_fd *d;
 	int fd, result;
-	DIR_POSIX* t;
+	DIR_POSIX *t;
 
 	t = RT_NULL;
 
 	/* allocate a fd */
 	fd = fd_new();
-	if (fd == -1) { rt_kprintf("no fd\n"); return RT_NULL; }
-	d  = fd_get(fd);
+	if (fd == -1)
+	{
+		rt_kprintf("no fd\n");
+		return RT_NULL;
+	}
+	d = fd_get(fd);
 
 	result = dfs_file_open(d, name, DFS_O_RDONLY | DFS_O_DIRECTORY);
 	if (result >= 0)
 	{
 		/* open successfully */
-		t = (DIR_POSIX *) rt_malloc (sizeof(DIR_POSIX));
+		t = (DIR_POSIX *) rt_malloc(sizeof(DIR_POSIX));
 		if (t == RT_NULL)
 		{
 			dfs_file_close(d);
@@ -454,10 +473,10 @@ DIR_POSIX* opendir(const char* name)
  *
  * @return the next directory entry, NULL on the end of directory or failed.
  */
-struct dirent* readdir(DIR_POSIX *d)
+struct dirent *readdir(DIR_POSIX *d)
 {
 	int result;
-	struct dfs_fd* fd;
+	struct dfs_fd *fd;
 
 	fd = fd_get(d->fd);
 	if (fd == RT_NULL)
@@ -468,21 +487,22 @@ struct dirent* readdir(DIR_POSIX *d)
 
 	if (!d->num || (d->cur += ((struct dirent*)(d->buf + d->cur))->d_reclen) >= d->num)
 	{
+		/* get a new entry */
 		result = dfs_file_getdents(fd, (struct dirent*)d->buf, sizeof(d->buf) - 1);
 		if (result <= 0)
 		{
-			rt_set_errno(result);
 			fd_put(fd);
+			rt_set_errno(result);
 
 			return RT_NULL;
 		}
 
 		d->num = result;
-		d->cur = 0;
+		d->cur = 0; /* current entry index */
 	}
 
 	fd_put(fd);
-	return (struct dirent*)(d->buf+d->cur);
+	return (struct dirent *)(d->buf+d->cur);
 }
 
 /**
@@ -495,7 +515,7 @@ struct dirent* readdir(DIR_POSIX *d)
  */
 long telldir(DIR_POSIX *d)
 {
-	struct dfs_fd* fd;
+	struct dfs_fd *fd;
 	long result;
 
 	fd = fd_get(d->fd);
@@ -520,7 +540,7 @@ long telldir(DIR_POSIX *d)
  */
 void seekdir(DIR_POSIX *d, off_t offset)
 {
-	struct dfs_fd* fd;
+	struct dfs_fd *fd;
 
 	fd = fd_get(d->fd);
 	if (fd == RT_NULL)
@@ -529,7 +549,9 @@ void seekdir(DIR_POSIX *d, off_t offset)
 		return ;
 	}
 
-	if (dfs_file_lseek(fd, offset) >= 0) d->num = d->cur = 0;
+	/* seek to the offset position of directory */
+	if (dfs_file_lseek(fd, offset) >= 0)
+		d->num = d->cur = 0;
 	fd_put(fd);
 }
 
@@ -540,7 +562,7 @@ void seekdir(DIR_POSIX *d, off_t offset)
  */
 void rewinddir(DIR_POSIX *d)
 {
-	struct dfs_fd* fd;
+	struct dfs_fd *fd;
 
 	fd = fd_get(d->fd);
 	if (fd == RT_NULL)
@@ -549,7 +571,9 @@ void rewinddir(DIR_POSIX *d)
 		return ;
 	}
 
-	if (dfs_file_lseek(fd, 0) >= 0) d->num = d->cur = 0;
+	/* seek to the beginning of directory */
+	if (dfs_file_lseek(fd, 0) >= 0)
+		d->num = d->cur = 0;
 	fd_put(fd);
 }
 
@@ -561,10 +585,10 @@ void rewinddir(DIR_POSIX *d)
  *
  * @return 0 on successful, -1 on failed.
  */
-int closedir(DIR_POSIX* d)
+int closedir(DIR_POSIX *d)
 {
 	int result;
-	struct dfs_fd* fd;
+	struct dfs_fd *fd;
 
 	fd = fd_get(d->fd);
 	if (fd == RT_NULL)
@@ -597,10 +621,10 @@ int closedir(DIR_POSIX* d)
  */
 int chdir(const char *path)
 {
-	char* fullpath;
-	DIR_POSIX* d;
+	char *fullpath;
+	DIR_POSIX *d;
 
-	if(path == RT_NULL)
+	if (path == RT_NULL)
 	{
 		dfs_lock();
 		rt_kprintf("%s\n", working_directory);

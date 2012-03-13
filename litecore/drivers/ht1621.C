@@ -159,12 +159,15 @@ enum SEGS Icon_Gprs[] =
 enum SEGS Icon_Online[] = 
      { SEG_PHONE };  //GPRS
 
+enum SEGS Icon_Usb[] = 
+     { SEG_USB };
+
 const uint8_t * icons[]= 
 {
     Digit_1,    Digit_2,    Digit_3,    Digit_4,	Digit_5,    
     Digit_6,    Digit_7,    Digit_8,	Icon_DP,	Icon_List,  
     Icon_Check, Icon_Unit,  Icon_Phase, Digit_0,	Icon_Tri,
-	Icon_Cap,   Icon_Gprs, Icon_Online 
+	Icon_Cap,   Icon_Gprs, Icon_Online, Icon_Usb,
 };
 
 // Number of segments in each icon.
@@ -173,7 +176,7 @@ const uint8_t num_segs[] =
     sizeof (Digit_1), sizeof (Digit_2), sizeof (Digit_3), sizeof (Digit_4),sizeof (Digit_5), 
     sizeof (Digit_6), sizeof (Digit_7), sizeof (Digit_8),sizeof (Icon_DP), sizeof (Icon_List), sizeof (Icon_Check), 
     sizeof (Icon_Unit),sizeof (Icon_Phase),sizeof (Digit_0),sizeof (Icon_Tri),sizeof (Icon_Cap),sizeof (Icon_Gprs),
-    sizeof (Icon_Online)
+    sizeof (Icon_Online), sizeof(Icon_Usb),
 };
 
 /***************************************************************************
@@ -413,20 +416,20 @@ void HT1621_UnDis_Section(const uint8_t *section)
 /*********************************************************/
 //HT1621初始化
 /*********************************************************/
-void ht1621_Init ()
+void ht1621_Init()
 {
 
 	SysCtlPeripheralEnable(GPIO_LCD_SYSCTL_PERIPH);		//使能HT1621所在端口，然后配置为输出
-	HT1621_OUTPUT(HT1621_CS|HT1621_RD|HT1621_WR);		//HT1621.h处的宏定义
+	HT1621_OUTPUT(HT1621_CS | HT1621_RD | HT1621_WR);		//HT1621.h处的宏定义
     HT1621_CS_L;
-	ht1621_SendBits(0x01,3);            //送3位命令模式码100 0x80=0b10000000	（0b100）
-	ht1621_SendBits(0x18,9);            //系统时钟选用片内RC	（0b000110000）rc 256k
-	ht1621_SendBits(0x80,9);            //打开系统振荡器  （0b000000010）sys_en
-	ht1621_SendBits(0x94,9);            //（0b001010010）(1/3偏置，4个公共口)
-    ht1621_SendBits(0xc0,9);            //打开LCD偏置发生器 （0b000000110）LCD_EN	
+	ht1621_SendBits(0x01, 3);            //送3位命令模式码100 0x80=0b10000000	（0b100）
+	ht1621_SendBits(0x18, 9);            //系统时钟选用片内RC	（0b000110000）rc 256k
+	ht1621_SendBits(0x80, 9);            //打开系统振荡器  （0b000000010）sys_en
+	ht1621_SendBits(0x94, 9);            //（0b001010010）(1/3偏置，4个公共口)
+    ht1621_SendBits(0xc0, 9);            //打开LCD偏置发生器 （0b000000110）LCD_EN	
 	HT1621_CS_H;						 //片选
-	ht1621_Write (0x00, 0x00);		
-    HT1621_NoPrint( );                   //液晶不显示
+	ht1621_Write(0x00, 0x00);		
+    HT1621_NoPrint();                   //液晶不显示
 }  
 
 /*********************************************************/

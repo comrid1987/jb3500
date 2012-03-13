@@ -55,6 +55,8 @@ static rt_err_t usbmsc_open(rt_device_t dev, rt_uint16_t oflag)
 static rt_err_t usbmsc_close(rt_device_t dev)
 {
 
+	USBHMSCDriveClose((unsigned long)dev->user_data);
+	usbmsc_state |= STA_NOINIT;
 	return RT_EOK;
 }
 

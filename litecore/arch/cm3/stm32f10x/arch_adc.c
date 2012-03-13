@@ -17,10 +17,7 @@ void arch_AdcInit()
 	xAdc.ADC_NbrOfChannel = 2;
 	ADC_Init(ADC1, &xAdc);
 	/* ADC1 Regular Channel1 Configuration                                      */
-	//YFT5000
-	//ADC_RegularChannelConfig(ADC1, ADC_Channel_10, 1, ADC_SampleTime_239Cycles5);	//Ubattery
-	//GWJ8000
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_14, 1, ADC_SampleTime_239Cycles5);	//Ubattery
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_14, 1, ADC_SampleTime_239Cycles5);
 	/* Enable ADC1 */
 	ADC_Cmd(ADC1, ENABLE);             
 

@@ -1,7 +1,7 @@
 /*
  * File      : dfs_def.h
  * This file is part of Device File System in RT-Thread RTOS
- * COPYRIGHT (C) 2004-2010, RT-Thread Development Team
+ * COPYRIGHT (C) 2004-2011, RT-Thread Development Team
  *
  * The license and distribution terms for this file may be
  * found in the file LICENSE in this distribution or at
@@ -10,8 +10,10 @@
  * Change Logs:
  * Date           Author       Notes
  * 2009-05-27     Yi.qiu       The first version.
- * 2010-07-18     Bernard      add stat and statfs structure definitions.
+ * 2010-07-18     Bernard      add stat and statfs structure definitions. 
+ * 2011-05-16     Yi.qiu       Change parameter name of rename, "new" is C++ key word.
  */
+ 
 #ifndef __DFS_POSIX_H__
 #define __DFS_POSIX_H__
 
@@ -64,9 +66,13 @@
 #define S_IWOTH		DFS_S_IWOTH
 #define S_IXOTH		DFS_S_IXOTH
 
-//#define SEEK_SET	DFS_SEEK_SET
-//#define SEEK_CUR	DFS_SEEK_CUR
-//#define SEEK_END	DFS_SEEK_END
+#if defined(__CC_ARM)
+#include <stdio.h>
+#else
+#define SEEK_SET	DFS_SEEK_SET
+#define SEEK_CUR	DFS_SEEK_CUR
+#define SEEK_END	DFS_SEEK_END
+#endif
 
 typedef struct 
 {
@@ -77,9 +83,9 @@ typedef struct
 } DIR_POSIX;
 
 /* directory api*/
-int mkdir (const char *path, mode_t mode);
-DIR_POSIX* opendir(const char* name);
-struct dirent* readdir(DIR_POSIX *d);
+int mkdir(const char *path, mode_t mode);
+DIR_POSIX *opendir(const char *name);
+struct dirent *readdir(DIR_POSIX *d);
 long telldir(DIR_POSIX *d);
 void seekdir(DIR_POSIX *d, off_t offset);
 void rewinddir(DIR_POSIX *d);
@@ -96,7 +102,7 @@ int close(int d);
 int read(int fd, void *buf, size_t len);
 int write(int fd, const void *buf, size_t len);
 off_t lseek(int fd, off_t offset, int whence);
-int rename(const char* old, const char* new );
+int rename(const char *from, const char *to);
 int unlink(const char *pathname);
 int stat(const char *file, struct stat *buf);
 int fstat(int fildes, struct stat *buf);
