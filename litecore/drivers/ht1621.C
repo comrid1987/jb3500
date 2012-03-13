@@ -142,7 +142,7 @@ enum SEGS Icon_Check[]  =
     {SEG_AREA, SEG_ADDR, SEG_time, SEG_day,SEG_MONTH, SEG_TODAY,SEG_LASTMONTH, SEG_LASTDAY};
 
 enum SEGS Icon_Unit[]  = 
-	 {SEG_PCNT, SEG_v, SEG_i, SEG_KW, SEG_kvar,SEG_WARN, SEG_USB, SEG_STATUS};	   //
+	 {SEG_PCNT, SEG_v, SEG_i, SEG_KW, SEG_kvar,SEG_WARN, SEG_STATUS};	   //
 
 enum SEGS Icon_Phase[]  =	 
 	 { SEG_A, SEG_B, SEG_C,SEG_SUM,SEG_T12};     //

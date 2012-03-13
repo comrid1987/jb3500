@@ -34,6 +34,16 @@ static struct rt_device usbmsc_device;
 static uint_t usbmsc_state = STA_NOINIT;
 //-----------------------------------------------------------------
 
+rt_err_t usbmsc_isready(rt_device_t dev)
+{
+
+	if (USBHMSCDriveReady((uint_t)dev->user_data) == 0) {
+		usbmsc_state &= ~STA_NOINIT;
+		return RT_EOK;
+	}
+	usbmsc_state |= STA_NOINIT;
+	return RT_ERROR;
+}
 
 static rt_err_t usbmsc_init(rt_device_t dev)
 {
@@ -66,11 +76,10 @@ static rt_size_t usbmsc_read(rt_device_t dev, rt_off_t pos, void* buffer, rt_siz
 
 	usbmsc_lock();
 	if (usbmsc_state & STA_NOINIT) {
-		if (USBHMSCDriveReady((uint_t)dev->user_data)) {
+		if (usbmsc_isready(dev) != RT_EOK) {
 			usbmsc_unlock();
 			return 0;
 		}
-		usbmsc_state &= ~STA_NOINIT;
 	}
 	/* READ BLOCK */
 	res = USBHMSCBlockRead((uint_t)dev->user_data, pos, buffer, size);
