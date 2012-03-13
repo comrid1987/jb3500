@@ -22,7 +22,7 @@ os_thd_declare(Display, 1024);
 os_thd_declare(Meter, 1280);
 
 
-sys_res sys_IsUsbReady()
+sys_res sys_IsUsbFormat()
 {
 	DIR_POSIX *d;
 

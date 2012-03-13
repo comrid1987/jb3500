@@ -384,7 +384,7 @@ static void disp_Handle(uint_t nSel)
 void tsk_Display(void *args)
 {
 	os_que que;
-	uint_t nCnt = 0, nBlCnt = 0, nCycle = 0, nSel = 21, nKey;
+	uint_t nReady = 0, nCnt = 0, nBlCnt = 0, nCycle = 0, nSel = 21, nKey;
 	time_t tTime;
 
     Display_Number(bcd2bin16(VER_SOFT), 8, 4);
@@ -426,17 +426,19 @@ void tsk_Display(void *args)
 				break;
 			case 3:
 				LCD_BL(0);
-				fs_usb_Mount();
-				if (sys_IsUsbReady() == SYS_R_OK) {
-					ht1621_Write(iUsb, IconUSB);
-					if (g_sys_status & BITMASK(1)) {
-						CLRBIT(g_sys_status, 1);
-						icp_UdiskLoad();
-					}
-					data_Copy2Udisk();
-					ht1621_Write(iUsb, BLANK);
+				//fs_usb_Mount();
+				if (nReady == 0)
+					break;
+				if (sys_IsUsbFormat() != SYS_R_OK)
+					break;
+//				ht1621_Write(iUsb, IconUSB);
+				if (g_sys_status & BITMASK(1)) {
+					CLRBIT(g_sys_status, 1);
+					icp_UdiskLoad();
 				}
- 				fs_usb_Unmount();
+				data_Copy2Udisk();
+//				ht1621_Write(iUsb, BLANK);
+ 				//fs_usb_Unmount();
 				break;
 			default:
 				break;
@@ -444,6 +446,13 @@ void tsk_Display(void *args)
 		}
  		if ((nCnt & 7) == 0)
 			ht1621_Init();
+		if (fs_usb_IsReady() == SYS_R_OK) {
+			ht1621_Write(iUsb, IconUSB);
+			nReady = 1;
+		} else {
+			ht1621_Write(iUsb, BLANK);
+			nReady = 0;
+		}
 		disp_Handle(nSel);
 	}
 }
