@@ -384,7 +384,6 @@ static void disp_Handle(uint_t nSel)
 void tsk_Display(void *args)
 {
 	os_que que;
-	uint_t nReady = 0, nCnt = 0, nBlCnt = 0, nCycle = 0, nSel = 21, nKey;
 	uint_t nMount = 0, nCnt = 0, nBlCnt = 0, nCycle = 0, nSel = 21, nKey;
 	time_t tTime;
 
