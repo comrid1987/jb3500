@@ -441,9 +441,11 @@ void tsk_Display(void *args)
 		disp_Handle(nSel);
 		if (fs_usb_IsReady() == SYS_R_OK) {
 			ht1621_Write(iUsb, IconUSB);
+			if (nMount == 0) {
+				if (sys_IsUsbFormat() == SYS_R_OK)
+					data_Copy2Udisk();
+			}
 			nMount = 1;
-			if (sys_IsUsbFormat() == SYS_R_OK)
-				data_Copy2Udisk();
 		} else {
 			ht1621_Write(iUsb, BLANK);
 			if (nMount) {
