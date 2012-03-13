@@ -431,6 +431,7 @@ void tsk_Display(void *args)
 					break;
 				if (sys_IsUsbFormat() != SYS_R_OK)
 					break;
+				icp_UdiskLoad();
     			break;
 			default:
 				break;
