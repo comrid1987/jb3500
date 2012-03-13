@@ -380,14 +380,15 @@ static void disp_Handle(uint_t nSel)
     }
 }
 
+
 void tsk_Display(void *args)
 {
 	os_que que;
-	uint_t nFlushCnt = 0, nBlCnt = 0, nCycle = 0, nSel = 21, nKey;
+	uint_t nCnt = 0, nBlCnt = 0, nCycle = 0, nSel = 21, nKey;
 	time_t tTime;
 
     Display_Number(bcd2bin16(VER_SOFT), 8, 4);
-	que = os_que_Wait(QUE_EVT_KEYBOARD, NULL, 500);
+	que = os_que_Wait(QUE_EVT_KEYBOARD, NULL, 1000);
 	if (que != NULL) {
 		if (que->data->val == 1)
 			CLRBIT(g_sys_status, 0);
@@ -398,7 +399,7 @@ void tsk_Display(void *args)
 			tTime = rtc_GetTimet();
 			nBlCnt += 1;
 			nCycle += 1;
-			nFlushCnt += 1;
+			nCnt += 1;
 			if (nCycle > 5) {
 				nCycle = 0;
 				nSel = cycle(nSel, 0, 22, 1);
@@ -408,7 +409,7 @@ void tsk_Display(void *args)
 				LCD_BL(0);
 			}
 		}
-		que = os_que_Wait(QUE_EVT_KEYBOARD, NULL, 1000);
+ 		que = os_que_Wait(QUE_EVT_KEYBOARD, NULL, 1000);
 		if (que != NULL) {
 			nBlCnt = 0;
 			nCycle = 0;
@@ -425,21 +426,24 @@ void tsk_Display(void *args)
 				break;
 			case 3:
 				LCD_BL(0);
-				if (g_sys_status & BITMASK(1)) {
-					CLRBIT(g_sys_status, 1);
+				fs_usb_Mount();
+				if (sys_IsUsbReady() == SYS_R_OK) {
+					ht1621_Write(iUsb, IconUSB);
+					if (g_sys_status & BITMASK(1)) {
+						CLRBIT(g_sys_status, 1);
+						icp_UdiskLoad();
+					}
 					data_Copy2Udisk();
+					ht1621_Write(iUsb, BLANK);
 				}
-                else
-					icp_UdiskLoad();
+ 				fs_usb_Unmount();
 				break;
 			default:
 				break;
 			}
 		}
-		if (nFlushCnt > 7) {
-			nFlushCnt = 0;
+ 		if ((nCnt & 7) == 0)
 			ht1621_Init();
-		}
 		disp_Handle(nSel);
 	}
 }

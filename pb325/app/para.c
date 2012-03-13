@@ -262,11 +262,6 @@ void icp_UdiskLoad(void)
 	int fd;
 	uint_t ulen, ui;
 
-	d = fs_opendir(FS_USBMSC_PATH);
-	if (d == NULL)
-		return;
-	fs_closedir(d);
-
     BEEP(1);
 	icp_ParaRead(4, 1, TERMINAL, &xF1, sizeof(t_afn04_f1));
 	icp_ParaRead(4, 3, TERMINAL, &xF3, sizeof(t_afn04_f3));

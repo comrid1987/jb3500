@@ -22,6 +22,17 @@ os_thd_declare(Display, 1024);
 os_thd_declare(Meter, 1280);
 
 
+sys_res sys_IsUsbReady()
+{
+	DIR_POSIX *d;
+
+	d = fs_opendir(FS_USBMSC_PATH);
+	if (d == NULL)
+		return SYS_R_NOK;
+	fs_closedir(d);
+	return SYS_R_OK;
+}
+
 void tsk_Daemon(void *args)
 {
 	uint_t i, nCnt, nSpan;
@@ -69,17 +80,9 @@ void app_Entry()
 		os_thd_Create(Meter, 80);
 }
 
-void hold()
-{
-	uint_t i;
-
-	for (i = 1; i; );
-}
-
 int main(void)
 {
 
-//	hold();
 	sys_Start();
 }
 

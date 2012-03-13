@@ -241,10 +241,6 @@ void data_Copy2Udisk()
 	t_data_quarter xQuar;
 	buf b = {0};
 
-	d = fs_opendir(FS_USBMSC_PATH);
-	if (d == NULL)
-		return;
-	fs_closedir(d);
 	icp_ParaRead(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
 	sprintf(sAddr, FS_USBMSC_PATH"%04X%04X/", xF85.area, xF85.addr);
 	fs_mkdir(sAddr, 0);
