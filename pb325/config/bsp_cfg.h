@@ -7,7 +7,7 @@
 //硬件版本
 #define VER_HARD						0x0010
 //软件版本
-#define VER_SOFT						0x0057
+#define VER_SOFT						0x0058
 
 //Main Control Unit Select
 #define ARCH_TYPE						ARCH_T_LM3S5X
@@ -75,7 +75,7 @@
 
 
 //看门狗使能
-#define WDG_ENABLE						0
+#define WDG_ENABLE						1
 #if WDG_ENABLE
 	//片内看门狗使能
 	#define WDT_INT_ENABLE				1
