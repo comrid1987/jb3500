@@ -59,7 +59,8 @@ void data_MinRead(const uint8_t *pTime, t_data_min *pData)
 	if (memcmp(aBuf, &pTime[2], 3) == 0) {
 		nAdr += (ECL_DATA_MIN_HEADER + (bcd2bin8(pTime[1]) * 60 + bcd2bin8(pTime[0])) * ECL_DATA_MIN_MSIZE);
 		spif_Read(nAdr, pData, sizeof(t_data_min));
-		return;
+		if (memtest(pData, 0xEE, sizeof(t_data_min)))
+			return;
 	}
 	memset(pData, GW3761_DATA_INVALID, sizeof(t_data_min));
 }
@@ -91,7 +92,8 @@ void data_QuarterRead(const uint8_t *pTime, t_data_quarter *pData)
 		if (memcmp(aBuf, &pTime[2], 3) == 0) {
 			nAdr += (ECL_DATA_QUAR_HEADER + (bcd2bin8(pTime[1]) * 4 + bcd2bin8(pTime[0]) / 15) * ECL_DATA_QUAR_MSIZE);
 			spif_Read(nAdr, pData, sizeof(t_data_quarter));
-			return;
+			if (memtest(pData, 0xEE, sizeof(t_data_quarter)))
+				return;
 		}
 	}
 	memset(pData, GW3761_DATA_INVALID, sizeof(t_data_quarter));
