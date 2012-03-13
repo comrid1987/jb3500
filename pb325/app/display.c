@@ -384,6 +384,7 @@ static void disp_Handle(uint_t nSel)
 void tsk_Display(void *args)
 {
 	os_que que;
+	uint_t nReady = 0, nCnt = 0, nBlCnt = 0, nCycle = 0, nSel = 21, nKey;
 	uint_t nMount = 0, nCnt = 0, nBlCnt = 0, nCycle = 0, nSel = 21, nKey;
 	time_t tTime;
 
@@ -430,8 +431,16 @@ void tsk_Display(void *args)
 					break;
 				if (sys_IsUsbFormat() != SYS_R_OK)
 					break;
-				icp_UdiskLoad();
-				break;
+<<<<<<< .mine				ht1621_Write(iUsb, IconUSB);
+				if (g_sys_status & BITMASK(1)) {
+					CLRBIT(g_sys_status, 1);
+					icp_UdiskLoad();
+				}
+				data_Copy2Udisk();
+				ht1621_Write(iUsb, BLANK);
+ 				//fs_usb_Unmount();
+=======				icp_UdiskLoad();
+>>>>>>> .theirs				break;
 			default:
 				break;
 			}
