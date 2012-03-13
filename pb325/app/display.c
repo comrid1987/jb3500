@@ -431,16 +431,7 @@ void tsk_Display(void *args)
 					break;
 				if (sys_IsUsbFormat() != SYS_R_OK)
 					break;
-<<<<<<< .mine				ht1621_Write(iUsb, IconUSB);
-				if (g_sys_status & BITMASK(1)) {
-					CLRBIT(g_sys_status, 1);
-					icp_UdiskLoad();
-				}
-				data_Copy2Udisk();
-				ht1621_Write(iUsb, BLANK);
- 				//fs_usb_Unmount();
-=======				icp_UdiskLoad();
->>>>>>> .theirs				break;
+    			break;
 			default:
 				break;
 			}
