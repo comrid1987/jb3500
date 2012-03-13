@@ -426,11 +426,6 @@ void tsk_Display(void *args)
 				break;
 			case 3:
 				LCD_BL(0);
-				if (nMount == 0)
-					break;
-				if (sys_IsUsbFormat() != SYS_R_OK)
-					break;
-				icp_UdiskLoad();
     			break;
 			default:
 				break;
@@ -442,8 +437,18 @@ void tsk_Display(void *args)
 		if (fs_usb_IsReady() == SYS_R_OK) {
 			ht1621_Write(iUsb, IconUSB);
 			if (nMount == 0) {
-				if (sys_IsUsbFormat() == SYS_R_OK)
-					data_Copy2Udisk();
+				if (sys_IsUsbFormat() == SYS_R_OK) {
+					que = os_que_Wait(QUE_EVT_KEYBOARD, NULL, 1000);
+					if (que != NULL) {
+						if (que->data->val == 1)
+							nMount = 1;
+						os_que_Release(que);
+					}
+					if (nMount)
+						icp_UdiskLoad();
+					else
+						data_Copy2Udisk();
+				}
 			}
 			nMount = 1;
 		} else {
