@@ -56,6 +56,44 @@
 
 
 //External Functions
+#if USBMSC_ENABLE
+sys_res fs_usb_Mount()
+{
+
+	/* mount usb mass storage fat partition 0 as um0 directory */
+	if (dfs_mount("usbmsc0", FS_USBMSC_PATH, "elm", 0, 0)) {
+		rt_kprintf("USB Mass Storage mount failed!\n");
+		return SYS_R_ERR;
+	}
+	return SYS_R_OK;
+}
+
+sys_res fs_usb_Unmount()
+{
+
+	/* unmount usb mass storage fat partition 0 as um0 directory */
+	if (dfs_unmount(FS_USBMSC_PATH)) {
+		rt_kprintf("USB Mass Storage unmount failed!\n");
+		return SYS_R_ERR;
+	}
+	return SYS_R_OK;
+}
+
+sys_res fs_usb_IsReady()
+{
+
+	rt_device_t dev_id;
+
+	dev_id = rt_device_find("usbmsc0");
+	if (dev_id == NULL)
+		return SYS_R_ERR;
+	if (usbmsc_isready(dev_id) != RT_EOK)
+		return SYS_R_ERR;
+	return SYS_R_OK;
+}
+#endif
+
+
 sys_res fs_init()
 {
 
@@ -103,54 +141,12 @@ sys_res fs_init()
 #if USBMSC_ENABLE
 	/* init the USB Mass Storage layer */
 	usbmsc_dev_Init();
-	/* mount usb mass storage fat partition 0 as um0 directory */
-	if (dfs_mount("usbmsc0", FS_USBMSC_PATH, "elm", 0, 0)) {
-		rt_kprintf("USB Mass Storage mount failed!\n");
-		return SYS_R_ERR;
-	}
+	fs_usb_Mount();
 #endif
 
 	return SYS_R_OK;
 }
 
-#if USBMSC_ENABLE
-sys_res fs_usb_Mount()
-{
-
-	/* mount usb mass storage fat partition 0 as um0 directory */
-	if (dfs_mount("usbmsc0", FS_USBMSC_PATH, "elm", 0, 0)) {
-		rt_kprintf("USB Mass Storage mount failed!\n");
-		return SYS_R_ERR;
-	}
-	return SYS_R_OK;
-}
-
-sys_res fs_usb_Unmount()
-{
-
-	/* unmount usb mass storage fat partition 0 as um0 directory */
-	if (dfs_unmount(FS_USBMSC_PATH)) {
-		rt_kprintf("USB Mass Storage unmount failed!\n");
-		return SYS_R_ERR;
-	}
-	return SYS_R_OK;
-}
-
-sys_res fs_usb_IsReady()
-{
-
-	rt_device_t dev_id;
-
-	dev_id = rt_device_find("usbmsc0");
-	if (dev_id == NULL)
-		return SYS_R_ERR;
-	if (usbmsc_isready(dev_id) != RT_EOK)
-		return SYS_R_ERR;
-	return SYS_R_OK;
-}
-
-
-#endif
 
 
 
