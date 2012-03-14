@@ -77,9 +77,25 @@ int memtest(const void *s, uint8_t c, int len)
 	uint_t i;
 	uint8_t *p = (uint8_t *)s;
 
-	for (i = len; i; i--)
+	for (i = len; i; i--) {
 		if (*p++ != c)
 			break;
+	}
+	return i;
+}
+
+//-------------------------------------------------------------------------
+//字符串为某值的个数
+//-------------------------------------------------------------------------
+int memcnt(const void *s, uint8_t c, uint_t len)
+{
+	uint_t i = 0;
+	uint8_t *p = (uint8_t *)s;
+
+	for (; len; len--) {
+		if (*p++ == c)
+			i += 1;
+	}
 	return i;
 }
 
