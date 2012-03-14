@@ -8,7 +8,7 @@
 #define VER_HARD						0x0010
 //Èí¼þ°æ±¾
 #define VER_SOFT						0x0060
-#define VER_SOFT						0x0059
+
 
 //Main Control Unit Select
 #define ARCH_TYPE						ARCH_T_LM3S5X
