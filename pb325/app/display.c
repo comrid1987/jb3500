@@ -447,7 +447,7 @@ void tsk_Display(void *args)
 					if (nMount)
 						icp_UdiskLoad();
 					else
-						data_Copy2Udisk();
+						os_que_Send(QUE_EVT_USER_EVT, NULL, NULL, 0, 1000);
 				}
 			}
 			nMount = 1;

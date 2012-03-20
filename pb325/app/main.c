@@ -20,6 +20,7 @@ os_thd_declare(Upcom2, 1024);
 os_thd_declare(Daemon, 1024);
 os_thd_declare(Display, 1024);
 os_thd_declare(Meter, 1280);
+os_thd_declare(Idle, 1280);
 
 
 sys_res sys_IsUsbFormat()
@@ -42,6 +43,7 @@ void tsk_Daemon(void *args)
 		que = os_que_Wait(QUE_EVT_PULSE, NULL, 200);
 		if (que != NULL) {
 			nSpan = que->data->val;
+			os_que_Release(que);
 			for (i = 0; i < 3; i++) {
 				if (nSpan & BITMASK(i)){
                     BEEP(1);
@@ -50,7 +52,6 @@ void tsk_Daemon(void *args)
                     BEEP(0);
 				}
 			}
-			os_que_Release(que);
 		}
 		if (g_sys_status & BITMASK(0))
 			nSpan = 3;
@@ -62,6 +63,20 @@ void tsk_Daemon(void *args)
 			LED_RUN(0);
 	}
 }
+
+void tsk_Idle(void *args)
+{
+	os_que que;
+
+	for (; ; ) {
+		que = os_que_Wait(QUE_EVT_USER_EVT, NULL, 1000);
+		if (que != NULL) {
+			os_que_Release(que);
+			data_Copy2Udisk();
+		}
+	}
+}
+
 
 void app_Entry()
 {
@@ -78,6 +93,8 @@ void app_Entry()
 		os_thd_Create(Upcom2, 100);
 	if (i)
 		os_thd_Create(Meter, 80);
+	if (i)
+		os_thd_Create(Idle, 20);
 }
 
 int main(void)

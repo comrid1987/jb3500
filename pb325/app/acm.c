@@ -151,7 +151,7 @@ void acm_MinSave(const uint8_t *pTime)
 	t_acm_rtdata *pD = &acm_rtd;
 	uint_t i;
 	uint8_t *pTemp;
-	t_data_min xData;
+	t_data_min xData = {0};
 
 	pTemp = xData.data;
 	xData.time = rtc_GetTimet();
@@ -172,7 +172,7 @@ void acm_QuarterSave(const uint8_t *pTime)
 	t_acm_xbdata *pX;
 	uint_t i, j;
 	uint8_t *pTemp, aBuf[4];
-	t_data_quarter xData;
+	t_data_quarter xData = {0};
 
 	pTemp = xData.data;
 	xData.time = rtc_GetTimet();
