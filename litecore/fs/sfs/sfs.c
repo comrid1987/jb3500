@@ -9,13 +9,18 @@
 
 
 //Private Defines
+#define SFS_LOCK_ENABLE			1
 #define SFS_DEBUG_METHOD		0
 
 #define SFS_RECORD_MASK			0xFFFFFFFF
 
+#if SFS_LOCK_ENABLE
 #define sfs_Lock()				os_thd_Lock()
 #define sfs_Unlock()			os_thd_Unlock()
-
+#else
+#define sfs_Lock()
+#define sfs_Unlock()
+#endif
 
 
 #define SFS_BLK_IDLE			0xFFFFFFFF
@@ -58,7 +63,7 @@ static sys_res _sfs_Erase(sfs_dev pDev, adr_t nAdr)
 	return flash_nolockErase(pDev->dev, nAdr);
 }
 
-static sys_res _sfs_Program(sfs_dev pDev, adr_t nAdr, void *pData, uint_t nLen)
+static sys_res _sfs_Program(sfs_dev pDev, adr_t nAdr, const void *pData, uint_t nLen)
 {
 
 	return flash_nolockProgram(pDev->dev, nAdr, pData, nLen);
@@ -283,24 +288,6 @@ sys_res sfs_Write(sfs_dev pDev, uint32_t nRecord, const void *pData, uint_t nLen
 	return res;
 }
 
-sys_res sfs_Read2Buf(sfs_dev pDev, uint32_t nRecord, buf b)
-{
-	sys_res res = SYS_R_ERR;
-	adr_t nIdx;
-	t_sfs_idx xIdx;
-
-	sfs_Lock();
-	if ((nIdx = _sfs_Find(pDev, SFS_RECORD_MASK, nRecord, &xIdx)) != 0) {
-		//找到记录,读取
-		if (buf_Push(b, (uint8_t *)(nIdx + sizeof(t_sfs_idx)), xIdx.len) == SYS_R_OK)
-			res = SYS_R_OK;
-		else
-			res = SYS_R_EMEM;
-	}
-	sfs_Unlock();
-	return res;
-}
-
 //-------------------------------------------------------------------------
 //_sfs_Read - 读出一条记录
 //
@@ -328,6 +315,41 @@ sys_res sfs_Read(sfs_dev pDev, uint32_t nRecord, void *pData)
 	return res;
 }
 
+sys_res sfs_ReadRandom(sfs_dev pDev, uint32_t nRecord, void *pData, uint_t nOffset, uint_t nLen)
+{
+	sys_res res = SYS_R_ERR;
+	adr_t nIdx;
+	t_sfs_idx xIdx;
+
+	sfs_Lock();
+	if ((nIdx = _sfs_Find(pDev, SFS_RECORD_MASK, nRecord, &xIdx)) != 0) {
+		//找到记录,读取
+		if (nOffset < xIdx.len) {
+			memcpy(pData, (uint8_t *)(nIdx + sizeof(t_sfs_idx) + nOffset), MIN(nLen, xIdx.len - nOffset));
+			res = SYS_R_OK;
+		}
+	}
+	sfs_Unlock();
+	return res;
+}
+
+sys_res sfs_Read2Buf(sfs_dev pDev, uint32_t nRecord, buf b)
+{
+	sys_res res = SYS_R_ERR;
+	adr_t nIdx;
+	t_sfs_idx xIdx;
+
+	sfs_Lock();
+	if ((nIdx = _sfs_Find(pDev, SFS_RECORD_MASK, nRecord, &xIdx)) != 0) {
+		//找到记录,读取
+		if (buf_Push(b, (uint8_t *)(nIdx + sizeof(t_sfs_idx)), xIdx.len) == SYS_R_OK)
+			res = SYS_R_OK;
+		else
+			res = SYS_R_EMEM;
+	}
+	sfs_Unlock();
+	return res;
+}
 
 sys_res sfs_Find(sfs_dev pDev, uint32_t nPar, buf b, uint_t nLen)
 {

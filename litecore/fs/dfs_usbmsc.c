@@ -5,7 +5,7 @@
 
 
 //Private Defines
-#define USB_LOCK_ENABLE			0
+#define USB_LOCK_ENABLE			1
 
 /* Disk Status Bits (DSTATUS) */
 #define STA_NOINIT		0x01	/* Drive not initialized */
@@ -37,18 +37,21 @@ static uint_t usbmsc_state = STA_NOINIT;
 rt_err_t usbmsc_isready(rt_device_t dev)
 {
 
-	if (USBHMSCDriveReady((uint_t)dev->user_data) == 0) {
+	usbmsc_lock();
+	if (USBHMSCDriveReady((uint_t)dev->user_data))
+		usbmsc_state |= STA_NOINIT;
+	else
 		usbmsc_state &= ~STA_NOINIT;
-		return RT_EOK;
-	}
-	usbmsc_state |= STA_NOINIT;
-	return RT_ERROR;
+	usbmsc_unlock();
+	if (usbmsc_state & STA_NOINIT)
+		return RT_ERROR;
+	return RT_EOK;
 }
 
 static rt_err_t usbmsc_init(rt_device_t dev)
 {
 
-#if NFTL_LOCK_ENABLE
+#if USB_LOCK_ENABLE
 	rt_sem_init(&usbmsc_sem, "sem_u0", 1, RT_IPC_FLAG_FIFO);
 #endif
 	return RT_EOK;
@@ -58,15 +61,19 @@ static rt_err_t usbmsc_open(rt_device_t dev, rt_uint16_t oflag)
 {
 	extern void MSCCallback(unsigned long ulInstance, unsigned long ulEvent, void *pvData);
 
+	usbmsc_lock();
 	dev->user_data = (void *)USBHMSCDriveOpen(0, MSCCallback);
+	usbmsc_unlock();
 	return RT_EOK;
 }
 
 static rt_err_t usbmsc_close(rt_device_t dev)
 {
 
+	usbmsc_lock();
 	USBHMSCDriveClose((unsigned long)dev->user_data);
 	usbmsc_state |= STA_NOINIT;
+	usbmsc_unlock();
 	return RT_EOK;
 }
 
@@ -74,13 +81,11 @@ static rt_size_t usbmsc_read(rt_device_t dev, rt_off_t pos, void* buffer, rt_siz
 {
 	int res;
 
-	usbmsc_lock();
 	if (usbmsc_state & STA_NOINIT) {
-		if (usbmsc_isready(dev) != RT_EOK) {
-			usbmsc_unlock();
+		if (usbmsc_isready(dev) != RT_EOK)
 			return 0;
-		}
 	}
+	usbmsc_lock();
 	/* READ BLOCK */
 	res = USBHMSCBlockRead((uint_t)dev->user_data, pos, buffer, size);
 	usbmsc_unlock();

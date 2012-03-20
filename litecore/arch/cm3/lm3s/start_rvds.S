@@ -62,9 +62,8 @@ HeapMem
         SPACE   Heap
 __heap_limit
 
-		IMPORT rt_hw_pend_sv
+		IMPORT PendSV_Handler
 		IMPORT rt_hw_timer_handler
-		IMPORT rt_hw_hard_fault
 		IMPORT lm3s_isr_porta
 		IMPORT lm3s_isr_portb
 		IMPORT lm3s_isr_portc
@@ -86,6 +85,7 @@ __heap_limit
 		IMPORT lm3s_isr_timer3b
 		IMPORT lm3s_isr_eth
 		IMPORT lm3s_isr_usb0
+		IMPORT HardFault_Handler
 
 
 ;******************************************************************************
@@ -113,7 +113,7 @@ __Vectors
         DCD     StackMem + Stack            ; Top of Stack
         DCD     Reset_Handler               ; Reset Handler
         DCD     NmiSR                       ; NMI Handler
-        DCD     rt_hw_hard_fault            ; Hard Fault Handler
+        DCD     HardFault_Handler           ; Hard Fault Handler
         DCD     IntDefaultHandler           ; MPU Fault Handler
         DCD     IntDefaultHandler           ; Bus Fault Handler
         DCD     IntDefaultHandler           ; Usage Fault Handler
@@ -124,7 +124,7 @@ __Vectors
         DCD     IntDefaultHandler           ; SVCall Handler
         DCD     IntDefaultHandler           ; Debug Monitor Handler
         DCD     0                           ; Reserved
-        DCD     rt_hw_pend_sv           	; PendSV Handler
+        DCD     PendSV_Handler           	; PendSV Handler
         DCD     rt_hw_timer_handler         ; SysTick Handler
         DCD     lm3s_isr_porta              ; GPIO Port A
         DCD     lm3s_isr_portb              ; GPIO Port B

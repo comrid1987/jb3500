@@ -21,7 +21,7 @@ extern "C" {
 
 void intf_Init(void);
 sys_res intf_Erase(adr_t adr);
-sys_res intf_Program(adr_t adr, void *pData, uint_t nLen);
+sys_res intf_Program(adr_t adr, const void *pData, uint_t nLen);
 
 
 

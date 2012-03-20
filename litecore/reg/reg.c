@@ -320,7 +320,7 @@ static int reg_State(uint_t nDa, uint_t nID, void *pData, uint_t nFlag)
 		nLen = 41;
 		switch (nFlag) {
 		case REG_STATE_FLAG_READ:
-			rt_memset(pData, 0x00, 41);
+			memset(pData, 0x00, 41);
 			memcpy(pData, TER_FAT_CODE, sizeof(TER_FAT_CODE));
 			memcpy((char *)pData + 4, TER_MODEL, sizeof(TER_MODEL));
 			memcpy((char *)pData + 12, TER_SOFT_VER, sizeof(TER_SOFT_VER));

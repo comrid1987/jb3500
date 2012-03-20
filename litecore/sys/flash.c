@@ -48,7 +48,7 @@ sys_res flash_nolockErase(uint_t nDev, adr_t nAdr)
 
 
 
-sys_res flash_Program(uint_t nDev, adr_t nAdr, void *pData, uint_t nLen)
+sys_res flash_Program(uint_t nDev, adr_t nAdr, const void *pData, uint_t nLen)
 {
 	sys_res res;
 
@@ -70,7 +70,7 @@ sys_res flash_Program(uint_t nDev, adr_t nAdr, void *pData, uint_t nLen)
 	return res;
 }
 
-sys_res flash_nolockProgram(uint_t nDev, adr_t nAdr, void *pData, uint_t nLen)
+sys_res flash_nolockProgram(uint_t nDev, adr_t nAdr, const void *pData, uint_t nLen)
 {
 	sys_res res;
 

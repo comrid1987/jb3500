@@ -2,6 +2,12 @@
 #define __SFS_H__
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
+
 //Public Defines
 
 
@@ -21,13 +27,16 @@ typedef struct {
 sys_res sfs_Init(sfs_dev pDev);
 sys_res sfs_Write(sfs_dev pDev, uint32_t nRecord, const void *pData, uint_t nLen);
 sys_res sfs_Read(sfs_dev pDev, uint32_t nRecord, void *pData);
+sys_res sfs_ReadRandom(sfs_dev pDev, uint32_t nRecord, void *pData, uint_t nOffset, uint_t nLen);
 sys_res sfs_Read2Buf(sfs_dev pDev, uint32_t nRecord, buf b);
 sys_res sfs_Find(sfs_dev pDev, uint32_t nPar, buf b, uint_t nLen);
 sys_res sfs_Info(sfs_dev pDev, uint32_t nRecord, sfs_info info);
 sys_res sfs_Delete(sfs_dev pDev, uint32_t nRecord);
 
 
-
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 
