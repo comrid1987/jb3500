@@ -6,8 +6,8 @@
 	(ARCH_TYPE == ARCH_T_LPC176X)
 
 //#include <arch/CMSIS/CM3/CoreSupport/core_cm3.c>
-#include <arch/cm3/fault.c>
-#include <arch/cm3/stack.c>
+#include <arch/cm3/cpuport.c>
+
 
 #elif ARCH_TYPE == ARCH_T_M051X
 #include <arch/cm0/fault.c>
@@ -115,37 +115,6 @@
 #include <arch/arm7/str71x/arch_uart.c>
 #include <arch/arm7/str71x/arch_retarget.c>
 
-#endif
-
-
-/* exception and interrupt handler table */
-uint32_t rt_interrupt_from_thread, rt_interrupt_to_thread;
-uint32_t rt_thread_switch_interrupt_flag;
-
-#if OS_TYPE
-void rt_hw_timer_handler(void)
-{
-	/* enter interrupt */
-	rt_interrupt_enter();
-
-	rt_tick_increase();
-
-	/* leave interrupt */
-	rt_interrupt_leave();
-}
-
-/* write one character to serial, must not trigger interrupt */
-static void rt_hw_console_putc(const char c)
-{
-	extern int sendchar(int ch);
-	/*
-		to be polite with serial console add a line feed
-		to the carriage return character
-	*/
-	if (c == '\n') sendchar('\r');
-
-	sendchar(c);
-}
 #endif
 
 
