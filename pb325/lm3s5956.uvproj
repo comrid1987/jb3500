@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <Project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="project_proj.xsd">
 
-  <SchemaVersion>1.1</SchemaVersion>
+  <SchemaVersion>1.0</SchemaVersion>
 
   <Header>### uVision Project, (C) Keil Software</Header>
 
@@ -29,7 +29,6 @@
           <SLE66CMisc></SLE66CMisc>
           <SLE66AMisc></SLE66AMisc>
           <SLE66LinkerMisc></SLE66LinkerMisc>
-          <SFDFile></SFDFile>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
           <IncludePath></IncludePath>
@@ -392,19 +391,14 @@
               <FilePath>..\litecore\litecore.c</FilePath>
             </File>
             <File>
-              <FileName>context_rvds.S</FileName>
-              <FileType>2</FileType>
-              <FilePath>..\litecore\arch\cm3\lm3s\context_rvds.S</FilePath>
-            </File>
-            <File>
-              <FileName>fault_rvds.S</FileName>
-              <FileType>2</FileType>
-              <FilePath>..\litecore\arch\cm3\lm3s\fault_rvds.S</FilePath>
-            </File>
-            <File>
               <FileName>start_rvds.S</FileName>
               <FileType>2</FileType>
               <FilePath>..\litecore\arch\cm3\lm3s\start_rvds.S</FilePath>
+            </File>
+            <File>
+              <FileName>context_rvds.S</FileName>
+              <FileType>2</FileType>
+              <FilePath>..\litecore\arch\cm3\context_rvds.S</FilePath>
             </File>
             <File>
               <FileName>driverlib-cm3.lib</FileName>
