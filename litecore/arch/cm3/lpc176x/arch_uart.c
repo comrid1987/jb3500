@@ -7,8 +7,6 @@ extern dque dqueue;
 #endif
 
 //Private Defines
-#define LPC176X_UART_QTY	4
-
 #define IER_RBR		0x01
 #define IER_THRE	0x02
 #define IER_RLS		0x04
@@ -38,7 +36,7 @@ static void * const lpc176x_tblUartBase[] = {
 };
 
 //Private Variables
-static p_dev_uart lpc176x_uart_dev[LPC176X_UART_QTY];
+static p_dev_uart lpc176x_uart_dev[4];
 
 
 

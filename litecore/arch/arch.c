@@ -115,6 +115,15 @@
 #include <arch/arm7/str71x/arch_uart.c>
 #include <arch/arm7/str71x/arch_retarget.c>
 
+#elif ARCH_TYPE == ARCH_T_LPC22XX
+#include <arch/arm7/lpc22xx/arch.c>
+#include <arch/arm7/lpc22xx/arch_flash.c>
+#include <arch/arm7/lpc22xx/arch_gpio.c>
+#include <arch/arm7/lpc22xx/arch_it.c>
+#include <arch/arm7/lpc22xx/arch_timer.c>
+#include <arch/arm7/lpc22xx/arch_uart.c>
+
+
 #endif
 
 

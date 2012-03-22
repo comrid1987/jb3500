@@ -12,6 +12,7 @@
 #define ARCH_T_M051X		6
 
 #define ARCH_T_STR71X		8
+#define ARCH_T_LPC22XX		9
 
 
 //System Speed Defines

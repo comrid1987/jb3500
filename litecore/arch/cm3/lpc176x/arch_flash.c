@@ -17,24 +17,24 @@ typedef double         	FP64;           //  双精度浮点数（64位长度）
 /* 
  *  定义CCLK值大小，单位为KHz 
  */
-#define  IAP_FCCLK            (MCU_CLOCK / 1000)
-#define  IAP_ENTER_ADR        0x1FFF1FF1                                  /* IAP入口地址定义              */
+#define IAP_FCCLK            (MCU_CLOCK / 1000)
+#define IAP_ENTER_ADR        0x1FFF1FF1                                  /* IAP入口地址定义              */
 
 /* 
  *  定义IAP命令字
  */                                     
-#define     IAP_Prepare                                50               /* 选择扇区                     */
+#define IAP_Prepare                                50               /* 选择扇区                     */
                                                                         /* 【起始扇区号、结束扇区号】   */                    
-#define     IAP_RAMTOFLASH                             51               /* 拷贝数据 FLASH目标地址       */
+#define IAP_RAMTOFLASH                             51               /* 拷贝数据 FLASH目标地址       */
                                                                         /* RAM源地址    【、写入字节数  */
                                                                         /* 系统时钟频率】               */
-#define     IAP_ERASESECTOR                            52               /* 擦除扇区    【起始扇区号     */
+#define IAP_ERASESECTOR                            52               /* 擦除扇区    【起始扇区号     */
                                                                         /* 结束扇区号、系统时钟频率】   */
-#define     IAP_BLANKCHK                               53               /* 查空扇区    【起始扇区号、   */
+#define IAP_BLANKCHK                               53               /* 查空扇区    【起始扇区号、   */
                                                                         /* 结束扇区号】                 */
-#define     IAP_READPARTID                             54               /* 读器件ID    【无】           */
-#define     IAP_BOOTCODEID                             55               /* 读Boot版本号【无】           */
-#define     IAP_COMPARE                                56               /* 比较命令    【Flash起始地址  */
+#define IAP_READPARTID                             54               /* 读器件ID    【无】           */
+#define IAP_BOOTCODEID                             55               /* 读Boot版本号【无】           */
+#define IAP_COMPARE                                56               /* 比较命令    【Flash起始地址  */
                                                                         /* RAM起始地址、需要比较的      */
                                                                         /* 字节数】                     */
 

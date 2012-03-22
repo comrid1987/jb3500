@@ -2,9 +2,9 @@
 
 
 //Private Defines
-#define LPC_PINCON_PINSEL_BASE			LPC_PINCON_BASE
-#define LPC_PINCON_PINMODE_BASE			(LPC_PINCON_PINSEL_BASE + 0x40)
-#define LPC_PINCON_PINMODEOD_BASE		(LPC_PINCON_PINMODE_BASE + 40)
+#define LPC_PINCON_SEL_BASE				LPC_PINCON_BASE
+#define LPC_PINCON_MODE_BASE			(LPC_PINCON_SEL_BASE + 0x40)
+#define LPC_PINCON_MODEOD_BASE			(LPC_PINCON_MODE_BASE + 40)
 
 //Private Variables
 static LPC_GPIO_TypeDef * const lpc176x_tblGpioBase[] = {
@@ -36,10 +36,10 @@ void arch_GpioSel(uint_t nPort, uint_t nPin, uint_t nSel)
 	uint32_t nBase, nValue;
 
 	if (nPin < 16) {
-		nBase = LPC_PINCON_PINSEL_BASE + nPort * 2 * 4;
+		nBase = LPC_PINCON_SEL_BASE + nPort * 2 * 4;
 		nMove = nPin << 1;
 	} else {
-		nBase = LPC_PINCON_PINSEL_BASE + (nPort * 2 + 1) * 4;
+		nBase = LPC_PINCON_SEL_BASE + (nPort * 2 + 1) * 4;
 		nMove = (nPin - 16) << 1;
 	}
 	//Set GPIO function
@@ -74,7 +74,7 @@ void arch_GpioConf(uint_t nPort, uint_t nPin, uint_t nMode, uint_t nInit)
 	switch (nMode) {
 	case GPIO_M_OUT_OD:
 	case GPIO_M_AF_OD:
-		nBase = LPC_PINCON_PINMODEOD_BASE + nPort * 4;
+		nBase = LPC_PINCON_MODEOD_BASE + nPort * 4;
 		__raw_writel(__raw_readl(nBase) | BITMASK(nPin), nBase);
 		break;
 	default:
@@ -82,10 +82,10 @@ void arch_GpioConf(uint_t nPort, uint_t nPin, uint_t nMode, uint_t nInit)
 	}
 	//Set GPIO Mode
 	if (nPin < 16) {
-		nBase = LPC_PINCON_PINMODE_BASE + nPort * 2 * 4;
+		nBase = LPC_PINCON_MODE_BASE + nPort * 2 * 4;
 		nMove = nPin << 1;
 	} else {
-		nBase = LPC_PINCON_PINMODE_BASE + (nPort * 2 + 1) * 4;
+		nBase = LPC_PINCON_MODE_BASE + (nPort * 2 + 1) * 4;
 		nMove = (nPin - 16) << 1;
 	}
 	nValue = __raw_readl(nBase) & ~(3 << nMove);
@@ -119,9 +119,9 @@ void arch_GpioSet(uint_t nPort, uint_t nPin, uint_t nHL)
 	LPC_GPIO_TypeDef *p = lpc176x_tblGpioBase[nPort];
 
 	if (nHL)
-		SETBIT(p->FIOSET, nPin);
+		p->FIOSET = BITMASK(nPin);
 	else
-		SETBIT(p->FIOCLR, nPin);
+		p->FIOCLR = BITMASK(nPin);
 }
 
 int arch_GpioRead(uint_t nPort, uint_t nPin)

@@ -13,14 +13,19 @@ extern "C" {
 #if	(ARCH_TYPE == ARCH_T_STM32F10X) || \
 	(ARCH_TYPE == ARCH_T_LM3S9X) || (ARCH_TYPE == ARCH_T_LM3S5X) || \
 	(ARCH_TYPE == ARCH_T_LPC176X)
+
 #include <arch/cm3/typedef.h>
+#endif
 
-#elif ARCH_TYPE == ARCH_T_M051X
+#if ARCH_TYPE == ARCH_T_M051X
+
 #include <arch/cm0/typedef.h>
+#endif
 
-#elif ARCH_TYPE == ARCH_T_STR71X
+#if (ARCH_TYPE == ARCH_T_STR71X) || \
+	(ARCH_TYPE == ARCH_T_LPC22XX)
+
 #include <arch/arm7/typedef.h>
-
 #endif
 
 
@@ -49,6 +54,9 @@ extern "C" {
 
 #elif ARCH_TYPE == ARCH_T_STR71X
 #include <arch/arm7/str71x/arch.h>
+
+#elif ARCH_TYPE == ARCH_T_LPC22XX
+#include <arch/arm7/lpc22xx/arch.h>
 
 #endif
 
