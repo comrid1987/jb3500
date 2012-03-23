@@ -81,6 +81,7 @@ void data_MinWrite(const uint8_t *pTime, t_data_min *pData)
 	}
 	nAdr += (ECL_DATA_MIN_HEADER + (bcd2bin8(pTime[1]) * 60 + bcd2bin8(pTime[0])) * ECL_DATA_MIN_MSIZE);
 	spif_Write(nAdr, pData, sizeof(t_data_min));
+	flash_Flush(0);
 }
 
 void data_QuarterRead(const uint8_t *pTime, t_data_quarter *pData)
@@ -115,6 +116,7 @@ void data_QuarterWrite(const uint8_t *pTime, t_data_quarter *pData)
 	}
 	nAdr += (ECL_DATA_QUAR_HEADER + (bcd2bin8(pTime[1]) * 4 + bcd2bin8(pTime[0]) / 15) * ECL_DATA_QUAR_MSIZE);
 	spif_Write(nAdr, pData, sizeof(t_data_quarter));
+	flash_Flush(0);
 }
 
 #if 0
