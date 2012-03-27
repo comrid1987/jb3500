@@ -636,8 +636,8 @@
 
   <AlienFiles>
     <PathWithFilename>D:\Workspace\lm3s5956\config\bsp_cfg.h</PathWithFilename>
-    <TopLine>37</TopLine>
-    <CurrentLine>37</CurrentLine>
+    <TopLine>498</TopLine>
+    <CurrentLine>519</CurrentLine>
     <Constant>0</Constant>
     <WindowPosition>
       <length>0</length>
@@ -2087,9 +2087,9 @@
         </Doc>
         <Doc>
           <Name>.\config\bsp_cfg.h</Name>
-          <ColumnNumber>28</ColumnNumber>
-          <TopLine>37</TopLine>
-          <CurrentLine>37</CurrentLine>
+          <ColumnNumber>35</ColumnNumber>
+          <TopLine>498</TopLine>
+          <CurrentLine>519</CurrentLine>
         </Doc>
         <Doc>
           <Name>..\litecore\os/rtt/idle.c</Name>
