@@ -324,7 +324,7 @@ void data_Copy2Udisk()
 				}
 				for (i = 1; i < 4; i++) {
 					pTemp = &xMin.data[ACM_MSAVE_COS + i * 2];
-					fs_write(fd1, str, sprintf(str, ",%1X.%1X%1X", pTemp[1] >> 4, pTemp[1] & 0xF, pTemp[0] >> 4));
+					fs_write(fd1, str, sprintf(str, ",%1X.%1X%1X", (pTemp[1] >> 4) & 0x07, pTemp[1] & 0xF, pTemp[0] >> 4));
 				}
 				pTemp = &xMin.data[ACM_MSAVE_CUR + 9];
 				fs_write(fd1, str, sprintf(str, ",%1X%1X.%1X%1X", pTemp[2] & 0xF, pTemp[1] >> 4, pTemp[1] & 0xF, pTemp[0] >> 4));
