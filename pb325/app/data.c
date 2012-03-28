@@ -61,10 +61,10 @@ void data_MinRead(const uint8_t *pTime, t_data_min *pData)
 	if (memcmp(aBuf, &pTime[2], 3) == 0) {
 		nAdr += (ECL_DATA_MIN_HEADER + (bcd2bin8(pTime[1]) * 60 + bcd2bin8(pTime[0])) * ECL_DATA_MIN_MSIZE);
 		spif_Read(nAdr, pData, sizeof(t_data_min));
-		if (memcnt(pData->data, 0xEE, sizeof(t_data_min) - sizeof(time_t)) == 0)
-			return;
-		if (memcnt(pData->data, 0xFF, sizeof(t_data_min) - sizeof(time_t)) == 0)
-			return;
+		if (memcnt(pData->data, 0xEE, sizeof(t_data_min) - sizeof(time_t)) == 0) {
+			if (memcnt(pData->data, 0xFF, sizeof(t_data_min) - sizeof(time_t)) == 0)
+				return;
+		}
 	}
 	memset(pData, GW3761_DATA_INVALID, sizeof(t_data_min));
 }
@@ -97,10 +97,10 @@ void data_QuarterRead(const uint8_t *pTime, t_data_quarter *pData)
 		if (memcmp(aBuf, &pTime[2], 3) == 0) {
 			nAdr += (ECL_DATA_QUAR_HEADER + (bcd2bin8(pTime[1]) * 4 + bcd2bin8(pTime[0]) / 15) * ECL_DATA_QUAR_MSIZE);
 			spif_Read(nAdr, pData, sizeof(t_data_quarter));
-			if (memcnt(pData->data, 0xEE, sizeof(t_data_quarter) - sizeof(time_t)) == 0)
-				return;
-			if (memcnt(pData->data, 0xFF, sizeof(t_data_quarter) - sizeof(time_t)) == 0)
-				return;
+			if (memcnt(pData->data, 0xEE, sizeof(t_data_quarter) - sizeof(time_t)) == 0) {
+				if (memcnt(pData->data, 0xFF, sizeof(t_data_quarter) - sizeof(time_t)) == 0)
+					return;
+			}
 		}
 	}
 	memset(pData, GW3761_DATA_INVALID, sizeof(t_data_quarter));
@@ -333,7 +333,7 @@ void data_Copy2Udisk()
 				pTemp = &xMin.data[ACM_MSAVE_PQ];
 				fs_write(fd1, str, sprintf(str, ",%1X.%1X%1X%1X", pTemp[2] & 0xF, pTemp[1] >> 4, pTemp[1] & 0xF, pTemp[0] >> 4));
 				pTemp = &xMin.data[ACM_MSAVE_COS];
-				fs_write(fd1, str, sprintf(str, ",%1X.%1X%1X\r\n", pTemp[1] >> 4, pTemp[1] & 0xF, pTemp[0] >> 4));
+				fs_write(fd1, str, sprintf(str, ",%1X.%1X%1X\r\n", (pTemp[1] >> 4) & 0x07, pTemp[1] & 0xF, pTemp[0] >> 4));
 			}
 		}
 
