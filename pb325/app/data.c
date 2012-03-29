@@ -364,6 +364,8 @@ void data_Copy2Udisk()
 	fd1 = fs_open(str, O_WRONLY | O_CREAT | O_TRUNC, 0);
 	if (fd1 >= 0) {
 		fs_write(fd1, str, sprintf(str, "20%02X-%02X-%02X %02X:%02X:00\r\n", aTime[5], aTime[4], aTime[3], aTime[2], aTime[1]));
+		timet2array(rtc_GetTimet(), aTime, 1);
+		fs_write(fd1, str, sprintf(str, "20%02X-%02X-%02X %02X:%02X:00\r\n", aTime[5], aTime[4], aTime[3], aTime[2], aTime[1]));
 		fs_close(fd1);
 	}
 	//Õ£…œµÁ
