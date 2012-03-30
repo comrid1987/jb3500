@@ -14,7 +14,6 @@
 
 //Private Defines
 #define SFS_LOCK_ENABLE			1
-#define SFS_RECORD_LEN8			0
 #define SFS_DEBUG_METHOD		0
 
 #define SFS_RECORD_MASK			0xFFFFFFFF
@@ -47,11 +46,7 @@ typedef struct {
 typedef struct {
 	uint16_t ste;
 	uint16_t len;
-#if SFS_RECORD_LEN8
-	uint64_t para;
-#else
-	uint32_t para;
-#endif
+	t_sfs_id id;
 }t_sfs_idx, *p_sfs_idx;
 
 typedef t_flash_blk				t_sfs_blk;
@@ -78,11 +73,7 @@ static sys_res _sfs_Program(sfs_dev pDev, adr_t nAdr, const void *pData, uint_t 
 	return flash_nolockProgram(pDev->dev, nAdr, pData, nLen);
 }
 
-#if SFS_RECORD_LEN8
-static adr_t _sfs_Find(sfs_dev pDev, uint64_t nAnd, uint64_t nRecord, p_sfs_idx pIdx)
-#else
 static adr_t _sfs_Find(sfs_dev pDev, uint32_t nAnd, uint32_t nRecord, p_sfs_idx pIdx)
-#endif
 {
 	adr_t nIdx, nEnd;
 	const t_sfs_blk *pBlk, *pEnd;
@@ -96,7 +87,7 @@ static adr_t _sfs_Find(sfs_dev pDev, uint32_t nAnd, uint32_t nRecord, p_sfs_idx 
 			nEnd = pBlk->start + pBlk->size;
 			for (; nIdx < nEnd; nIdx = ALIGN4(nIdx + sizeof(t_sfs_idx) + pIdx->len)) {
 				memcpy(pIdx, (uint8_t *)nIdx, sizeof(t_sfs_idx));
-				if (((pIdx->para & nAnd) == nRecord) && (pIdx->ste == SFS_S_VALID))
+				if (((pIdx->id & nAnd) == nRecord) && (pIdx->ste == SFS_S_VALID))
 					return nIdx;
 			}
 		}
@@ -119,11 +110,7 @@ static int _sfs_Free(sfs_dev pDev, const t_sfs_blk *pBlk, adr_t *pAdrIdx)
 	return 0;
 }
 
-#if SFS_RECORD_LEN8
-static sys_res _sfs_Write(sfs_dev pDev, uint64_t nRecord, const void *pData, uint_t nLen)
-#else
 static sys_res _sfs_Write(sfs_dev pDev, uint32_t nRecord, const void *pData, uint_t nLen)
-#endif
 {
 	sys_res res;
 	uint_t i, nIsFull = 1;
@@ -151,7 +138,7 @@ static sys_res _sfs_Write(sfs_dev pDev, uint32_t nRecord, const void *pData, uin
 			nEnd = pBlk->start + pBlk->size;
 			for (; nIdx < nEnd; nIdx = ALIGN4(nIdx + sizeof(t_sfs_idx) + xIdx.len)) {
 				memcpy(&xIdx, (uint8_t *)nIdx, sizeof(t_sfs_idx));
-				if ((xIdx.para == nRecord) && (xIdx.ste == SFS_S_VALID)) {
+				if ((xIdx.id == nRecord) && (xIdx.ste == SFS_S_VALID)) {
 					//找到原记录
 					nAdrOld = nIdx;
 					break;
@@ -232,7 +219,7 @@ static sys_res _sfs_Write(sfs_dev pDev, uint32_t nRecord, const void *pData, uin
 	//}
 	//写新记录
 	xIdx.ste = SFS_S_VALID;
-	xIdx.para = nRecord;
+	xIdx.id = nRecord;
 	xIdx.len = nLen;
  	if ((res = _sfs_Program(pDev, nIdx, (uint8_t *)&xIdx, sizeof(t_sfs_idx)))!= SYS_R_OK)
 		return res;
@@ -295,11 +282,7 @@ sys_res sfs_Init(sfs_dev pDev)
 //
 //Return: SYS_R_OK on success, errno otherwise
 //-------------------------------------------------------------------------
-#if SFS_RECORD_LEN8
-sys_res sfs_Write(sfs_dev pDev, uint64_t nRecord, const void *pData, uint_t nLen)
-#else
-sys_res sfs_Write(sfs_dev pDev, uint32_t nRecord, const void *pData, uint_t nLen)
-#endif
+sys_res sfs_Write(sfs_dev pDev, t_sfs_id nRecord, const void *pData, uint_t nLen)
 {
 	sys_res res;
 
@@ -320,11 +303,7 @@ sys_res sfs_Write(sfs_dev pDev, uint32_t nRecord, const void *pData, uint_t nLen
 //
 //Return: 成功读取的数据长度, errno otherwise
 //-------------------------------------------------------------------------
-#if SFS_RECORD_LEN8
-sys_res sfs_Read(sfs_dev pDev, uint64_t nRecord, void *pData)
-#else
-sys_res sfs_Read(sfs_dev pDev, uint32_t nRecord, void *pData)
-#endif
+sys_res sfs_Read(sfs_dev pDev, t_sfs_id nRecord, void *pData)
 {
 	sys_res res = SYS_R_ERR;
 	adr_t nIdx;
@@ -340,11 +319,7 @@ sys_res sfs_Read(sfs_dev pDev, uint32_t nRecord, void *pData)
 	return res;
 }
 
-#if SFS_RECORD_LEN8
-sys_res sfs_ReadRandom(sfs_dev pDev, uint64_t nRecord, void *pData, uint_t nOffset, uint_t nLen)
-#else
-sys_res sfs_ReadRandom(sfs_dev pDev, uint32_t nRecord, void *pData, uint_t nOffset, uint_t nLen)
-#endif
+sys_res sfs_ReadRandom(sfs_dev pDev, t_sfs_id nRecord, void *pData, uint_t nOffset, uint_t nLen)
 {
 	sys_res res = SYS_R_ERR;
 	adr_t nIdx;
@@ -362,11 +337,7 @@ sys_res sfs_ReadRandom(sfs_dev pDev, uint32_t nRecord, void *pData, uint_t nOffs
 	return res;
 }
 
-#if SFS_RECORD_LEN8
-sys_res sfs_Read2Buf(sfs_dev pDev, uint64_t nRecord, buf b)
-#else
-sys_res sfs_Read2Buf(sfs_dev pDev, uint32_t nRecord, buf b)
-#endif
+sys_res sfs_Read2Buf(sfs_dev pDev, t_sfs_id nRecord, buf b)
 {
 	sys_res res = SYS_R_ERR;
 	adr_t nIdx;
@@ -384,11 +355,7 @@ sys_res sfs_Read2Buf(sfs_dev pDev, uint32_t nRecord, buf b)
 	return res;
 }
 
-#if SFS_RECORD_LEN8
-sys_res sfs_Find(sfs_dev pDev, uint64_t nPar, buf b, uint_t nLen)
-#else
-sys_res sfs_Find(sfs_dev pDev, uint32_t nPar, buf b, uint_t nLen)
-#endif
+sys_res sfs_Find(sfs_dev pDev, t_sfs_id nRecord, buf b, uint_t nLen)
 {
 	sys_res res = SYS_R_ERR;
 	adr_t nIdx, nEnd;
@@ -404,8 +371,8 @@ sys_res sfs_Find(sfs_dev pDev, uint32_t nPar, buf b, uint_t nLen)
 			nEnd = pBlk->start + pBlk->size;
 			for (; nLen && (nIdx < nEnd); nIdx = ALIGN4(nIdx + sizeof(t_sfs_idx) + xIdx.len)) {
 				memcpy(&xIdx, (uint8_t *)nIdx, sizeof(t_sfs_idx));
-				if (((xIdx.para & nPar) == nPar) && (xIdx.ste == SFS_S_VALID)) {
-					buf_Push(b, &xIdx.para, sizeof(xIdx.para));
+				if (((xIdx.id & nRecord) == nRecord) && (xIdx.ste == SFS_S_VALID)) {
+					buf_Push(b, &xIdx.id, sizeof(xIdx.id));
 					nLen -= 1;
 					res = SYS_R_OK;
 				}
@@ -428,11 +395,7 @@ sys_res sfs_Find(sfs_dev pDev, uint32_t nPar, buf b, uint_t nLen)
 //
 //Return: SYS_R_OK on success, errno otherwise
 //-------------------------------------------------------------------------
-#if SFS_RECORD_LEN8
-sys_res sfs_Info(sfs_dev pDev, uint64_t nRecord, sfs_info info)
-#else
-sys_res sfs_Info(sfs_dev pDev, uint32_t nRecord, sfs_info info)
-#endif
+sys_res sfs_Info(sfs_dev pDev, t_sfs_id nRecord, sfs_info info)
 {
 	sys_res res = SYS_R_ERR;
 	t_sfs_idx xIdx;
@@ -458,11 +421,7 @@ sys_res sfs_Info(sfs_dev pDev, uint32_t nRecord, sfs_info info)
 //
 //Return: SYS_R_OK on success, errno otherwise
 //-------------------------------------------------------------------------
-#if SFS_RECORD_LEN8
-sys_res sfs_Delete(sfs_dev pDev, uint64_t nRecord)
-#else
-sys_res sfs_Delete(sfs_dev pDev, uint32_t nRecord)
-#endif
+sys_res sfs_Delete(sfs_dev pDev, t_sfs_id nRecord)
 {
 	sys_res res = SYS_R_ERR;
 	adr_t nIdx;
