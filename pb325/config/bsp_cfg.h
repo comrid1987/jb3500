@@ -340,6 +340,10 @@
 
 //SFS使能
 #define SFS_ENABLE						1
+#if SFS_ENABLE
+	#define SFS_RECORD_LEN				4
+#endif
+
 
 //USB使能
 #define USB_ENABLE						1
