@@ -5,7 +5,9 @@
 #if TCPPS_TYPE == TCPPS_T_KEILTCP
 #include "Net_Config.c"
 #include "Telnet_uif.c"
+#if DEBUG_ENABLE
 #include <net/rtxip/Retarget.c>
+#endif
 #include <net/rtxip/rtxip_eth.c>
 #include <net/rtxip/rtxip.c>
 #include <net/rtxip/sockets.c>

@@ -1003,6 +1003,52 @@ void DMA2_Channel4_5_IRQHandler(void)
 {
 }
 
+
+void ETH_IRQHandler(void)
+{
+
+}
+
+//Ethernet Wakeup through EXTI line
+void ETH_WKUP_IRQHandler(void)
+{
+
+}
+
+void CAN2_TX_IRQHandler(void)
+{
+
+}
+
+void CAN2_RX0_IRQHandler(void)
+{
+
+}
+
+void CAN2_RX1_IRQHandler(void)
+{
+
+}
+
+void CAN2_SCE_IRQHandler(void)
+{
+
+}
+
+void OTG_FS_IRQHandler(void)
+{
+	extern void usb_HostIRQ(void);
+
+	os_irq_Enter();
+
+#if USB_ENABLE
+	usb_HostIRQ();
+#endif
+
+	os_irq_Leave();
+}
+
+
 /******************* (C) COPYRIGHT 2008 STMicroelectronics *****END OF FILE****/
 
 

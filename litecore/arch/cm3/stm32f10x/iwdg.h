@@ -17,8 +17,7 @@ extern "C" {
 
 
 //External Functions
-#define arch_WdgReload()			IWDG_ReloadCounter()
-
+void arch_WdgReload(uint_t nIntEnable);
 void arch_WdgInit(void);
 
 

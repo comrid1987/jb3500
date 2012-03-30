@@ -24,8 +24,8 @@
 #define SETBIT(n, bit)			((n) |= BITMASK(bit))
 #define CLRBIT(n, bit)			((n) &= BITANTI(bit))
 
-#define MAX(x, y)				((x) > (y) ? (x) : (y))
-#define MIN(x, y)				((x) < (y) ? (x) : (y))
+#define MAX(a, b)				(((a) > (b)) ? (a) : (b))
+#define MIN(a, b)				(((a) < (b)) ? (a) : (b))
 
 #define ALIGN2(n)				(((n) + 1) & ~1)
 #define ALIGN4(n)				(((n) + 3) & ~3)

@@ -5,11 +5,16 @@
 //History:
 //V1.0	First Release
 //		likazhou 2009-02-06
-#include <string.h>
+//V1.1	Length 8 supported
+//		likazhou 2012-03-29
+
+//Include Header Files
+
 
 
 //Private Defines
 #define SFS_LOCK_ENABLE			1
+#define SFS_RECORD_LEN8			0
 #define SFS_DEBUG_METHOD		0
 
 #define SFS_RECORD_MASK			0xFFFFFFFF
@@ -42,7 +47,11 @@ typedef struct {
 typedef struct {
 	uint16_t ste;
 	uint16_t len;
+#if SFS_RECORD_LEN8
+	uint64_t para;
+#else
 	uint32_t para;
+#endif
 }t_sfs_idx, *p_sfs_idx;
 
 typedef t_flash_blk				t_sfs_blk;
@@ -69,7 +78,11 @@ static sys_res _sfs_Program(sfs_dev pDev, adr_t nAdr, const void *pData, uint_t 
 	return flash_nolockProgram(pDev->dev, nAdr, pData, nLen);
 }
 
+#if SFS_RECORD_LEN8
+static adr_t _sfs_Find(sfs_dev pDev, uint64_t nAnd, uint64_t nRecord, p_sfs_idx pIdx)
+#else
 static adr_t _sfs_Find(sfs_dev pDev, uint32_t nAnd, uint32_t nRecord, p_sfs_idx pIdx)
+#endif
 {
 	adr_t nIdx, nEnd;
 	const t_sfs_blk *pBlk, *pEnd;
@@ -106,7 +119,11 @@ static int _sfs_Free(sfs_dev pDev, const t_sfs_blk *pBlk, adr_t *pAdrIdx)
 	return 0;
 }
 
+#if SFS_RECORD_LEN8
+static sys_res _sfs_Write(sfs_dev pDev, uint64_t nRecord, const void *pData, uint_t nLen)
+#else
 static sys_res _sfs_Write(sfs_dev pDev, uint32_t nRecord, const void *pData, uint_t nLen)
+#endif
 {
 	sys_res res;
 	uint_t i, nIsFull = 1;
@@ -278,7 +295,11 @@ sys_res sfs_Init(sfs_dev pDev)
 //
 //Return: SYS_R_OK on success, errno otherwise
 //-------------------------------------------------------------------------
+#if SFS_RECORD_LEN8
+sys_res sfs_Write(sfs_dev pDev, uint64_t nRecord, const void *pData, uint_t nLen)
+#else
 sys_res sfs_Write(sfs_dev pDev, uint32_t nRecord, const void *pData, uint_t nLen)
+#endif
 {
 	sys_res res;
 
@@ -299,7 +320,11 @@ sys_res sfs_Write(sfs_dev pDev, uint32_t nRecord, const void *pData, uint_t nLen
 //
 //Return: 成功读取的数据长度, errno otherwise
 //-------------------------------------------------------------------------
+#if SFS_RECORD_LEN8
+sys_res sfs_Read(sfs_dev pDev, uint64_t nRecord, void *pData)
+#else
 sys_res sfs_Read(sfs_dev pDev, uint32_t nRecord, void *pData)
+#endif
 {
 	sys_res res = SYS_R_ERR;
 	adr_t nIdx;
@@ -315,7 +340,11 @@ sys_res sfs_Read(sfs_dev pDev, uint32_t nRecord, void *pData)
 	return res;
 }
 
+#if SFS_RECORD_LEN8
+sys_res sfs_ReadRandom(sfs_dev pDev, uint64_t nRecord, void *pData, uint_t nOffset, uint_t nLen)
+#else
 sys_res sfs_ReadRandom(sfs_dev pDev, uint32_t nRecord, void *pData, uint_t nOffset, uint_t nLen)
+#endif
 {
 	sys_res res = SYS_R_ERR;
 	adr_t nIdx;
@@ -333,7 +362,11 @@ sys_res sfs_ReadRandom(sfs_dev pDev, uint32_t nRecord, void *pData, uint_t nOffs
 	return res;
 }
 
+#if SFS_RECORD_LEN8
+sys_res sfs_Read2Buf(sfs_dev pDev, uint64_t nRecord, buf b)
+#else
 sys_res sfs_Read2Buf(sfs_dev pDev, uint32_t nRecord, buf b)
+#endif
 {
 	sys_res res = SYS_R_ERR;
 	adr_t nIdx;
@@ -351,7 +384,11 @@ sys_res sfs_Read2Buf(sfs_dev pDev, uint32_t nRecord, buf b)
 	return res;
 }
 
+#if SFS_RECORD_LEN8
+sys_res sfs_Find(sfs_dev pDev, uint64_t nPar, buf b, uint_t nLen)
+#else
 sys_res sfs_Find(sfs_dev pDev, uint32_t nPar, buf b, uint_t nLen)
+#endif
 {
 	sys_res res = SYS_R_ERR;
 	adr_t nIdx, nEnd;
@@ -391,7 +428,11 @@ sys_res sfs_Find(sfs_dev pDev, uint32_t nPar, buf b, uint_t nLen)
 //
 //Return: SYS_R_OK on success, errno otherwise
 //-------------------------------------------------------------------------
+#if SFS_RECORD_LEN8
+sys_res sfs_Info(sfs_dev pDev, uint64_t nRecord, sfs_info info)
+#else
 sys_res sfs_Info(sfs_dev pDev, uint32_t nRecord, sfs_info info)
+#endif
 {
 	sys_res res = SYS_R_ERR;
 	t_sfs_idx xIdx;
@@ -417,7 +458,11 @@ sys_res sfs_Info(sfs_dev pDev, uint32_t nRecord, sfs_info info)
 //
 //Return: SYS_R_OK on success, errno otherwise
 //-------------------------------------------------------------------------
+#if SFS_RECORD_LEN8
+sys_res sfs_Delete(sfs_dev pDev, uint64_t nRecord)
+#else
 sys_res sfs_Delete(sfs_dev pDev, uint32_t nRecord)
+#endif
 {
 	sys_res res = SYS_R_ERR;
 	adr_t nIdx;

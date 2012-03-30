@@ -7,11 +7,40 @@ extern "C" {
 
 
 //Header Files
-#include <stm32f10x_lib.h>
-
+#if ARCH_TYPE == ARCH_T_STM32F10X_HD
 #define STM32F10X_HD
-//#include <arch/CMSIS/CM3/DeviceSupport/ST/STM32F10x/stm32f10x.h>
-//#include <arch/CMSIS/CM3/CoreSupport/core_cm3.h>
+#endif
+#if ARCH_TYPE == ARCH_T_STM32F10X_CL
+#define STM32F10X_CL
+#define USE_USB_OTG_FS
+#if 0
+#include <stm32f10x_cl.h>
+
+//#include <arch/cm3/stm32f10x/usblib/usb_bsp.h>
+//#include <arch/cm3/stm32f10x/usblib/usb_hcd_int.h>
+//#include <arch/cm3/stm32f10x/usblib/usbh_core.h>
+
+#include <stm32f10x_adc.h>
+#include <stm32f10x_bkp.h>
+#include <stm32f10x_crc.h>
+#include <stm32f10x_dma.h>
+#include <stm32f10x_exti.h>
+#include <stm32f10x_flash.h>
+#include <stm32f10x_fsmc.h>
+#include <stm32f10x_gpio.h>
+//#include <stm32f10x_it.h>
+#include <stm32f10x_iwdg.h>
+
+#include <stm32f10x_nvic.h>
+
+#include <stm32f10x_rcc.h>
+#include <stm32f10x_usart.h>
+#endif
+#endif
+
+#define USE_STDPERIPH_DRIVER
+#include "stm32f10x.h"
+
 
 #include <arch/cm3/stm32f10x/adc.h>
 #include <arch/cm3/stm32f10x/bkp.h>

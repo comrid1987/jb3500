@@ -249,6 +249,14 @@ void spif_Init()
 		}
 		spif_dbgJedec[i] = nJedecID;
 	}
+#if SPIF_PROTECT_ENABLE
+	if (sfs_Read(spif_IdxDev, 1, &nSec) == SYS_R_OK) {
+		spif_Read(uint_t nAdr,void * pBuf,uint_t nLen)
+
+
+
+	}
+#endif
 	spi_Release(pSpi);
 	spif_Unlock();
 }

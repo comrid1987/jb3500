@@ -13,7 +13,6 @@ extern "C" {
 
 
 
-
 //Public Typedefs
 typedef t_flash_dev		sfs_dev[1];
 

@@ -38,7 +38,7 @@ typedef __packed struct {
 
 //External Functions
 //读参数
-int gd5100_Response01(gd5100 p, buf b)
+int gd5100_Response01(p_gd5100 p, buf b)
 {
 	uint_t nDI, nTemp;
 	uint8_t *pData, *pEnd, aBuf[128];
@@ -107,7 +107,7 @@ int gd5100_Response01(gd5100 p, buf b)
 
 
 //自定义
-int gd5100_Response0F(gd5100 p, buf b)
+int gd5100_Response0F(p_gd5100 p, buf b)
 {
 	static uint_t nSaved = 0;
 	uint8_t *pData;
@@ -186,7 +186,7 @@ int gd5100_Response0F(gd5100 p, buf b)
 
 
 
-void gd5100_Response(gd5100 p)
+void gd5100_Response(p_gd5100 p)
 {
 	uint_t nCode;
 	buf b = {0};

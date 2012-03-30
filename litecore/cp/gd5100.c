@@ -94,7 +94,7 @@ static sys_res gd5100_RmsgAnalyze(void *args)
 //-------------------------------------------------------------------------
 //报文头初始化
 //-------------------------------------------------------------------------
-static void gd5100_TmsgHeaderInit(gd5100 p, p_gd5100_header pH)
+static void gd5100_TmsgHeaderInit(p_gd5100 p, p_gd5100_header pH)
 {
 
 	pH->sc1 = 0x68;
@@ -114,7 +114,7 @@ static void gd5100_TmsgHeaderInit(gd5100 p, p_gd5100_header pH)
 //-------------------------------------------------------------------------
 //初始化
 //-------------------------------------------------------------------------
-void gd5100_Init(gd5100 p)
+void gd5100_Init(p_gd5100 p)
 {
 
 	memset(p, 0, sizeof(t_gw3761));
@@ -126,7 +126,7 @@ void gd5100_Init(gd5100 p)
 //-------------------------------------------------------------------------
 //发送报文
 //-------------------------------------------------------------------------
-sys_res gd5100_TmsgSend(gd5100 p, uint_t nCode, buf b, uint_t nType)
+sys_res gd5100_TmsgSend(p_gd5100 p, uint_t nCode, buf b, uint_t nType)
 {
 	t_gd5100_header xH;
 	uint_t nCS;
@@ -152,7 +152,7 @@ sys_res gd5100_TmsgSend(gd5100 p, uint_t nCode, buf b, uint_t nType)
 //-------------------------------------------------------------------------
 //发送异常应答
 //-------------------------------------------------------------------------
-sys_res gd5100_TmsgError(gd5100 p, uint_t nCode, uint_t nErr)
+sys_res gd5100_TmsgError(p_gd5100 p, uint_t nCode, uint_t nErr)
 {
 	t_gd5100_header xH;
 	uint8_t nCS, aBuf[3];
@@ -176,7 +176,7 @@ sys_res gd5100_TmsgError(gd5100 p, uint_t nCode, uint_t nErr)
 //-------------------------------------------------------------------------
 //规约处理
 //-------------------------------------------------------------------------
-sys_res gd5100_Handler(gd5100 p)
+sys_res gd5100_Handler(p_gd5100 p)
 {
 
 	return dlrcp_Handler(&p->parent);

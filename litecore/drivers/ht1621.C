@@ -215,13 +215,9 @@ static void ht1621_SendBits(unsigned char wr_lcd_buf,unsigned char d_count)
         HT1621_WR_L;					   //3v供电时，write mode大于3.34小于125us，read mode 大于6.67us（5v供电，write mode大于1.67小于125us，read mode 大于3.34us）
      	Ctl_Delay(10);
 		if ((wr_lcd_buf & 0x01)==1)				    //置数据位;
-	    {	
 			HT1621_DATA_H;
-		}
 		else
-		{	
 			HT1621_DATA_L;
-		}	
 		HT1621_WR_H;
 		Ctl_Delay(10);					  //10us
 		wr_lcd_buf =(wr_lcd_buf>>1);  //左移位

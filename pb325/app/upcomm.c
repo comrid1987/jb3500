@@ -69,7 +69,7 @@ void dbg_trace(const char *fmt, ...)
 	chl_Send(p->parent.chl, str, strlen(str));
 }
 
-static gd5100 rcp_GD5100;
+static t_gd5100 rcp_GD5100;
 void tsk_Upcom2(void *args)
 {
 	p_gw3761 p, pEnd;
@@ -100,21 +100,21 @@ void tsk_Upcom2(void *args)
 		dlrcp_SetChl(&pEnd->parent, CHL_T_RS232, 0, 9600, UART_PARI_EVEN, UART_DATA_8D, UART_STOP_1D);
 	}
 
-	gd5100_Init(rcp_GD5100);
+	gd5100_Init(&rcp_GD5100);
 	p->rtua = xF85.area;
 	p->terid = xF85.addr;
-	rcp_GD5100->parent.tmo = 5;
-	rcp_GD5100->parent.retry = 3;
-	rcp_GD5100->parent.refresh = 3 * 60;
-	rcp_GD5100->parent.connect = 60;
+	rcp_GD5100.parent.tmo = 5;
+	rcp_GD5100.parent.retry = 3;
+	rcp_GD5100.parent.refresh = 3 * 60;
+	rcp_GD5100.parent.connect = 60;
 	//远程南网GD5100规约端口777
-	dlrcp_SetChl(&rcp_GD5100->parent, CHL_T_SOC_TS, 777, 0, 0, 0, 0);
+	dlrcp_SetChl(&rcp_GD5100.parent, CHL_T_SOC_TS, 777, 0, 0, 0, 0);
 
 	for (; ; ) {
 		for (p = &rcp_aGw3761[1]; p <= pEnd; p++)
 			gw3761_Handler(p);
-		if (gd5100_Handler(rcp_GD5100) == SYS_R_OK)
-			gd5100_Response(rcp_GD5100);
+		if (gd5100_Handler(&rcp_GD5100) == SYS_R_OK)
+			gd5100_Response(&rcp_GD5100);
 	}
 }
 

@@ -3,28 +3,24 @@
 
 
 //Internal Functions
-#define __NVIC_PRIO_BITS		4
-#define SysTick_IRQn			-1
 static void stm32_OsTickInit()
 {
-	RCC_ClocksTypeDef xClock;
-	volatile uint8_t *pSCB_SHP = (volatile uint8_t *)SCB->SHPR;
+	RCC_ClocksTypeDef  rcc_clocks;
+	rt_uint32_t         cnts;
 
-	RCC_GetClocksFreq(&xClock);
-	/* set reload register */
-	SysTick->LOAD = xClock.HCLK_Frequency / RT_TICK_PER_SECOND - 1;
-	/* set Priority for Cortex-M0 System Interrupts */
-	pSCB_SHP[((uint_t)(SysTick_IRQn) & 0x0F)-4] = ((15 << (8 - __NVIC_PRIO_BITS)) & 0xFF);
-	/* Load the SysTick Counter Value */
-	SysTick->VAL = 0x00;
-	/* Enable SysTick IRQ and SysTick Timer */
-	SysTick->CTRL = 0x07;
+	RCC_GetClocksFreq(&rcc_clocks);
+
+	cnts = (rt_uint32_t)rcc_clocks.HCLK_Frequency / RT_TICK_PER_SECOND;
+
+	SysTick_Config(cnts);
+	SysTick_CLKSourceConfig(SysTick_CLKSource_HCLK);
 }
 
 
 static void stm32_RccInit()
 {
 
+#if ARCH_TYPE == ARCH_T_STM32F10X_HD
 	//初始化系统时钟
 	RCC_DeInit();
 #if MCU_HSI_ENABLE
@@ -90,6 +86,7 @@ static void stm32_RccInit()
 	}	
 #endif
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+#endif
 
 	//SysTick Initialize
 	stm32_OsTickInit();
@@ -99,7 +96,6 @@ static void stm32_IrqInit()
 {
     NVIC_InitTypeDef xNVIC;
 
-	NVIC_DeInit();
 	NVIC_SetVectorTable(NVIC_VectTab_FLASH, BOOTLOADER_SIZE);
 	/* Configure one bit for preemption priority */
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
@@ -108,19 +104,19 @@ static void stm32_IrqInit()
 	xNVIC.NVIC_IRQChannelSubPriority = 0;
 	xNVIC.NVIC_IRQChannelCmd = ENABLE;
 
-	xNVIC.NVIC_IRQChannel = EXTI0_IRQChannel;
+	xNVIC.NVIC_IRQChannel = EXTI0_IRQn;
 	NVIC_Init(&xNVIC);
-	xNVIC.NVIC_IRQChannel = EXTI1_IRQChannel;
+	xNVIC.NVIC_IRQChannel = EXTI1_IRQn;
 	NVIC_Init(&xNVIC);
-	xNVIC.NVIC_IRQChannel = EXTI2_IRQChannel;
+	xNVIC.NVIC_IRQChannel = EXTI2_IRQn;
 	NVIC_Init(&xNVIC);
-	xNVIC.NVIC_IRQChannel = EXTI3_IRQChannel;
+	xNVIC.NVIC_IRQChannel = EXTI3_IRQn;
 	NVIC_Init(&xNVIC);
-	xNVIC.NVIC_IRQChannel = EXTI4_IRQChannel;
+	xNVIC.NVIC_IRQChannel = EXTI4_IRQn;
 	NVIC_Init(&xNVIC);
-	xNVIC.NVIC_IRQChannel = EXTI9_5_IRQChannel;
+	xNVIC.NVIC_IRQChannel = EXTI9_5_IRQn;
 	NVIC_Init(&xNVIC);
-	xNVIC.NVIC_IRQChannel = EXTI15_10_IRQChannel;
+	xNVIC.NVIC_IRQChannel = EXTI15_10_IRQn;
 	NVIC_Init(&xNVIC);
 }
 
@@ -199,6 +195,6 @@ void arch_IdleEntry()
 void arch_Reset()
 {
 
-	NVIC_GenerateSystemReset();
+	NVIC_SystemReset();
 }
 

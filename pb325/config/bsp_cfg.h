@@ -221,6 +221,10 @@
 	#if SPIFLASH_ENABLE
 		#define BSP_SPIF_QTY			1
 		#define SPIF_COMID				0
+		#define SPIF_PROTECT_ENABLE 	1
+		#if SPIF_PROTECT_ENABLE
+			#define SPIF_PROTECT_SEC	
+		#endif
 	#endif
 
 	//SC16IS7XÊ¹ÄÜ

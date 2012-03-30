@@ -67,7 +67,7 @@ void sys_IOHandle(void *args)
 	}
 #endif
 #if USBMSC_ENABLE
-	USBHCDMain();
+	usb_MscHandler();
 #endif
 #if TCPPS_ENABLE
 	net_Handler();

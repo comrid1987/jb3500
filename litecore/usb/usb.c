@@ -1,4 +1,54 @@
 
+#if ARCH_TYPE == ARCH_T_STM32F10X_CL
+
+
+
+#include <arch/cm3/stm32f10x/usblib/usb_core.c>
+#include <arch/cm3/stm32f10x/usblib/usb_bsp.c>
+#include <arch/cm3/stm32f10x/usblib/usb_hcd.c>
+#include <arch/cm3/stm32f10x/usblib/usb_hcd_int.c>
+
+#include <arch/cm3/stm32f10x/usblib/usbh_core.c>
+#include <arch/cm3/stm32f10x/usblib/usbh_hcs.c>
+#include <arch/cm3/stm32f10x/usblib/usbh_ioreq.c>
+#include <arch/cm3/stm32f10x/usblib/usbh_stdreq.c>
+
+#include <arch/cm3/stm32f10x/usblib/usbh_usr.c>
+
+#include <arch/cm3/stm32f10x/usblib/usbh_msc_core.c>
+#include <arch/cm3/stm32f10x/usblib/usbh_msc_bot.c>
+#include <arch/cm3/stm32f10x/usblib/usbh_msc_scsi.c>
+
+
+USB_OTG_CORE_HANDLE		USB_OTG_Core;
+USBH_HOST				USB_Host;
+
+void usb_Init()
+{
+
+	USBH_Init(&USB_OTG_Core, USB_OTG_FS_CORE_ID, &USB_Host, &USBH_MSC_cb, &USR_cb);
+
+
+}
+
+void usb_MscHandler()
+{
+
+	USBH_Process(&USB_OTG_Core, &USB_Host);
+}
+
+void usb_HostIRQ()
+{
+
+	USBH_OTG_ISR_Handler(&USB_OTG_Core);
+}
+
+
+#endif
+
+
+
+#if (ARCH_TYPE == ARCH_T_LM3S5X) || (ARCH_TYPE == ARCH_T_LM3S9X)
 #include <arch/cm3/lm3s/usblib/usblib.h>
 #include <arch/cm3/lm3s/usblib/usblibpriv.h>
 #include <arch/cm3/lm3s/usblib/device/usbdevice.h>
@@ -320,10 +370,18 @@ void usb_Init()
 }
 
 
-void
-USBDeviceIntHandlerInternal(unsigned long ulIndex, unsigned long ulStatus)
+void USBDeviceIntHandlerInternal(unsigned long ulIndex, unsigned long ulStatus)
 {
 
 }
+
+void usb_MscHandler()
+{
+
+	USBHCDMain();
+}
+
+
+#endif
 
 

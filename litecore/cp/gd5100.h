@@ -54,7 +54,7 @@ typedef struct {
  	uint16_t	rtua;
  	uint16_t	terid;
 	gd5100_rmsg	rmsg;
-}t_gd5100, gd5100[1];
+}t_gd5100, *p_gd5100;
 
 
 
@@ -62,10 +62,10 @@ typedef struct {
 
 
 //External Functions
-void gd5100_Init(gd5100 p);
-sys_res gd5100_TmsgSend(gd5100 p, uint_t nCode, buf b, uint_t nType);
-sys_res gd5100_TmsgError(gd5100 p, uint_t nCode, uint_t nErr);
-sys_res gd5100_Handler(gd5100 p);
+void gd5100_Init(p_gd5100 p);
+sys_res gd5100_TmsgSend(p_gd5100 p, uint_t nCode, buf b, uint_t nType);
+sys_res gd5100_TmsgError(p_gd5100 p, uint_t nCode, uint_t nErr);
+sys_res gd5100_Handler(p_gd5100 p);
 
 
 

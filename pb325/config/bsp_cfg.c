@@ -227,6 +227,17 @@ by arnold
 			0, 1, 2, 3, 8, 9, 10, 11,
 		};
 	#endif
+	#if SPIF_PROTECT_ENABLE
+		t_flash_blk _tbl_spifIdxDev[] = {
+			INTFLASH_BASE_ADR + 0x3C000 + INTFLASH_BLK_SIZE * 12,	INTFLASH_BLK_SIZE,
+			INTFLASH_BASE_ADR + 0x3C000 + INTFLASH_BLK_SIZE * 13,	INTFLASH_BLK_SIZE,
+			INTFLASH_BASE_ADR + 0x3C000 + INTFLASH_BLK_SIZE * 14,	INTFLASH_BLK_SIZE,
+			INTFLASH_BASE_ADR + 0x3C000 + INTFLASH_BLK_SIZE * 15,	INTFLASH_BLK_SIZE,
+		};
+		t_flash_dev spif_IdxDev = {
+			FLASH_DEV_INT, ARR_SIZE(_tbl_spifIdxDev), _tbl_spifIdxDev,
+		};
+	#endif
 #endif
 
 #if SC16IS7X_ENABLE

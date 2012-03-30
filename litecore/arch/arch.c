@@ -1,13 +1,11 @@
 
 
 
-#if (ARCH_TYPE == ARCH_T_STM32F10X) || \
+#if (ARCH_TYPE == ARCH_T_STM32F10X_HD) || (ARCH_TYPE == ARCH_T_STM32F10X_CL) || \
 	(ARCH_TYPE == ARCH_T_LM3S5X) || (ARCH_TYPE == ARCH_T_LM3S9X) || \
 	(ARCH_TYPE == ARCH_T_LPC176X)
 
-//#include <arch/CMSIS/CM3/CoreSupport/core_cm3.c>
 #include <arch/cm3/cpuport.c>
-
 
 #elif ARCH_TYPE == ARCH_T_M051X
 #include <arch/cm0/fault.c>
@@ -19,8 +17,9 @@
 
 
 
-#if ARCH_TYPE == ARCH_T_STM32F10X
+#if (ARCH_TYPE == ARCH_T_STM32F10X_HD) || (ARCH_TYPE == ARCH_T_STM32F10X_CL)
 //#include <arch/CMSIS/CM3/DeviceSupport/ST/STM32F10x/system_stm32f10x.c>
+#include <arch/cm3/stm32f10x/stm32f10x_rcc.c>
 #ifdef RT_USING_CONSOLE
 #include <arch/cm3/stm32f10x/serial.c>
 #endif

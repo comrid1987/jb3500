@@ -4,10 +4,11 @@
 
 
 //Archives Defines
-#define ARCH_T_STM32F10X	1
-#define ARCH_T_LPC176X		2
-#define ARCH_T_LM3S5X		3
-#define ARCH_T_LM3S9X		4
+#define ARCH_T_STM32F10X_HD	1
+#define ARCH_T_STM32F10X_CL	2
+#define ARCH_T_LPC176X		3
+#define ARCH_T_LM3S5X		4
+#define ARCH_T_LM3S9X		5
 
 #define ARCH_T_M051X		6
 

@@ -33,31 +33,31 @@ void arch_UartInit(p_dev_uart p)
 		/* Enalbe the USART1 Clock */
 		RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
 		/* Enable the USART1 Interrupt */
-		xNVIC.NVIC_IRQChannel = USART1_IRQChannel;
+		xNVIC.NVIC_IRQChannel = USART1_IRQn;
 		break;
 	case 1:		
 		/* Enalbe the USART2 Clock */
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
 		/* Enable the USART2 Interrupt */
-		xNVIC.NVIC_IRQChannel = USART2_IRQChannel;
+		xNVIC.NVIC_IRQChannel = USART2_IRQn;
 		break;
 	case 2:
 		/* Enalbe the USART3 Clock */
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);
 		/* Enable the USART3 Interrupt */
-		xNVIC.NVIC_IRQChannel = USART3_IRQChannel;
+		xNVIC.NVIC_IRQChannel = USART3_IRQn;
 		break;
 	case 3:
 		/* Enalbe the USART4 Clock */
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4, ENABLE);
 		/* Enable the USART4 Interrupt */
-		xNVIC.NVIC_IRQChannel = UART4_IRQChannel;
+		xNVIC.NVIC_IRQChannel = UART4_IRQn;
 		break;
 	case 4:
 		/* Enalbe the USART5 Clock */
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART5, ENABLE);
 		/* Enable the USART5 Interrupt */
-		xNVIC.NVIC_IRQChannel = UART5_IRQChannel;
+		xNVIC.NVIC_IRQChannel = UART5_IRQn;
 		break;
 	default:
 		break;
