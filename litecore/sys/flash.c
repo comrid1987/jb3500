@@ -162,12 +162,12 @@ static void _flash_Flush(uint_t nDelay)
 #if SPIF_PROTECT_ENABLE
 			spif_SecErase(SPIF_PROTECT_SEC);
 			spif_Program(SPIF_PROTECT_SEC, p->fbuf);
-			sfs_Write(spif_IdxDev, 1, p->sector, sizeof(p->sector));
+			sfs_Write(&spif_IdxDev, 1, &p->sector, sizeof(p->sector));
 #endif
 			spif_SecErase(p->sector);
 			spif_Program(p->sector, p->fbuf);
 #if SPIF_PROTECT_ENABLE
-			sfs_Delete(spif_IdxDev, 1);
+			sfs_Delete(&spif_IdxDev, 1);
 #endif
 			break;
 #endif
@@ -197,15 +197,15 @@ void flash_Init()
 	p->sector = FLASH_BLOCK_INVALID;
 	p->dirty = 0;
 #if SPIF_PROTECT_ENABLE
-	if (sfs_Read(spif_IdxDev, 0, NULL) != SYS_R_OK) {
-		sfs_Init(spif_IdxDev);
-		sfs_Write(spif_IdxDev, 0, NULL, 0);
+	if (sfs_Read(&spif_IdxDev, 0, NULL) != SYS_R_OK) {
+		sfs_Init(&spif_IdxDev);
+		sfs_Write(&spif_IdxDev, 0, NULL, 0);
 	}
-	if (sfs_Read(spif_IdxDev, 1, &nSec) == SYS_R_OK) {
+	if (sfs_Read(&spif_IdxDev, 1, &nSec) == SYS_R_OK) {
 		spif_ReadLen(SPIF_PROTECT_SEC, 0, p->fbuf, SPIF_SEC_SIZE);
 		spif_SecErase(nSec);
 		spif_Program(nSec, p->fbuf);
-		sfs_Delete(spif_IdxDev, 1);
+		sfs_Delete(&spif_IdxDev, 1);
 	}
 #endif
 }
