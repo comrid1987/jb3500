@@ -6,7 +6,7 @@
 #include "alarm.h"
 #include "acm.h"
 #include "data.h"
-
+#include "system.h"
 
 //Private Defines
 #define ECL_DATA_MAGIC_WORD		0x52318761
@@ -364,8 +364,7 @@ void data_Copy2Udisk()
 	fd1 = fs_open(str, O_WRONLY | O_CREAT | O_TRUNC, 0);
 	if (fd1 >= 0) {
 		fs_write(fd1, str, sprintf(str, "20%02X-%02X-%02X %02X:%02X:00\r\n", aTime[5], aTime[4], aTime[3], aTime[2], aTime[1]));
-		timet2array(rtc_GetTimet(), aTime, 1);
-		fs_write(fd1, str, sprintf(str, "20%02X-%02X-%02X %02X:%02X:00\r\n", aTime[5], aTime[4], aTime[3], aTime[2], aTime[1]));
+		fs_write(fd1, str, sprintf(str, "%d Min %d Sec Finshed.\r\n", (rtc_GetTimet() - tNow)/60, (rtc_GetTimet() - tNow)%60));
 		fs_close(fd1);
 	}
 	//Õ£…œµÁ
@@ -400,6 +399,9 @@ void data_Copy2Udisk()
 		fs_close(fd1);
 		buf_Release(b);
 	}
+    BEEP(1);
+    os_thd_Sleep(1000);
+    BEEP(0);
 	LED_UDISK(0);
 }
 

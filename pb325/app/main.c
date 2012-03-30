@@ -99,7 +99,7 @@ void app_Entry()
 
 int main(void)
 {
-
+    BEEP(0);
 	sys_Start();
 }
 
