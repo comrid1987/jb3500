@@ -458,10 +458,10 @@ sys_res usb_HostIsConnected(void *pHandler)
 int usb_HostMscRead(void *pHandler, uint_t nOffset, void *pBuf, uint_t nLen)
 {
 
-	return USBHMSCBlockRead((uint_t)pHandler, nOffset, pBuf, nLen)
+	return USBHMSCBlockRead((uint_t)pHandler, nOffset, pBuf, nLen);
 }
 
-int usb_HostMscRead(void *pHandler, uint_t nOffset, const void *pBuf, uint_t nLen)
+int usb_HostMscWrite(void *pHandler, uint_t nOffset, const void *pBuf, uint_t nLen)
 {
 
 	return USBHMSCBlockWrite((uint_t)pHandler, nOffset, (uint8_t *)pBuf, nLen);
