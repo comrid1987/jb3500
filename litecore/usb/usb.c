@@ -27,8 +27,6 @@ void usb_Init()
 {
 
 	USBH_Init(&USB_OTG_Core, USB_OTG_FS_CORE_ID, &USB_Host, &USBH_MSC_cb, &USR_cb);
-
-
 }
 
 void usb_MscHandler()

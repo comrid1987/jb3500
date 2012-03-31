@@ -184,11 +184,11 @@ const uint8_t num_segs[] =
 #define HT1621_Ful_addr (0x80)
 #endif
 
-#define ht1621_Cs(x)		sys_GpioSet(gpio_node(tbl_bspHT1621, 0), x)
-#define ht1621_Rd(x)		sys_GpioSet(gpio_node(tbl_bspHT1621, 1), x)
-#define ht1621_Wr(x)		sys_GpioSet(gpio_node(tbl_bspHT1621, 2), x)
-#define ht1621_Data(x)		sys_GpioSet(gpio_node(tbl_bspHT1621, 4), x)
-
+#define ht1621_Cs(x)			sys_GpioSet(gpio_node(tbl_bspHT1621, 0), x)
+#define ht1621_Rd(x)			sys_GpioSet(gpio_node(tbl_bspHT1621, 1), x)
+#define ht1621_Wr(x)			sys_GpioSet(gpio_node(tbl_bspHT1621, 2), x)
+#define ht1621_DataOut(x)		sys_GpioSet(gpio_node(tbl_bspHT1621, 4), x)
+#define ht1621_DataIn()		sys_GpioRead(gpio_node(tbl_bspHT1621, 3))
 
 
 
@@ -207,9 +207,9 @@ static void ht1621_SendBits(uint_t nData, uint_t nCnt)
         ht1621_Wr(0);					//3v供电时，write mode大于3.34小于125us，read mode 大于6.67us（5v供电，write mode大于1.67小于125us，read mode 大于3.34us）
      	sys_Delay(10);
 		if (nData & 0x01)			//置数据位;
-			ht1621_Data(1);
+			ht1621_DataOut(1);
 		else
-			ht1621_Data(0);
+			ht1621_DataOut(0);
 		ht1621_Wr(1);
 		sys_Delay(10);					//10us
 		nData >>= 1;				//左移位
@@ -220,52 +220,53 @@ static void ht1621_SendBits(uint_t nData, uint_t nCnt)
 /*********************************************************/
 //从data线上读取d_count个数据
 /*********************************************************/
-static void ht1621_ReadBits(unsigned char * rd_lcd_buf , uint_t nCnt)
+static uint_t ht1621_ReadBits(uint_t nCnt)
 {
- 	uint_t i;
-	unsigned long read_data;
+ 	uint_t i, nData = 0;
 
 	sys_GpioConf(gpio_node(tbl_bspHT1621, 3));
 	ht1621_Cs(0);
 	ht1621_Wr(1);
  	for (i = 0; i < nCnt; i++) {
 		ht1621_Rd(0);
-		Ctl_Delay(10);
-		(*rd_lcd_buf)<<=1; 					//准备一个位(读满8个数据时，是否需要处理，看调用是否需要)
+		sys_Delay(10);
+		nData <<= 1; 					//准备一个位(读满8个数据时，是否需要处理，看调用是否需要)
 		ht1621_Rd(1);
-		read_data= GPIOPinRead(GPIO_LCD_PORT_BASE, HT1621_DATA);  //WEI:读取的long型数据HT1621_DATA是否在相应位还是在最低位	     
-		(*rd_lcd_buf) |= ((read_data&0xff)>>3);	
+		nData |= ht1621_DataIn();
 	}
 	ht1621_Cs(1);
+	return nData;
 }
 
 /*********************************************************/
 //将4位数据写入到HT1621地址为addr处
 /*********************************************************/
-void HT1621_WR_Byte(unsigned char addr,unsigned char wr_byte_buf)//将数据data写入HT1621中地址为addr处
+void ht1621_WrByte(uint_t nAdr, uint_t nData)//将数据data写入HT1621中地址为addr处
 {
-	if (addr<=(HT1621_Ful_addr-1)) //判断地址是否有效
- 	{
-		ht1621_SendBits(0x05,3);
-		ht1621_SendBits(addr,6);
-		ht1621_SendBits(wr_byte_buf,4);
+
+	if (nAdr <= (HT1621_Ful_addr - 1)) {
+		ht1621_SendBits(0x05, 3);
+		ht1621_SendBits(nAdr, 6);
+		ht1621_SendBits(nData, 4);
 	}
 }
 
 /*********************************************************/
 //将HT1621地址为addr处的4位数据读出
 /*********************************************************/
-void HT1621_RD_Byte(unsigned char addr,unsigned char * rd_byte_buf)//读addr地址处的数据，读出的数据存至data，
+uint_t ht1621_RrByte(uint_t nAdr)//读addr地址处的数据，读出的数据存至data，
 {
-	if (addr<=(HT1621_Ful_addr-1)) //判断地址是否有效
- 	{
-		ht1621_SendBits(0x03,3);
-		ht1621_SendBits(addr,6);
-		ht1621_ReadBits(rd_byte_buf,4);
+	uint_t nData;
+
+	if (nAdr <= (HT1621_Ful_addr - 1)) {
+ 		ht1621_SendBits(0x03, 3);
+		ht1621_SendBits(nAdr, 6);
+		nData = ht1621_ReadBits(4);
 	}
-		(* rd_byte_buf)=(((* rd_byte_buf)&0x0a)>>1)|(((* rd_byte_buf)&0x05)<<1);
-		(* rd_byte_buf)=(((* rd_byte_buf)&0x0c)>>2)|(((* rd_byte_buf)&0x03)<<2);
-		ht1621_Cs(1);
+	nData = ((nData & 0x0a) >> 1) | ((nData & 0x05) << 1);
+	nData = ((nData & 0x0c) >> 2) | ((nData & 0x03) << 2);
+	ht1621_Cs(1);
+	return nData;
 }
 
 /*********************************************************/
@@ -289,19 +290,15 @@ void ht1621_WR_Block(uint_t nAddr, const uint8_t *pBuf, uint_t nLen)
 //连续从HT1621读出数据，起始地址为addr，读n个数据，注意注意对地址是否有效以及是否写满判断
 //返回数据存储地址的指针,在此未还用到
 /*********************************************************/
-void HT1621_RD_Block(unsigned char addr,unsigned char * rd_block_buf,unsigned char n)
+void HT1621_RD_Block(uint_t nAdr, uint8_t *pBuf, uint_t nLen)
 {
-		if(HT1621_Ful_addr<=(addr+n))
-		{
-			ht1621_SendBits(0x3,3);
-			ht1621_SendBits(addr,6);
-			while(n)
-			{
-				 ht1621_ReadBits(rd_block_buf,4);
-				 rd_block_buf++;
-				 n--;
-			}
+	if(HT1621_Ful_addr <= (nAdr + nLen)) {
+		ht1621_SendBits(0x03, 3);
+		ht1621_SendBits(nAdr, 6);
+		for (; nLen; nLen--) {
+			 *pBuf++ = ht1621_ReadBits(4);
 		}
+	}
 }
 
 
@@ -314,7 +311,7 @@ void ht1621_NoPrint()
 
 	ht1621_SendBits(0x05, 3);
 	ht1621_SendBits(0x00, 6);
-	for (i = 0;i < 0x1E; i++) {
+	for (i = 0; i < 0x1E; i++) {
 		ht1621_SendBits(0x00, 4);
 	}
 	ht1621_Cs(1);
@@ -369,8 +366,8 @@ void ht1621_DisSection(uint_t nSection)
 	uint_t nBit;
 
 	nBit = (nSection & 0xC0) >> 6;
-	nSection = invert_bits(nSection & 0x3F, 6)
-	HT1621_WR_Byte(nSection, HT1621_RD_Byte(nSection) | BITMASK(nBit));
+	nSection = invert_bits(nSection & 0x3F, 6);
+	ht1621_WrByte(nSection, ht1621_RrByte(nSection) | BITMASK(nBit));
 	ht1621_Cs(1);
 }
 
@@ -382,8 +379,8 @@ void ht1621_UnDisSection(uint_t nSection)
 	uint_t nBit;
 
 	nBit = (nSection & 0xC0) >> 6;
-	nSection = invert_bits(nSection & 0x3F, 6)
-  	HT1621_WR_Byte(nSection, HT1621_RD_Byte(nSection) & BITANTI(nBit));
+	nSection = invert_bits(nSection & 0x3F, 6);
+  	ht1621_WrByte(nSection, ht1621_RrByte(nSection) & BITANTI(nBit));
 	ht1621_Cs(1);
 }
 
