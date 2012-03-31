@@ -41,6 +41,62 @@ void usb_HostIRQ()
 	USBH_OTG_ISR_Handler(&USB_OTG_Core);
 }
 
+void *usb_HostOpen()
+{
+
+	return &USB_OTG_Core;
+}
+
+void usb_HostClose(void *pHandler)
+{
+
+}
+
+sys_res usb_HostIsConnected(void *pHandler)
+{
+
+	if (HCD_IsDeviceConnected(pHandler))
+		return SYS_R_OK;
+	return SYS_R_ERR;
+}
+
+int usb_HostMscRead(void *pHandler, uint_t nOffset, void *pBuf, uint_t nLen)
+{
+	USBH_MSC_Status_TypeDef status;
+	uint8_t *pData = (uint8_t *)pBuf;
+	uint_t nSector = nOffset;
+
+	for (; nLen; nLen--) {
+		do {
+			status = (USBH_MSC_Status_TypeDef)USBH_MSC_Read10(pHandler, pData, nSector, 512);
+			USBH_MSC_HandleBOTXfer(pHandler, &USB_Host);
+			if (HCD_IsDeviceConnected(pHandler) == 0)
+				return (nSector - nOffset);
+		} while (status == USBH_MSC_BUSY);
+		pData += 512;
+		nSector += 1;
+	}
+	return (nSector - nOffset);
+}
+
+int usb_HostMscWrite(void *pHandler, uint_t nOffset, const void *pBuf, uint_t nLen)
+{
+	USBH_MSC_Status_TypeDef status;
+	uint8_t *pData = (uint8_t *)pBuf;
+	uint_t nSector = nOffset;
+
+	for (; nLen; nLen--) {
+		do {
+			status = (USBH_MSC_Status_TypeDef)USBH_MSC_Write10(pHandler, pData, nSector, 512);
+			USBH_MSC_HandleBOTXfer(pHandler, &USB_Host);
+			if (HCD_IsDeviceConnected(pHandler) == 0)
+				return (nSector - nOffset);
+		} while (status == USBH_MSC_BUSY);
+		pData += 512;
+		nSector += 1;
+	}
+	return (nSector - nOffset);
+}
 
 #endif
 
@@ -379,6 +435,37 @@ void usb_MscHandler()
 	USBHCDMain();
 }
 
+void *usb_HostOpen()
+{
+
+	return (void *)USBHMSCDriveOpen(0, MSCCallback);
+}
+
+void usb_HostClose(void *pHandler)
+{
+
+	USBHMSCDriveClose((uint_t)pHandler);
+}
+
+sys_res usb_HostIsConnected(void *pHandler)
+{
+
+	if (USBHMSCDriveReady((uint_t)pHandler))
+		return SYS_R_OK;
+	return SYS_R_ERR;
+}
+
+int usb_HostMscRead(void *pHandler, uint_t nOffset, void *pBuf, uint_t nLen)
+{
+
+	return USBHMSCBlockRead((uint_t)pHandler, nOffset, pBuf, nLen)
+}
+
+int usb_HostMscRead(void *pHandler, uint_t nOffset, const void *pBuf, uint_t nLen)
+{
+
+	return USBHMSCBlockWrite((uint_t)pHandler, nOffset, (uint8_t *)pBuf, nLen);
+}
 
 #endif
 

@@ -38,7 +38,7 @@ rt_err_t usbmsc_isready(rt_device_t dev)
 {
 
 	usbmsc_lock();
-	if (USBHMSCDriveReady((uint_t)dev->user_data))
+	if (usb_HostIsConnected(dev->user_data) != SYS_R_OK)
 		usbmsc_state |= STA_NOINIT;
 	else
 		usbmsc_state &= ~STA_NOINIT;
@@ -62,7 +62,7 @@ static rt_err_t usbmsc_open(rt_device_t dev, rt_uint16_t oflag)
 	extern void MSCCallback(unsigned long ulInstance, unsigned long ulEvent, void *pvData);
 
 	usbmsc_lock();
-	dev->user_data = (void *)USBHMSCDriveOpen(0, MSCCallback);
+	dev->user_data = usb_HostOpen();
 	usbmsc_unlock();
 	return RT_EOK;
 }
@@ -71,7 +71,7 @@ static rt_err_t usbmsc_close(rt_device_t dev)
 {
 
 	usbmsc_lock();
-	USBHMSCDriveClose((unsigned long)dev->user_data);
+	usb_HostClose(dev->user_data);
 	usbmsc_state |= STA_NOINIT;
 	usbmsc_unlock();
 	return RT_EOK;
@@ -87,7 +87,7 @@ static rt_size_t usbmsc_read(rt_device_t dev, rt_off_t pos, void* buffer, rt_siz
 	}
 	usbmsc_lock();
 	/* READ BLOCK */
-	res = USBHMSCBlockRead((uint_t)dev->user_data, pos, buffer, size);
+	res = usb_HostMscRead(dev->user_data, pos, buffer, size);
 	usbmsc_unlock();
 	if (res)
 		return 0;
@@ -104,7 +104,7 @@ static rt_size_t usbmsc_write (rt_device_t dev, rt_off_t pos, const void* buffer
 		return 0;
 	usbmsc_lock();
 	/* WRITE BLOCK */
-	res = USBHMSCBlockWrite((uint_t)dev->user_data, pos, (uint8_t *)buffer, size);
+	res = usb_HostMscWrite(dev->user_data, pos, buffer, size);
 	usbmsc_unlock();
 	if (res)
 		return 0;
