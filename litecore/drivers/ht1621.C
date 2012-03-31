@@ -185,9 +185,9 @@ const uint8_t num_segs[] =
 #endif
 
 #define ht1621_Cs(x)		sys_GpioSet(gpio_node(tbl_bspHT1621, 0), x)
-#define ht1621_RD(x)		sys_GpioSet(gpio_node(tbl_bspHT1621, 1), x)
-#define ht1621_WR(x)		sys_GpioSet(gpio_node(tbl_bspHT1621, 2), x)
-
+#define ht1621_Rd(x)		sys_GpioSet(gpio_node(tbl_bspHT1621, 1), x)
+#define ht1621_Wr(x)		sys_GpioSet(gpio_node(tbl_bspHT1621, 2), x)
+#define ht1621_Data(x)		sys_GpioSet(gpio_node(tbl_bspHT1621, 4), x)
 
 
 
@@ -197,23 +197,22 @@ const uint8_t num_segs[] =
 /*********************************************************/
 //Ð´d_countÎ»Êý¾Ýd;´ÓµÍÎ»¿ªÊ¼ËÍ
 /*********************************************************/
-static void ht1621_SendBits(unsigned char wr_lcd_buf,unsigned char d_count)
+static void ht1621_SendBits(uint_t nData, uint_t nCnt)
 {
  	uint_t i;
-	HT1621_DATA_OUTPUT;
-	HT1621_CS_L;
- 	for (i=0; i<d_count; ++i)
-	{
-        
-        HT1621_WR_L;					   //3v¹©µçÊ±£¬write mode´óÓÚ3.34Ð¡ÓÚ125us£¬read mode ´óÓÚ6.67us£¨5v¹©µç£¬write mode´óÓÚ1.67Ð¡ÓÚ125us£¬read mode ´óÓÚ3.34us£©
-     	Ctl_Delay(10);
-		if ((wr_lcd_buf & 0x01)==1)				    //ÖÃÊý¾ÝÎ»;
-			HT1621_DATA_H;
+
+	sys_GpioConf(gpio_node(tbl_bspHT1621, 4));
+	ht1621_Cs(0);
+ 	for (i = 0; i < nCnt; i++) {
+        ht1621_Wr(0);					//3v¹©µçÊ±£¬write mode´óÓÚ3.34Ð¡ÓÚ125us£¬read mode ´óÓÚ6.67us£¨5v¹©µç£¬write mode´óÓÚ1.67Ð¡ÓÚ125us£¬read mode ´óÓÚ3.34us£©
+     	sys_Delay(10);
+		if (nData & 0x01)			//ÖÃÊý¾ÝÎ»;
+			ht1621_Data(1);
 		else
-			HT1621_DATA_L;
-		HT1621_WR_H;
-		Ctl_Delay(10);					  //10us
-		wr_lcd_buf =(wr_lcd_buf>>1);  //×óÒÆÎ»
+			ht1621_Data(0);
+		ht1621_Wr(1);
+		sys_Delay(10);					//10us
+		nData >>= 1;				//×óÒÆÎ»
 	}
 	
 }
@@ -221,25 +220,23 @@ static void ht1621_SendBits(unsigned char wr_lcd_buf,unsigned char d_count)
 /*********************************************************/
 //´ÓdataÏßÉÏ¶ÁÈ¡d_count¸öÊý¾Ý
 /*********************************************************/
-void HT1621_Read_Bits(unsigned char * rd_lcd_buf , unsigned char d_count)
+static void ht1621_ReadBits(unsigned char * rd_lcd_buf , uint_t nCnt)
 {
- 	unsigned char j;
+ 	uint_t i;
 	unsigned long read_data;
-	HT1621_DATA_INPUT;
-	DATA_INPUT_CONFIG;
-	HT1621_CS_L;
-	HT1621_WR_H;
-	
- 	for (j=0; j<d_count; ++j)
-	{
-		HT1621_RD_L;
+
+	sys_GpioConf(gpio_node(tbl_bspHT1621, 3));
+	ht1621_Cs(0);
+	ht1621_Wr(1);
+ 	for (i = 0; i < nCnt; i++) {
+		ht1621_Rd(0);
 		Ctl_Delay(10);
 		(*rd_lcd_buf)<<=1; 					//×¼±¸Ò»¸öÎ»(¶ÁÂú8¸öÊý¾ÝÊ±£¬ÊÇ·ñÐèÒª´¦Àí£¬¿´µ÷ÓÃÊÇ·ñÐèÒª)
-		HT1621_RD_H;
+		ht1621_Rd(1);
 		read_data= GPIOPinRead(GPIO_LCD_PORT_BASE, HT1621_DATA);  //WEI:¶ÁÈ¡µÄlongÐÍÊý¾ÝHT1621_DATAÊÇ·ñÔÚÏàÓ¦Î»»¹ÊÇÔÚ×îµÍÎ»	     
 		(*rd_lcd_buf) |= ((read_data&0xff)>>3);	
 	}
-	HT1621_CS_H;
+	ht1621_Cs(1);
 }
 
 /*********************************************************/
@@ -264,31 +261,28 @@ void HT1621_RD_Byte(unsigned char addr,unsigned char * rd_byte_buf)//¶ÁaddrµØÖ·´
  	{
 		ht1621_SendBits(0x03,3);
 		ht1621_SendBits(addr,6);
-		HT1621_Read_Bits(rd_byte_buf,4);
+		ht1621_ReadBits(rd_byte_buf,4);
 	}
 		(* rd_byte_buf)=(((* rd_byte_buf)&0x0a)>>1)|(((* rd_byte_buf)&0x05)<<1);
 		(* rd_byte_buf)=(((* rd_byte_buf)&0x0c)>>2)|(((* rd_byte_buf)&0x03)<<2);
-	HT1621_CS_H;
+		ht1621_Cs(1);
 }
 
 /*********************************************************/
 //Á¬ÐøÐ´Êý¾ÝÖÁHT1621ÆðÊ¼µØÖ·Îªaddr£¬Ð´n¸öÊý¾Ý£¬µØÖ·µÝÔö£¬×¢Òâ¶ÔµØÖ·ÊÇ·ñÓÐÐ§ÒÔ¼°ÊÇ·ñÐ´ÂúÅÐ¶Ï
 //ÊäÈëÐèÒªÐ´ÈëÊý¾ÝµÄÊ×µØÖ·,ÐèÒªÐ´ÈëµÄÆðÊ¼µØÖ·£¬¿¼ÂÇÊÇ·ñ½«·µ»ØÖµÊä³ö£¬ÒÔ¹©ÅÐ¶Ï£¿ÔÚ´ËÎ´»¹ÓÃµ½
 /*********************************************************/
-void HT1621_WR_Block(unsigned char addr,unsigned char * wr_block_buf,unsigned char n)
+void ht1621_WR_Block(uint_t nAddr, const uint8_t *pBuf, uint_t nLen)
 {
-		if(HT1621_Ful_addr<=(addr+n))
-		{
-			ht1621_SendBits(0x5,3);
-			ht1621_SendBits(addr,6);
-			while(n)
-			{
-				 ht1621_SendBits((*wr_block_buf),4);
-				 wr_block_buf++;
-				 n--;
-			}
+	
+	if (HT1621_Ful_addr <= (nAddr + nLen)) {
+		ht1621_SendBits(0x05, 3);
+		ht1621_SendBits(nAddr, 6);
+		for (; nLen; nLen--) {
+			 ht1621_SendBits(*pBuf++, 4);
 		}
-		HT1621_CS_H;
+	}
+	ht1621_Cs(1);
 }
 
 /*********************************************************/
@@ -303,7 +297,7 @@ void HT1621_RD_Block(unsigned char addr,unsigned char * rd_block_buf,unsigned ch
 			ht1621_SendBits(addr,6);
 			while(n)
 			{
-				 HT1621_Read_Bits(rd_block_buf,4);
+				 ht1621_ReadBits(rd_block_buf,4);
 				 rd_block_buf++;
 				 n--;
 			}
@@ -392,6 +386,9 @@ void ht1621_UnDisSection(uint_t nSection)
   	HT1621_WR_Byte(nSection, HT1621_RD_Byte(nSection) & BITANTI(nBit));
 	ht1621_Cs(1);
 }
+
+
+
 
 /*********************************************************/
 //HT1621³õÊ¼»¯
