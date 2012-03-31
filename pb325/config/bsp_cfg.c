@@ -70,10 +70,11 @@ by arnold
 
 #if HT1621_ENABLE
     t_gpio_def _tbl_bspHT1621[] = {
-        GPIO_T_INT,		GPIO_P1,	6,		GPIO_M_OUT_PP,		GPIO_INIT_HIGH,		//CS
-        GPIO_T_INT,		GPIO_P1,	4,		GPIO_M_OUT_PP,		GPIO_INIT_HIGH,		//RD
-        GPIO_T_INT,		GPIO_P1,	5,		GPIO_M_OUT_PP,		GPIO_INIT_HIGH,		//WR
-        GPIO_T_INT,		GPIO_P1,	0,		GPIO_M_OUT_PP,		GPIO_INIT_HIGH,		//DATA
+		GPIO_T_INT, 	GPIO_P4,	0,		GPIO_M_OUT_PP,		GPIO_INIT_HIGH, 	//CS
+		GPIO_T_INT, 	GPIO_P4,	1,		GPIO_M_OUT_PP,		GPIO_INIT_HIGH, 	//RD
+		GPIO_T_INT, 	GPIO_P4,	2,		GPIO_M_OUT_PP,		GPIO_INIT_HIGH, 	//WR
+		GPIO_T_INT, 	GPIO_P4,	3,		GPIO_M_IN_PU,		GPIO_INIT_NULL, 	//DATA in
+		GPIO_T_INT, 	GPIO_P4,	3,		GPIO_M_OUT_PP,		GPIO_INIT_HIGH, 	//DATA out
     };
     tbl_gpio_def tbl_bspHT1621[] = {_tbl_bspHT1621, ARR_ENDADR(_tbl_bspHT1621)};
 #endif

@@ -270,7 +270,7 @@
       <GroupNumber>1</GroupNumber>
       <FileNumber>1</FileNumber>
       <FileType>1</FileType>
-      <tvExp>1</tvExp>
+      <tvExp>0</tvExp>
       <Focus>0</Focus>
       <ColumnNumber>21</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -351,7 +351,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>34</TopLine>
+      <TopLine>37</TopLine>
       <CurrentLine>50</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\main.c</PathWithFileName>
@@ -575,7 +575,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>87</TopLine>
+      <TopLine>90</TopLine>
       <CurrentLine>103</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\data.c</PathWithFileName>
@@ -596,6 +596,32 @@
       <FilenameWithoutPath>display.c</FilenameWithoutPath>
     </File>
   </Group>
+
+  <AlienFiles>
+    <PathWithFilename>D:\Workspace\litecore\fs\sfs\sfs.h</PathWithFilename>
+    <TopLine>10</TopLine>
+    <CurrentLine>14</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
 
   <AlienFiles>
     <PathWithFilename>D:\Workspace\litecore\arch\cm3\lm3s\arch.h</PathWithFilename>
@@ -703,7 +729,7 @@
 
   <AlienFiles>
     <PathWithFilename>D:\Workspace\litecore\lib\string.c</PathWithFilename>
-    <TopLine>81</TopLine>
+    <TopLine>84</TopLine>
     <CurrentLine>97</CurrentLine>
     <Constant>0</Constant>
     <WindowPosition>
@@ -729,7 +755,7 @@
 
   <AlienFiles>
     <PathWithFilename>D:\Workspace\litecore\sys\flash.c</PathWithFilename>
-    <TopLine>186</TopLine>
+    <TopLine>189</TopLine>
     <CurrentLine>202</CurrentLine>
     <Constant>0</Constant>
     <WindowPosition>
@@ -834,32 +860,6 @@
   <AlienFiles>
     <PathWithFilename>D:\Workspace\lm3s5956\config\bsp_cfg.h</PathWithFilename>
     <TopLine>1</TopLine>
-    <CurrentLine>1</CurrentLine>
-    <Constant>0</Constant>
-    <WindowPosition>
-      <length>0</length>
-      <flags>0</flags>
-      <showCmd>0</showCmd>
-      <MinPosition>
-        <xPos>0</xPos>
-        <yPos>0</yPos>
-      </MinPosition>
-      <MaxPosition>
-        <xPos>0</xPos>
-        <yPos>0</yPos>
-      </MaxPosition>
-      <NormalPosition>
-        <Top>0</Top>
-        <Left>0</Left>
-        <Right>0</Right>
-        <Bottom>0</Bottom>
-      </NormalPosition>
-    </WindowPosition>
-  </AlienFiles>
-
-  <AlienFiles>
-    <PathWithFilename>D:\Workspace\litecore\fs\sfs\sfs.h</PathWithFilename>
-    <TopLine>10</TopLine>
     <CurrentLine>14</CurrentLine>
     <Constant>0</Constant>
     <WindowPosition>
@@ -2292,9 +2292,9 @@
         </Doc>
         <Doc>
           <Name>.\config\bsp_cfg.h</Name>
-          <ColumnNumber>28</ColumnNumber>
+          <ColumnNumber>13</ColumnNumber>
           <TopLine>1</TopLine>
-          <CurrentLine>1</CurrentLine>
+          <CurrentLine>14</CurrentLine>
         </Doc>
         <Doc>
           <Name>..\litecore\drivers/ht1621.c</Name>
@@ -2317,13 +2317,13 @@
         <Doc>
           <Name>..\litecore\sys/flash.c</Name>
           <ColumnNumber>7</ColumnNumber>
-          <TopLine>186</TopLine>
+          <TopLine>189</TopLine>
           <CurrentLine>202</CurrentLine>
         </Doc>
         <Doc>
           <Name>.\app\main.c</Name>
           <ColumnNumber>0</ColumnNumber>
-          <TopLine>34</TopLine>
+          <TopLine>37</TopLine>
           <CurrentLine>50</CurrentLine>
         </Doc>
         <Doc>
@@ -2335,13 +2335,13 @@
         <Doc>
           <Name>.\app\data.c</Name>
           <ColumnNumber>0</ColumnNumber>
-          <TopLine>87</TopLine>
+          <TopLine>90</TopLine>
           <CurrentLine>103</CurrentLine>
         </Doc>
         <Doc>
           <Name>..\litecore\lib/string.c</Name>
           <ColumnNumber>0</ColumnNumber>
-          <TopLine>81</TopLine>
+          <TopLine>84</TopLine>
           <CurrentLine>97</CurrentLine>
         </Doc>
         <Doc>
