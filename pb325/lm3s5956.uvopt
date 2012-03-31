@@ -270,7 +270,7 @@
       <GroupNumber>1</GroupNumber>
       <FileNumber>1</FileNumber>
       <FileType>1</FileType>
-      <tvExp>0</tvExp>
+      <tvExp>1</tvExp>
       <Focus>0</Focus>
       <ColumnNumber>21</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -729,8 +729,8 @@
 
   <AlienFiles>
     <PathWithFilename>D:\Workspace\litecore\sys\flash.c</PathWithFilename>
-    <TopLine>127</TopLine>
-    <CurrentLine>143</CurrentLine>
+    <TopLine>186</TopLine>
+    <CurrentLine>202</CurrentLine>
     <Constant>0</Constant>
     <WindowPosition>
       <length>0</length>
@@ -757,6 +757,162 @@
     <PathWithFilename>D:\Workspace\litecore\arch\cm3\lm3s\usblib\host\usbhostenum.c</PathWithFilename>
     <TopLine>4125</TopLine>
     <CurrentLine>4135</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
+    <PathWithFilename>D:\Workspace\litecore\drivers\spiflash.c</PathWithFilename>
+    <TopLine>194</TopLine>
+    <CurrentLine>194</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
+    <PathWithFilename>D:\Workspace\litecore\drivers\ht1621.c</PathWithFilename>
+    <TopLine>203</TopLine>
+    <CurrentLine>211</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
+    <PathWithFilename>D:\Workspace\lm3s5956\config\bsp_cfg.h</PathWithFilename>
+    <TopLine>1</TopLine>
+    <CurrentLine>1</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
+    <PathWithFilename>D:\Workspace\litecore\fs\sfs\sfs.h</PathWithFilename>
+    <TopLine>10</TopLine>
+    <CurrentLine>14</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
+    <PathWithFilename>D:\Workspace\litecore\header.h</PathWithFilename>
+    <TopLine>1</TopLine>
+    <CurrentLine>1</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
+    <PathWithFilename>D:\Workspace\litecore\fs\sfs\sfs.c</PathWithFilename>
+    <TopLine>416</TopLine>
+    <CurrentLine>424</CurrentLine>
     <Constant>0</Constant>
     <WindowPosition>
       <length>0</length>
@@ -2120,8 +2276,38 @@
     <ActiveMDIGroup>0</ActiveMDIGroup>
     <MDIGroup>
       <Size>100</Size>
-      <ActiveTab>10</ActiveTab>
+      <ActiveTab>2</ActiveTab>
       <Documents>
+        <Doc>
+          <Name>..\litecore\fs/sfs/sfs.c</Name>
+          <ColumnNumber>41</ColumnNumber>
+          <TopLine>416</TopLine>
+          <CurrentLine>424</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>..\litecore\header.h</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>1</TopLine>
+          <CurrentLine>1</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>.\config\bsp_cfg.h</Name>
+          <ColumnNumber>28</ColumnNumber>
+          <TopLine>1</TopLine>
+          <CurrentLine>1</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>..\litecore\drivers/ht1621.c</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>203</TopLine>
+          <CurrentLine>211</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>..\litecore\drivers/spiflash.c</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>194</TopLine>
+          <CurrentLine>194</CurrentLine>
+        </Doc>
         <Doc>
           <Name>..\litecore\arch/cm3/lm3s/usblib/host/usbhostenum.c</Name>
           <ColumnNumber>0</ColumnNumber>
@@ -2130,9 +2316,9 @@
         </Doc>
         <Doc>
           <Name>..\litecore\sys/flash.c</Name>
-          <ColumnNumber>23</ColumnNumber>
-          <TopLine>127</TopLine>
-          <CurrentLine>143</CurrentLine>
+          <ColumnNumber>7</ColumnNumber>
+          <TopLine>186</TopLine>
+          <CurrentLine>202</CurrentLine>
         </Doc>
         <Doc>
           <Name>.\app\main.c</Name>
@@ -2193,6 +2379,12 @@
           <ColumnNumber>22</ColumnNumber>
           <TopLine>181</TopLine>
           <CurrentLine>189</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>..\litecore\fs/sfs/sfs.h</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>10</TopLine>
+          <CurrentLine>14</CurrentLine>
         </Doc>
       </Documents>
     </MDIGroup>

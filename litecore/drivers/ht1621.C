@@ -179,37 +179,30 @@ const uint8_t num_segs[] =
     sizeof (Icon_Online), sizeof(Icon_Usb),
 };
 
-/***************************************************************************
- * History:
- * $Log: LCD_VIM808.c,v $
- * Revision 1.3  2005/08/03 18:34:51  tvander
- * Changed copyright to "Teridian Semiconductor Co."
- * Put in alt-mux change in MPU parameters in api_struct.h
- * Revised validity date of cal.c
- *
- * Revision 1.2  2005/02/17 18:32:25  tvander
- * Added automatic check-in logging to all source code.
- *
- * 2003 OCTOBER 30; First Version. 
- * Copyright (C) 2005 Teridian Semiconductor Corp. All Rights Reserved.	   *
- * this program is fully protected by the United States copyright          *
- * laws and is the property of Teridian Semiconductor Corporation.         *
- ***************************************************************************/
-
 
 #ifndef HT1621_Ful_addr
 #define HT1621_Ful_addr (0x80)
 #endif
+
+#define ht1621_Cs(x)		sys_GpioSet(gpio_node(tbl_bspHT1621, 0), x)
+#define ht1621_RD(x)		sys_GpioSet(gpio_node(tbl_bspHT1621, 1), x)
+#define ht1621_WR(x)		sys_GpioSet(gpio_node(tbl_bspHT1621, 2), x)
+
+
+
+
+
+
 
 /*********************************************************/
 //写d_count位数据d;从低位开始送
 /*********************************************************/
 static void ht1621_SendBits(unsigned char wr_lcd_buf,unsigned char d_count)
 {
- 	unsigned char j;
+ 	uint_t i;
 	HT1621_DATA_OUTPUT;
 	HT1621_CS_L;
- 	for (j=0; j<d_count; ++j)
+ 	for (i=0; i<d_count; ++i)
 	{
         
         HT1621_WR_L;					   //3v供电时，write mode大于3.34小于125us，read mode 大于6.67us（5v供电，write mode大于1.67小于125us，read mode 大于3.34us）
@@ -321,92 +314,83 @@ void HT1621_RD_Block(unsigned char addr,unsigned char * rd_block_buf,unsigned ch
 /*********************************************************/
 //rom全置零，即无显示
 /*********************************************************/
-void HT1621_NoPrint()
+void ht1621_NoPrint()
 {
-	unsigned char i;
-	ht1621_SendBits(0x5,3);
-	ht1621_SendBits(0x0,6);
-	for (i=0x00;i<0x1E;++i)
-	{
-		ht1621_SendBits(0x00,4);
+	uint_t i;
+
+	ht1621_SendBits(0x05, 3);
+	ht1621_SendBits(0x00, 6);
+	for (i = 0;i < 0x1E; i++) {
+		ht1621_SendBits(0x00, 4);
 	}
-	HT1621_CS_H;
+	ht1621_Cs(1);
 }
 
 /*********************************************************/
 //省电模式，关闭系统振荡器和偏压发生器，LCD显示空白
 /*********************************************************/
-void HT1621_Sleep()
+void ht1621_Sleep()
 {
-	ht1621_SendBits(0x01,3);
-	ht1621_SendBits(0x0,9);
-	HT1621_CS_H;
+
+	ht1621_SendBits(0x01, 3);
+	ht1621_SendBits(0x00, 9);
+	ht1621_Cs(1);
 }
 
 /*********************************************************/
 //唤醒省电模式，打开系统振荡器和偏压发生器，LCD显示
 /*********************************************************/
-void HT1621_Wakeup()
+void ht1621_Wakeup()
 {
-////	ht1621_SendBits(0x01,3);
-////	ht1621_SendBits(0x80,9);
-////	HT1621_CS_H;
 
-	HT1621_CS_L;
-	ht1621_SendBits(0x01,3);            //送3位命令模式码100 0x80=0b10000000	（0b100）
-	ht1621_SendBits(0x18,9);            //系统时钟选用片内RC	（0b000110000）rc 256k
-	ht1621_SendBits(0x80,9);            //打开系统振荡器  （0b000000010）sys_en
-	ht1621_SendBits(0x94,9);            //（0b001010010）(1/3偏置，4个公共口)
-    ht1621_SendBits(0xc0,9);            //打开LCD偏置发生器 （0b000000110）LCD_EN	
-	HT1621_CS_H;						 //使用HT1621_Send_Bits函数之后需将片选置高，若在HT1621_Send_Bits函数内加入片选置高语句则不能连续发送数据
-
+	ht1621_Cs(0);
+	ht1621_SendBits(0x01, 3);	//送3位命令模式码100 0x80=0b10000000	（0b100）
+	ht1621_SendBits(0x18, 9);	//系统时钟选用片内RC	（0b000110000）rc 256k
+	ht1621_SendBits(0x80, 9);	//打开系统振荡器  （0b000000010）sys_en
+	ht1621_SendBits(0x94, 9);	//（0b001010010）(1/3偏置，4个公共口)
+	ht1621_SendBits(0xc0, 9);	//打开LCD偏置发生器 （0b000000110）LCD_EN	
+	ht1621_Cs(1);
 }
 
 /*********************************************************/
 //rom全置位，即全显
 /*********************************************************/
-void HT1621_FulPrint()
+void ht1621_FullPrint()
 {
-	unsigned char i;
-	ht1621_SendBits(0x5,3);
-	ht1621_SendBits(0x0,6);
-	for (i=0x00;i<0x1E;++i)
-	{
-		ht1621_SendBits(0x0f,4);
+	uint_t i;
+
+	ht1621_SendBits(0x05, 3);
+	ht1621_SendBits(0x00, 6);
+	for (i = 0; i < 0x1E; i++) {
+		ht1621_SendBits(0x0f, 4);
 	}
-	HT1621_CS_H;
+	ht1621_Cs(1);
 }
 
 /*********************************************************/
 //显示一段（输入是一个指向八位数据的指针，其中高两位表示com（00：com3,01：com2,10：com1，11：com0），低六位表示地址（a5a4a3a2a1a0））
 /*********************************************************/
-void HT1621_Dis_Section(const uint8_t *section)
+void ht1621_DisSection(uint_t nSection)
 {
-	unsigned char addr_section=(*section)&0x3f;
-	unsigned char	data_section=0x01<<(((*section)&0xc0)>>6);//(两位变四位表示com口d0d1d2d3：com0com1com2com3)
-	unsigned char data_config;//缓存需要写入数据的地址的当前数据，用于比较判断
-	addr_section=((addr_section&0x38)>>3)|((addr_section&0x07)<<3);	//用于反转数据从a5a4a3a2a1a0变为a0a1a2a3a4a5（因为HT1621_Send_Bits()函数定义的是从低位开始输出）
-	addr_section=((addr_section&0x24)>>2)|((addr_section&0x09)<<2)|(addr_section&0x12);
-	HT1621_RD_Byte(addr_section,(unsigned char *)&data_config);//回读配置，不改变原输出
-	data_section|=data_config; 
-	HT1621_WR_Byte(addr_section,data_section);
-	HT1621_CS_H;	
+	uint_t nBit;
+
+	nBit = (nSection & 0xC0) >> 6;
+	nSection = invert_bits(nSection & 0x3F, 6)
+	HT1621_WR_Byte(nSection, HT1621_RD_Byte(nSection) | BITMASK(nBit));
+	ht1621_Cs(1);
 }
 
 /*********************************************************/
 //取消显示某段
 /*********************************************************/
-void HT1621_UnDis_Section(const uint8_t *section)
+void ht1621_UnDisSection(uint_t nSection)
 {
-	unsigned char addr_section=(*section)&0x3f;
-	unsigned char data_section=0x01<<(((*section)&0xc0)>>6);//(两位变四位表示com口d0d1d2d3：com0com1com2com3)
-	unsigned char data_config_un;//缓存需要写入数据的地址的当前数据，用于比较判断
-	addr_section=((addr_section&0x38)>>3)|((addr_section&0x07)<<3);	//用于反转数据
-	addr_section=((addr_section&0x24)>>2)|((addr_section&0x09)<<2)|(addr_section&0x12);
-	HT1621_RD_Byte(addr_section,(unsigned char *)&data_config_un);
-	data_section=(~data_section)&data_config_un;
-	HT1621_WR_Byte(addr_section,data_section);
-	HT1621_CS_H;	
+	uint_t nBit;
+
+	nBit = (nSection & 0xC0) >> 6;
+	nSection = invert_bits(nSection & 0x3F, 6)
+  	HT1621_WR_Byte(nSection, HT1621_RD_Byte(nSection) & BITANTI(nBit));
+	ht1621_Cs(1);
 }
 
 /*********************************************************/
@@ -415,17 +399,19 @@ void HT1621_UnDis_Section(const uint8_t *section)
 void ht1621_Init()
 {
 
-	SysCtlPeripheralEnable(GPIO_LCD_SYSCTL_PERIPH);		//使能HT1621所在端口，然后配置为输出
-	HT1621_OUTPUT(HT1621_CS | HT1621_RD | HT1621_WR);		//HT1621.h处的宏定义
-    HT1621_CS_L;
+	sys_GpioConf(gpio_node(tbl_bspHT1621, 0));
+	sys_GpioConf(gpio_node(tbl_bspHT1621, 1));
+	sys_GpioConf(gpio_node(tbl_bspHT1621, 2));
+
+	ht1621_Cs(0);
 	ht1621_SendBits(0x01, 3);            //送3位命令模式码100 0x80=0b10000000	（0b100）
 	ht1621_SendBits(0x18, 9);            //系统时钟选用片内RC	（0b000110000）rc 256k
 	ht1621_SendBits(0x80, 9);            //打开系统振荡器  （0b000000010）sys_en
 	ht1621_SendBits(0x94, 9);            //（0b001010010）(1/3偏置，4个公共口)
     ht1621_SendBits(0xc0, 9);            //打开LCD偏置发生器 （0b000000110）LCD_EN	
-	HT1621_CS_H;						 //片选
+	ht1621_Cs(1);
 	ht1621_Write(0x00, 0x00);		
-    HT1621_NoPrint();                   //液晶不显示
+    ht1621_NoPrint();                   //液晶不显示
 }  
 
 /*********************************************************/
@@ -437,16 +423,11 @@ void ht1621_Write(uint_t nIcon, uint_t nMask)
 	uint_t i;
 
 	seg = icons[nIcon];	//要显示的第seg个数字
-	for (i = 0; i < num_segs[nIcon]; i++)		//笔画数
-	{
+	for (i = 0; i < num_segs[nIcon]; i++) {		//笔画数
 		if (nMask & 1)//wei:取mask的最低位，为1表示显示该段
-		{
-			HT1621_Dis_Section(seg);    // Activate segment.
-		}
+			ht1621_DisSection(*seg);    // Activate segment.
 		else			//为0时表示该段不显示，故清显示
-		{
-			HT1621_UnDis_Section(seg);   // DeActivate segment.
-		}
+			ht1621_UnDisSection(*seg);   // DeActivate segment.
 		seg++;
 		nMask >>= 1;//循环输出
 	}
