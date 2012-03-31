@@ -935,6 +935,32 @@
     </WindowPosition>
   </AlienFiles>
 
+  <AlienFiles>
+    <PathWithFilename>D:\Workspace\litecore\usb\usb.c</PathWithFilename>
+    <TopLine>454</TopLine>
+    <CurrentLine>464</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
   <WinLayout>
     <sActiveDebugView>Default</sActiveDebugView>
     <iActiveDebugViewLocation>1</iActiveDebugViewLocation>
@@ -2276,8 +2302,14 @@
     <ActiveMDIGroup>0</ActiveMDIGroup>
     <MDIGroup>
       <Size>100</Size>
-      <ActiveTab>2</ActiveTab>
+      <ActiveTab>0</ActiveTab>
       <Documents>
+        <Doc>
+          <Name>..\litecore\usb/usb.c</Name>
+          <ColumnNumber>20</ColumnNumber>
+          <TopLine>454</TopLine>
+          <CurrentLine>464</CurrentLine>
+        </Doc>
         <Doc>
           <Name>..\litecore\fs/sfs/sfs.c</Name>
           <ColumnNumber>41</ColumnNumber>
