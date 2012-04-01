@@ -3,7 +3,7 @@
  *----------------------------------------------------------------------------
  *      Name:    NET_CONFIG.H
  *      Purpose: Common TCPnet Definitions
- *      Rev.:    V4.22
+ *      Rev.:    V4.23
  *----------------------------------------------------------------------------
  *      This code is part of the RealView Run-Time Library.
  *      Copyright (c) 2004-2011 KEIL - An ARM Company. All rights reserved.
@@ -22,7 +22,6 @@
 #define PHY_HEADER_LEN  (2*ETH_ADRLEN + 2) /* network interfaces.            */
 #define ETH_MTU         1514      /* Ethernet Frame Max Transfer Unit        */
 #define PPP_PROT_IP     0x0021    /* PPP Protocol type: IP                   */
-#define TCP_DEF_WINSIZE 4380      /* TCP default window size                 */
 #define PASSW_SZ        20        /* Authentication Password Buffer size     */
 
 /* Network Interfaces */
@@ -97,6 +96,7 @@ typedef struct arp_info {         /* << ARP Cache Entry info >>              */
 typedef struct igmp_info {        /* << IGMP Group info >>                   */
   U8  State;                      /* Group membership current state          */
   U8  Tout;                       /* Timeout Timer for sending reports       */
+  U8  Flags;                      /* State machine flags                     */
   U8  GrpIpAdr[IP_ADRLEN];        /* Group IP address                        */
 } IGMP_INFO;
 
@@ -248,7 +248,8 @@ typedef struct mib_entry {        /* << SNMP-MIB Entry Info >>               */
 typedef struct sys_cfg {          /* << SYS Configuration info >>            */
   U32 *MemPool;                   /* Dynamic Memory Pool buffer              */
   U32 MemSize;                    /* Memory Pool size in bytes               */
-  U16 TickRate;                   /* Tick Rate in ticks per second           */
+  U8  TickRate;                   /* Tick Rate in ticks per second           */
+  U8  TickItv;                    /* Tick Interval in ms                     */
   U8  NetCfg;                     /* Network Interface Configuration flags   */
   U8 *HostName;                   /* Local Host Name                         */
 } const SYS_CFG;
@@ -295,6 +296,7 @@ typedef struct tcp_cfg {          /* << TCP Configuration info >>            */
   U16 SynRetryTout;               /* SYN Retry Timeout in ticks              */
   U16 InitRetryTout;              /* Initial Retransmit timeout in ticks     */
   U16 DefTout;                    /* Default Connect Timeout in seconds      */
+  U16 MaxSegSize;                 /* Maximum Segment Size value              */
   U8  ConRetry;                   /* Number of Retries to Connect            */
 } const TCP_CFG;
 
@@ -313,6 +315,7 @@ typedef struct tnet_cfg {         /* << TNET Configuration info >>           */
   TNET_INFO *Scb;                 /* Session Control Block array             */
   U8  NumSess;                    /* Max. Number of Active Sessions          */
   U8  EnAuth;                     /* Enable User Authentication              */
+  U8  NoEcho;                     /* Disable Server Echo mode                */
   U16 PortNum;                    /* Listening Port number                   */
   U16 IdleTout;                   /* Idle Connection timeout in ticks        */
   U8 const *User;                 /* Authentication User Name                */
@@ -355,6 +358,7 @@ typedef struct bsd_cfg {          /* << BSD Configuration info >>            */
   U8  NumSocks;                   /* Number of BSD Sockets                   */
   U8  T200ms;                     /* Delay 200ms in ticks                    */
   U16 RcvTout;                    /* Blocking recv timeout in ticks          */
+  U8  InRtx;                      /* Running in RTX environment              */
 } const BSD_CFG;
 
 typedef enum {                    /* << Fatal System Error Codes >>          */
@@ -420,7 +424,7 @@ extern int  str_copy (U8 *dp, U8 *sp);
 extern void str_up_case (U8 *dp, U8 *sp);
 
 /* at_Arp.c */
-extern void arp_send_req (U32 entry);
+extern void arp_send_req (int entry);
 
 /* at_Dhcp.c */
 extern void dhcp_cbfunc (U8 opt, U8 *val);
@@ -444,13 +448,13 @@ extern void tcp_poll_sockets (void);
 extern void tcp_process (OS_FRAME *frame);
 
 /* at_Bsd.c */
-extern void bsd_init (int rtx);
+extern void bsd_init (void);
 extern void bsd_poll_sockets (void);
 extern U8   bsd_wait (BSD_INFO *bsd_s, U8 evt);
 extern void bsd_enable (BSD_INFO *bsd_s, U8 evt);
 
 /* at_Bsd_Host.c */
-extern void bsd_init_host (int rtx);
+extern void bsd_init_host (void);
 
 /* at_Http.c */
 extern void http_init (void);

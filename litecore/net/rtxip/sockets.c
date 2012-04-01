@@ -72,7 +72,7 @@ int socket(int domain, int type, int protocol)
 
 int select(int maxfdp1, fd_set *readset, fd_set *writeset, fd_set *exceptset, struct timeval *timeout);
 
-int ioctlsocket(int s, long cmd, void *argp)
+int ioctlsocket(int s, long cmd, unsigned long *argp)
 {
 
 	return 0;

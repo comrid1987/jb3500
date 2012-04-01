@@ -42,7 +42,7 @@ int send(int s, const char *dataptr, int size, int flags);
 int sendto(int s, const char *dataptr, int size, int flags, struct sockaddr *to, socklen_t tolen);
 int socket(int domain, int type, int protocol);
 int select(int maxfdp1, fd_set *readset, fd_set *writeset, fd_set *exceptset, struct timeval *timeout);
-int ioctlsocket(int s, long cmd, void *argp);
+int ioctlsocket(int s, long cmd, unsigned long *argp);
 
 
 #ifdef __cplusplus
