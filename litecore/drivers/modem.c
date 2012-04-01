@@ -71,7 +71,11 @@ BOOL com_tx_active()
 	return tx_active;
 }
 
+#if __ARMCC_VERSION > 410000 
+void modem_init()
+#else
 void init_modem()
+#endif
 {
 
 }
