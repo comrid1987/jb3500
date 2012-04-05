@@ -28,9 +28,10 @@ sys_res arch_IntfErase(adr_t adr)
 
 	lm3s_intf_Lock();
 	nEndAdr = adr + INTFLASH_BLK_SIZE;
-	for (; adr < nEndAdr; adr += 4)
+	for (; adr < nEndAdr; adr += 4) {
 		if (*(volatile uint32_t *)adr != 0xFFFFFFFF)
 			break;
+	}
 	if (adr < nEndAdr)
 		res = MAP_FlashErase(adr);
 	lm3s_intf_Unlock();
