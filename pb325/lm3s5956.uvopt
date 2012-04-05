@@ -270,7 +270,7 @@
       <GroupNumber>1</GroupNumber>
       <FileNumber>1</FileNumber>
       <FileType>1</FileType>
-      <tvExp>0</tvExp>
+      <tvExp>1</tvExp>
       <Focus>0</Focus>
       <ColumnNumber>21</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -859,8 +859,8 @@
 
   <AlienFiles>
     <PathWithFilename>D:\Workspace\lm3s5956\config\bsp_cfg.h</PathWithFilename>
-    <TopLine>1</TopLine>
-    <CurrentLine>14</CurrentLine>
+    <TopLine>409</TopLine>
+    <CurrentLine>422</CurrentLine>
     <Constant>0</Constant>
     <WindowPosition>
       <length>0</length>
@@ -937,8 +937,86 @@
 
   <AlienFiles>
     <PathWithFilename>D:\Workspace\litecore\usb\usb.c</PathWithFilename>
-    <TopLine>454</TopLine>
-    <CurrentLine>464</CurrentLine>
+    <TopLine>1</TopLine>
+    <CurrentLine>6</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
+    <PathWithFilename>D:\Workspace\litecore\sys\system.c</PathWithFilename>
+    <TopLine>31</TopLine>
+    <CurrentLine>38</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
+    <PathWithFilename>D:\Workspace\lm3s5956\config\Net_Config.c</PathWithFilename>
+    <TopLine>1</TopLine>
+    <CurrentLine>1</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
+    <PathWithFilename>D:\Workspace\litecore\drivers\modem.c</PathWithFilename>
+    <TopLine>64</TopLine>
+    <CurrentLine>74</CurrentLine>
     <Constant>0</Constant>
     <WindowPosition>
       <length>0</length>
@@ -2305,10 +2383,28 @@
       <ActiveTab>0</ActiveTab>
       <Documents>
         <Doc>
+          <Name>..\litecore\drivers/modem.c</Name>
+          <ColumnNumber>21</ColumnNumber>
+          <TopLine>64</TopLine>
+          <CurrentLine>74</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>.\config\Net_Config.c</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>1</TopLine>
+          <CurrentLine>1</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>..\litecore\sys/system.c</Name>
+          <ColumnNumber>17</ColumnNumber>
+          <TopLine>31</TopLine>
+          <CurrentLine>38</CurrentLine>
+        </Doc>
+        <Doc>
           <Name>..\litecore\usb/usb.c</Name>
-          <ColumnNumber>20</ColumnNumber>
-          <TopLine>454</TopLine>
-          <CurrentLine>464</CurrentLine>
+          <ColumnNumber>39</ColumnNumber>
+          <TopLine>1</TopLine>
+          <CurrentLine>6</CurrentLine>
         </Doc>
         <Doc>
           <Name>..\litecore\fs/sfs/sfs.c</Name>
@@ -2324,9 +2420,9 @@
         </Doc>
         <Doc>
           <Name>.\config\bsp_cfg.h</Name>
-          <ColumnNumber>13</ColumnNumber>
-          <TopLine>1</TopLine>
-          <CurrentLine>14</CurrentLine>
+          <ColumnNumber>19</ColumnNumber>
+          <TopLine>409</TopLine>
+          <CurrentLine>422</CurrentLine>
         </Doc>
         <Doc>
           <Name>..\litecore\drivers/ht1621.c</Name>

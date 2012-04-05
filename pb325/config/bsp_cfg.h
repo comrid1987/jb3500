@@ -419,6 +419,7 @@
 
 	#define FTP_SERVER_ENABLE			0
 
+	#define TELNET_SERVER_ENABLE		1
 #endif
 
 //EtherNet InterfaceÊ¹ÄÜ

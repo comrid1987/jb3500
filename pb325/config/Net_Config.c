@@ -20,7 +20,7 @@
 //   <i> This is the name under which embedded host can be
 //   <i> accessed on a local area network.
 //   <i> Default: "mcb2300"
-#define LHOST_NAME     "JB_PDG00"
+#define LHOST_NAME     "PB325"
 
 //   <o>Memory Pool size <1500-32000:4><#/4>
 //   <i> This is the size of a memory pool in bytes. Buffers for
@@ -88,7 +88,7 @@
 
 //     <o>Address byte 3 <0-255>
 //     <i> Default: 0
-#define _IP3           18
+#define _IP3           0
 
 //     <o>Address byte 4 <0-255>
 //     <i> Default: 100
@@ -108,7 +108,7 @@
 
 //     <o>Mask byte 3 <0-255>
 //     <i> Default: 255
-#define _MSK3          0
+#define _MSK3          255
 
 //     <o>Mask byte 4 <0-255>
 //     <i> Default: 0
@@ -128,7 +128,7 @@
 
 //     <o>Address byte 3 <0-255>
 //     <i> Default: 0
-#define _GW3           18
+#define _GW3           0
 
 //     <o>Address byte 4 <0-255>
 //     <i> Default: 254
