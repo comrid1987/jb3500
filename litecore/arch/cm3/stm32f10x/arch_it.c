@@ -277,12 +277,14 @@ void RCC_IRQHandler(void)
 void EXTI0_IRQHandler(void)
 {
 
+#if IRQ_ENABLE
 	os_irq_Enter();
 
 	EXTI->PR = BITMASK(0);
 	irq_ExtISR(0);
 
 	os_irq_Leave();
+#endif
 }
 
 /*******************************************************************************
@@ -295,12 +297,14 @@ void EXTI0_IRQHandler(void)
 void EXTI1_IRQHandler(void)
 {
 
+#if IRQ_ENABLE
 	os_irq_Enter();
 
 	EXTI->PR = BITMASK(1);
 	irq_ExtISR(1);
 
 	os_irq_Leave();
+#endif
 }
 
 /*******************************************************************************
@@ -313,12 +317,14 @@ void EXTI1_IRQHandler(void)
 void EXTI2_IRQHandler(void)
 {
 
+#if IRQ_ENABLE
 	os_irq_Enter();
 
 	EXTI->PR = BITMASK(2);
 	irq_ExtISR(2);
 
 	os_irq_Leave();
+#endif
 }
 
 /*******************************************************************************
@@ -331,12 +337,14 @@ void EXTI2_IRQHandler(void)
 void EXTI3_IRQHandler(void)
 {
 
+#if IRQ_ENABLE
 	os_irq_Enter();
 
 	EXTI->PR = BITMASK(3);
 	irq_ExtISR(3);
 
 	os_irq_Leave();
+#endif
 }
 
 /*******************************************************************************
@@ -349,12 +357,14 @@ void EXTI3_IRQHandler(void)
 void EXTI4_IRQHandler(void)
 {
 
+#if IRQ_ENABLE
 	os_irq_Enter();
 
 	EXTI->PR = BITMASK(4);
 	irq_ExtISR(4);
 
 	os_irq_Leave();
+#endif
 }
 
 /*******************************************************************************
@@ -500,18 +510,22 @@ void CAN_SCE_IRQHandler(void)
 *******************************************************************************/
 void EXTI9_5_IRQHandler(void)
 {
+#if IRQ_ENABLE
 	uint_t i, nIS;
 
 	os_irq_Enter();
 
-	while ((nIS = EXTI->PR & 0x03E0) != 0)
-		for (i = 5; i < 10; i++)
+	while ((nIS = EXTI->PR & 0x03E0) != 0) {
+		for (i = 5; i < 10; i++) {
 			if (nIS & BITMASK(i)) {
 				EXTI->PR = BITMASK(i);
 				irq_ExtISR(i);
 			}
+		}
+	}
 
 	os_irq_Leave();
+#endif
 }
 
 /*******************************************************************************
@@ -603,6 +617,7 @@ void TIM4_IRQHandler(void)
 void I2C1_EV_IRQHandler(void)
 {
 
+#if I2C_ENABLE
 	os_irq_Enter();
 
 #if I2C_IRQ_ENABLE
@@ -610,6 +625,7 @@ void I2C1_EV_IRQHandler(void)
 #endif
 
 	os_irq_Leave();
+#endif
 }
 
 /*******************************************************************************
@@ -622,6 +638,7 @@ void I2C1_EV_IRQHandler(void)
 void I2C1_ER_IRQHandler(void)
 {
 
+#if I2C_ENABLE
 	os_irq_Enter();
 
 #if I2C_IRQ_ENABLE
@@ -629,6 +646,7 @@ void I2C1_ER_IRQHandler(void)
 #endif
 
 	os_irq_Leave();
+#endif
 }
 
 /*******************************************************************************
@@ -641,6 +659,7 @@ void I2C1_ER_IRQHandler(void)
 void I2C2_EV_IRQHandler(void)
 {
 
+#if I2C_ENABLE
 	os_irq_Enter();
 
 #if I2C_IRQ_ENABLE
@@ -648,6 +667,7 @@ void I2C2_EV_IRQHandler(void)
 #endif
 
 	os_irq_Leave();
+#endif
 }
 
 /*******************************************************************************
@@ -660,6 +680,7 @@ void I2C2_EV_IRQHandler(void)
 void I2C2_ER_IRQHandler(void)
 {
 
+#if I2C_ENABLE
 	os_irq_Enter();
 
 #if I2C_IRQ_ENABLE
@@ -667,6 +688,7 @@ void I2C2_ER_IRQHandler(void)
 #endif
 
 	os_irq_Leave();
+#endif
 }
 
 /*******************************************************************************
@@ -701,6 +723,7 @@ void SPI2_IRQHandler(void)
 void USART1_IRQHandler(void)
 {
 
+#if UART_ENABLE
 	os_irq_Enter();
 
 #if UART_ENABLE
@@ -712,6 +735,7 @@ void USART1_IRQHandler(void)
 #endif
 
 	os_irq_Leave();
+#endif
 }
 
 /*******************************************************************************
@@ -724,6 +748,7 @@ void USART1_IRQHandler(void)
 void USART2_IRQHandler(void)
 {
 
+#if UART_ENABLE
 	os_irq_Enter();
 
 #if UART_ENABLE
@@ -731,6 +756,7 @@ void USART2_IRQHandler(void)
 #endif
 
 	os_irq_Leave();
+#endif
 }
 
 /*******************************************************************************
@@ -743,6 +769,7 @@ void USART2_IRQHandler(void)
 void USART3_IRQHandler(void)
 {
 
+#if UART_ENABLE
 	os_irq_Enter();
 
 #if UART_ENABLE
@@ -750,6 +777,7 @@ void USART3_IRQHandler(void)
 #endif
 
 	os_irq_Leave();
+#endif
 }
 
 /*******************************************************************************
@@ -761,18 +789,22 @@ void USART3_IRQHandler(void)
 *******************************************************************************/
 void EXTI15_10_IRQHandler(void)
 {
+#if IRQ_ENABLE
 	uint_t i, nIS;
 
 	os_irq_Enter();
 
-	while ((nIS = EXTI->PR & 0xFC00) != 0)
-		for (i = 10; i < 16; i++)
+	while ((nIS = EXTI->PR & 0xFC00) != 0) {
+		for (i = 10; i < 16; i++) {
 			if (nIS & BITMASK(i)) {
 				EXTI->PR = BITMASK(i);
 				irq_ExtISR(i);
 			}
+		}
+	}
 			
 	os_irq_Leave();
+#endif
 }
 
 /*******************************************************************************
@@ -908,6 +940,7 @@ void SPI3_IRQHandler(void)
 void UART4_IRQHandler(void)
 {
 
+#if UART_ENABLE
 	os_irq_Enter();
 
 #if UART_ENABLE
@@ -915,6 +948,7 @@ void UART4_IRQHandler(void)
 #endif
 
 	os_irq_Leave();
+#endif
 }
 
 /*******************************************************************************
@@ -927,6 +961,7 @@ void UART4_IRQHandler(void)
 void UART5_IRQHandler(void)
 {
 
+#if UART_ENABLE
 	os_irq_Enter();
 
 #if UART_ENABLE
@@ -934,6 +969,7 @@ void UART5_IRQHandler(void)
 #endif
 
 	os_irq_Leave();
+#endif
 }
 
 /*******************************************************************************
@@ -1039,13 +1075,19 @@ void OTG_FS_IRQHandler(void)
 {
 	extern void usb_HostIRQ(void);
 
+#if USB_ENABLE
+#if OS_TYPE
 	os_irq_Enter();
+#endif
 
 #if USB_ENABLE
 	usb_HostIRQ();
 #endif
 
+#if OS_TYPE
 	os_irq_Leave();
+#endif
+#endif
 }
 
 

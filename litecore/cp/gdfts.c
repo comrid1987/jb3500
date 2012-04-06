@@ -118,7 +118,7 @@ sys_res gdfts_Handler(buf bIn, buf bOut)
 								t_iap xIap = {0};
 								xIap.magic1 = IAP_MAGICWORD_1;
 								xIap.magic2 = IAP_MAGICWORD_2;
-								xIap.dest = INTFLASH_BASE_ADR + BOOTLOADER_SIZE;
+								xIap.dest = INTFLASH_ADR_BASE + BOOTLOADER_SIZE;
 								xIap.len = pFts->len;
 								xIap.id = pH->id;
 								xIap.crc = pFts->crc;

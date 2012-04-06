@@ -21,11 +21,9 @@ static void lm3s_RccInit()
 	MAP_SysTickDisable();
 #if OS_TYPE
 	MAP_SysTickPeriodSet(MAP_SysCtlClockGet() / RT_TICK_PER_SECOND);
-#else
-	MAP_SysTickPeriodSet(MAP_SysCtlClockGet() / 100);
-#endif
 	MAP_SysTickIntEnable();
 	MAP_SysTickEnable();
+#endif
 }
 
 

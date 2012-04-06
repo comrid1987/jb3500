@@ -5,6 +5,7 @@
 //Internal Functions
 static void stm32_OsTickInit()
 {
+#if OS_TYPE
 	RCC_ClocksTypeDef  rcc_clocks;
 	rt_uint32_t         cnts;
 
@@ -14,6 +15,7 @@ static void stm32_OsTickInit()
 
 	SysTick_Config(cnts);
 	SysTick_CLKSourceConfig(SysTick_CLKSource_HCLK);
+#endif
 }
 
 

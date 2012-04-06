@@ -130,6 +130,7 @@ static t_flash_buffer flash_buf;
 static void _flash_Flush(uint_t nDelay)
 {
 	p_flash_buffer p = &flash_buf;
+	adr_t nAdr;
 	time_t tTime;
 
 	if (p->sector == FLASH_BLOCK_INVALID)
@@ -147,9 +148,10 @@ static void _flash_Flush(uint_t nDelay)
 		switch (p->type) {
 #if INTFLASH_ENABLE
 		case FLASH_DEV_INT:
-			if ((p->sector >= INTFLASH_BLK_START) && (p->sector < INTFLASH_BLK_END)) {
-				intf_Erase(p->sector * INTFLASH_BLK_SIZE);
-				intf_Program(p->sector * INTFLASH_BLK_SIZE, p->fbuf, INTFLASH_BLK_SIZE);
+			nAdr = p->sector * INTFLASH_BLK_SIZE;
+			if ((nAdr >= INTFLASH_BASE_ADR) && (nAdr < (INTFLASH_BASE_ADR + INTFLASH_SIZE))) {
+				intf_Erase(nAdr);
+				intf_Program(nAdr, p->fbuf, INTFLASH_BLK_SIZE);
 			}
 			break;
 #endif

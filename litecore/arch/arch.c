@@ -5,7 +5,9 @@
 	(ARCH_TYPE == ARCH_T_LM3S5X) || (ARCH_TYPE == ARCH_T_LM3S9X) || \
 	(ARCH_TYPE == ARCH_T_LPC176X)
 
+#if OS_TYPE
 #include <arch/cm3/cpuport.c>
+#endif
 
 #elif ARCH_TYPE == ARCH_T_M051X
 #include <arch/cm0/fault.c>

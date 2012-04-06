@@ -52,7 +52,10 @@ extern "C" {
 #include <arch/cm3/stm32f10x/nand.h>
 #include <arch/cm3/stm32f10x/rtc.h>
 #include <arch/cm3/stm32f10x/spi.h>
+
+#if OS_TYPE
 #include <arch/cm3/stm32f10x/uart.h>
+#endif
 
 #include <arch/cm3/stm32f10x/it.h>
 
