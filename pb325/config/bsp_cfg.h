@@ -143,8 +143,7 @@
 #if INTFLASH_ENABLE
 	#define INTFLASH_BLK_SIZE			0x400
 	#define INTFLASH_BASE_ADR			0
-    #define INTFLASH_BLK_START          0
-    #define INTFLASH_BLK_END            0
+    #define INTFLASH_SIZE				0x40000
 #endif
 
 //外部扩展总线
