@@ -19,10 +19,10 @@ static void stm32_OsTickInit()
 }
 
 
-static void stm32_RccInit()
+#if ARCH_TYPE == ARCH_T_STM32F10X_HD
+void SystemInit()
 {
 
-#if ARCH_TYPE == ARCH_T_STM32F10X_HD
 	//初始化系统时钟
 	RCC_DeInit();
 #if MCU_HSI_ENABLE
@@ -88,7 +88,13 @@ static void stm32_RccInit()
 	}	
 #endif
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+}
 #endif
+
+static void stm32_RccInit()
+{
+
+	SystemInit();
 
 	//SysTick Initialize
 	stm32_OsTickInit();
@@ -180,11 +186,7 @@ void arch_Init()
 #endif
 }
 
-void SystemInit()
-{
 
-}
- 
 #if IDLE_ENABLE
 void arch_IdleEntry()
 {

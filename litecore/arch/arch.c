@@ -25,6 +25,9 @@
 #ifdef RT_USING_CONSOLE
 #include <arch/cm3/stm32f10x/serial.c>
 #endif
+#if ARCH_TYPE == ARCH_T_STM32F10X_CL
+#include <arch/cm3/stm32f10x/system_stm32f10x_cl.c>
+#endif
 #include <arch/cm3/stm32f10x/arch.c>
 #include <arch/cm3/stm32f10x/arch_adc.c>
 #include <arch/cm3/stm32f10x/arch_bkp.c>

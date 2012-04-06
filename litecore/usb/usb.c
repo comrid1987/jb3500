@@ -1,8 +1,6 @@
 
 #if ARCH_TYPE == ARCH_T_STM32F10X_CL
 
-
-
 #include <arch/cm3/stm32f10x/usblib/usb_core.c>
 #include <arch/cm3/stm32f10x/usblib/usb_bsp.c>
 #include <arch/cm3/stm32f10x/usblib/usb_hcd.c>
@@ -97,7 +95,6 @@ int usb_HostMscWrite(void *pHandler, uint_t nOffset, const void *pBuf, uint_t nL
 	}
 	return (nSector - nOffset);
 }
-
 #endif
 
 

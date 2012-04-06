@@ -166,7 +166,7 @@ void USBH_Init(USB_OTG_CORE_HANDLE *pdev,
   
     
   /* Start the USB OTG core */     
-   HCD_Init(pdev , coreID);
+  HCD_Init(pdev , coreID);
    
   /* Upon Init call usr call back */
   phost->usr_cb->Init();

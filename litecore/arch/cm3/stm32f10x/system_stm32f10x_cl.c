@@ -21,7 +21,6 @@
  ******************************************************************************/
 
 
-#include "stm32f10x_cl.h"
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> -----------------
 //=========================================================================== Clock Configuration
@@ -220,23 +219,6 @@
 /*----------------------------------------------------------------------------
   DEFINES
  *----------------------------------------------------------------------------*/
-/*----------------------------------------------------------------------------
-  RCC Defines
- *----------------------------------------------------------------------------*/
-/* register RCC_CR -----------------------------------------------------------*/
-#define RCC_CR_HSION       (0x00000001)              /* Internal High Speed clock enable     */
-#define RCC_CR_HSIRDY      (0x00000002)              /* Internal High Speed clock ready flag */
-#define RCC_CR_HSEON       (0x00010000)              /* External High Speed clock enable     */
-#define RCC_CR_HSERDY      (0x00020000)              /* External High Speed clock ready flag */
-#define RCC_CR_PLL1ON      (0x01000000)              /* PLL1 enable                          */
-#define RCC_CR_PLL1RDY     (0x02000000)              /* PLL1 clock ready flag                */
-#define RCC_CR_PLL2ON      (0x04000000)              /* PLL2 enable                          */
-#define RCC_CR_PLL2RDY     (0x08000000)              /* PLL2 clock ready flag                */
-#define RCC_CR_PLL3ON      (0x10000000)              /* PLL3 enable                          */
-#define RCC_CR_PLL3RDY     (0x20000000)              /* PLL3 clock ready flag                */
-
-/* register RCC_CFGR ---------------------------------------------------------*/
-#define RCC_CFGR_SWS       (0x0000000C)              /* System Clock Switch Status           */
 
 #define __HSI (8000000UL)   
 
@@ -291,9 +273,9 @@ void SystemInit (void) {
     while ((RCC->CR & RCC_CR_PLL2RDY) == 0);         /* Wait for PLL2RDY = 1 (PLL is ready)*/
   }
 
-  if (__RCC_CR_VAL & RCC_CR_PLL1ON) {                /* if PLL1 enabled*/
-    RCC->CR |= RCC_CR_PLL1ON;                              /* PLL3 On */
-    while ((RCC->CR & RCC_CR_PLL1RDY) == 0);         /* Wait for PLL1RDY = 1 (PLL is ready)*/
+  if (__RCC_CR_VAL & RCC_CR_PLLON) {                /* if PLL1 enabled*/
+    RCC->CR |= RCC_CR_PLLON;                              /* PLL3 On */
+    while ((RCC->CR & RCC_CR_PLLRDY) == 0);         /* Wait for PLL1RDY = 1 (PLL is ready)*/
   }
 
   /* Wait till SYSCLK is stabilized (depending on selected clock) */
