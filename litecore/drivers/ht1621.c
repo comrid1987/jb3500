@@ -180,16 +180,17 @@ const uint8_t num_segs[] =
 };
 
 
+#define HT1621_DELAY			100
+
 #ifndef HT1621_Ful_addr
-#define HT1621_Ful_addr (0x80)
+#define HT1621_Ful_addr 		(0x80)
 #endif
 
 #define ht1621_Cs(x)			sys_GpioSet(gpio_node(tbl_bspHT1621, 0), x)
 #define ht1621_Rd(x)			sys_GpioSet(gpio_node(tbl_bspHT1621, 1), x)
 #define ht1621_Wr(x)			sys_GpioSet(gpio_node(tbl_bspHT1621, 2), x)
 #define ht1621_DataOut(x)		sys_GpioSet(gpio_node(tbl_bspHT1621, 4), x)
-#define ht1621_DataIn()		sys_GpioRead(gpio_node(tbl_bspHT1621, 3))
-
+#define ht1621_DataIn()			sys_GpioRead(gpio_node(tbl_bspHT1621, 3))
 
 
 
@@ -205,13 +206,13 @@ static void ht1621_SendBits(uint_t nData, uint_t nCnt)
 	ht1621_Cs(0);
  	for (i = 0; i < nCnt; i++) {
         ht1621_Wr(0);					//3v供电时，write mode大于3.34小于125us，read mode 大于6.67us（5v供电，write mode大于1.67小于125us，read mode 大于3.34us）
-     	sys_Delay(10);
+     	sys_Delay(HT1621_DELAY);
 		if (nData & 0x01)			//置数据位;
 			ht1621_DataOut(1);
 		else
 			ht1621_DataOut(0);
 		ht1621_Wr(1);
-		sys_Delay(10);					//10us
+		sys_Delay(HT1621_DELAY);					//10us
 		nData >>= 1;				//左移位
 	}
 	
@@ -229,7 +230,7 @@ static uint_t ht1621_ReadBits(uint_t nCnt)
 	ht1621_Wr(1);
  	for (i = 0; i < nCnt; i++) {
 		ht1621_Rd(0);
-		sys_Delay(10);
+		sys_Delay(HT1621_DELAY);
 		nData <<= 1; 					//准备一个位(读满8个数据时，是否需要处理，看调用是否需要)
 		ht1621_Rd(1);
 		nData |= ht1621_DataIn();
@@ -263,8 +264,7 @@ uint_t ht1621_RrByte(uint_t nAdr)//读addr地址处的数据，读出的数据存至data，
 		ht1621_SendBits(nAdr, 6);
 		nData = ht1621_ReadBits(4);
 	}
-	nData = ((nData & 0x0a) >> 1) | ((nData & 0x05) << 1);
-	nData = ((nData & 0x0c) >> 2) | ((nData & 0x03) << 2);
+	nData = invert_bits(nData, 4);
 	ht1621_Cs(1);
 	return nData;
 }
@@ -273,7 +273,7 @@ uint_t ht1621_RrByte(uint_t nAdr)//读addr地址处的数据，读出的数据存至data，
 //连续写数据至HT1621起始地址为addr，写n个数据，地址递增，注意对地址是否有效以及是否写满判断
 //输入需要写入数据的首地址,需要写入的起始地址，考虑是否将返回值输出，以供判断？在此未还用到
 /*********************************************************/
-void ht1621_WR_Block(uint_t nAddr, const uint8_t *pBuf, uint_t nLen)
+void ht1621_WrBlock(uint_t nAddr, const uint8_t *pBuf, uint_t nLen)
 {
 	
 	if (HT1621_Ful_addr <= (nAddr + nLen)) {
@@ -290,8 +290,9 @@ void ht1621_WR_Block(uint_t nAddr, const uint8_t *pBuf, uint_t nLen)
 //连续从HT1621读出数据，起始地址为addr，读n个数据，注意注意对地址是否有效以及是否写满判断
 //返回数据存储地址的指针,在此未还用到
 /*********************************************************/
-void HT1621_RD_Block(uint_t nAdr, uint8_t *pBuf, uint_t nLen)
+void ht1621_RdBlock(uint_t nAdr, uint8_t *pBuf, uint_t nLen)
 {
+
 	if(HT1621_Ful_addr <= (nAdr + nLen)) {
 		ht1621_SendBits(0x03, 3);
 		ht1621_SendBits(nAdr, 6);
@@ -417,13 +418,11 @@ void ht1621_Write(uint_t nIcon, uint_t nMask)
 	uint_t i;
 
 	seg = icons[nIcon];	//要显示的第seg个数字
-	for (i = 0; i < num_segs[nIcon]; i++) {		//笔画数
-		if (nMask & 1)//wei:取mask的最低位，为1表示显示该段
+	for (i = 0; i < num_segs[nIcon]; i++, seg++) {		//笔画数
+		if (GETBIT(nMask, i))//wei:取mask的最低位，为1表示显示该段
 			ht1621_DisSection(*seg);    // Activate segment.
 		else			//为0时表示该段不显示，故清显示
 			ht1621_UnDisSection(*seg);   // DeActivate segment.
-		seg++;
-		nMask >>= 1;//循环输出
 	}
 }
 
