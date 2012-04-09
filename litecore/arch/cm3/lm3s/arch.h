@@ -13,7 +13,7 @@ extern "C" {
 #endif
 
 
-//Using ROM Library
+//#define Using ROM Library
 //#define TARGET_IS_DUSTDEVIL_RA0
 //#define TARGET_IS_TEMPEST_RB1
 //#define TARGET_IS_TEMPEST_RC1

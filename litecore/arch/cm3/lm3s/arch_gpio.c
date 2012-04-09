@@ -134,15 +134,15 @@ void arch_GpioConf(uint_t nPort, uint_t nPin, uint_t nMode, uint_t nInit)
 		break;
 	case GPIO_M_IN_PD:
 		MAP_GPIODirModeSet(nBase, nPin, GPIO_DIR_MODE_IN);
-		MAP_GPIOPadConfigSet(nBase, nPin, GPIO_STRENGTH_8MA, GPIO_PIN_TYPE_STD_WPD);
+		MAP_GPIOPadConfigSet(nBase, nPin, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPD);
 		break;
 	case GPIO_M_IN_PU:
 		MAP_GPIODirModeSet(nBase, nPin, GPIO_DIR_MODE_IN);
-		MAP_GPIOPadConfigSet(nBase, nPin, GPIO_STRENGTH_8MA, GPIO_PIN_TYPE_STD_WPU);
+		MAP_GPIOPadConfigSet(nBase, nPin, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
 		break;
 	case GPIO_M_IN_FLOAT:
 		MAP_GPIODirModeSet(nBase, nPin, GPIO_DIR_MODE_IN);
-		MAP_GPIOPadConfigSet(nBase, nPin, GPIO_STRENGTH_8MA, GPIO_PIN_TYPE_STD);
+		MAP_GPIOPadConfigSet(nBase, nPin, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD);
 		break;
 	case GPIO_M_OUT_OD:
 		MAP_GPIODirModeSet(nBase, nPin, GPIO_DIR_MODE_OUT);
@@ -182,7 +182,9 @@ void arch_GpioSet(uint_t nPort, uint_t nPin, uint_t nHL)
 int arch_GpioRead(uint_t nPort, uint_t nPin)
 {
 
-	return MAP_GPIOPinRead(arch_GpioPortBase(nPort), BITMASK(nPin));
+	if (MAP_GPIOPinRead(arch_GpioPortBase(nPort), BITMASK(nPin)))
+		return 1;
+	return 0;
 }
 
 
