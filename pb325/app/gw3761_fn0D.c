@@ -242,6 +242,20 @@ int gw3761_ResponseData2(p_gw3761 p, buf b, u_word2 *pDu, uint8_t **ppData)
 						res += 1;
 						nLen = 0;
 						break;
+                    case 232:
+                        //配电扩展组合数据读取
+						buf_Push(b, *ppData, 7);
+						for (k = 0; k < nData; k++, tTime += nTemp) {
+							timet2array(tTime, aTime, 1);
+							data_MinRead(&aTime[1], &xMin);
+							if (xMin.time != GW3761_DATA_INVALID)
+								buf_Push(b, xMin.data, 42);
+							else
+								buf_Fill(b, GW3761_DATA_INVALID, 42);
+						}
+						res += 1;
+						nLen = 0;
+						break;
 					default:
 						nLen = 0;
 						break;
