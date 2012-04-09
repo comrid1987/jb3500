@@ -180,7 +180,7 @@ const uint8_t num_segs[] =
 };
 
 
-#define HT1621_DELAY			100
+#define HT1621_DELAY			60
 
 #ifndef HT1621_Ful_addr
 #define HT1621_Ful_addr 		(0x80)
