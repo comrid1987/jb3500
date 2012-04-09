@@ -21,20 +21,23 @@ void arch_IntfInit()
 {
 
 	FLASH_Unlock();
+	FLASH_ClearFlag(FLASH_FLAG_EOP | FLASH_FLAG_OPTERR | FLASH_FLAG_WRPRTERR | FLASH_FLAG_PGERR | FLASH_FLAG_BSY);
 }
 
-sys_res arch_IntfErase(adr_t adr)
+sys_res arch_IntfErase(adr_t nAdr)
 {
 	FLASH_Status res = FLASH_COMPLETE;
-	adr_t nEndAdr;
+	adr_t nCur, nEndAdr;
 
 	stm32_intf_Lock();
-	nEndAdr = adr + INTFLASH_BLK_SIZE;
-	for (; adr < nEndAdr; adr += 4)
-		if (*(volatile uint32_t *)adr != 0xFFFFFFFF)
+	nCur = nAdr;
+	nEndAdr = nAdr + INTFLASH_BLK_SIZE;
+	for (; nCur < nEndAdr; nCur += 4) {
+		if (*(volatile uint32_t *)nCur != 0xFFFFFFFF)
 			break;
-	if (adr < nEndAdr)
-		res = FLASH_ErasePage(adr);
+	}
+	if (nCur < nEndAdr)
+		res = FLASH_ErasePage(nAdr);
 	stm32_intf_Unlock();
 	if (res == FLASH_COMPLETE)
 		return SYS_R_OK;

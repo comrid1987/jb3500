@@ -295,7 +295,7 @@ void USBH_USR_DeviceNotSupported(void)
 USBH_USR_Status USBH_USR_UserInput(void)
 {
 
-	return USBH_USR_NO_RESP;
+	return USBH_USR_RESP_OK;
 }  
 
 /**
@@ -319,7 +319,7 @@ void USBH_USR_OverCurrentDetected (void)
 int USBH_USR_MSC_Application(void)
 {
 
-	return 0;
+	return USBH_USR_ApplicationState;
 }
 
 
@@ -331,6 +331,7 @@ int USBH_USR_MSC_Application(void)
 */
 void USBH_USR_DeInit(void)
 {
+
   USBH_USR_ApplicationState = USH_USR_FS_INIT;
 }
 

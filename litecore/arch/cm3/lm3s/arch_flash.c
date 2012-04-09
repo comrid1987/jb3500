@@ -21,19 +21,21 @@ void arch_IntfInit()
 	MAP_FlashUsecSet(MAP_SysCtlClockGet() / 1000000);
 }
 
-sys_res arch_IntfErase(adr_t adr)
+
+sys_res arch_IntfErase(adr_t nAdr)
 {
 	int res = 0;
-	adr_t nEndAdr;
+	adr_t nCur, nEndAdr;
 
 	lm3s_intf_Lock();
-	nEndAdr = adr + INTFLASH_BLK_SIZE;
-	for (; adr < nEndAdr; adr += 4) {
-		if (*(volatile uint32_t *)adr != 0xFFFFFFFF)
+	nCur = nAdr;
+	nEndAdr = nCur + INTFLASH_BLK_SIZE;
+	for (; nCur < nEndAdr; nCur += 4) {
+		if (*(volatile uint32_t *)nCur != 0xFFFFFFFF)
 			break;
 	}
-	if (adr < nEndAdr)
-		res = MAP_FlashErase(adr);
+	if (nCur < nEndAdr)
+		res = MAP_FlashErase(nAdr);
 	lm3s_intf_Unlock();
 	if (res)
 		return SYS_R_TMO;
@@ -42,18 +44,18 @@ sys_res arch_IntfErase(adr_t adr)
 
 
 #if 1
-sys_res arch_IntfProgram(adr_t adr, const void *pData, uint_t nLen)
+sys_res arch_IntfProgram(adr_t nAdr, const void *pData, uint_t nLen)
 {
 	adr_t aEnd;
 	uint32_t *p;
 
 	lm3s_intf_Lock();
 	p = (uint32_t *)pData;
-	aEnd = adr + nLen;
-	for (; adr < aEnd; adr += 4) {
+	aEnd = nAdr + nLen;
+	for (; nAdr < aEnd; nAdr += 4) {
 		while (__raw_readl(FLASH_FMC) & FLASH_FMC_WRITE);
 		__raw_writel(*p++, FLASH_FMD);
-		__raw_writel(adr, FLASH_FMA);
+		__raw_writel(nAdr, FLASH_FMA);
 		__raw_writel(FLASH_FMC_WRKEY | FLASH_FMC_WRITE, FLASH_FMC);
 	}
 	lm3s_intf_Unlock();

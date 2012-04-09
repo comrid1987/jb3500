@@ -20,13 +20,13 @@
 
 
 #if (ARCH_TYPE == ARCH_T_STM32F10X_HD) || (ARCH_TYPE == ARCH_T_STM32F10X_CL)
-//#include <arch/CMSIS/CM3/DeviceSupport/ST/STM32F10x/system_stm32f10x.c>
 #include <arch/cm3/stm32f10x/stm32f10x_rcc.c>
 #ifdef RT_USING_CONSOLE
 #include <arch/cm3/stm32f10x/serial.c>
 #endif
 #if ARCH_TYPE == ARCH_T_STM32F10X_CL
-#include <arch/cm3/stm32f10x/system_stm32f10x_cl.c>
+//#include <arch/cm3/stm32f10x/system_stm32f10x_cl.c>
+#include <arch/cm3/stm32f10x/system_stm32f10x.c>
 #endif
 #include <arch/cm3/stm32f10x/arch.c>
 #include <arch/cm3/stm32f10x/arch_adc.c>

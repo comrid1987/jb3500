@@ -58,42 +58,30 @@ sys_res usb_HostIsConnected(void *pHandler)
 	return SYS_R_ERR;
 }
 
-int usb_HostMscRead(void *pHandler, uint_t nOffset, void *pBuf, uint_t nLen)
+int usb_HostMscRead(void *pHandler, uint_t nSector, void *pBuf, uint_t nLen)
 {
 	USBH_MSC_Status_TypeDef status;
-	uint8_t *pData = (uint8_t *)pBuf;
-	uint_t nSector = nOffset;
 
-	for (; nLen; nLen--) {
-		do {
-			status = (USBH_MSC_Status_TypeDef)USBH_MSC_Read10(pHandler, pData, nSector, 512);
-			USBH_MSC_HandleBOTXfer(pHandler, &USB_Host);
-			if (HCD_IsDeviceConnected(pHandler) == 0)
-				return (nSector - nOffset);
-		} while (status == USBH_MSC_BUSY);
-		pData += 512;
-		nSector += 1;
-	}
-	return (nSector - nOffset);
+	do {
+		status = (USBH_MSC_Status_TypeDef)USBH_MSC_Read10(pHandler, pBuf, nSector, nLen * 512);
+		USBH_MSC_HandleBOTXfer(pHandler, &USB_Host);
+		if (HCD_IsDeviceConnected(pHandler) == 0)
+			return nLen;
+	} while (status == USBH_MSC_BUSY);
+	return 0;
 }
 
-int usb_HostMscWrite(void *pHandler, uint_t nOffset, const void *pBuf, uint_t nLen)
+int usb_HostMscWrite(void *pHandler, uint_t nSector, const void *pBuf, uint_t nLen)
 {
 	USBH_MSC_Status_TypeDef status;
-	uint8_t *pData = (uint8_t *)pBuf;
-	uint_t nSector = nOffset;
 
-	for (; nLen; nLen--) {
-		do {
-			status = (USBH_MSC_Status_TypeDef)USBH_MSC_Write10(pHandler, pData, nSector, 512);
-			USBH_MSC_HandleBOTXfer(pHandler, &USB_Host);
-			if (HCD_IsDeviceConnected(pHandler) == 0)
-				return (nSector - nOffset);
-		} while (status == USBH_MSC_BUSY);
-		pData += 512;
-		nSector += 1;
-	}
-	return (nSector - nOffset);
+	do {
+		status = (USBH_MSC_Status_TypeDef)USBH_MSC_Write10(pHandler, pBuf, nSector, nLen * 512);
+		USBH_MSC_HandleBOTXfer(pHandler, &USB_Host);
+		if (HCD_IsDeviceConnected(pHandler) == 0)
+			return nLen;
+	} while (status == USBH_MSC_BUSY);
+	return 0;
 }
 #endif
 
@@ -361,6 +349,11 @@ USBHCDEvents(void *pvData)
     }
 }
 
+void USBDeviceIntHandlerInternal(unsigned long ulIndex, unsigned long ulStatus)
+{
+
+}
+
 
 
 void usb_Init()
@@ -420,12 +413,6 @@ void usb_Init()
 	USBHCDInit(0, usb_HCDPool, sizeof(usb_HCDPool));
 }
 
-
-void USBDeviceIntHandlerInternal(unsigned long ulIndex, unsigned long ulStatus)
-{
-
-}
-
 void usb_MscHandler()
 {
 
@@ -448,8 +435,8 @@ sys_res usb_HostIsConnected(void *pHandler)
 {
 
 	if (USBHMSCDriveReady((uint_t)pHandler))
-		return SYS_R_OK;
-	return SYS_R_ERR;
+		return SYS_R_ERR;
+	return SYS_R_OK;
 }
 
 int usb_HostMscRead(void *pHandler, uint_t nOffset, void *pBuf, uint_t nLen)

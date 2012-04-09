@@ -145,7 +145,7 @@ static uint8_t i2cbus_Recv(p_dev_i2c p)
 		i2cbus_Scl(p, 0);
 		i2cbus_Scl(p, 1);
 		if (i2cbus_Ste(p))
-			nData |= BITMASK(0);
+			SETBIT(nData, 0);
 	}
 #if I2CBUS_IOMODE_CHANGE
 	i2cbus_IoConf(p);

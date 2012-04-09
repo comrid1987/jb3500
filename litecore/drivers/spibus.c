@@ -78,11 +78,11 @@ static void _spibus_Recv(p_dev_spi p, uint8_t *pRec, uint_t nLen)
 			nData <<= 1;
 			if (p->latchmode == SPI_LATCH_1EDGE)
 				if (spibus_Miso(p))
-					nData |= 1;
+					SETBIT(nData, 0);
 			spibus_Sck(p, 1);
 			if (p->latchmode == SPI_LATCH_2EDGE)
 				if (spibus_Miso(p))
-					nData |= 1;
+					SETBIT(nData, 0);
 			spibus_Sck(p, 0);
 		}
 		*pRec++ = nData;

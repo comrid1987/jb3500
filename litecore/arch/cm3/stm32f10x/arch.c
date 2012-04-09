@@ -126,6 +126,11 @@ static void stm32_IrqInit()
 	NVIC_Init(&xNVIC);
 	xNVIC.NVIC_IRQChannel = EXTI15_10_IRQn;
 	NVIC_Init(&xNVIC);
+#if USB_ENABLE == 0
+	xNVIC.NVIC_IRQChannelCmd = DISABLE;
+	xNVIC.NVIC_IRQChannel = OTG_FS_IRQn;
+	NVIC_Init(&xNVIC);
+#endif
 }
 
 static void stm32_GpioIdleInit()

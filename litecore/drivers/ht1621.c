@@ -215,7 +215,6 @@ static void ht1621_SendBits(uint_t nData, uint_t nCnt)
 		sys_Delay(HT1621_DELAY);					//10us
 		nData >>= 1;				//左移位
 	}
-	
 }
 
 /*********************************************************/
@@ -233,7 +232,8 @@ static uint_t ht1621_ReadBits(uint_t nCnt)
 		sys_Delay(HT1621_DELAY);
 		nData <<= 1; 					//准备一个位(读满8个数据时，是否需要处理，看调用是否需要)
 		ht1621_Rd(1);
-		nData |= ht1621_DataIn();
+		if (ht1621_DataIn())
+			SETBIT(nData, 0);
 	}
 	ht1621_Cs(1);
 	return nData;
