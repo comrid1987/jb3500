@@ -86,9 +86,9 @@ ErrorStatus HSEStartUpStatus;
 
 void USB_OTG_BSP_Init(USB_OTG_CORE_HANDLE *pdev)
 {
-	
+
 	RCC_OTGFSCLKConfig(RCC_OTGFSCLKSource_PLLVCO_Div3);
-	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_OTG_FS, ENABLE) ;
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_OTG_FS, ENABLE);
 }
 /**
   * @brief  USB_OTG_BSP_EnableInterrupt
@@ -98,18 +98,18 @@ void USB_OTG_BSP_Init(USB_OTG_CORE_HANDLE *pdev)
   */
 void USB_OTG_BSP_EnableInterrupt(USB_OTG_CORE_HANDLE *pdev)
 {
-  NVIC_InitTypeDef NVIC_InitStructure; 
-  
-  NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
+	NVIC_InitTypeDef NVIC_InitStructure; 
+
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
 #ifdef USE_USB_OTG_HS   
-  NVIC_InitStructure.NVIC_IRQChannel = OTG_HS_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannel = OTG_HS_IRQn;
 #else
-  NVIC_InitStructure.NVIC_IRQChannel = OTG_FS_IRQn;  
+	NVIC_InitStructure.NVIC_IRQChannel = OTG_FS_IRQn;  
 #endif
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;
-  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-  NVIC_Init(&NVIC_InitStructure);  
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
 }
 
 /**
@@ -156,17 +156,13 @@ void USB_OTG_BSP_ConfigVBUS(USB_OTG_CORE_HANDLE *pdev)
   */
 void USB_OTG_BSP_uDelay (const uint32_t usec)
 {
-  
-  __IO uint32_t count = 0;
-  const uint32_t utime = (120 * usec / 7);
-  do
-  {
-    if ( ++count > utime )
-    {
-      return ;
-    }
-  }
-  while (1);
+
+	__IO uint32_t count = 0;
+	const uint32_t utime = (120 * usec / 7);
+	do {
+		if (++count > utime)
+			return;
+	} while (1);
 }
 
 

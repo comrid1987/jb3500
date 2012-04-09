@@ -148,7 +148,7 @@ static void stm32_GpioIdleInit()
 	GPIO_Init(GPIOA, &xGpio);
 	GPIO_Init(GPIOB, &xGpio);
 	GPIO_Init(GPIOC, &xGpio);
-	GPIO_Init(GPIOD, &xGpio);	
+	GPIO_Init(GPIOD, &xGpio);
 	GPIO_Init(GPIOE, &xGpio);
 	GPIO_Init(GPIOF, &xGpio);
 	GPIO_Init(GPIOG, &xGpio);
