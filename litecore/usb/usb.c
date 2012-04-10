@@ -76,7 +76,7 @@ int usb_HostMscWrite(void *pHandler, uint_t nSector, const void *pBuf, uint_t nL
 	USBH_MSC_Status_TypeDef status;
 
 	do {
-		status = (USBH_MSC_Status_TypeDef)USBH_MSC_Write10(pHandler, pBuf, nSector, nLen * 512);
+		status = (USBH_MSC_Status_TypeDef)USBH_MSC_Write10(pHandler, (uint8_t *)pBuf, nSector, nLen * 512);
 		USBH_MSC_HandleBOTXfer(pHandler, &USB_Host);
 		if (HCD_IsDeviceConnected(pHandler) == 0)
 			return nLen;

@@ -42,23 +42,24 @@ static p_dev_uart lm3s_uart_dev[LM3S_UART_QTY];
 void arch_UartInit(p_dev_uart p)
 {
 	t_uart_para xUart;
+	p_uart_def pDef = p->def;
 
-	lm3s_uart_dev[p->def->id] = p;
+	lm3s_uart_dev[pDef->id] = p;
 
 	/* enable UART clock */
-    MAP_SysCtlPeripheralEnable(lm3s_tblUartSysCtl[p->def->id]);
+    MAP_SysCtlPeripheralEnable(lm3s_tblUartSysCtl[pDef->id]);
 
 	/* enable UART interrupt */
-	MAP_IntEnable(lm3s_tblUartInt[p->def->id]);
+	MAP_IntEnable(lm3s_tblUartInt[pDef->id]);
 
 	/* set UART pin */
-	arch_GpioClockEnable(p->def->rxport);
-	arch_GpioClockEnable(p->def->txport);
-	switch (p->def->id) {
+	arch_GpioClockEnable(pDef->rxport);
+	arch_GpioClockEnable(pDef->txport);
+	switch (pDef->id) {
 	case 1:
-		switch (p->def->rxport) {
+		switch (pDef->rxport) {
 		case GPIO_P1:
-			if (p->def->rxpin == 0) {
+			if (pDef->rxpin == 0) {
 				MAP_GPIOPinConfigure(GPIO_PB0_U1RX);
 				MAP_GPIOPinConfigure(GPIO_PB1_U1TX);
 			} else {
@@ -71,7 +72,7 @@ void arch_UartInit(p_dev_uart p)
 			MAP_GPIOPinConfigure(GPIO_PC7_U1TX);
 			break;
 		case GPIO_P3:
-			if (p->def->rxpin == 0) {
+			if (pDef->rxpin == 0) {
 				MAP_GPIOPinConfigure(GPIO_PD0_U1RX);
 				MAP_GPIOPinConfigure(GPIO_PD1_U1TX);
 			} else {
@@ -84,13 +85,13 @@ void arch_UartInit(p_dev_uart p)
 		}
 		break;
 	case 2:
-		switch (p->def->rxport) {
+		switch (pDef->rxport) {
 		case GPIO_P3:
 #if ARCH_TYPE == ARCH_T_LM3S5X
 			MAP_GPIOPinConfigure(GPIO_PD0_U2RX);
 			MAP_GPIOPinConfigure(GPIO_PD1_U2TX);
 #elif ARCH_TYPE == ARCH_T_LM3S9X
-			if (p->def->rxpin == 0) {
+			if (pDef->rxpin == 0) {
 				MAP_GPIOPinConfigure(GPIO_PD0_U2RX);
 				MAP_GPIOPinConfigure(GPIO_PD1_U2TX);
 			} else {
@@ -112,13 +113,13 @@ void arch_UartInit(p_dev_uart p)
 	default:
 		break;
 	}
-	MAP_GPIOPinTypeUART(arch_GpioPortBase(p->def->rxport), BITMASK(p->def->rxpin));
-	MAP_GPIOPinTypeUART(arch_GpioPortBase(p->def->txport), BITMASK(p->def->txpin));
+	MAP_GPIOPinTypeUART(arch_GpioPortBase(pDef->rxport), BITMASK(pDef->rxpin));
+	MAP_GPIOPinTypeUART(arch_GpioPortBase(pDef->txport), BITMASK(pDef->txpin));
 	xUart.baud = 4800;
 	xUart.pari = UART_PARI_NO;
 	xUart.data = UART_DATA_8D;
 	xUart.stop = UART_STOP_1D;
-	arch_UartOpen(p->def->id, &xUart);
+	arch_UartOpen(pDef->id, &xUart);
 }
 
 

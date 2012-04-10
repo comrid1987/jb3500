@@ -48,11 +48,12 @@ void arch_UartInit(p_dev_uart p)
 {
 	t_uart_para xUart;
 	uint_t nMode, nSel = 0;
+	p_uart_def pDef = p->def;
 
-	lpc176x_uart_dev[p->def->id] = p;
+	lpc176x_uart_dev[pDef->id] = p;
 
 	/* enable UART clock and interrupt*/
-	switch (p->def->id) {
+	switch (pDef->id) {
 	case 0:
 		SETBIT(LPC_SC->PCONP, 3);
 		NVIC_EnableIRQ(UART0_IRQn);
@@ -74,16 +75,16 @@ void arch_UartInit(p_dev_uart p)
 	}
 
 	/* set UART pin */
-	arch_GpioConf(p->def->rxport, p->def->rxpin, GPIO_M_IN_PU, GPIO_INIT_HIGH);
-	if (p->def->outmode == DEV_PIN_PP)
+	arch_GpioConf(pDef->rxport, pDef->rxpin, GPIO_M_IN_PU, GPIO_INIT_HIGH);
+	if (pDef->outmode == DEV_PIN_PP)
 		nMode = GPIO_M_OUT_PP;
 	else
 		nMode = GPIO_M_OUT_OD;
-	arch_GpioConf(p->def->txport, p->def->txpin, nMode, GPIO_INIT_HIGH);
+	arch_GpioConf(pDef->txport, pDef->txpin, nMode, GPIO_INIT_HIGH);
 
-	switch (p->def->id) {
+	switch (pDef->id) {
 	case 0:
-		switch (p->def->rxport) {
+		switch (pDef->rxport) {
 		case GPIO_P0:
 			nSel = 1;
 			break;
@@ -93,7 +94,7 @@ void arch_UartInit(p_dev_uart p)
 		break;
 	case 1:
 	case 2:
-		switch (p->def->rxport) {
+		switch (pDef->rxport) {
 		case GPIO_P0:
 			nSel = 1;
 			break;
@@ -105,7 +106,7 @@ void arch_UartInit(p_dev_uart p)
 		}
 		break;
 	case 3:
-		switch (p->def->rxpin) {
+		switch (pDef->rxpin) {
 		case 1:
 			nSel = 2;
 			break;
@@ -120,13 +121,13 @@ void arch_UartInit(p_dev_uart p)
 	default:
 		break;
 	}
-	arch_GpioSel(p->def->rxport, p->def->rxpin, nSel);
-	arch_GpioSel(p->def->txport, p->def->txpin, nSel);
+	arch_GpioSel(pDef->rxport, pDef->rxpin, nSel);
+	arch_GpioSel(pDef->txport, pDef->txpin, nSel);
 	xUart.baud = 4800;
 	xUart.pari = UART_PARI_NO;
 	xUart.data = UART_DATA_8D;
 	xUart.stop = UART_STOP_1D;
-	arch_UartOpen(p->def->id, &xUart);
+	arch_UartOpen(pDef->id, &xUart);
 }
 
 

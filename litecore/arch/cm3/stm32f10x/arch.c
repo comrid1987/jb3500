@@ -87,7 +87,6 @@ void SystemInit()
 #if MCU_HSI_ENABLE == 0
 	}	
 #endif
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
 }
 #endif
 
@@ -95,6 +94,8 @@ static void stm32_RccInit()
 {
 
 	SystemInit();
+
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
 
 	//SysTick Initialize
 	stm32_OsTickInit();
