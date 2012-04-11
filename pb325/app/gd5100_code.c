@@ -40,7 +40,7 @@ typedef __packed struct {
 //读参数
 int gd5100_Response01(p_gd5100 p, buf b)
 {
-	uint_t nDI, nTemp;
+	uint_t nDi, nTemp;
 	uint8_t *pData, *pEnd, aBuf[128];
 	uint32_t nAdr;
 
@@ -49,10 +49,10 @@ int gd5100_Response01(p_gd5100 p, buf b)
 	buf_Push(b, pData, 8);
 	pData += 8;
 	for (; (pData + 2) <= pEnd; ) {
-		nDI = (pData[1] << 8) | pData[0];
+		nDi = (pData[1] << 8) | pData[0];
 		buf_Push(b, pData, 2);
 		pData += 2;
-		switch (nDI) {
+		switch (nDi) {
 		case 0x8016:	//地市区县码
 			aBuf[1] = p->rtua;
 			aBuf[0] = p->rtua >> 8;
@@ -69,7 +69,7 @@ int gd5100_Response01(p_gd5100 p, buf b)
 			//厂商代号
 			aBuf[7] = 0x88;
 			//文件类型
-			aBuf[6] = 0x01;
+			aBuf[6] = 0x02;
 			//版本号
 			aBuf[5] = (uint8_t)VER_SOFT;
 			aBuf[4] = VER_SOFT >> 8;
@@ -120,16 +120,14 @@ int gd5100_Response0F(p_gd5100 p, buf b)
 	buf_Push(b, pData, 1);
 	pData += 5;
 	buf_Push(b, pData, 1);
-	switch (*pData) {
+	switch (*pData++) {
 	case 0x01:
 		//主程序升级请求
-		pData += 1;
 		nSaved = 0;
 		buf_Push(b, pData, sizeof(t_iap_update));
 		break;
 	case 0x02:
 		//主程序升级数据帧
-		pData += 1;
 		pFrame = (t_iap_frame *)pData;
 		pData += sizeof(t_iap_frame);
 		nCRC = crc16(pData, 2048);
@@ -149,13 +147,11 @@ int gd5100_Response0F(p_gd5100 p, buf b)
 		break;
 	case 0x04:
 		//主程序升级中止
-		pData += 1;
 		nSaved = 0;
 		buf_Push(b, pData, 10);
 		break;
 	case 0x05:
 		//主程序升级确认
-		pData += 1;
 		buf_Push(b, pData, 10);
 		pData += 8;
 		nQty = (pData[1] << 8) | pData[0];
