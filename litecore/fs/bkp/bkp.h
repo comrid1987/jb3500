@@ -12,6 +12,7 @@ extern "C" {
 #define BKP_T_NULL			0
 #define BKP_T_INT			1
 #define BKP_T_EEPROM		2
+#define BKP_T_SFS			3
 
 
 

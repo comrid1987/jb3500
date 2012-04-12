@@ -13,9 +13,17 @@
 
 #include <arch/cm3/stm32f10x/usblib/usbh_usr.c>
 
+#if USBH_MSC_ENABLE
 #include <arch/cm3/stm32f10x/usblib/usbh_msc_core.c>
 #include <arch/cm3/stm32f10x/usblib/usbh_msc_bot.c>
 #include <arch/cm3/stm32f10x/usblib/usbh_msc_scsi.c>
+#endif
+
+#if USBH_HID_ENABLE
+#include <arch/cm3/stm32f10x/usblib/usbh_hid_core.c>
+#include <arch/cm3/stm32f10x/usblib/usbh_hid_keybd.c>
+#include <arch/cm3/stm32f10x/usblib/usbh_hid_mouse.c>
+#endif
 
 
 USB_OTG_CORE_HANDLE		USB_OTG_Core;
@@ -24,10 +32,15 @@ USBH_HOST				USB_Host;
 void usb_Init()
 {
 
+#if USBH_MSC_ENABLE
 	USBH_Init(&USB_OTG_Core, USB_OTG_FS_CORE_ID, &USB_Host, &USBH_MSC_cb, &USR_cb);
+#endif
+#if USBH_HID_ENABLE
+	USBH_Init(&USB_OTG_Core, USB_OTG_FS_CORE_ID, &USB_Host, &HID_cb, &USR_cb);
+#endif
 }
 
-void usb_MscHandler()
+void usb_HostHandler()
 {
 
 	USBH_Process(&USB_OTG_Core, &USB_Host);
@@ -58,6 +71,7 @@ sys_res usb_HostIsConnected(void *pHandler)
 	return SYS_R_ERR;
 }
 
+#if USBH_MSC_ENABLE
 int usb_HostMscRead(void *pHandler, uint_t nSector, void *pBuf, uint_t nLen)
 {
 	USBH_MSC_Status_TypeDef status;
@@ -83,6 +97,31 @@ int usb_HostMscWrite(void *pHandler, uint_t nSector, const void *pBuf, uint_t nL
 	} while (status == USBH_MSC_BUSY);
 	return 0;
 }
+#endif
+
+
+#if USBH_HID_ENABLE
+void USR_KEYBRD_Init()
+{
+
+}
+
+void USR_MOUSE_Init()
+{
+
+}
+
+void USR_KEYBRD_ProcessData(uint8_t nData)
+{
+
+}
+
+void USR_MOUSE_ProcessData(HID_MOUSE_Data_TypeDef *pData)
+{
+
+}
+#endif
+
 #endif
 
 
@@ -413,7 +452,7 @@ void usb_Init()
 	USBHCDInit(0, usb_HCDPool, sizeof(usb_HCDPool));
 }
 
-void usb_MscHandler()
+void usb_HostHandler()
 {
 
 	USBHCDMain();

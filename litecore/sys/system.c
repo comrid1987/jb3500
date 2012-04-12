@@ -66,8 +66,8 @@ void sys_IOHandle(void *args)
 		}
 	}
 #endif
-#if USBMSC_ENABLE
-	usb_MscHandler();
+#if USB_ENABLE
+	usb_HostHandler();
 #endif
 #if TCPPS_ENABLE
 	net_Handler();

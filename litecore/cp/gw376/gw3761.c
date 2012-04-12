@@ -50,6 +50,7 @@ static int gw3761_IsPW(uint_t nAfn)
 static int gw3761_IsEC(uint_t nAfn)
 {
 
+#if 0
 	switch (nAfn) {
 	case 0x00:
 	case 0x08:
@@ -64,6 +65,14 @@ static int gw3761_IsEC(uint_t nAfn)
 	default:
 		return 0;
 	}
+#else
+	switch (nAfn) {
+	case 0x02:
+		return 1;
+	default:
+		return 0;
+	}
+#endif
 }
 
 
@@ -202,12 +211,10 @@ sys_res gw3761_TmsgSend(p_gw3761 p, uint_t nFun, uint_t nAfn, buf b, uint_t nTyp
 	xH.seq.fin = 1;
 	xH.seq.fir = 1;
 	xH.afn = nAfn;
-#if 0
 	if (gw3761_IsEC(nAfn)) {
 		xH.c.fcb_acd = 1;
 		buf_PushData(b, evt_GetCount(), 2);
 	}
-#endif
 	if (p->rmsg.seq.tpv) {
 		xH.seq.tpv = 1;
 		buf_Push(b, &p->rmsg.tp, sizeof(p->rmsg.tp));
