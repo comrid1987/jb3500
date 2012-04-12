@@ -348,6 +348,8 @@
 #define USB_ENABLE						1
 #if USB_ENABLE
 	#define USB_CONTROLL_ENABLE			0
+	#define USBH_MSC_ENABLE 			1
+	#define USBH_HID_ENABLE 			0
 #endif
 
 
