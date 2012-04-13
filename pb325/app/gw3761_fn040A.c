@@ -315,8 +315,8 @@ static void gw3761_Afn04_F201(uint8_t **ppData)
 {
 	t_afn04_f85 xF85;
 
-	xF85.mfcode = 0;
 	memcpy(&xF85, *ppData - 2, sizeof(t_afn04_f85));
+	xF85.mfcode = 0;
 	*ppData += 4;
 	icp_ParaWrite(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
 }
