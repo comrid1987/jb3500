@@ -215,9 +215,11 @@ sys_res gw3761_TmsgSend(p_gw3761 p, uint_t nFun, uint_t nAfn, buf b, uint_t nTyp
 		xH.c.fcb_acd = 1;
 		buf_PushData(b, evt_GetCount(), 2);
 	}
-	if (p->rmsg.seq.tpv) {
-		xH.seq.tpv = 1;
-		buf_Push(b, &p->rmsg.tp, sizeof(p->rmsg.tp));
+	if (nType == DLRCP_TMSG_RESPOND) {
+		if (p->rmsg.seq.tpv) {
+			xH.seq.tpv = 1;
+			buf_Push(b, &p->rmsg.tp, sizeof(p->rmsg.tp));
+		}
 	}
 	xH.len1 = xH.len2 = b->len + (sizeof(t_gw3761_header) - GW3761_FIXHEADER_SIZE);
 	nCS = cs8((uint8_t *)&xH + GW3761_FIXHEADER_SIZE, (sizeof(t_gw3761_header) - GW3761_FIXHEADER_SIZE));

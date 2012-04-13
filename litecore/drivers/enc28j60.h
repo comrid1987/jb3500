@@ -1,6 +1,11 @@
+#ifndef __ENC28J60_H__
+#define __ENC28J60_H__
 
-#ifndef __BSP_ENC28J60_H__
-#define __BSP_ENC28J60_H__
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 //ENC28J60 Control Registers
 //Control register definitions are a combination of address,
@@ -245,6 +250,9 @@ int enc28j60_IsPhyLinked(void);
 //Interrupt Function
 void enc28j60_Interrupt(void);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

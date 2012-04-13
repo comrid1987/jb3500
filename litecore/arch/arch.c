@@ -31,6 +31,7 @@
 #include <arch/cm3/stm32f10x/arch.c>
 #include <arch/cm3/stm32f10x/arch_adc.c>
 #include <arch/cm3/stm32f10x/arch_bkp.c>
+#include <arch/cm3/stm32f10x/arch_emac.c>
 #include <arch/cm3/stm32f10x/arch_flash.c>
 #include <arch/cm3/stm32f10x/arch_fsmc.c>
 #include <arch/cm3/stm32f10x/arch_gpio.c>

@@ -1,31 +1,381 @@
-/**
-  ******************************************************************************
-  * @file    stm32_eth.c
-  * @author  MCD Application Team
-  * @version V1.1.0
-  * @date    11/20/2009
-  * @brief   This file provides all the ETH firmware functions.
-  ******************************************************************************
-  * @copy
-  *
-  * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
-  * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
-  * TIME. AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY
-  * DIRECT, INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING
-  * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
-  * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
-  *
-  * <h2><center>&copy; COPYRIGHT 2009 STMicroelectronics</center></h2>
-  */
+#if STM32_ETH_ENABLE
+#if 0
+/* The following macro definitions may be used to select the speed
+   of the physical link:
 
-/* Includes ------------------------------------------------------------------*/
-#include "stm32_eth.h"
-#include "stm32f10x_rcc.h"
+  _10MBIT_   - connect at 10 MBit only
+  _100MBIT_  - connect at 100 MBit only
+
+  By default an autonegotiation of the link speed is used. This may take 
+  longer to connect, but it works for 10MBit and 100MBit physical links.     */
+
+/* Net_Config.c */
+extern uint8_t own_hw_adr[];
+
+/* Local variables */
+static uint8_t TxBufIndex;
+static uint8_t RxBufIndex;
+
+/* ENET local DMA Descriptors. */
+static RX_Desc Rx_Desc[NUM_RX_BUF];
+static TX_Desc Tx_Desc[NUM_TX_BUF];
+
+/* ENET local DMA buffers. */
+static uint32_t rx_buf[NUM_RX_BUF][ETH_BUF_SIZE>>2];
+static uint32_t tx_buf[NUM_TX_BUF][ETH_BUF_SIZE>>2];
+
+/*----------------------------------------------------------------------------
+ *      ENET Ethernet Driver Functions
+ *----------------------------------------------------------------------------
+ *  Required functions for Ethernet driver module:
+ *  a. Polling mode: - void init_ethernet ()
+ *                   - void send_frame (OS_FRAME *frame)
+ *                   - void poll_ethernet (void)
+ *  b. Interrupt mode: - void init_ethernet ()
+ *                     - void send_frame (OS_FRAME *frame)
+ *                     - void int_enable_eth ()
+ *                     - void int_disable_eth ()
+ *                     - interrupt function 
+ *---------------------------------------------------------------------------*/
+
+/* Local Function Prototypes */
+static void rx_descr_init (void);
+static void tx_descr_init (void);
+static void write_PHY (uint32_t PhyReg, uint16_t Value);
+static uint16_t  read_PHY (uint32_t PhyReg);
+
+/*--------------------------- init_ethernet ---------------------------------*/
+
+void init_ethernet (void) {
+  /* Initialize the ETH ethernet controller. */
+  uint32_t regv,tout,id1,id2;
+
+  /* Enable clock for Port A,B,C,D and Alternate function */
+  RCC->APB2ENR |= 0x0000003D;
+
+  /* Enable clock for MAC. */
+  RCC->AHBENR  |= 0x0001C000;
+
+#ifdef STM32_ETH_MII
+  /* Use MII on STM3210C-EVAL board. */
+
+  /* Remap MII RX pins to PD8 .. PD12 */
+  AFIO->MAPR   |= 0x00200000;
+
+  /* Configure Port A ethernet pins. */
+  GPIOA->CRL   &= 0xFFFF0000;
+  GPIOA->CRL   |= 0x00004B44;
+  GPIOA->CRH   &= 0xFFFFFFF0;
+  GPIOA->CRH   |= 0x0000000B;
+
+  /* Configure Port B ethernet pins */
+  GPIOB->CRH   &= 0xFF0000F0;
+  GPIOB->CRH   |= 0x00BBB40B;
+
+  /* Configure Port C ethernet pins */
+  GPIOC->CRL   &= 0xFFFF000F;
+  GPIOC->CRL   |= 0x00004BB0;
+
+  /* Configure Port D ethernet pins */
+  GPIOD->CRH   &= 0xFFF00000;
+  GPIOD->CRH   |= 0x00044444;
+#else
+  /* Use RMII on MCBSTM32C evaluation board. */
+
+  /* Enable RMII, remap RX pins to PD8 .. PD10 */
+  AFIO->MAPR   |= 0x00A00000;
+
+  /* Configure Port A ethernet pins. */
+  GPIOA->CRL   &= 0xFFFFF00F;
+  GPIOA->CRL   |= 0x00000B40;
+
+  /* Configure Port B ethernet pins */
+  GPIOB->CRH   &= 0xFF000FFF;
+  GPIOB->CRH   |= 0x00BBB000;
+
+  /* Configure Port C ethernet pins */
+  GPIOC->CRL   &= 0xFFFFFF0F;
+  GPIOC->CRL   |= 0x000000B0;
+
+  /* Configure Port D ethernet pins */
+  GPIOD->CRH   &= 0xFFFFF000;
+  GPIOD->CRH   |= 0x00000444;
+#endif
+
+  /* Reset Ethernet MAC */
+  RCC->AHBSTR  |= 0x00004000;
+  RCC->AHBSTR  &=~0x00004000;
+
+  ETH->DMABMR  |= DBMR_SR;
+  while (ETH->DMABMR & DBMR_SR);
+
+  /* MDC Clock range 60-72MHz. */
+  ETH->MACMIIAR = 0x00000000;
+
+  /* Put the DP83848C in reset mode */
+  write_PHY (PHY_REG_BMCR, 0x8000);
+
+  /* Wait for hardware reset to end. */
+  for (tout = 0; tout < 0x10000; tout++) {
+    regv = read_PHY (PHY_REG_BMCR);
+    if (!(regv & 0x8800)) {
+      /* Reset complete, device not Power Down. */
+      break;
+    }
+  }
+
+  /* Check if this is a DP83848C PHY. */
+  id1 = read_PHY (PHY_REG_IDR1);
+  id2 = read_PHY (PHY_REG_IDR2);
+
+  if (((id1 << 16) | (id2 & 0xFFF0)) == DP83848C_ID) {
+    /* Configure the PHY device */
+#if defined (_10MBIT_)
+    /* Connect at 10MBit */
+    write_PHY (PHY_REG_BMCR, PHY_FULLD_10M);
+#elif defined (_100MBIT_)
+    /* Connect at 100MBit */
+    write_PHY (PHY_REG_BMCR, PHY_FULLD_100M);
+#else
+    /* Use autonegotiation about the link speed. */
+    write_PHY (PHY_REG_BMCR, PHY_AUTO_NEG);
+    /* Wait to complete Auto_Negotiation. */
+    for (tout = 0; tout < 0x10000; tout++) {
+      regv = read_PHY (PHY_REG_BMSR);
+      if (regv & 0x0020) {
+        /* Autonegotiation Complete. */
+        break;
+      }
+    }
+#endif
+  }
+
+  /* Check the link status. */
+  for (tout = 0; tout < 0x10000; tout++) {
+    regv = read_PHY (PHY_REG_STS);
+    if (regv & 0x0001) {
+      /* Link is on. */
+      break;
+    }
+  }
+
+  /* Initialize MAC control register */
+  ETH->MACCR  = MCR_ROD;
+
+  /* Configure Full/Half Duplex mode. */
+  if (regv & 0x0004) {
+    /* Full duplex is enabled. */
+    ETH->MACCR |= MCR_DM;
+  }
+
+  /* Configure 100MBit/10MBit mode. */
+  if ((regv & 0x0002) == 0) {
+    /* 100MBit mode. */
+    ETH->MACCR |= MCR_FES;
+  }
+
+  /* MAC address filtering, accept multicast packets. */
+  ETH->MACFFR = MFFR_HPF | MFFR_PAM;
+  ETH->MACFCR = MFCR_ZQPD;
+
+  /* Set the Ethernet MAC Address registers */
+  ETH->MACA0HR = ((uint32_t)own_hw_adr[5] <<  8) | (uint32_t)own_hw_adr[4];
+  ETH->MACA0LR = ((uint32_t)own_hw_adr[3] << 24) | (uint32_t)own_hw_adr[2] << 16 |
+                 ((uint32_t)own_hw_adr[1] <<  8) | (uint32_t)own_hw_adr[0];
+
+  /* Initialize Tx and Rx DMA Descriptors */
+  rx_descr_init ();
+  tx_descr_init ();
+
+  /* Flush FIFO, start DMA Tx and Rx */
+  ETH->DMAOMR = DOMR_FTF | DOMR_ST | DOMR_SR;
+
+  /* Enable receiver and transmiter */
+  ETH->MACCR |= MCR_TE | MCR_RE;
+
+  /* Reset all interrupts */
+  ETH->DMASR  = 0xFFFFFFFF;
+
+  /* Enable Rx and NIS interrupts. */
+  ETH->DMAIER = INT_NISE | INT_RIE;
+}
+
+/*--------------------------- int_enable_eth --------------------------------*/
+
+void int_enable_eth (void)
+{
+  /* Ethernet Interrupt Enable function. */
+  NVIC->ISER[1] = 1 << 29;
+}
+
+
+/*--------------------------- int_disable_eth -------------------------------*/
+
+void int_disable_eth (void)
+{
+  /* Ethernet Interrupt Disable function. */
+  NVIC->ICER[1] = 1 << 29;
+}
+
+
+/*--------------------------- send_frame ------------------------------------*/
+
+void send_frame (OS_FRAME *frame) {
+  /* Send frame to ETH ethernet controller */
+  uint32_t *sp,*dp;
+  uint32_t i,j;
+
+  j = TxBufIndex;
+  /* Wait until previous packet transmitted. */
+  while (Tx_Desc[j].CtrlStat & DMA_TX_OWN);
+
+  sp = (uint32_t *)&frame->data[0];
+  dp = (uint32_t *)(Tx_Desc[j].Addr & ~3);
+
+  /* Copy frame data to ETH IO buffer. */
+  for (i = (frame->length + 3) >> 2; i; i--) {
+    *dp++ = *sp++;
+  }
+  Tx_Desc[j].Size      = frame->length;
+  Tx_Desc[j].CtrlStat |= DMA_TX_OWN;
+  if (++j == NUM_TX_BUF) j = 0;
+  TxBufIndex = j;
+  /* Start frame transmission. */
+  ETH->DMASR   = DSR_TPSS;
+  ETH->DMATPDR = 0;
+}
+
+
+/*--------------------------- interrupt_ethernet ----------------------------*/
+
+void ETH_IRQHandler (void) {
+  /* Ethernet Controller Interrupt function. */
+  OS_FRAME *frame;
+  uint32_t i,RxLen;
+  uint32_t *sp,*dp;
+
+  i = RxBufIndex;
+  do {
+    /* Valid frame has been received. */
+    if (Rx_Desc[i].Stat & DMA_RX_ERROR_MASK) {
+      goto rel;
+    }
+    if ((Rx_Desc[i].Stat & DMA_RX_SEG_MASK) != DMA_RX_SEG_MASK) {
+      goto rel;
+    }
+    RxLen = ((Rx_Desc[i].Stat >> 16) & 0x3FFF) - 4;
+    if (RxLen > ETH_MTU) {
+      /* Packet too big, ignore it and free buffer. */
+      goto rel;
+    }
+    /* Flag 0x80000000 to skip sys_error() call when out of memory. */
+    frame = alloc_mem (RxLen | 0x80000000);
+    /* if 'alloc_mem()' has failed, ignore this packet. */
+    if (frame != NULL) {
+      sp = (uint32_t *)(Rx_Desc[i].Addr & ~3);
+      dp = (uint32_t *)&frame->data[0];
+      for (RxLen = (RxLen + 3) >> 2; RxLen; RxLen--) {
+        *dp++ = *sp++;
+      }
+      put_in_queue (frame);
+    }
+    /* Release this frame from ETH IO buffer. */
+rel:Rx_Desc[i].Stat = DMA_RX_OWN;
+
+    if (++i == NUM_RX_BUF) i = 0;
+  } while ((Rx_Desc[i].Stat & DMA_RX_OWN) == 0);
+  RxBufIndex = i;
+
+  if (ETH->DMASR & INT_RBUIE) {
+    /* Rx DMA suspended, resume DMA reception. */
+    ETH->DMASR   = INT_RBUIE;
+    ETH->DMARPDR = 0;
+  }
+  /* Clear the interrupt pending bits. */
+  ETH->DMASR = INT_NISE | INT_RIE;
+}
+
+
+/*--------------------------- rx_descr_init ---------------------------------*/
+
+static void rx_descr_init (void) {
+  /* Initialize Receive DMA Descriptor array. */
+  uint32_t i,next;
+
+  RxBufIndex = 0;
+  for (i = 0, next = 0; i < NUM_RX_BUF; i++) {
+    if (++next == NUM_RX_BUF) next = 0;
+    Rx_Desc[i].Stat = DMA_RX_OWN;
+    Rx_Desc[i].Ctrl = DMA_RX_RCH | ETH_BUF_SIZE;
+    Rx_Desc[i].Addr = (uint32_t)&rx_buf[i];
+    Rx_Desc[i].Next = (uint32_t)&Rx_Desc[next];
+  }
+  ETH->DMARDLAR = (uint32_t)&Rx_Desc[0];
+}
+
+
+
+/*--------------------------- tx_descr_init ---------------------------------*/
+
+static void tx_descr_init (void) {
+  /* Initialize Transmit DMA Descriptor array. */
+  uint32_t i,next;
+
+  TxBufIndex = 0;
+  for (i = 0, next = 0; i < NUM_TX_BUF; i++) {
+    if (++next == NUM_TX_BUF) next = 0;
+    Tx_Desc[i].CtrlStat = DMA_TX_TCH | DMA_TX_LS | DMA_TX_FS;
+    Tx_Desc[i].Addr     = (uint32_t)&tx_buf[i];
+    Tx_Desc[i].Next     = (uint32_t)&Tx_Desc[next];
+  }
+  ETH->DMATDLAR = (uint32_t)&Tx_Desc[0];
+}
+
+
+/*--------------------------- write_PHY -------------------------------------*/
+
+static void write_PHY (uint32_t PhyReg, uint16_t Value) {
+  /* Write a data 'Value' to PHY register 'PhyReg'. */
+  uint32_t tout;
+
+  ETH->MACMIIDR = Value;
+  ETH->MACMIIAR = DP83848C_DEF_ADR << 11 | PhyReg << 6 | MMAR_MW | MMAR_MB;
+
+  /* Wait utill operation completed */
+  tout = 0;
+  for (tout = 0; tout < MII_WR_TOUT; tout++) {
+    if ((ETH->MACMIIAR & MMAR_MB) == 0) {
+      break;
+    }
+  }
+}
+
+
+/*--------------------------- read_PHY --------------------------------------*/
+
+static uint16_t read_PHY (uint32_t PhyReg) {
+  /* Read a PHY register 'PhyReg'. */
+  uint32_t tout;
+
+  ETH->MACMIIAR = DP83848C_DEF_ADR << 11 | PhyReg << 6 | MMAR_MB;
+
+  /* Wait until operation completed */
+  tout = 0;
+  for (tout = 0; tout < MII_RD_TOUT; tout++) {
+    if ((ETH->MACMIIAR & MMAR_MB) == 0) {
+      break;
+    }
+  }
+  return (ETH->MACMIIDR & MMDR_MD);
+}
+#else
+
+
 
 /* STM32F107 ETH dirver options */
 #define CHECKSUM_BY_HARDWARE
-#define RMII_MODE          /* MII mode for STM3210C-EVAL Board (MB784) (check jumpers setting) */
-//#define RMII_MODE       /* RMII mode for STM3210C-EVAL Board (MB784) (check jumpers setting) */
+//#define MII_MODE          /* MII mode for STM3210C-EVAL Board (MB784) (check jumpers setting) */
+#define RMII_MODE       /* RMII mode for STM3210C-EVAL Board (MB784) (check jumpers setting) */
 
 
 /** @addtogroup STM32_ETH_Driver
@@ -52,7 +402,7 @@ ETH_DMADESCTypeDef  *DMAPTPRxDescToGet;
 
 /* ETHERNET MAC address offsets */
 #define ETH_MAC_ADDR_HBASE   (ETH_MAC_BASE + 0x40)  /* ETHERNET MAC address high offset */
-#define ETH_MAC_ADDR_LBASE    (ETH_MAC_BASE + 0x44)  /* ETHERNET MAC address low offset */
+#define ETH_MAC_ADDR_LBASE   (ETH_MAC_BASE + 0x44)  /* ETHERNET MAC address low offset */
 
 /* ETHERNET MACMIIAR register Mask */
 #define MACMIIAR_CR_MASK    ((uint32_t)0xFFFFFFE3)
@@ -2958,561 +3308,37 @@ uint32_t ETH_HandlePTPRxPkt(uint8_t *ppkt, uint32_t *PTPRxTab)
   return (framelength);
 }
 
-/**
-  * @}
-  */
 
-/******************* (C) COPYRIGHT 2009 STMicroelectronics *****END OF FILE****/
-/*
- * STM32 Eth Driver for RT-Thread
- * Change Logs:
- * Date           Author       Notes
- * 2009-10-05     Bernard      eth interface driver for STM32F107 CL
- */
-#include <rtthread.h>
-#include <netif/ethernetif.h>
-#include <netif/etharp.h>
-#include <lwip/icmp.h>
-#include "lwipopts.h"
 
-#define ETH_DEBUG
-//#define ETH_RX_DUMP
-//#define ETH_TX_DUMP
 
-#ifdef ETH_DEBUG
-#define STM32_ETH_TRACE	        rt_kprintf
-#else
-#define STM32_ETH_TRACE(...)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #endif
 
-#define ETH_RXBUFNB        	4
-#define ETH_TXBUFNB        	2
-static ETH_InitTypeDef ETH_InitStructure;
-static ETH_DMADESCTypeDef  DMARxDscrTab[ETH_RXBUFNB], DMATxDscrTab[ETH_TXBUFNB];
-static rt_uint8_t Rx_Buff[ETH_RXBUFNB][ETH_MAX_PACKET_SIZE], Tx_Buff[ETH_TXBUFNB][ETH_MAX_PACKET_SIZE];
-
-#define MAX_ADDR_LEN 6
-struct rt_stm32_eth
-{
-    /* inherit from ethernet device */
-    struct eth_device parent;
-
-    /* interface address info. */
-    rt_uint8_t  dev_addr[MAX_ADDR_LEN];			/* hw address	*/
-};
-static struct rt_stm32_eth stm32_eth_device;
-static struct rt_semaphore tx_buf_free;
-
-/* interrupt service routine for ETH */
-void ETH_IRQHandler(void)
-{
-    rt_uint32_t status;
-
-    /* enter interrupt */
-    rt_interrupt_enter();
-
-	/* get DMA IT status */
-	status = ETH->DMASR;
-
-    if ( (status & ETH_DMA_IT_R) != (u32)RESET ) /* packet receiption */
-    {
-        /* a frame has been received */
-        eth_device_ready(&(stm32_eth_device.parent));
-
-        ETH_DMAClearITPendingBit(ETH_DMA_IT_R);
-    }
-
-    if ( (status & ETH_DMA_IT_T) != (u32)RESET ) /* packet transmission */
-    {
-        rt_sem_release(&tx_buf_free);
-        ETH_DMAClearITPendingBit(ETH_DMA_IT_T);
-    }
-
-    /* Clear received IT */
-    if ((status & ETH_DMA_IT_NIS) != (u32)RESET)
-        ETH->DMASR = (u32)ETH_DMA_IT_NIS;
-    if ((status & ETH_DMA_IT_AIS) != (u32)RESET)
-        ETH->DMASR = (u32)ETH_DMA_IT_AIS;
-    if ((status & ETH_DMA_IT_RO) != (u32)RESET)
-        ETH->DMASR = (u32)ETH_DMA_IT_RO;
-
-    if ((status & ETH_DMA_IT_RBU) != (u32)RESET)
-    {
-        ETH_ResumeDMAReception();
-        ETH->DMASR = (u32)ETH_DMA_IT_RBU;
-    }
-
-    if ((status & ETH_DMA_IT_TBU) != (u32)RESET)
-    {
-        ETH_ResumeDMATransmission();
-        ETH->DMASR = (u32)ETH_DMA_IT_TBU;
-    }
-
-    /* leave interrupt */
-    rt_interrupt_leave();
-}
-
-/* RT-Thread Device Interface */
-
-/* initialize the interface */
-static rt_err_t rt_stm32_eth_init(rt_device_t dev)
-{
-    vu32 Value = 0;
-
-    /* Reset ETHERNET on AHB Bus */
-    ETH_DeInit();
-
-    /* Software reset */
-    ETH_SoftwareReset();
-
-    /* Wait for software reset */
-    while(ETH_GetSoftwareResetStatus()==SET);
-
-    /* ETHERNET Configuration ------------------------------------------------------*/
-    /* Call ETH_StructInit if you don't like to configure all ETH_InitStructure parameter */
-    ETH_StructInit(&ETH_InitStructure);
-
-    /* Fill ETH_InitStructure parametrs */
-    /*------------------------   MAC   -----------------------------------*/
-    ETH_InitStructure.ETH_AutoNegotiation = ETH_AutoNegotiation_Enable  ;
-    ETH_InitStructure.ETH_Speed = ETH_Speed_100M;
-    ETH_InitStructure.ETH_Mode = ETH_Mode_FullDuplex;
-
-    ETH_InitStructure.ETH_LoopbackMode = ETH_LoopbackMode_Disable;
-    ETH_InitStructure.ETH_RetryTransmission = ETH_RetryTransmission_Disable;
-    ETH_InitStructure.ETH_AutomaticPadCRCStrip = ETH_AutomaticPadCRCStrip_Disable;
-    ETH_InitStructure.ETH_ReceiveAll = ETH_ReceiveAll_Enable;
-    ETH_InitStructure.ETH_BroadcastFramesReception = ETH_BroadcastFramesReception_Disable;
-    ETH_InitStructure.ETH_PromiscuousMode = ETH_PromiscuousMode_Disable;
-    ETH_InitStructure.ETH_MulticastFramesFilter = ETH_MulticastFramesFilter_Perfect;
-    ETH_InitStructure.ETH_UnicastFramesFilter = ETH_UnicastFramesFilter_Perfect;
-#ifdef CHECKSUM_BY_HARDWARE
-    ETH_InitStructure.ETH_ChecksumOffload = ETH_ChecksumOffload_Enable;
 #endif
 
-  /*------------------------   DMA   -----------------------------------*/
 
-  /* When we use the Checksum offload feature, we need to enable the Store and Forward mode:
-  the store and forward guarantee that a whole frame is stored in the FIFO, so the MAC can insert/verify the checksum,
-  if the checksum is OK the DMA can handle the frame otherwise the frame is dropped */
-  ETH_InitStructure.ETH_DropTCPIPChecksumErrorFrame = ETH_DropTCPIPChecksumErrorFrame_Enable;
-  ETH_InitStructure.ETH_ReceiveStoreForward = ETH_ReceiveStoreForward_Enable;
-  ETH_InitStructure.ETH_TransmitStoreForward = ETH_TransmitStoreForward_Enable;
-
-  ETH_InitStructure.ETH_ForwardErrorFrames = ETH_ForwardErrorFrames_Disable;
-  ETH_InitStructure.ETH_ForwardUndersizedGoodFrames = ETH_ForwardUndersizedGoodFrames_Disable;
-  ETH_InitStructure.ETH_SecondFrameOperate = ETH_SecondFrameOperate_Enable;
-  ETH_InitStructure.ETH_AddressAlignedBeats = ETH_AddressAlignedBeats_Enable;
-  ETH_InitStructure.ETH_FixedBurst = ETH_FixedBurst_Enable;
-  ETH_InitStructure.ETH_RxDMABurstLength = ETH_RxDMABurstLength_32Beat;
-  ETH_InitStructure.ETH_TxDMABurstLength = ETH_TxDMABurstLength_32Beat;
-  ETH_InitStructure.ETH_DMAArbitration = ETH_DMAArbitration_RoundRobin_RxTx_2_1;
-
-  /* Configure ETHERNET */
-  Value = ETH_Init(&ETH_InitStructure);
-
-  /* Enable DMA Receive interrupt (need to enable in this case Normal interrupt) */
-  ETH_DMAITConfig(ETH_DMA_IT_NIS | ETH_DMA_IT_R | ETH_DMA_IT_T, ENABLE);
-
-  /* Initialize Tx Descriptors list: Chain Mode */
-  ETH_DMATxDescChainInit(DMATxDscrTab, &Tx_Buff[0][0], ETH_TXBUFNB);
-  /* Initialize Rx Descriptors list: Chain Mode  */
-  ETH_DMARxDescChainInit(DMARxDscrTab, &Rx_Buff[0][0], ETH_RXBUFNB);
-
-  /* MAC address configuration */
-  ETH_MACAddressConfig(ETH_MAC_Address0, (u8*)&stm32_eth_device.dev_addr[0]);
-
-  /* Enable MAC and DMA transmission and reception */
-  ETH_Start();
-
-  return RT_EOK;
-}
-
-static rt_err_t rt_stm32_eth_open(rt_device_t dev, rt_uint16_t oflag)
-{
-    return RT_EOK;
-}
-
-static rt_err_t rt_stm32_eth_close(rt_device_t dev)
-{
-    return RT_EOK;
-}
-
-static rt_size_t rt_stm32_eth_read(rt_device_t dev, rt_off_t pos, void* buffer, rt_size_t size)
-{
-    rt_set_errno(-RT_ENOSYS);
-    return 0;
-}
-
-static rt_size_t rt_stm32_eth_write (rt_device_t dev, rt_off_t pos, const void* buffer, rt_size_t size)
-{
-    rt_set_errno(-RT_ENOSYS);
-    return 0;
-}
-
-static rt_err_t rt_stm32_eth_control(rt_device_t dev, rt_uint8_t cmd, void *args)
-{
-    switch(cmd)
-    {
-    case NIOCTL_GADDR:
-        /* get mac address */
-        if(args) rt_memcpy(args, stm32_eth_device.dev_addr, 6);
-        else return -RT_ERROR;
-        break;
-
-    default :
-        break;
-    }
-
-    return RT_EOK;
-}
-
-/* ethernet device interface */
-/* transmit packet. */
-rt_err_t rt_stm32_eth_tx( rt_device_t dev, struct pbuf* p)
-{
-    struct pbuf* q;
-    rt_uint32_t offset;
-
-    /* get free tx buffer */
-	{
-        rt_err_t result;
-        result = rt_sem_take(&tx_buf_free, 2);
-        if (result != RT_EOK) return -RT_ERROR;
-    }
-
-    offset = 0;
-    for (q = p; q != NULL; q = q->next)
-    {
-        rt_uint8_t* ptr;
-        rt_uint32_t len;
-
-        len = q->len;
-        ptr = q->payload;
-
-        /* Copy the frame to be sent into memory pointed by the current ETHERNET DMA Tx descriptor */
-        while (len)
-        {
-            (*(__IO uint8_t *)((DMATxDescToSet->Buffer1Addr) + offset)) = *ptr;
-
-            offset ++;
-            ptr ++;
-            len --;
-        }
-    }
-
-#ifdef ETH_TX_DUMP
-    {
-        rt_uint32_t i;
-        rt_uint8_t *ptr = (rt_uint8_t*)(DMATxDescToSet->Buffer1Addr);
-
-        STM32_ETH_TRACE("tx_dump:");
-        for(i=0; i<p->tot_len; i++)
-        {
-            if( (i%8) == 0 )
-            {
-                STM32_ETH_TRACE("  ");
-            }
-            if( (i%16) == 0 )
-            {
-                STM32_ETH_TRACE("\r\n");
-            }
-            STM32_ETH_TRACE("%02x ",*ptr);
-            ptr++;
-        }
-        STM32_ETH_TRACE("\r\ndump done!\r\n");
-    }
-#endif
-
-	/* Setting the Frame Length: bits[12:0] */
-	DMATxDescToSet->ControlBufferSize = (p->tot_len & ETH_DMATxDesc_TBS1);
-	/* Setting the last segment and first segment bits (in this case a frame is transmitted in one descriptor) */
-	DMATxDescToSet->Status |= ETH_DMATxDesc_LS | ETH_DMATxDesc_FS;
-    /* Enable TX Completion Interrupt */
-    DMATxDescToSet->Status |= ETH_DMATxDesc_IC;
-#ifdef CHECKSUM_BY_HARDWARE
-    DMATxDescToSet->Status |= ETH_DMATxDesc_ChecksumTCPUDPICMPFull;
-    /* clean ICMP checksum STM32F need */
-    {
-        struct eth_hdr *ethhdr = (struct eth_hdr *)(DMATxDescToSet->Buffer1Addr);
-        /* is IP ? */
-        if( ethhdr->type == htons(ETHTYPE_IP) )
-        {
-            struct ip_hdr *iphdr = (struct ip_hdr *)(DMATxDescToSet->Buffer1Addr + SIZEOF_ETH_HDR);
-            /* is ICMP ? */
-            if( IPH_PROTO(iphdr) == IP_PROTO_ICMP )
-            {
-                struct icmp_echo_hdr *iecho = (struct icmp_echo_hdr *)(DMATxDescToSet->Buffer1Addr + SIZEOF_ETH_HDR + sizeof(struct ip_hdr) );
-                iecho->chksum = 0;
-            }
-        }
-    }
-#endif
-    /* Set Own bit of the Tx descriptor Status: gives the buffer back to ETHERNET DMA */
-    DMATxDescToSet->Status |= ETH_DMATxDesc_OWN;
-    /* When Tx Buffer unavailable flag is set: clear it and resume transmission */
-    if ((ETH->DMASR & ETH_DMASR_TBUS) != (uint32_t)RESET)
-    {
-        /* Clear TBUS ETHERNET DMA flag */
-        ETH->DMASR = ETH_DMASR_TBUS;
-        /* Transmit Poll Demand to resume DMA transmission*/
-        ETH->DMATPDR = 0;
-    }
-
-    /* Update the ETHERNET DMA global Tx descriptor with next Tx decriptor */
-    /* Chained Mode */
-    /* Selects the next DMA Tx descriptor list for next buffer to send */
-    DMATxDescToSet = (ETH_DMADESCTypeDef*) (DMATxDescToSet->Buffer2NextDescAddr);
-
-    /* Return SUCCESS */
-    return RT_EOK;
-}
-
-/* reception packet. */
-struct pbuf *rt_stm32_eth_rx(rt_device_t dev)
-{
-    struct pbuf* p;
-    rt_uint32_t offset = 0, framelength = 0;
-
-    /* init p pointer */
-    p = RT_NULL;
-
-    /* Check if the descriptor is owned by the ETHERNET DMA (when set) or CPU (when reset) */
-    if(((DMARxDescToGet->Status & ETH_DMARxDesc_OWN) != (uint32_t)RESET))
-        return p;
-
-    if (((DMARxDescToGet->Status & ETH_DMARxDesc_ES) == (uint32_t)RESET) &&
-            ((DMARxDescToGet->Status & ETH_DMARxDesc_LS) != (uint32_t)RESET) &&
-            ((DMARxDescToGet->Status & ETH_DMARxDesc_FS) != (uint32_t)RESET))
-    {
-        /* Get the Frame Length of the received packet: substruct 4 bytes of the CRC */
-        framelength = ((DMARxDescToGet->Status & ETH_DMARxDesc_FL) >> ETH_DMARXDESC_FRAME_LENGTHSHIFT) - 4;
-
-        /* allocate buffer */
-        p = pbuf_alloc(PBUF_LINK, framelength, PBUF_RAM);
-        if (p != RT_NULL)
-        {
-            rt_uint8_t* ptr;
-            struct pbuf* q;
-            rt_size_t len;
-
-            for (q = p; q != RT_NULL; q= q->next)
-            {
-                ptr = q->payload;
-                len = q->len;
-
-                /* Copy the received frame into buffer from memory pointed by the current ETHERNET DMA Rx descriptor */
-                while (len)
-                {
-                    *ptr = (*(__IO uint8_t *)((DMARxDescToGet->Buffer1Addr) + offset));
-
-                    offset ++;
-                    ptr ++;
-                    len --;
-                }
-            }
-        }
-    }
-
-    /* Set Own bit of the Rx descriptor Status: gives the buffer back to ETHERNET DMA */
-    DMARxDescToGet->Status = ETH_DMARxDesc_OWN;
-
-    /* When Rx Buffer unavailable flag is set: clear it and resume reception */
-    if ((ETH->DMASR & ETH_DMASR_RBUS) != (uint32_t)RESET)
-    {
-        /* Clear RBUS ETHERNET DMA flag */
-        ETH->DMASR = ETH_DMASR_RBUS;
-        /* Resume DMA reception */
-        ETH->DMARPDR = 0;
-    }
-
-    /* Update the ETHERNET DMA global Rx descriptor with next Rx decriptor */
-    /* Chained Mode */
-    if((DMARxDescToGet->ControlBufferSize & ETH_DMARxDesc_RCH) != (uint32_t)RESET)
-    {
-        /* Selects the next DMA Rx descriptor list for next buffer to read */
-        DMARxDescToGet = (ETH_DMADESCTypeDef*) (DMARxDescToGet->Buffer2NextDescAddr);
-    }
-    else /* Ring Mode */
-    {
-        if((DMARxDescToGet->ControlBufferSize & ETH_DMARxDesc_RER) != (uint32_t)RESET)
-        {
-            /* Selects the first DMA Rx descriptor for next buffer to read: last Rx descriptor was used */
-            DMARxDescToGet = (ETH_DMADESCTypeDef*) (ETH->DMARDLAR);
-        }
-        else
-        {
-            /* Selects the next DMA Rx descriptor list for next buffer to read */
-            DMARxDescToGet = (ETH_DMADESCTypeDef*) ((uint32_t)DMARxDescToGet + 0x10 + ((ETH->DMABMR & ETH_DMABMR_DSL) >> 2));
-        }
-    }
-
-    return p;
-}
-
-static void RCC_Configuration(void)
-{
-    /* Enable ETHERNET clock  */
-    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_ETH_MAC | RCC_AHBPeriph_ETH_MAC_Tx |
-                          RCC_AHBPeriph_ETH_MAC_Rx, ENABLE);
-
-	/* Enable GPIOs clocks */
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA |	RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC |
-		RCC_APB2Periph_GPIOD | RCC_APB2Periph_GPIOE| RCC_APB2Periph_AFIO, ENABLE);
-}
-
-static void NVIC_Configuration(void)
-{
-    NVIC_InitTypeDef NVIC_InitStructure;
-
-    /* Enable the EXTI0 Interrupt */
-    NVIC_InitStructure.NVIC_IRQChannel = ETH_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-    NVIC_Init(&NVIC_InitStructure);
-}
-
-/*
- * GPIO Configuration for ETH
- */
-static void GPIO_Configuration(void)
-{
-	GPIO_InitTypeDef GPIO_InitStructure;
-
-	/* ETHERNET pins remapp in STM3210C-EVAL board: RX_DV and RxD[3:0] */
-	GPIO_PinRemapConfig(GPIO_Remap_ETH, ENABLE);
-
-	/* MII/RMII Media interface selection */
-#ifdef MII_MODE /* Mode MII with STM3210C-EVAL  */
-	GPIO_ETH_MediaInterfaceConfig(GPIO_ETH_MediaInterface_MII);
-
-	/* Get HSE clock = 25MHz on PA8 pin(MCO) */
-	RCC_MCOConfig(RCC_MCO_HSE);
-
-#elif defined RMII_MODE  /* Mode RMII with STM3210C-EVAL */
-	GPIO_ETH_MediaInterfaceConfig(GPIO_ETH_MediaInterface_RMII);
-
-	/* Get HSE clock = 25MHz on PA8 pin(MCO) */
-	/* set PLL3 clock output to 50MHz (25MHz /5 *10 =50MHz) */
-	RCC_PLL3Config(RCC_PLL3Mul_10);
-	/* Enable PLL3 */
-	RCC_PLL3Cmd(ENABLE);
-	/* Wait till PLL3 is ready */
-	while (RCC_GetFlagStatus(RCC_FLAG_PLL3RDY) == RESET)
-	{}
-
-	/* Get clock PLL3 clock on PA8 pin */
-	RCC_MCOConfig(RCC_MCO_PLL3CLK);
-#endif
-
-	/* ETHERNET pins configuration */
-	/* AF Output Push Pull:
-	- ETH_MII_MDIO / ETH_RMII_MDIO: PA2
-	- ETH_MII_MDC / ETH_RMII_MDC: PC1
-	- ETH_MII_TXD2: PC2
-	- ETH_MII_TX_EN / ETH_RMII_TX_EN: PB11
-	- ETH_MII_TXD0 / ETH_RMII_TXD0: PB12
-	- ETH_MII_TXD1 / ETH_RMII_TXD1: PB13
-	- ETH_MII_PPS_OUT / ETH_RMII_PPS_OUT: PB5
-	- ETH_MII_TXD3: PB8 */
-
-	/* Configure PA2 as alternate function push-pull */
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-	/* Configure PC1, PC2 and PC3 as alternate function push-pull */
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_2;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-	GPIO_Init(GPIOC, &GPIO_InitStructure);
-
-	/* Configure PB5, PB8, PB11, PB12 and PB13 as alternate function push-pull */
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_8 | GPIO_Pin_11 |
-								  GPIO_Pin_12 | GPIO_Pin_13;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
-
-	/**************************************************************/
-	/*               For Remapped Ethernet pins                   */
-	/*************************************************************/
-	/* Input (Reset Value):
-	- ETH_MII_CRS CRS: PA0
-	- ETH_MII_RX_CLK / ETH_RMII_REF_CLK: PA1
-	- ETH_MII_COL: PA3
-	- ETH_MII_RX_DV / ETH_RMII_CRS_DV: PD8
-	- ETH_MII_TX_CLK: PC3
-	- ETH_MII_RXD0 / ETH_RMII_RXD0: PD9
-	- ETH_MII_RXD1 / ETH_RMII_RXD1: PD10
-	- ETH_MII_RXD2: PD11
-	- ETH_MII_RXD3: PD12
-	- ETH_MII_RX_ER: PB10 */
-
-	/* Configure PA0, PA1 and PA3 as input */
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_3;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-	/* Configure PB10 as input */
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
-
-	/* Configure PC3 as input */
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-	GPIO_Init(GPIOC, &GPIO_InitStructure);
-
-	/* Configure PD8, PD9, PD10, PD11 and PD12 as input */
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_10 | GPIO_Pin_11 | GPIO_Pin_12;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-	GPIO_Init(GPIOD, &GPIO_InitStructure); /**/
-
-	/* MCO pin configuration------------------------------------------------- */
-	/* Configure MCO (PA8) as alternate function push-pull */
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-}
-
-void rt_hw_stm32_eth_init()
-{
-    RCC_Configuration();
-    GPIO_Configuration();
-    NVIC_Configuration();
-
-    // OUI 00-80-E1 STMICROELECTRONICS
-    stm32_eth_device.dev_addr[0] = 0x00;
-    stm32_eth_device.dev_addr[1] = 0x80;
-    stm32_eth_device.dev_addr[2] = 0xE1;
-    // generate MAC addr from 96bit unique ID (only for test)
-    stm32_eth_device.dev_addr[3] = *(rt_uint8_t*)(0x1FFFF7E8+7);
-    stm32_eth_device.dev_addr[4] = *(rt_uint8_t*)(0x1FFFF7E8+8);
-    stm32_eth_device.dev_addr[5] = *(rt_uint8_t*)(0x1FFFF7E8+9);
-
-    stm32_eth_device.parent.parent.init       = rt_stm32_eth_init;
-    stm32_eth_device.parent.parent.open       = rt_stm32_eth_open;
-    stm32_eth_device.parent.parent.close      = rt_stm32_eth_close;
-    stm32_eth_device.parent.parent.read       = rt_stm32_eth_read;
-    stm32_eth_device.parent.parent.write      = rt_stm32_eth_write;
-    stm32_eth_device.parent.parent.control    = rt_stm32_eth_control;
-    stm32_eth_device.parent.parent.user_data  = RT_NULL;
-
-    stm32_eth_device.parent.eth_rx     = rt_stm32_eth_rx;
-    stm32_eth_device.parent.eth_tx     = rt_stm32_eth_tx;
-
-    /* init tx buffer free semaphore */
-    rt_sem_init(&tx_buf_free, "tx_buf", ETH_TXBUFNB, RT_IPC_FLAG_FIFO);
-
-    /* register eth device */
-    eth_device_init(&(stm32_eth_device.parent), "e0");
-}
 

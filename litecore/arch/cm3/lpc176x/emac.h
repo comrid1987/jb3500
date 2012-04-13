@@ -2,6 +2,9 @@
 #define __ARCH_EMAC_H__
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 /* EMAC Memory Buffer configuration for 16K Ethernet RAM. */
@@ -293,6 +296,9 @@
 
 
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

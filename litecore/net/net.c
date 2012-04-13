@@ -14,16 +14,20 @@
 #include <net/rtxip/rtxip.c>
 #include <net/rtxip/sockets.c>
 
-#if TCPPS_ETH_ENABLE
-#if LM3S_ETH_ENABLE
-#include <net/lwip/netif/netif_lm3s.c>
-#endif
-#if LPC176X_ETH_ENABLE
-#include <net/lwip/netif/netif_lpc17xx.c>
-#endif
 #endif
 
-#elif TCPPS_TYPE == TCPPS_T_LWIP
+
+
+
+
+
+
+
+
+
+
+
+#if TCPPS_TYPE == TCPPS_T_LWIP
 #include <net/lwip/arch/sys_arch.c>
 
 #include <net/lwip/core/autoip.c>
@@ -81,6 +85,9 @@
 #if TCPPS_ETH_ENABLE
 #include <net/lwip/netif/etharp.c>
 #include <net/lwip/netif/ethernetif.c>
+#if STM32_ETH_ENABLE
+#include <net/lwip/netif/netif_stm32f10x.c>
+#endif
 #if LM3S_ETH_ENABLE
 #include <net/lwip/netif/netif_lm3s.c>
 #endif

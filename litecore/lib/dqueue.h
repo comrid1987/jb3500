@@ -1,6 +1,10 @@
 #ifndef __DQUEUE_H__
 #define __DQUEUE_H__
-#include <lib/buffer.h>
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //是否使用动态内存分配数据队列存储区
@@ -39,6 +43,10 @@ int dque_Push(dque pQue, uint_t nChl, const void *pBuf, uint_t nLen);
 int dque_IsNotEmpty(dque pQue, uint_t nChl);
 void dque_Clear(dque pQue, uint_t nChl);
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif 
 

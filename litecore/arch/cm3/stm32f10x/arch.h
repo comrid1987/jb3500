@@ -21,6 +21,7 @@ extern "C" {
 
 #include <arch/cm3/stm32f10x/adc.h>
 #include <arch/cm3/stm32f10x/bkp.h>
+#include <arch/cm3/stm32f10x/emac.h>
 #include <arch/cm3/stm32f10x/fsmc.h>
 #include <arch/cm3/stm32f10x/flash.h>
 #include <arch/cm3/stm32f10x/gpio.h>

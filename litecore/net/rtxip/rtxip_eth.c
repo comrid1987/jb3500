@@ -23,11 +23,7 @@ extern uint8_t own_hw_adr[];
 void init_ethernet()
 {
 
-#if LM3S_ETH_ENABLE
-	arch_EmacInit();
-	arch_EmacAddr(own_hw_adr);
-#endif
-#if LPC176X_ETH_ENABLE
+#if STM32_ETH_ENABLE || LM3S_ETH_ENABLE || LPC176X_ETH_ENABLE
 	arch_EmacInit();
 	arch_EmacAddr(own_hw_adr);
 #endif
@@ -43,10 +39,7 @@ void send_frame(OS_FRAME *frame)
 #if ENC28J60_ENABLE
 	enc28j60_PacketSend(frame->data, frame->length);
 #endif
-#if LM3S_ETH_ENABLE
-	arch_EmacPacketTx(frame->data, frame->length);
-#endif
-#if LPC176X_ETH_ENABLE
+#if STM32_ETH_ENABLE || LM3S_ETH_ENABLE || LPC176X_ETH_ENABLE
 	arch_EmacPacketTx(frame->data, frame->length);
 #endif
 }
@@ -61,10 +54,7 @@ void int_enable_eth()
 #if ENC28J60_ENABLE
 	enc28j60_WriteOp(ENC28J60_BIT_FIELD_SET, EIE, EIE_INTIE);
 #endif
-#if LM3S_ETH_ENABLE
-	arch_EmacIntEnable();
-#endif
-#if LPC176X_ETH_ENABLE
+#if STM32_ETH_ENABLE || LM3S_ETH_ENABLE || LPC176X_ETH_ENABLE
 	arch_EmacIntEnable();
 #endif
 }
@@ -78,10 +68,7 @@ void int_disable_eth()
 #if ENC28J60_ENABLE
 	enc28j60_WriteOp(ENC28J60_BIT_FIELD_CLR, EIE, EIE_INTIE);
 #endif
-#if LM3S_ETH_ENABLE
-	arch_EmacIntDisable();
-#endif
-#if LPC176X_ETH_ENABLE
+#if STM32_ETH_ENABLE || LM3S_ETH_ENABLE || LPC176X_ETH_ENABLE
 	arch_EmacIntDisable();
 #endif
 }
@@ -97,10 +84,7 @@ void poll_ethernet()
 #if ENC28J60_ENABLE
 	enc28j60_IntHandler();
 #endif
-#if LM3S_ETH_ENABLE
-	arch_EmacIsr();
-#endif
-#if LPC176X_ETH_ENABLE
+#if STM32_ETH_ENABLE || LM3S_ETH_ENABLE || LPC176X_ETH_ENABLE
 	arch_EmacIsr();
 #endif
 }
