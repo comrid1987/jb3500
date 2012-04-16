@@ -24,6 +24,7 @@ struct __FILE { int handle; /* Add whatever you need here */ };
 FILE __stdout;
 FILE __stdin;
 
+#if 0
 int fputc(int ch, FILE *f) {
   return (sendchar(ch));
 }
@@ -47,3 +48,4 @@ void _ttywrch(int ch) {
 void _sys_exit(int return_code) {
   while (1);    /* endless loop */
 }
+#endif

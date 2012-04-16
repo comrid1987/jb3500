@@ -12,7 +12,9 @@ extern "C" {
 #if SFS_ENABLE
 #include <fs/sfs/sfs.h>
 #endif
+#if FS_ENABLE
 #include <fs/fs_posix.h>
+#endif
 
 //Public Defines
 

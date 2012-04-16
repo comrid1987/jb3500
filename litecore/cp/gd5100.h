@@ -50,6 +50,7 @@ typedef struct {
 //规约结构
 typedef struct {
 	t_dlrcp		parent;
+	uint8_t		pwd[3];
 	uint16_t	group;
  	uint16_t	rtua;
  	uint16_t	terid;

@@ -74,7 +74,7 @@ sys_res chl_soc_Connect(chl p, uint8_t *pIp, uint_t nPort)
 	case CHL_T_SOC_TC:
 	case CHL_T_SOC_UC:
 		adr.sin_family = AF_INET;
-		rt_memcpy(&adr.sin_addr.s_addr, pIp, 4);
+		memcpy(&adr.sin_addr.s_addr, pIp, 4);
 		adr.sin_port = htons(nPort);
 		connect((int)p->pIf, (struct sockaddr *)&adr, sizeof(struct sockaddr_in));
 		p->ste = CHL_S_CONNECT;

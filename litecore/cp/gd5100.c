@@ -106,6 +106,33 @@ static void gd5100_TmsgHeaderInit(p_gd5100 p, p_gd5100_header pH)
 }
 
 
+//-------------------------------------------------------------------------
+//µÇÂ¼
+//-------------------------------------------------------------------------
+static sys_res gw3761_TmsgLinkcheck (void *p, uint_t nCmd)
+{
+	sys_res res;
+	buf b = {0};
+
+	switch (nCmd) {
+	case DLRCP_LINKCHECK_LOGIN:
+		nCmd = GD5100_CCODE_LOGIN;
+		break;
+	case DLRCP_LINKCHECK_LOGOUT:
+		nCmd = GD5100_CCODE_LOGOUT;
+		break;
+	case DLRCP_LINKCHECK_KEEPALIVE:
+		nCmd = GD5100_CCODE_KEEPALIVE;
+		break;
+	}
+	buf_Push(b, ((p_gd5100)p)->pwd, 3);
+	res = gd5100_TmsgSend(p, nCmd, b, DLRCP_TMSG_REPORT);
+	buf_Release(b);
+	return res;
+}
+	
+	
+
 
 
 
@@ -119,7 +146,7 @@ void gd5100_Init(p_gd5100 p)
 
 	memset(p, 0, sizeof(t_gw3761));
 	p->group = 0;
-	p->parent.linkcheck = NULL;
+	p->parent.linkcheck = gw3761_TmsgLinkcheck;
 	p->parent.analyze = gd5100_RmsgAnalyze;
 }
 

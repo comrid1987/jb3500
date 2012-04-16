@@ -4,6 +4,59 @@
 int arch_EmacInit()
 {
  
+	unsigned long ulTemp;
+
+	/* Enable and Reset the Ethernet Controller. */
+	MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_ETH);
+	MAP_SysCtlPeripheralReset(SYSCTL_PERIPH_ETH);
+
+	/*	
+	Enable Port F for Ethernet LEDs.
+	LED0		Bit 3	Output
+	LED1		Bit 2	Output
+	*/
+	MAP_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+	MAP_GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_2 | GPIO_PIN_3, GPIO_DIR_MODE_HW);
+	MAP_GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_2 | GPIO_PIN_3,
+					 GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD);
+
+	//
+	// Disable all Ethernet Interrupts.
+	//
+	MAP_EthernetIntDisable(ETH_BASE, (ETH_INT_PHY | ETH_INT_MDIO | ETH_INT_RXER |
+								  ETH_INT_RXOF | ETH_INT_TX | ETH_INT_TXER |
+								  ETH_INT_RX));
+	ulTemp = MAP_EthernetIntStatus(ETH_BASE, false);
+	MAP_EthernetIntClear(ETH_BASE, ulTemp);
+
+	//
+	// Initialize the Ethernet Controller.
+	//
+	MAP_EthernetInitExpClk(ETH_BASE, MAP_SysCtlClockGet());
+
+	//
+	// Configure the Ethernet Controller for normal operation.
+	// - Enable TX Duplex Mode
+	// - Enable TX Padding
+	// - Enable TX CRC Generation
+	//
+	MAP_EthernetConfigSet(ETH_BASE, (ETH_CFG_TX_DPLXEN |
+								 ETH_CFG_TX_CRCEN | ETH_CFG_TX_PADEN));
+
+	//
+	// Enable the Ethernet Controller transmitter and receiver.
+	//
+	MAP_EthernetEnable(ETH_BASE);
+
+	//
+	// Enable the Ethernet Interrupt handler.
+	//
+	MAP_IntEnable(INT_ETH);
+
+	//
+	// Enable Ethernet TX and RX Packet Interrupts.
+	//
+	MAP_EthernetIntEnable(ETH_BASE, ETH_INT_RX | ETH_INT_TX);
 
 	return 0;
 }
@@ -28,12 +81,14 @@ void arch_EmacAddr(uint8_t *pAdr)
 void arch_EmacIntEnable()
 {
 
+	MAP_IntEnable(INT_ETH);
 }
 
 
 void arch_EmacIntDisable()
 {
 
+	MAP_IntDisable(INT_ETH);
 }
 
 void arch_EmacPacketTx(const void *pData, uint_t nLen)
