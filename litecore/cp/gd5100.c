@@ -109,7 +109,7 @@ static void gd5100_TmsgHeaderInit(p_gd5100 p, p_gd5100_header pH)
 //-------------------------------------------------------------------------
 //µÇÂ¼
 //-------------------------------------------------------------------------
-static sys_res gw3761_TmsgLinkcheck (void *p, uint_t nCmd)
+static sys_res gd5100_TmsgLinkcheck (void *p, uint_t nCmd)
 {
 	sys_res res;
 	buf b = {0};
@@ -146,7 +146,7 @@ void gd5100_Init(p_gd5100 p)
 
 	memset(p, 0, sizeof(t_gw3761));
 	p->group = 0;
-	p->parent.linkcheck = gw3761_TmsgLinkcheck;
+	p->parent.linkcheck = gd5100_TmsgLinkcheck;
 	p->parent.analyze = gd5100_RmsgAnalyze;
 }
 

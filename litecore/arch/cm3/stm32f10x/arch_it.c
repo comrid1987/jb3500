@@ -726,12 +726,10 @@ void USART1_IRQHandler(void)
 #if UART_ENABLE
 	os_irq_Enter();
 
-#if UART_ENABLE
 #ifdef RT_USING_FINSH
 	rt_hw_serial_isr(&uart1_device);
 #else
 	arch_UartISR(0);
-#endif
 #endif
 
 	os_irq_Leave();
@@ -751,9 +749,7 @@ void USART2_IRQHandler(void)
 #if UART_ENABLE
 	os_irq_Enter();
 
-#if UART_ENABLE
 	arch_UartISR(1);
-#endif
 
 	os_irq_Leave();
 #endif
@@ -772,9 +768,7 @@ void USART3_IRQHandler(void)
 #if UART_ENABLE
 	os_irq_Enter();
 
-#if UART_ENABLE
 	arch_UartISR(2);
-#endif
 
 	os_irq_Leave();
 #endif
@@ -943,9 +937,7 @@ void UART4_IRQHandler(void)
 #if UART_ENABLE
 	os_irq_Enter();
 
-#if UART_ENABLE
 	arch_UartISR(3);
-#endif
 
 	os_irq_Leave();
 #endif
@@ -964,9 +956,7 @@ void UART5_IRQHandler(void)
 #if UART_ENABLE
 	os_irq_Enter();
 
-#if UART_ENABLE
 	arch_UartISR(4);
-#endif
 
 	os_irq_Leave();
 #endif
@@ -1043,6 +1033,13 @@ void DMA2_Channel4_5_IRQHandler(void)
 void ETH_IRQHandler(void)
 {
 
+#if TCPPS_ETH_ENABLE
+	os_irq_Enter();
+
+	arch_EmacIsr();
+
+	os_irq_Leave();
+#endif
 }
 
 //Ethernet Wakeup through EXTI line

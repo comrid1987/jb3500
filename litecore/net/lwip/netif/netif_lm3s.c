@@ -375,7 +375,7 @@ void arch_EmacIsr()
 }
 
 
-void lm3sethif_Init(void)
+void ethif_Init(void)
 {
 	unsigned long ulUser0, ulUser1;
 

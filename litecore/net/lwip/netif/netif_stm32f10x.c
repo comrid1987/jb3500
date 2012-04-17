@@ -3261,7 +3261,7 @@ static void NVIC_Configuration(void)
 /*
  * GPIO Configuration for ETH
  */
-static void GPIO_Configuration(void)
+static void arch_emacGpioCfg(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 
@@ -3275,7 +3275,7 @@ static void GPIO_Configuration(void)
 	/* Get HSE clock = 25MHz on PA8 pin(MCO) */
 	RCC_MCOConfig(RCC_MCO_HSE);
 
-#elif defined RMII_MODE  /* Mode RMII with STM3210C-EVAL */
+#else  /* Mode RMII with STM3210C-EVAL */
 	GPIO_ETH_MediaInterfaceConfig(GPIO_ETH_MediaInterface_RMII);
 
 	/* Get HSE clock = 25MHz on PA8 pin(MCO) */
@@ -3373,7 +3373,7 @@ int arch_EmacInit()
     vu32 Value = 0;
 
 	RCC_Configuration();
-	GPIO_Configuration();
+	arch_emacGpioCfg();
 	NVIC_Configuration();
 
 	/* Reset ETHERNET on AHB Bus */

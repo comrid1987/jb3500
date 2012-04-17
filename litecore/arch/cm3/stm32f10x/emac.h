@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-#if 0
+#if 1
 /* ETH Memory Buffer configuration. */
 #define NUM_RX_BUF          4           /* 0x1800 for Rx (4*1536=6K)         */
 #define NUM_TX_BUF          2           /* 0x0600 for Tx (2*1536=3K)         */

@@ -354,11 +354,8 @@ void sys_Init()
 //-------------------------------------------------------------------------
 //Network Subsystem Functions
 //-------------------------------------------------------------------------
-#if LM3S_ETH_ENABLE
-	lm3sethif_Init();
-#endif
-#if LPC176X_ETH_ENABLE
-	lpcethif_Init();
+#if STM32_ETH_ENABLE || LM3S_ETH_ENABLE || LPC176X_ETH_ENABLE
+	ethif_Init();
 #endif
 #if DM9000_ENABLE
 	dm9000_Init();
