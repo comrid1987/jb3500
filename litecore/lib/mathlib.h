@@ -12,6 +12,12 @@ extern const float math_div10[];
 extern const uint64_t math_pow10[];
 extern const float math_sint[];
 
+typedef struct {
+	float real;
+	float imag;
+}t_complex;
+
+
 
 //-------------------------------------------------------------------------
 //FixPoint
