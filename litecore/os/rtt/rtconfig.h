@@ -84,6 +84,7 @@
 #define RT_USING_DFS
 /* #define DFS_USING_WORKDIR */
 #define RT_USING_DFS_ELMFAT
+#endif
 
 /* the max number of mounted filesystem */
 #define DFS_FILESYSTEMS_MAX			3
@@ -91,7 +92,6 @@
 #define DFS_FD_MAX					4
 /* the max number of cached sector 		*/
 #define DFS_CACHE_MAX_NUM   		4
-#endif
 
 /* SECTION: lwip, a lighwight TCP/IP protocol stack */
 /* #define RT_USING_LWIP */

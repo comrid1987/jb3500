@@ -42,7 +42,7 @@ typedef struct {
 #define FLOAT2FIX(x)	((fixpoint)(((float)(x)) * (1UL << EXP)))
 #define FIXP_EPSILON	(1.0 / (1UL << EXP))
 
-uint32_t fix_Sqrt(uint64_t d, uint32_t N);
+uint32_t sqrtfix(uint64_t d, uint32_t N);
 uint_t uintabs(uint_t a, uint_t b);
 
 

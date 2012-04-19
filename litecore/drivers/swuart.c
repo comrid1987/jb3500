@@ -82,10 +82,12 @@ static void swuart_TxOut(uint_t nFun, uint_t nPort, uint_t nPin, uint_t nValue)
 #if IRDA_ENABLE
 	if (nFun == UART_FUN_IRDA) {
 #if IRDA_MODE == IRDA_MODE_TIM
-		if (nValue)
+		if (nValue) {
 			irq_TimerStop(nPort);
-		else
+			arch_GpioSet(nPort, nPin, 1);
+		} else {
 			irq_TimerStart(nPort, arch_TimerClockGet() / 76000);
+		}
 #else
 		if (nValue)
 			arch_PwmStop(nPort, nPin);

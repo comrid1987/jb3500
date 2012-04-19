@@ -115,18 +115,6 @@ void arch_GpioConf(uint_t nPort, uint_t nPin, uint_t nMode, uint_t nInit)
         __raw_writel(GPIO_LOCK_KEY_DD, GPIO_PORTB_BASE + GPIO_O_LOCK);
         __raw_writel(0x80, GPIO_PORTB_BASE + GPIO_O_CR);
     }
-	if (nMode & GPIO_M_OUT_MASK) {
-		switch (nInit) {
-		case GPIO_INIT_HIGH:
-			MAP_GPIOPinWrite(nBase, nPin, 0xFF);
-			break;
-		case GPIO_INIT_LOW:
-			MAP_GPIOPinWrite(nBase, nPin, 0);
-			break;
-		default:
-			break;
-		}
-	}
 	switch (nMode) {
 	case GPIO_M_IN_ANALOG:
 		MAP_GPIODirModeSet(nBase, nPin, GPIO_DIR_MODE_IN);
@@ -162,6 +150,18 @@ void arch_GpioConf(uint_t nPort, uint_t nPin, uint_t nMode, uint_t nInit)
 		break;
 	default:
 		break;
+	}
+	if (nMode & GPIO_M_OUT_MASK) {
+		switch (nInit) {
+		case GPIO_INIT_HIGH:
+			MAP_GPIOPinWrite(nBase, nPin, 0xFF);
+			break;
+		case GPIO_INIT_LOW:
+			MAP_GPIOPinWrite(nBase, nPin, 0);
+			break;
+		default:
+			break;
+		}
 	}
 	//PB7(NMI)
     if ((nPort == GPIO_P1) && (nPin == 0x80)) {
