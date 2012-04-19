@@ -257,7 +257,6 @@ void icp_UdiskLoad(void)
 	t_afn04_f1 xF1;
 	t_afn04_f3 xF3;
 	t_afn04_f85 xF85;
-	DIR_POSIX *d;
 	char str[128];
 	int fd;
 	uint_t ulen, ui;

@@ -35,8 +35,8 @@ by arnold
 **************************************************************************/
 #if HC165_ENABLE
 	t_gpio_def _tbl_bspHC165[] = {
-		GPIO_T_INT, 	GPIO_P1,	2,		GPIO_M_OUT_PP,		GPIO_INIT_HIGH,
-		GPIO_T_INT,		GPIO_P1,	4,		GPIO_M_OUT_PP,		GPIO_INIT_HIGH,
+		GPIO_T_INT, 	GPIO_P1,	2,		GPIO_M_OUT_PP,		GPIO_INIT_NULL,
+		GPIO_T_INT,		GPIO_P1,	4,		GPIO_M_OUT_PP,		GPIO_INIT_NULL,
 		GPIO_T_INT, 	GPIO_P3,	2,		GPIO_M_IN_FLOAT,	GPIO_INIT_NULL,
 	};
 	tbl_gpio_def tbl_bspHC165[] = {_tbl_bspHC165, ARR_ENDADR(_tbl_bspHC165)};

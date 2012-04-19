@@ -82,7 +82,6 @@ void app_Entry()
 {
 	uint_t i = 1;
 
-	BEEP(0);
 	if (i)
 		os_thd_Create(Daemon, 160);
 	if (i)
@@ -99,6 +98,7 @@ void app_Entry()
 
 int main(void)
 {
+
     BEEP(0);
 	sys_Start();
 }
