@@ -11,13 +11,6 @@
 //Private Defines
 #define ECL_DATA_MAGIC_WORD		0x52318761
 
-#define ECL_DATA_MADR_BASE		(98 * 0x1000)
-
-#define ECL_DATA_DAY_BASE		(100 * 0x1000)
-#define ECL_DATA_DAY_HEADER		16
-#define ECL_DATA_DAY_MSIZE		sizeof(t_data_quarter)
-#define ECL_DATA_DAY_ALLSIZE	(ECL_DATA_DAY_HEADER + 96 * ECL_DATA_DAY_MSIZE)
-
 #define ECL_DATA_QUAR_BASE		(68 * 0x1000)
 #define ECL_DATA_QUAR_HEADER	16
 #define ECL_DATA_QUAR_MSIZE		sizeof(t_data_quarter)
