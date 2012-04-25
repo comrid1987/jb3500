@@ -584,11 +584,13 @@ void TIM1_CC_IRQHandler(void)
 void TIM2_IRQHandler(void)
 {
 
+#if IRQ_ENABLE
 	os_irq_Enter();
 
 	acm_Tim2Isr();
 
 	os_irq_Leave();
+#endif
 }
 
 /*******************************************************************************

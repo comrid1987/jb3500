@@ -191,11 +191,13 @@ void EINT2_IRQHandler()
 void EINT3_IRQHandler()
 {
 
+#if IRQ_ENABLE
 	os_irq_Enter();
 
 	lpc176x_ExtIrqISR();
 	
 	os_irq_Leave();
+#endif
 }
 
 

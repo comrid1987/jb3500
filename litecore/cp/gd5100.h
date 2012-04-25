@@ -68,6 +68,8 @@ sys_res gd5100_TmsgSend(p_gd5100 p, uint_t nCode, buf b, uint_t nType);
 sys_res gd5100_TmsgError(p_gd5100 p, uint_t nCode, uint_t nErr);
 sys_res gd5100_Handler(p_gd5100 p);
 
+void gd5100_Response(p_gd5100 p);
+
 
 
 #endif

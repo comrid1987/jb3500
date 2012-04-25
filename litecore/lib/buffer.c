@@ -84,7 +84,7 @@ sys_res buf_PushData(buf b, uint_t nData, uint_t nLen)
 //-------------------------------------------------------------------------
 sys_res buf_Fill(buf b, uint_t nVal, uint_t nLen)
 {
-	sys_res res;
+	sys_res res = SYS_R_ERR;
 	uint_t nFill;
 	uint8_t aBuf[64];
 
