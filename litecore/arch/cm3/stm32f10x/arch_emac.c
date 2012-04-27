@@ -195,21 +195,24 @@ void arch_EmacInit()
     NVIC_Init(&NVIC_InitStructure);
 
 	/* Reset Ethernet MAC */
-	RCC->AHBRSTR  |= 0x00004000;
-	RCC->AHBRSTR  &=~0x00004000;
+	RCC->AHBRSTR |= 0x00004000;
+	RCC->AHBRSTR &=~0x00004000;
 
-	ETH->DMABMR  |= DBMR_SR;
-	while (ETH->DMABMR & DBMR_SR);
+	ETH->DMABMR |= DBMR_SR;
+	for (tout = 0; tout < 0x10000; tout++) {
+		if ((ETH->DMABMR & DBMR_SR) == 0)
+			break;
+	}
 
 	/* MDC Clock range 60-72MHz. */
 	ETH->MACMIIAR = 0x00000000;
 
 	/* Put the DP83848C in reset mode */
-	write_PHY (PHY_REG_BMCR, 0x8000);
+	write_PHY(PHY_REG_BMCR, 0x8000);
 
 	/* Wait for hardware reset to end. */
 	for (tout = 0; tout < 0x10000; tout++) {
-		regv = read_PHY (PHY_REG_BMCR);
+		regv = read_PHY(PHY_REG_BMCR);
 		if (!(regv & 0x8800)) {
 			/* Reset complete, device not Power Down. */
 			break;
@@ -217,34 +220,34 @@ void arch_EmacInit()
 	}
 
 	/* Check if this is a DP83848C PHY. */
-	id1 = read_PHY (PHY_REG_IDR1);
-	id2 = read_PHY (PHY_REG_IDR2);
+	id1 = read_PHY(PHY_REG_IDR1);
+	id2 = read_PHY(PHY_REG_IDR2);
 
 	if (((id1 << 16) | (id2 & 0xFFF0)) == DP83848C_ID) {
-	/* Configure the PHY device */
+		/* Configure the PHY device */
 #if defined (_10MBIT_)
-	/* Connect at 10MBit */
-	write_PHY (PHY_REG_BMCR, PHY_FULLD_10M);
+		/* Connect at 10MBit */
+		write_PHY(PHY_REG_BMCR, PHY_FULLD_10M);
 #elif defined (_100MBIT_)
-	/* Connect at 100MBit */
-	write_PHY (PHY_REG_BMCR, PHY_FULLD_100M);
+		/* Connect at 100MBit */
+		write_PHY(PHY_REG_BMCR, PHY_FULLD_100M);
 #else
-	/* Use autonegotiation about the link speed. */
-	write_PHY (PHY_REG_BMCR, PHY_AUTO_NEG);
-	/* Wait to complete Auto_Negotiation. */
-	for (tout = 0; tout < 0x10000; tout++) {
-		regv = read_PHY (PHY_REG_BMSR);
-		if (regv & 0x0020) {
-			/* Autonegotiation Complete. */
-			break;
+		/* Use autonegotiation about the link speed. */
+		write_PHY(PHY_REG_BMCR, PHY_AUTO_NEG);
+		/* Wait to complete Auto_Negotiation. */
+		for (tout = 0; tout < 0x10000; tout++) {
+			regv = read_PHY(PHY_REG_BMSR);
+			if (regv & 0x0020) {
+				/* Autonegotiation Complete. */
+				break;
+			}
 		}
-	}
 #endif
 	}
 
 	/* Check the link status. */
 	for (tout = 0; tout < 0x10000; tout++) {
-		regv = read_PHY (PHY_REG_STS);
+		regv = read_PHY(PHY_REG_STS);
 		if (regv & 0x0001) {
 			/* Link is on. */
 			break;
@@ -252,7 +255,7 @@ void arch_EmacInit()
 	}
 
 	/* Initialize MAC control register */
-	ETH->MACCR  = MCR_ROD;
+	ETH->MACCR = MCR_ROD;
 
 	/* Configure Full/Half Duplex mode. */
 	if (regv & 0x0004) {
@@ -281,7 +284,7 @@ void arch_EmacInit()
 	ETH->MACCR |= MCR_TE | MCR_RE;
 
 	/* Reset all interrupts */
-	ETH->DMASR  = 0xFFFFFFFF;
+	ETH->DMASR = 0xFFFFFFFF;
 
 	/* Enable Rx and NIS interrupts. */
 	ETH->DMAIER = INT_NISE | INT_RIE;

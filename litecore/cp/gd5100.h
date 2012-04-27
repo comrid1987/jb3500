@@ -21,6 +21,10 @@
 #define GD5100_ERR_SEND_FALE			0x12	//发送失败
 #define GD5100_ERR_SMS_LONG				0x13	//短消息帧太长
 
+#define GD5100_DATA_INVALID				0xFFFFFFFF
+
+
+
 //Public Typedefs
 
 //接收报文结构

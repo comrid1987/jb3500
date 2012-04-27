@@ -6,16 +6,14 @@
 
 #define SPIF_PAGE_SIZE			256
 
-#define SPIF_JEDEC_MX25L1605D	0x1520C2
-#define SPIF_JEDEC_MX25L3205D	0x1620C2
-#define SPIF_JEDEC_MX25L6405D	0x1720C2
+#define SPIF_JEDEC_MX25L16		0x1520C2
+#define SPIF_JEDEC_MX25L32		0x1620C2
+#define SPIF_JEDEC_MX25L64		0x1720C2
 #define SPIF_JEDEC_SST25VF03	0x4A25BF
 
 #define SPIF_T_NULL				0
-#define SPIF_T_MX25L1605D		1
-#define SPIF_T_MX25L3205D		2
-#define SPIF_T_MX25L6405D		3
-#define SPIF_T_SST25VF03		4
+#define SPIF_T_MX25LXX			1
+#define SPIF_T_SST25VFXX		2
 
 
 //Command Defines
@@ -223,21 +221,30 @@ void spif_Init()
 #endif
 		for (nRetry = 0; nRetry < 3; nRetry++) {
 			nJedecID = _spif_Probe(pSpi);
-			if (nJedecID == SPIF_JEDEC_MX25L3205D) {
-				p->size += SPIF_SEC_QTY;
+			if (nJedecID == SPIF_JEDEC_MX25L32) {
+				p->size += 1024;
 #if SPI_SEL_ENABLE
 				p->csid[j] = tbl_bspSpifCsid[i];
 #endif
-				p->type[j] = SPIF_T_MX25L3205D;
+				p->type[j] = SPIF_T_MX25LXX;
+				j += 1;
+				break;
+			}
+			if (nJedecID == SPIF_JEDEC_MX25L64) {
+				p->size += 2048;
+#if SPI_SEL_ENABLE
+				p->csid[j] = tbl_bspSpifCsid[i];
+#endif
+				p->type[j] = SPIF_T_MX25LXX;
 				j += 1;
 				break;
 			}
 			if (nJedecID == SPIF_JEDEC_SST25VF03) {
-				p->size += SPIF_SEC_QTY;
+				p->size += 1024;
 #if SPI_SEL_ENABLE
 				p->csid[j] = tbl_bspSpifCsid[i];
 #endif
-				p->type[j] = SPIF_T_SST25VF03;
+				p->type[j] = SPIF_T_SST25VFXX;
 				j += 1;
 				break;
 			}
@@ -292,7 +299,7 @@ void spif_Program(uint_t nSec, const void *pData)
 	spi_CsSel(pSpi, p->csid[nSec / SPIF_SEC_QTY]);
 #endif
 	switch (p->type[nSec / SPIF_SEC_QTY]) {
-	case SPIF_T_MX25L3205D:
+	case SPIF_T_MX25LXX:
 		_spif_Program_PP(pSpi, (nSec & (SPIF_SEC_QTY - 1)) * SPIF_SEC_SIZE, pData, SPIF_SEC_SIZE);
 		break;
 	default:

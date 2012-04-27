@@ -89,7 +89,7 @@ void arch_GpioConf(uint_t nPort, uint_t nPin, uint_t nMode, uint_t nInit)
 
 	xGpio.GPIO_Pin = BITMASK(nPin);
 	xGpio.GPIO_Mode = stm32_GpioFunDef(nMode);
-	xGpio.GPIO_Speed = GPIO_Speed_2MHz;
+	xGpio.GPIO_Speed = GPIO_Speed_50MHz;
 	stm32_GpioClockEnable(nPort);
 	if (nMode & GPIO_M_OUT_MASK) {
 		switch (nInit) {
