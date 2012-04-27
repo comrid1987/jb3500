@@ -131,7 +131,7 @@ static int icp_Default(uint_t nAfn, uint_t nFn, uint_t nPn, uint8_t *pBuf, uint_
 	return icp_ParaWrite(nAfn, nFn, nPn, pBuf, nLen);
 }
 
-static void icp_Reset()
+static void icp_Format()
 {
 
 	icp_Lock();
@@ -238,7 +238,7 @@ void icp_Clear()
 	icp_ParaRead(4, 1, TERMINAL, &xF1, sizeof(t_afn04_f1));
 	icp_ParaRead(4, 3, TERMINAL, &xF3, sizeof(t_afn04_f3));
 	icp_ParaRead(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
-	icp_Reset();
+	icp_Format();
 	icp_ParaWrite(4, 1, TERMINAL, &xF1, sizeof(t_afn04_f1));
 	icp_ParaWrite(4, 3, TERMINAL, &xF3, sizeof(t_afn04_f3));
 	icp_ParaWrite(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
@@ -250,6 +250,10 @@ void icp_Init()
 #if ICP_LOCK_ENABLE
 	rt_sem_init(&icp_sem, "sem_icp", 1, RT_IPC_FLAG_FIFO);
 #endif
+	if (sfs_Read(&icp_SfsDev, 0xFFFF5987, NULL) != SYS_R_OK) {
+		icp_Format();
+		sfs_Write(&icp_SfsDev, 0xFFFF5987, NULL, 0);
+	}
 }
 
 void icp_UdiskLoad(void)
@@ -287,7 +291,6 @@ void icp_UdiskLoad(void)
     	icp_ParaWrite(4, 3, TERMINAL, &xF3, sizeof(t_afn04_f3));
 		fs_close(fd);
 	}
-    
     BEEP(0);
 }
 
