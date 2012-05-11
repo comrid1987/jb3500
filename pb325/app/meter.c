@@ -132,89 +132,92 @@ void tsk_Meter(void *args)
 	}
 	for (nCnt = 0; ; nCnt++) {
 		//秒count
-		os_thd_Sleep(1000);
-		timet2array(rtc_GetTimet(), aTime, 1);
- 		if ((nCnt & 0x0F) == 0)
-            acm_XBRead();
-		if ((nCnt & 0x1F) == 0)
-            acm_JLRead();
-		//分钟
-		if (nMin != aTime[1]) {
-			nMin = aTime[1];
-			icp_RunTimeWrite(rtc_GetTimet());
-			acm_MinSave(aTime);
-			if ((bcd2bin8(nMin) % 15) == 0)
-				acm_QuarterSave(aTime);
-		}
-		//小时
-		if (nHour != aTime[2]) {
-			nHour = aTime[2];
-
-
-		}
-		//日
-		if (nDay != aTime[3]) {
-			nDay = aTime[3];
-			//交采冻结
-			if (acm_IsReady()) {
-				day4timet(rtc_GetTimet(), -1, p->time, 1);
-//				acm_DaySave(p->time);
+		if (tTime != rtc_GetTimet()) {
+			tTime = rtc_GetTimet();
+			timet2array(tTime, aTime, 1);
+	 		if ((nCnt & 0x0F) == 0)
+	            acm_XBRead();
+			if ((nCnt & 0x1F) == 0)
+	            acm_JLRead();
+			//分钟
+			if (nMin != aTime[1]) {
+				nMin = aTime[1];
+				icp_RunTimeWrite(tTime);
+				acm_MinSave(aTime);
+				if ((bcd2bin8(nMin) % 15) == 0)
+					acm_QuarterSave(aTime);
 			}
-		}
+			//小时
+			if (nHour != aTime[2]) {
+				nHour = aTime[2];
+
+
+			}
+			//日
+			if (nDay != aTime[3]) {
+				nDay = aTime[3];
+				//交采冻结
+				if (acm_IsReady()) {
+					day4timet(tTime, -1, p->time, 1);
+	//				acm_DaySave(p->time);
+				}
+			}
 #if 0
-		if ((g_sys_status & BITMASK(0))) {
-			switch (p->ste) {
-			case ECL_TASK_S_IDLE:
-				if ((rtc_GetTimet() - tTime) > 60) {
-					if (p->ste == ECL_TASK_S_IDLE) {
-						p->ste = ECL_TASK_S_AUTO;
-						tTime = rtc_GetTimet();
-					}
-				}
-				break;
-			case ECL_TASK_S_AUTO:
-				monthprev(tTime, p->time, 1);
-				for (p->sn = 1; p->sn < ECL_SN_MAX; p->sn++) {
-					//下一个有效电表
-					if (icp_MeterRead(p->sn, &p->f10) == 0)
-						continue;
-					if (p->f10.port != ECL_PORT_RS485)
-						continue;
-					if (p->f10.prtl == ECL_PRTL_DLT645_97) {
-						nLen = 2;
-						nCode = DLT645_CODE_READ97;
-						nBaud = 1200;
-					} else {
-						nLen = 4;
-						nCode = DLT645_CODE_READ07;
-						nBaud = 2400;
-					}
-					chl_rs232_Config(chlRS485, nBaud, UART_PARI_EVEN, UART_DATA_8D, UART_STOP_1D);
-					data_DayRead(p->f10.tn, p->f10.madr, p->time, &xEnergy);
-					if (xEnergy.time == GW3761_DATA_INVALID) {
-						if (p->f10.prtl == ECL_PRTL_DLT645_97)
-							p->di = 0x901F;
-						else
-							p->di = 0x05060101;
-						dlt645_Packet2Buf(b, p->f10.madr, nCode, &p->di, nLen);
-						res = dlt645_Transmit2Meter(chlRS485, b, p->f10.madr, b->p, b->len, 3000);
-						if ((res == SYS_R_OK) && (b->p[8] == (nCode | BITMASK(7)))) {
-							nRecDI = 0;
-							pTemp = &b->p[10];
-							memcpy(&nRecDI, pTemp, nLen);
-							pTemp += nLen;
-							ecl_DataHandler(p->f10.tn, p->f10.madr, p->time, nRecDI, pTemp);
+			if ((g_sys_status & BITMASK(0))) {
+				switch (p->ste) {
+				case ECL_TASK_S_IDLE:
+					if ((rtc_GetTimet() - tTime) > 60) {
+						if (p->ste == ECL_TASK_S_IDLE) {
+							p->ste = ECL_TASK_S_AUTO;
+							tTime = rtc_GetTimet();
 						}
-						buf_Release(b);
 					}
+					break;
+				case ECL_TASK_S_AUTO:
+					monthprev(tTime, p->time, 1);
+					for (p->sn = 1; p->sn < ECL_SN_MAX; p->sn++) {
+						//下一个有效电表
+						if (icp_MeterRead(p->sn, &p->f10) == 0)
+							continue;
+						if (p->f10.port != ECL_PORT_RS485)
+							continue;
+						if (p->f10.prtl == ECL_PRTL_DLT645_97) {
+							nLen = 2;
+							nCode = DLT645_CODE_READ97;
+							nBaud = 1200;
+						} else {
+							nLen = 4;
+							nCode = DLT645_CODE_READ07;
+							nBaud = 2400;
+						}
+						chl_rs232_Config(chlRS485, nBaud, UART_PARI_EVEN, UART_DATA_8D, UART_STOP_1D);
+						data_DayRead(p->f10.tn, p->f10.madr, p->time, &xEnergy);
+						if (xEnergy.time == GW3761_DATA_INVALID) {
+							if (p->f10.prtl == ECL_PRTL_DLT645_97)
+								p->di = 0x901F;
+							else
+								p->di = 0x05060101;
+							dlt645_Packet2Buf(b, p->f10.madr, nCode, &p->di, nLen);
+							res = dlt645_Transmit2Meter(chlRS485, b, p->f10.madr, b->p, b->len, 3000);
+							if ((res == SYS_R_OK) && (b->p[8] == (nCode | BITMASK(7)))) {
+								nRecDI = 0;
+								pTemp = &b->p[10];
+								memcpy(&nRecDI, pTemp, nLen);
+								pTemp += nLen;
+								ecl_DataHandler(p->f10.tn, p->f10.madr, p->time, nRecDI, pTemp);
+							}
+							buf_Release(b);
+						}
+					}
+					p->ste = ECL_TASK_S_IDLE;
+					break;
+				default:
+					break;
 				}
-				p->ste = ECL_TASK_S_IDLE;
-				break;
-			default:
-				break;
 			}
-		}
 #endif
+		}
+		os_thd_Sleep(100);
 	}
 }
 
