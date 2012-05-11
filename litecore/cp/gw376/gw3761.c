@@ -317,6 +317,9 @@ sys_res gw3761_Handler(p_gw3761 p)
 		case GW3761_AFN_DATA_L1:
 			gw3761_ResponseData1(p);
 			break;
+		case GW3761_AFN_DATA_L2:
+			gw3761_ResponseData2(p);
+			break;
 		default:
 			//统一回应
 			pData = p->rmsg.data->p;
@@ -341,9 +344,6 @@ sys_res gw3761_Handler(p_gw3761 p)
 					break;
 				case GW3761_AFN_PARA_GET:
 					res += gw3761_ResponseGetParam(p, b, &uDu, &pData);
-					break;
-				case GW3761_AFN_DATA_L2:
-					res += gw3761_ResponseData2(p, b, &uDu, &pData);
 					break;
 				case GW3761_AFN_DATA_L3:
 					res += gw3761_ResponseData3(p, b, &uDu, &pData);

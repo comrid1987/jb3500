@@ -27,7 +27,7 @@ int gw3761_ResponseCtrlCmd(p_gw3761 p, u_word2 *pDu, uint8_t **ppData);
 int gw3761_ResponseGetConfig(p_gw3761 p, buf b, u_word2 *pDu);
 int gw3761_ResponseGetParam(p_gw3761 p, buf b, u_word2 *pDu, uint8_t **ppData);
 int gw3761_ResponseData1(p_gw3761 p);
-int gw3761_ResponseData2(p_gw3761 p, buf b, u_word2 *pDu, uint8_t **ppData);
+int gw3761_ResponseData2(p_gw3761 p);
 int gw3761_ResponseData3(p_gw3761 p, buf b, u_word2 *pDu, uint8_t **ppData);
 int gw3761_ResponseFileTrans(p_gw3761 p, buf b, u_word2 *pDu, uint8_t **ppData);
 int gw3761_ResponseTransmit(p_gw3761 p, buf b, u_word2 *pDu, uint8_t **ppData);
