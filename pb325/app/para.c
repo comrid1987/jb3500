@@ -208,27 +208,6 @@ int icp_Meter4Tn(uint_t nTn, t_afn04_f10 *p)
 }
 
 
-void icp_RunTimeWrite(time_t tTime)
-{
-
-	icp_Lock();
-	sfs_Write(&icp_SfsDev, 0xFFFF0001, &tTime, sizeof(time_t));
-	icp_Unlock();
-}
-
-int icp_RunTimeRead(time_t *pTime)
-{
-	sys_res res;
-
-	icp_Lock();
-	res = sfs_Read(&icp_SfsDev, 0xFFFF0001, pTime);
-	icp_Unlock();
-	if (res == SYS_R_OK)
-		return 1;
-	return 0;
-}
-
-
 void icp_Clear()
 {
 	t_afn04_f1 xF1;

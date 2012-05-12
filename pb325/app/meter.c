@@ -122,8 +122,6 @@ void tsk_Meter(void *args)
 
 	acm_Init();
 
-	data_RuntimeWrite();
-
 	memset(p, 0, sizeof(t_ecl_task));
 	if (g_sys_status & BITMASK(0)) {
 		p->chl = chlRS485;
@@ -142,7 +140,7 @@ void tsk_Meter(void *args)
 			//∑÷÷”
 			if (nMin != aTime[1]) {
 				nMin = aTime[1];
-				icp_RunTimeWrite(tTime);
+				evt_RunTimeWrite(tTime);
 				acm_MinSave(aTime);
 				if ((bcd2bin8(nMin) % 15) == 0)
 					acm_QuarterSave(aTime);

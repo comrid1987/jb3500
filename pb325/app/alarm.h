@@ -7,15 +7,6 @@ extern "C" {
 
 
 //Public Defines
-#define EVT_BASE_ADDR				0
-
-#define EVT_CNT_ADDR				16	// 4
-#define EVT_FLAG_ADDR				20	// 8
-
-#define EVT_RUNVER_ADDR				40	// 4
-#define EVT_RUNTIME_ADDR			64	// 4
-
-#define EVT_METERFLAG_ADDR			128	//
 
 
 
@@ -23,6 +14,9 @@ extern "C" {
 
 //External Functions
 void evt_ERC3(uint_t nMSA, u_word2 *pDu);
+void evt_RunTimeWrite(time_t tTime);
+int evt_RunTimeRead(time_t *pTime);
+
 void evt_Init(void);
 void evt_Clear(void);
 uint_t evt_GetCount(void);

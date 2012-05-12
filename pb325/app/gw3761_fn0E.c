@@ -9,14 +9,24 @@
 //External Functions
 int gw3761_ResponseData3(p_gw3761 p, buf b, u_word2 *pDu, uint8_t **ppData)
 {
-	uint_t i;
+	int res = 0;
+	uint_t nPm, nPn;
 
-	for (i = 0; i < 8; i++) {
-		if ((pDu->word[1] & BITMASK(i)) == 0)
-			continue;
-		*ppData += 2;
+	buf_PushData(b, evt_GetCount(), 2);
+	nPm = *(*ppData)++;
+	nPn = *(*ppData)++;
+	if (nPm != nPn) {
+		switch (pDu->word[1]) {
+		case 0x0001:
+			res += evt_Read(b, nPm, nPn, 0);
+			break;
+		default:
+			res += evt_Read(b, nPm, nPn, 1);
+			break;
+		}
 	}
-	return 0;
+	if (res == 0)
+		buf_Unpush(b, 6);
+	return res;
 }
-
 

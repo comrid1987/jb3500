@@ -26,11 +26,6 @@
 #define ECL_DATA_YX_SIZE		7
 #define ECL_DATA_YX_QTY			100
 
-#define ECL_DATA_ONOFF_BASE		(325 * 0x1000)
-#define ECL_DATA_ONOFF_HEADER	16
-#define ECL_DATA_ONOFF_SIZE		12
-#define ECL_DATA_ONOFF_QTY		100
-
 
 
 //Private Macros
@@ -168,43 +163,6 @@ void data_DayWrite(uint_t nTn, const uint8_t *pAdr, const uint8_t *pTime, t_ecl_
 }
 #endif
 
-
-void data_RuntimeRead(buf b)
-{
-	uint8_t *pBuf;
-
-	pBuf = mem_Malloc(ECL_DATA_ONOFF_QTY * ECL_DATA_ONOFF_SIZE);
-	if (pBuf != NULL) {
-		spif_Read(ECL_DATA_ONOFF_BASE + ECL_DATA_ONOFF_HEADER, pBuf, ECL_DATA_ONOFF_QTY * ECL_DATA_ONOFF_SIZE);
-		buf_Push(b, pBuf, ECL_DATA_ONOFF_QTY * ECL_DATA_ONOFF_SIZE);
-		mem_Free(pBuf);
-	}
-}
-
-void data_RuntimeWrite()
-{
-	time_t tTime;
-	uint32_t nMagic;
-	uint8_t *pBuf;
-
-	spif_Read(ECL_DATA_ONOFF_BASE, &nMagic, 4);
-	if (nMagic != ECL_DATA_MAGIC_WORD) {
-		nMagic = ECL_DATA_MAGIC_WORD;
-		spif_Fill(ECL_DATA_ONOFF_BASE, ECL_DATA_ONOFF_BASE + ECL_DATA_ONOFF_HEADER + ECL_DATA_ONOFF_SIZE * 10, GW3761_DATA_INVALID);
-		spif_Write(ECL_DATA_ONOFF_BASE, &nMagic, 4);
-	}
-	if (icp_RunTimeRead(&tTime)) {
-		pBuf = mem_Malloc(ECL_DATA_ONOFF_QTY * ECL_DATA_ONOFF_SIZE);
-		if (pBuf != NULL) {
-			spif_Read(ECL_DATA_ONOFF_BASE + ECL_DATA_ONOFF_HEADER, pBuf, ECL_DATA_ONOFF_QTY * ECL_DATA_ONOFF_SIZE);
-			memmove(&pBuf[ECL_DATA_ONOFF_SIZE], pBuf, (ECL_DATA_ONOFF_QTY - 1) * ECL_DATA_ONOFF_SIZE);
-	        timet2array(rtc_GetTimet(), pBuf, 1);
-	        timet2array(tTime, &pBuf[ECL_DATA_ONOFF_SIZE / 2], 1);
-			spif_Write(ECL_DATA_ONOFF_BASE + ECL_DATA_ONOFF_HEADER, pBuf, ECL_DATA_ONOFF_QTY * ECL_DATA_ONOFF_SIZE);
-			mem_Free(pBuf);
-		}
-	}
-}
 
 void data_YXRead(buf b)
 {
@@ -359,23 +317,6 @@ void data_Copy2Udisk()
 		fs_write(fd1, str, sprintf(str, "20%02X-%02X-%02X %02X:%02X:00\r\n", aTime[5], aTime[4], aTime[3], aTime[2], aTime[1]));
 		fs_write(fd1, str, sprintf(str, "%d Min %d Sec Finshed.\r\n", (rtc_GetTimet() - tNow)/60, (rtc_GetTimet() - tNow)%60));
 		fs_close(fd1);
-	}
-	//Í£ÉÏµç
-	sprintf(str, "%s%s", sAddr, "pb325_rt.txt");
-	fd1 = fs_open(str, O_WRONLY | O_CREAT | O_TRUNC, 0);
-	if (fd1 >= 0) {
-		data_RuntimeRead(b);
-		fs_write(fd1, str, sprintf(str, "[RunTime]\r\n"));
-		for (i = 0; i < ECL_DATA_ONOFF_QTY; i++) {
-			pTemp = &b->p[i * ECL_DATA_ONOFF_SIZE];
-			if (memtest(pTemp, 0xEE, ECL_DATA_ONOFF_SIZE))
-				fs_write(fd1, str, sprintf(str, "%03d=[on]20%02X-%02X-%02X %02X:%02X:%02X [off]20%02X-%02X-%02X %02X:%02X:%02X\r\n", i + 1, pTemp[5], pTemp[4], pTemp[3], pTemp[2], pTemp[1], pTemp[0], pTemp[11], pTemp[10], pTemp[9], pTemp[8], pTemp[7], pTemp[6]));
-			else
-				fs_write(fd1, str, sprintf(str, "%03d=\r\n", i + 1));
-		}
-		fs_write(fd1, str, sprintf(str, "[end]\r\n"));
-		fs_close(fd1);
-		buf_Release(b);
 	}
 	//Ò£ÐÅ
 	sprintf(str, "%s%s", sAddr, "pb325_yx.txt");
