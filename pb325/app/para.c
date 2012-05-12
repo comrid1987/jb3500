@@ -229,10 +229,10 @@ void icp_Init()
 #if ICP_LOCK_ENABLE
 	rt_sem_init(&icp_sem, "sem_icp", 1, RT_IPC_FLAG_FIFO);
 #endif
-	if (sfs_Read(&icp_SfsDev, 0xFFFF5987, NULL) != SYS_R_OK) {
-		icp_Format();
-		sfs_Write(&icp_SfsDev, 0xFFFF5987, NULL, 0);
-	}
+//	if (sfs_Read(&icp_SfsDev, 0xFFFF5987, NULL) != SYS_R_OK) {
+//		icp_Format();
+//		sfs_Write(&icp_SfsDev, 0xFFFF5987, NULL, 0);
+//	}
 }
 
 void icp_UdiskLoad(void)

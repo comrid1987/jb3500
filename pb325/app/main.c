@@ -1,10 +1,12 @@
 #include <litecore.h>
 #include <drivers/tdk6515.h>
 #include "system.h"
+#include "para.h"
+#include "data.h"
 #include "display.h"
 #include "upcomm.h"
 #include "meter.h"
-#include "para.h"
+#include "alarm.h"
 
 
 
@@ -81,6 +83,9 @@ void tsk_Idle(void *args)
 void app_Entry()
 {
 	uint_t i = 1;
+
+	icp_Init();
+	evt_Init();
 
 	if (i)
 		os_thd_Create(Daemon, 160);
