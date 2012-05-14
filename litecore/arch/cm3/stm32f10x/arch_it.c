@@ -1085,9 +1085,7 @@ void OTG_FS_IRQHandler(void)
 	os_irq_Enter();
 #endif
 
-#if USB_ENABLE
 	usb_HostIRQ();
-#endif
 
 #if OS_TYPE
 	os_irq_Leave();
