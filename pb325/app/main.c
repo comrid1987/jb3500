@@ -112,7 +112,7 @@ int main(void)
 {
 
 	BEEP(0);
-	hold();
+//	hold();
 	sys_Start();
 }
 
