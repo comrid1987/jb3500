@@ -445,9 +445,9 @@ void tsk_Display(void *args)
 						os_que_Release(que);
 					}
 					if (nMount)
-						icp_UdiskLoad();
-					else
 						os_que_Send(QUE_EVT_USER_EVT, NULL, NULL, 0, 1000);
+					else
+						icp_UdiskLoad();
 				}
 			}
 			nMount = 1;
