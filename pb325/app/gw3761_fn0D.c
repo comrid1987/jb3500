@@ -61,6 +61,8 @@ int gw3761_ResponseData2(p_gw3761 p)
 				case 27:
 				case 28:
 				case 29:
+					
+					break;
 				case 30:
 				case 31:
 				case 32:

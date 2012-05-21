@@ -160,6 +160,88 @@ void tsk_Meter(void *args)
 	//				acm_DaySave(p->time);
 				}
 			}
+
+		if (nMin != rtc_pTm()->tm_min) {
+			nMin = rtc_pTm()->tm_min;
+			tTime = rtc_GetTimet();
+			for (i = 0; i < 3; i++)
+				pa->cnt[i] = 0;
+			if (nDay != rtc_pTm()->tm_mday) {
+				nDay = rtc_pTm()->tm_mday;
+				//跨日
+				buf_PushData(b, tTime, 4);
+				for (i = 1; i < 4; i++) {
+					for (j = 0xD121; j <= 0xD12C; j++) {
+						stat_DataGet(i, j, b);
+					}
+				}
+				day4timet(tTime, -1, aBuf, 0);
+				data_DayWrite(aBuf, b->p);
+				buf_Release(b);
+				for (ps = &stat[0][0], i = 0; i < 3; ps++, i++)
+					stat_Clear(ps);
+				if (nDay == icp_ParaGet(TERMINAL, 0xD302, 1)) {
+					//跨统计月
+					for (i = 0; i < 3; i++) {
+						for (j = 0xD221; j <= 0xD22C; j++) {
+							stat_DataGet(i, j, b);
+						}
+					}
+					day4timet(tTime, -1, aBuf, 0);
+					data_DayWrite(aBuf, b->p);
+					buf_Release(b);
+					for (ps = &stat[1][0], i = 0; i < 3; ps++, i++)
+						stat_Clear(ps);
+				}
+			}
+			buf_PushData(b, tTime, 4);
+			for (i = 0; i < 3; i++) {
+				//分钟统计
+				fVol = pa->vol[i];
+#if DT800_PRTL_GUANGDONG
+				fLow = (float)icp_ParaGet(i, 0xD103, 2) / 100.0f;
+				fUp = (float)icp_ParaGet(i, 0xD104, 2) / 100.0f;
+#endif
+#if DT800_PRTL_ZHEJIANG
+				icp_ParaRead(i, 0xD102, aBuf, 3);
+				fLow = 220.0f * (1.0f - (float)aBuf[2] / 100.0f);
+				fUp = 220.0f * (1.0f + (float)aBuf[1] / 100.0f);
+#endif
+				for (j = 0; j < 2; j++) {
+					ps = &stat[j][i];
+					ps->volsum += fVol;
+					ps->cnt += 1;
+					ps->run += 1;
+					if (fVol < fLow)
+						ps->low += 1;
+					if (fVol > fUp)
+						ps->up += 1;
+					if (fVol < ps->volmin) {
+						ps->volmin = fVol;
+						ps->timemin = tTime;
+					}
+					if (fVol > ps->volmax) {
+						ps->volmax = fVol;
+						ps->timemax = tTime;
+					}
+				}
+				//分钟电压曲线
+				acm_RtDataGet(i + 1, 0xD111, b);
+			}
+			//统计保存
+			icp_ParaWrite(TERMINAL, 0xF100, stat, sizeof(stat));
+			//分钟曲线保存
+			timet2array(tTime, aBuf, 0);
+			data_MinWrite(aBuf, b->p);
+			buf_Release(b);
+		}
+
+			
+		}
+		os_thd_Slp1Tick();
+	}
+}
+
 #if 0
 			if ((g_sys_status & BITMASK(0))) {
 				switch (p->ste) {
@@ -214,10 +296,5 @@ void tsk_Meter(void *args)
 				}
 			}
 #endif
-		}
-		os_thd_Sleep(100);
-	}
-}
-
 
 
