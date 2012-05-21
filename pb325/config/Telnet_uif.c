@@ -3,29 +3,27 @@
  *----------------------------------------------------------------------------
  *      Name:    TELNET_UIF.C
  *      Purpose: Telnet Server User Interface Module
- *      Rev.:    V4.22
+ *      Rev.:    V4.12
  *----------------------------------------------------------------------------
  *      This code is part of the RealView Run-Time Library.
- *      Copyright (c) 2004-2011 KEIL - An ARM Company. All rights reserved.
+ *      Copyright (c) 2004-2010 KEIL - An ARM Company. All rights reserved.
  *---------------------------------------------------------------------------*/
 
-#include <Net_Config.h>
+#include <net/rtxip/Net_Config.h>
 #include <string.h>
 #include <stdio.h>
 
 /* Net_Config.c */
-#define tcp_NumSocks    tcp_config.NumSocks
-#define tcp_socket      tcp_config.Scb
-#define tnet_EnAuth     tnet_config.EnAuth
-#define tnet_auth_passw tnet_config.Passw
+extern struct tcp_info tcp_socket[];
+extern U8 const tcp_NumSocks;
+extern U8 const tnet_EnAuth;
+extern U8       tnet_auth_passw[20];
 
 /* ANSI ESC Sequences for terminal control. */
 #define CLS     "\033[2J"
 #define TBLUE   "\033[37;44m"
 #define TNORM   "\033[0m"
 
-extern BOOL LEDrun;
-extern BOOL send_msg;
 
 /* My structure of a Telnet U32 storage variable. This variable is private */
 /* for each Telnet Session and is not altered by Telnet Server. It is only */
@@ -41,7 +39,7 @@ typedef struct {
 static U8 const tnet_header[] = {
   CLS "\r\n"
   "        " TBLUE
-  "*===JieBao_PB325_V0067===*\r\n" TNORM
+  "*======================JZQ_GW_A0_JieBao=====================*\r\n" TNORM
   };
 
 static U8 const tcp_stat[] = {
@@ -156,6 +154,7 @@ U16 tnet_process_cmd (U8 *cmd, U8 *buf, U16 buflen, U32 *pvar) {
   /*            - on 1st call = 0                                           */
   /*            - 2nd call    = as set by this function on first call       */
   TCP_INFO *tsoc;
+  REMOTEM rm;
   U16 len = 0;
 
   switch (MYBUF(pvar)->id) {
@@ -201,20 +200,21 @@ U16 tnet_process_cmd (U8 *cmd, U8 *buf, U16 buflen, U32 *pvar) {
       }
       /* Request a repeated call, bit 14 is a repeat flag. */
       return (len |= 0x4000);
+	case 2:
+
+		len = 1;
+        tnet_set_delay (200);
+	  return (len |= 0x4000);
   }
 
   /* Simple Command line parser */
   len = strlen ((const char *)cmd);
   
   if (tnet_ccmp (cmd, "RESET") == __TRUE) {
+	extern void sys_Reset(void);
     /* 'RESET' command received */
 	sys_Reset();
     return (len);
-  }
-
-  if (tnet_ccmp (cmd, "SPIF") == __TRUE) {
-  	extern int dbg_SpifInfo(uint8_t *pBuf);
-    return dbg_SpifInfo(buf);
   }
 
   if (tnet_ccmp (cmd, "BYE") == __TRUE) {
@@ -224,12 +224,49 @@ U16 tnet_process_cmd (U8 *cmd, U8 *buf, U16 buflen, U32 *pvar) {
     return (len | 0x8000);
   }
 
+  if (tnet_ccmp (cmd, "PASSW") == __TRUE && tnet_EnAuth) {
+    /* Change the system password. */
+    if (len == 5) {
+      /* Disable password. */
+      tnet_auth_passw[0] = 0;
+    }
+    else {
+      mem_copy (&tnet_auth_passw, &cmd[6], 20);
+    }
+    len = sprintf ((char *)buf, "\r\n OK, New Password: \"%s\"",tnet_auth_passw);
+    return (len);
+  }
+
+  if (tnet_ccmp (cmd, "PASSWD") == __TRUE && tnet_EnAuth) {
+    /* Only display the current system password. */
+    len = sprintf ((char *)buf, "\r\n System Password: \"%s\"",tnet_auth_passw);
+    return (len);
+  }
+
   if (tnet_ccmp (cmd, "TCPSTAT") == __TRUE) {
     /* Display a TCP status similar to that in HTTP_Demo example. */
     /* Here the local storage '*pvar' is initialized to 0 by Telnet Server.    */
     MYBUF(pvar)->id = 1;
     len = str_copy (buf, CLS);
     return (len | 0x4000);
+  }
+
+  if (tnet_ccmp (cmd, "PLCDBG") == __TRUE) {
+    MYBUF(pvar)->id = 2;
+    len = str_copy (buf, CLS);
+    return (len | 0x4000);
+  }
+
+  if (tnet_ccmp (cmd, "RINFO") == __TRUE) {
+    /* Display Remote Machine IP and MAC address. */
+    tnet_get_info (&rm);
+    len  = sprintf ((char *)buf,"\r\n Remote IP : %d.%d.%d.%d",
+                    rm.IpAdr[0],rm.IpAdr[1],rm.IpAdr[2],rm.IpAdr[3]);
+    len += sprintf ((char *)(buf+len),
+                    "\r\n Remote MAC: %02X-%02X-%02X-%02X-%02X-%02X",
+                    rm.HwAdr[0],rm.HwAdr[1],rm.HwAdr[2],
+                    rm.HwAdr[3],rm.HwAdr[4],rm.HwAdr[5]);
+    return (len);
   }
 
   /* Unknown command, display message */
