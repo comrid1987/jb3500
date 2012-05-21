@@ -372,7 +372,7 @@ sys_res gw3761_Handler(p_gw3761 p)
 		}
 		return SYS_R_OK;
 	}
-	return SYS_R_NOK;
+	return SYS_R_ERR;
 }
 
 

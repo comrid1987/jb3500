@@ -202,7 +202,7 @@ static sys_res modem_SendCmd(p_modem p, const char *pCmd, const char *pRes, uint
 
 static sys_res modem_InitCmd(p_modem p)
 {
-	uint_t i;
+	uint_t i, nTemp;
 	char *pTemp, str[64];
 
 	if (modem_SendCmd(p, "ATZ0\r", "OK\r", 30) != SYS_R_OK)
@@ -210,6 +210,21 @@ static sys_res modem_InitCmd(p_modem p)
 	if (modem_SendCmd(p, "ATE0\r", "OK\r", 4) != SYS_R_OK)
 		return SYS_R_TMO;
 	if (modem_SendCmd(p, "AT+CPIN?\r", "OK\r", 30) != SYS_R_OK)
+		return SYS_R_TMO;
+	//注册网络
+	for (i = 0; i < 20; i++) {
+ 		if (modem_SendCmd(p, "AT+CREG?\r", "OK\r", 1) != SYS_R_OK)
+			continue;
+		if ((pTemp = modem_FindStr(p, ",")) == NULL)
+			continue;
+		nTemp = atoi(pTemp + 1);
+		if ((nTemp == 1) || (nTemp == 5))
+			break;
+		os_thd_Sleep(1000);
+	}
+	if (i >= 20)
+		return SYS_R_TMO;
+	if (modem_SendCmd(p, "AT+CREG?\r", "OK\r", 20) != SYS_R_OK)
 		return SYS_R_TMO;
 	//获得信号强度
 	for (i = 0; i < 20; i++) {
@@ -248,6 +263,7 @@ static sys_res modem_InitCmd(p_modem p)
 	if (modem_SendCmd(p, str, "OK\r", 20) != SYS_R_OK)
 		return SYS_R_TMO;
 
+	modem_SendCmd(p, "AT+CGATT=1\r", "OK\r", 10);
 	modem_SendCmd(p, "AT+CGATT?\r", "+CGATT: 1", 30);
 
 	return SYS_R_OK;

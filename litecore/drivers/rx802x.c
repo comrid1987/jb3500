@@ -31,7 +31,11 @@ sys_res rtc_i2c_Init(p_dev_i2c p)
 {
 
 	//Ð´±êÖ¾¼Ä´æÆ÷
-	if (i2c_WriteByte(p, RX802X_SLAVEADR, RX802X_REG_FLAG, 0x23) != SYS_R_OK)
+	if (i2c_WriteByte(p, RX802X_SLAVEADR, RX802X_REG_EXTR, 0) != SYS_R_OK)
+		return SYS_R_TMO;
+	if (i2c_WriteByte(p, RX802X_SLAVEADR, RX802X_REG_FLAG, 0) != SYS_R_OK)
+		return SYS_R_TMO;
+	if (i2c_WriteByte(p, RX802X_SLAVEADR, RX802X_REG_CTLR, 0x60) != SYS_R_OK)
 		return SYS_R_TMO;
 	return SYS_R_OK;
 }
