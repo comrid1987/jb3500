@@ -16,6 +16,11 @@
 #define ECL_DATA_QUAR_MSIZE		sizeof(t_data_quarter)
 #define ECL_DATA_QUAR_ALLSIZE	(ECL_DATA_QUAR_HEADER + 96 * ECL_DATA_QUAR_MSIZE)
 
+#define ECL_DATA_DAY_BASE		(170 * 0x1000)
+#define ECL_DATA_DAY_HEADER		16
+#define ECL_DATA_DAY_MSIZE		sizeof(t_stat)
+#define ECL_DATA_DAY_ALLSIZE	(ECL_DATA_QUAR_HEADER + ECL_DATA_QUAR_MSIZE)
+
 #define ECL_DATA_MIN_BASE		(326 * 0x1000)
 #define ECL_DATA_MIN_HEADER		16
 #define ECL_DATA_MIN_MSIZE		sizeof(t_data_min)
@@ -120,6 +125,43 @@ void data_QuarterWrite(const uint8_t *pTime, t_data_quarter *pData)
 	spif_Write(nAdr, pData, sizeof(t_data_quarter));
 	flash_Flush(0);
 }
+
+int data_DayRead(const uint8_t *pTime, void *pData)
+{
+	uint_t nAdr;
+	uint8_t aBuf[6];
+
+	nAdr = ECL_DATA_DAY_BASE + (pTime[0] - 1) * ECL_DATA_DAY_ALLSIZE;
+	spif_Read(nAdr, aBuf, 3);
+	if (memcmp(aBuf, pTime, 3) == 0) {
+		nAdr += ECL_DATA_DAY_HEADER;
+		spif_Read(nAdr, pData, ECL_DATA_DAY_ALLSIZE);
+		if (memcnt(pData, 0xEE, ECL_DATA_DAY_ALLSIZE) == 0) {
+			if (memcnt(pData, 0xFF, ECL_DATA_DAY_ALLSIZE) == 0)
+				return 1;
+		}
+	}
+	memset(pData, GW3761_DATA_INVALID, ECL_DATA_DAY_ALLSIZE);
+	return 0;
+}
+
+void data_DayWrite(const uint8_t *pTime, const void *pData)
+{
+	uint_t nAdr;
+	uint8_t aBuf[6];
+
+	nAdr = ECL_DATA_DAY_BASE + (pTime[0] - 1) * ECL_DATA_DAY_ALLSIZE;
+	spif_Read(nAdr, aBuf, 3);
+	if (memcmp(aBuf, pTime, 3)) {
+		//时间错,初始化
+		spif_Fill(nAdr, nAdr + ECL_DATA_DAY_ALLSIZE, GW3761_DATA_INVALID);
+		spif_Write(nAdr, pTime, 3);
+	}
+	nAdr += ECL_DATA_DAY_HEADER;
+	spif_Write(nAdr, pData, ECL_DATA_DAY_ALLSIZE);
+	flash_Flush(0);
+}
+
 
 #if 0
 void data_DayRead(uint_t nTn, const uint8_t *pAdr, const uint8_t *pTime, t_ecl_energy *pData)

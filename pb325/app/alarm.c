@@ -20,6 +20,7 @@
 #define EVT_RUNVER_ADDR			0xFFFF0101	// 4
 #define EVT_RUNTIME_ADDR		0xFFFF0102	// 4
 
+#define EVT_STAT_ADDR			0xFFFF0201	//
 
 //Private Variables
 #if EVT_LOCK_ENABLE
@@ -243,22 +244,33 @@ void evt_ERC35(uint_t nPort, const uint8_t *pAdr)
 
 
 //运行时间
+int evt_RunTimeRead(time_t *pTime)
+{
+
+	if (sfs_Read(&evt_SfsDev, EVT_RUNTIME_ADDR, pTime) == SYS_R_OK)
+		return 1;
+	return 0;
+}
+
 void evt_RunTimeWrite(time_t tTime)
 {
 
 	sfs_Write(&evt_SfsDev, EVT_RUNTIME_ADDR, &tTime, sizeof(time_t));
 }
 
-int evt_RunTimeRead(time_t *pTime)
+int evt_StatRead(void *pBuf)
 {
-	sys_res res;
 
-	res = sfs_Read(&evt_SfsDev, EVT_RUNTIME_ADDR, pTime);
-	if (res == SYS_R_OK)
+	if (sfs_Read(&evt_SfsDev, EVT_STAT_ADDR, pBuf) == SYS_R_OK)
 		return 1;
 	return 0;
 }
 
+void evt_StatWrite(const void *pBuf)
+{
+
+	sfs_Write(&evt_SfsDev, EVT_STAT_ADDR, pBuf, sizeof(time_t));
+}
 
 void evt_Init()
 {

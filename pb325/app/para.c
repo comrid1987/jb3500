@@ -97,6 +97,9 @@ static int icp_Default(uint_t nAfn, uint_t nFn, uint_t nPn, uint8_t *pBuf, uint_
 		memset(&pBuf[46], 3, 2);	//23:00-00:00£¨·ÑÂÊ4£©¹È
 		pBuf[48] = 4;
 		break;
+//	case 26:
+	//	memcpy(pBuf, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\x0B\x3E\x80\x80\x00\x00\x00\x00", nLen);
+	//	break;
 	case 28:
 		memcpy(pBuf, "\x00\x08\x50\x09", nLen);
 		break;

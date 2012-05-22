@@ -19,7 +19,9 @@ int gw3761_ResponseData2(p_gw3761 p)
 	uint_t i, j, k, nDa, nDaQty, nFn, nTemp, nData, nOffset, nLen, nFnOff, nSucc;
 	t_data_min xMin;
 	t_data_quarter xQuar;
-	uint8_t *pData, *pEnd, aTime[6];
+	uint8_t *pData, *pEnd, aBuf[6];
+	t_stat xStat;
+	p_stat ps = &xStat;
 	u_word2 uDu;
 	buf b = {0};
 	
@@ -38,6 +40,78 @@ int gw3761_ResponseData2(p_gw3761 p)
 				nSucc = 0;
 				nFn = gw3761_ConvertDt2Fn((uDu.word[1] & 0xFF00) | BITMASK(j));
 				switch (nFn) {
+				case 27:
+					if (data_DayRead(pData, ps)) {
+						buf_Push(b, pData, 3);
+						for (i = 0; i < 3; i++) {
+							buf_PushData(b, ps->uover[i], 2);
+							buf_PushData(b, ps->uunder[i], 2);
+							buf_PushData(b, ps->uup[i], 2);
+							buf_PushData(b, ps->ulow[i], 2);
+							buf_PushData(b, ps->run - ps->uup[i] - ps->ulow[i], 2);
+						}
+						for (i = 0; i < 3; i++) {
+							gw3761_ConvertData_07(aBuf, FLOAT2FIX(ps->umax[i]));
+							buf_Push(b, aBuf, 2);
+							gw3761_ConvertData_18(aBuf, ps->tumax[i]);
+							buf_Push(b, aBuf, 3);
+							gw3761_ConvertData_07(aBuf, FLOAT2FIX(ps->umin[i]));
+							buf_Push(b, aBuf, 2);
+							gw3761_ConvertData_18(aBuf, ps->tumin[i]);
+							buf_Push(b, aBuf, 3);
+						}
+						for (i = 0; i < 3; i++) {
+							gw3761_ConvertData_07(aBuf, FLOAT2FIX(ps->usum[i] / (float)ps->run));
+							buf_Push(b, aBuf, 2);
+						}
+						nSucc = 1;
+					}
+					pData += 3;
+					break;						
+				case 28:
+					if (data_DayRead(pData, ps)) {
+						buf_Push(b, pData, 3);
+						buf_PushData(b, ps->ibalance, 2);
+						buf_PushData(b, ps->ubalance, 2);
+						gw3761_ConvertData_05_Percent(aBuf, FLOAT2FIX(ps->ibmax), 0);
+						buf_Push(b, aBuf, 2);
+						gw3761_ConvertData_18(aBuf, ps->tibmax);
+						buf_Push(b, aBuf, 3);
+						gw3761_ConvertData_05_Percent(aBuf, FLOAT2FIX(ps->ubmax), 0);
+						buf_Push(b, aBuf, 2);
+						gw3761_ConvertData_18(aBuf, ps->tubmax);
+						buf_Push(b, aBuf, 3);
+						nSucc = 1;
+					}
+					pData += 3;
+					break;						
+				case 29:
+					if (data_DayRead(pData, ps)) {
+						buf_Push(b, pData, 3);
+						for (i = 0; i < 3; i++) {
+							buf_PushData(b, ps->iover[i], 2);
+							buf_PushData(b, ps->iup[i], 2);
+						}
+						buf_PushData(b, ps->iup[3], 2);
+						for (i = 0; i < 4; i++) {
+							gw3761_ConvertData_25(aBuf, FLOAT2FIX(ps->imax[i]), 1);
+							buf_Push(b, aBuf, 3);
+							gw3761_ConvertData_18(aBuf, ps->timax[i]);
+							buf_Push(b, aBuf, 3);
+						}
+						nSucc = 1;
+					}
+					pData += 3;
+					break;						
+				case 30:
+					if (data_DayRead(pData, ps)) {
+						buf_Push(b, pData, 3);
+						buf_PushData(b, ps->uiover, 2);
+						buf_PushData(b, ps->uiup, 2);
+						nSucc = 1;
+					}
+					pData += 3;
+					break;						
 				case 49:
 					buf_Push(b, pData, 3);
 					buf_PushData(b, 1440, 2);
@@ -58,12 +132,6 @@ int gw3761_ResponseData2(p_gw3761 p)
 				case 12:
 				case 25:
 				case 26:
-				case 27:
-				case 28:
-				case 29:
-					
-					break;
-				case 30:
 				case 31:
 				case 32:
 				case 41:
@@ -172,9 +240,9 @@ int gw3761_ResponseData2(p_gw3761 p)
 					pData += 2;
 					break;
 				default:
-					memcpy(&aTime[1], pData, 5);
-					aTime[0] = 0;
-					tTime = array2timet(aTime, 1);
+					memcpy(&aBuf[1], pData, 5);
+					aBuf[0] = 0;
+					tTime = array2timet(aBuf, 1);
 					nTemp = pData[5];
 					switch (nTemp) {
 					case 1:
@@ -243,8 +311,8 @@ int gw3761_ResponseData2(p_gw3761 p)
 							//配电扩展15分钟冻结
 							buf_Push(b, pData, 7);
 							for (k = 0; k < nData; k++, tTime += nTemp) {
-								timet2array(tTime, aTime, 1);
-								data_QuarterRead(&aTime[1], &xQuar);
+								timet2array(tTime, aBuf, 1);
+								data_QuarterRead(&aBuf[1], &xQuar);
 								if (xQuar.time != GW3761_DATA_INVALID)
 									buf_Push(b, xQuar.data, 146);
 								else
@@ -257,8 +325,8 @@ int gw3761_ResponseData2(p_gw3761 p)
 	                        //配电扩展组合数据读取
 							buf_Push(b, pData, 7);
 							for (k = 0; k < nData; k++, tTime += nTemp) {
-								timet2array(tTime, aTime, 1);
-								data_MinRead(&aTime[1], &xMin);
+								timet2array(tTime, aBuf, 1);
+								data_MinRead(&aBuf[1], &xMin);
 								if (xMin.time != GW3761_DATA_INVALID)
 									buf_Push(b, xMin.data, 42);
 								else
@@ -274,8 +342,8 @@ int gw3761_ResponseData2(p_gw3761 p)
 						if (nLen) {
 							buf_Push(b, pData, 7);
 							for (k = 0; k < nData; k++, tTime += nTemp) {
-								timet2array(tTime, aTime, 1);
-								data_MinRead(&aTime[1], &xMin);
+								timet2array(tTime, aBuf, 1);
+								data_MinRead(&aBuf[1], &xMin);
 								if (xMin.time != GW3761_DATA_INVALID)
 									buf_Push(b, &xMin.data[nOffset + nFnOff * nLen], nLen);
 								else

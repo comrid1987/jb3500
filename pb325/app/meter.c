@@ -46,6 +46,7 @@
 
 //Private Variables
 static t_ecl_task ecl_Task485;
+static t_stat acm_stat;
 
 
 
@@ -53,6 +54,19 @@ static t_ecl_task ecl_Task485;
 
 
 
+
+
+
+void stat_Clear(p_stat p)
+{
+	uint_t i;
+
+	memset(p, 0, sizeof(t_stat));
+	for (i = 0; i < 3; i++)
+		p->umin[i] = 100000.0f;
+}
+
+  
 
 #if 0
 void ecl_DataHandler(uint_t nTn, const uint8_t *pAdr, const uint8_t *pTime, uint32_t nRecDI, const void *pData)
@@ -112,13 +126,16 @@ void tsk_Meter(void *args)
 	sys_res res;
 	chl chlRS485;
 	time_t tTime;
-	int nMin= -1, nHour = -1, nDay = -1;
-	uint_t nCnt, nLen, nCode, nBaud;
+	int nMin= -1, nDay = -1;
+	uint_t i, nCnt, nCode, nBaud;
 	uint32_t nRecDI, nData1, nData2;
-	uint8_t *pTemp, aTime[6];
+	uint8_t *pTemp, aBuf[6];
+	float fVol, fLow, fUp, fUnder, fOver;
+	p_stat ps = &acm_stat;
 	t_ecl_energy xEnergy;
 	t_ecl_task *p = &ecl_Task485;
-	buf b = {0};
+	t_acm_rtdata *pa = &acm_rtd;
+	t_afn04_f26 xF26;
 
 	acm_Init();
 
@@ -128,115 +145,68 @@ void tsk_Meter(void *args)
 		chl_Init(chlRS485);
 		chl_Bind(chlRS485, CHL_T_RS232, 0, OS_TMO_FOREVER);
 	}
+
+	//统计恢复
+	if (evt_StatRead(ps) == 0)
+		stat_Clear(ps);
+	nMin = rtc_pTm()->tm_min;
+	nDay = rtc_pTm()->tm_mday;
+
 	for (nCnt = 0; ; nCnt++) {
 		//秒count
 		if (tTime != rtc_GetTimet()) {
 			tTime = rtc_GetTimet();
-			timet2array(tTime, aTime, 1);
 	 		if ((nCnt & 0x0F) == 0)
 	            acm_XBRead();
 			if ((nCnt & 0x1F) == 0)
 	            acm_JLRead();
 			//分钟
-			if (nMin != aTime[1]) {
-				nMin = aTime[1];
+			if (nMin != rtc_pTm()->tm_min) {
+				nMin = rtc_pTm()->tm_min;
 				evt_RunTimeWrite(tTime);
-				acm_MinSave(aTime);
+				timet2array(tTime, aBuf, 1);
+				acm_MinSave(aBuf);
 				if ((bcd2bin8(nMin) % 15) == 0)
-					acm_QuarterSave(aTime);
-			}
-			//小时
-			if (nHour != aTime[2]) {
-				nHour = aTime[2];
+					acm_QuarterSave(aBuf);
 
+				icp_ParaRead(4, 26, TERMINAL, &xF26, sizeof(t_afn04_f26));
 
-			}
-			//日
-			if (nDay != aTime[3]) {
-				nDay = aTime[3];
-				//交采冻结
-				if (acm_IsReady()) {
-					day4timet(tTime, -1, p->time, 1);
-	//				acm_DaySave(p->time);
-				}
-			}
-
-		if (nMin != rtc_pTm()->tm_min) {
-			nMin = rtc_pTm()->tm_min;
-			tTime = rtc_GetTimet();
-			for (i = 0; i < 3; i++)
-				pa->cnt[i] = 0;
-			if (nDay != rtc_pTm()->tm_mday) {
-				nDay = rtc_pTm()->tm_mday;
-				//跨日
-				buf_PushData(b, tTime, 4);
-				for (i = 1; i < 4; i++) {
-					for (j = 0xD121; j <= 0xD12C; j++) {
-						stat_DataGet(i, j, b);
-					}
-				}
-				day4timet(tTime, -1, aBuf, 0);
-				data_DayWrite(aBuf, b->p);
-				buf_Release(b);
-				for (ps = &stat[0][0], i = 0; i < 3; ps++, i++)
+				if (nDay != rtc_pTm()->tm_mday) {
+					nDay = rtc_pTm()->tm_mday;
+					//跨日
+					day4timet(tTime, -1, aBuf, 1);
+					data_DayWrite(aBuf, ps);
 					stat_Clear(ps);
-				if (nDay == icp_ParaGet(TERMINAL, 0xD302, 1)) {
-					//跨统计月
-					for (i = 0; i < 3; i++) {
-						for (j = 0xD221; j <= 0xD22C; j++) {
-							stat_DataGet(i, j, b);
-						}
-					}
-					day4timet(tTime, -1, aBuf, 0);
-					data_DayWrite(aBuf, b->p);
-					buf_Release(b);
-					for (ps = &stat[1][0], i = 0; i < 3; ps++, i++)
-						stat_Clear(ps);
 				}
-			}
-			buf_PushData(b, tTime, 4);
-			for (i = 0; i < 3; i++) {
-				//分钟统计
-				fVol = pa->vol[i];
-#if DT800_PRTL_GUANGDONG
-				fLow = (float)icp_ParaGet(i, 0xD103, 2) / 100.0f;
-				fUp = (float)icp_ParaGet(i, 0xD104, 2) / 100.0f;
-#endif
-#if DT800_PRTL_ZHEJIANG
-				icp_ParaRead(i, 0xD102, aBuf, 3);
-				fLow = 220.0f * (1.0f - (float)aBuf[2] / 100.0f);
-				fUp = 220.0f * (1.0f + (float)aBuf[1] / 100.0f);
-#endif
-				for (j = 0; j < 2; j++) {
-					ps = &stat[j][i];
-					ps->volsum += fVol;
-					ps->cnt += 1;
-					ps->run += 1;
+				ps->run += 1;
+				for (i = 0; i < 3; i++) {
+					//分钟统计
+					fVol = pa->vol[i];
+					fLow = (float)bcd2bin16(xF26.ulow);
+					fUnder = (float)bcd2bin16(xF26.uunder);
+					fUp = (float)bcd2bin16(xF26.uup);
+					fOver = (float)bcd2bin16(xF26.uover);
+					ps->usum[i] += fVol;
 					if (fVol < fLow)
-						ps->low += 1;
+						ps->ulow[i] += 1;
 					if (fVol > fUp)
-						ps->up += 1;
-					if (fVol < ps->volmin) {
-						ps->volmin = fVol;
-						ps->timemin = tTime;
+						ps->uup[i] += 1;
+					if (fVol < fUnder)
+						ps->uunder[i] += 1;
+					if (fVol < fOver)
+						ps->uover[i] += 1;
+					if (fVol < ps->umin[i]) {
+						ps->umin[i] = fVol;
+						ps->tumin[i] = tTime;
 					}
-					if (fVol > ps->volmax) {
-						ps->volmax = fVol;
-						ps->timemax = tTime;
+					if (fVol > ps->umax[i]) {
+						ps->umax[i] = fVol;
+						ps->tumax[i] = tTime;
 					}
 				}
-				//分钟电压曲线
-				acm_RtDataGet(i + 1, 0xD111, b);
+				//统计保存
+				evt_StatWrite(ps);
 			}
-			//统计保存
-			icp_ParaWrite(TERMINAL, 0xF100, stat, sizeof(stat));
-			//分钟曲线保存
-			timet2array(tTime, aBuf, 0);
-			data_MinWrite(aBuf, b->p);
-			buf_Release(b);
-		}
-
-			
 		}
 		os_thd_Slp1Tick();
 	}

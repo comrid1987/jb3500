@@ -14,8 +14,8 @@ extern "C" {
 
 //External Functions
 void evt_ERC3(uint_t nMSA, u_word2 *pDu);
-void evt_RunTimeWrite(time_t tTime);
 int evt_RunTimeRead(time_t *pTime);
+void evt_RunTimeWrite(time_t tTime);
 
 void evt_Init(void);
 void evt_Clear(void);
