@@ -438,52 +438,52 @@ typedef struct {
 }t_att7022, *p_att7022;
 
 typedef struct {
-	  uint32_t Res1;                    
-      uint32_t Res2;                     
-      uint32_t Iregion1;             //相位补偿区域设置1
-      uint32_t Iregion2;             //相位补偿区域设置2
-      uint32_t Iregion3;             //相位补偿区域设置3
-      uint32_t Iregion4;             //相位补偿区域设置4
-      uint32_t Pgain0[3];             //A相功率增益0
-      uint32_t Pgain1[3];             //A相功率增益1
-      uint32_t PhsregA[5];          //A相区域0相位校正   
-      uint32_t PhsregB[5];          //B相区域0相位校正   
-      uint32_t PhsregC[5];          //C相区域0相位校正   
-      uint32_t Ugain[3];              //A相电压校正
-      uint32_t Irechg;              //比差补偿区域设置
-      uint32_t Istarstup;          //起动电流阀值设置   
-      uint32_t HFConst;            //高频脉冲输出设置
-      uint32_t Res3;             
-      uint32_t Res4;             
-      uint32_t Res5;             
-      uint32_t Res6;             
-      uint32_t Res7;             
-      uint32_t Igain[3];             //A相电流校正
-      uint32_t FailVoltage;     // 失压阀值设置
-      uint32_t EAddMode;       //合相能量累加模式选择      
-      uint32_t GainAdc7;         //第七路ADC有效值校正    
-      uint32_t GCtrlT7Adc;      //温度/第七路ADC选择控制       
-      uint32_t EnLineFreq;      //基波测量使能控制       
-      uint32_t EnUAngle;        //电压夹角测量使能控制     
-      uint32_t SlectPQSU;        //基波电压功率使能控制     
-      uint32_t ENDtIorder;      //电流相序检测使能控制       
-      uint32_t LineFreqPg;     //基波功率校正        
-      uint32_t Res8;             
-      uint32_t Res9;             
-      uint32_t Res10;             
-      uint32_t Res11;             
-      uint32_t Res12;             
-      uint32_t Res13;             
-      uint32_t Res14;             
-      uint32_t Res15;             
-      uint32_t Res16;             
-      uint32_t Res17;             
-      uint32_t EnHarm;          //基波测量与谐波测量切换选择   
-      uint32_t Res18;             
-      uint32_t HFDouble;      //脉冲常数加倍选择       
-      uint32_t UADCPga;      //电压通道ADC增益选择       
-      uint32_t CRC;            //  以上数据的校验和
-      uint32_t CalitFlage;           //校表标识 0：没有校表 1：校表当中 2：完成校表      
+	  uint32_t Res1;
+      uint32_t Res2;
+      uint32_t Iregion1;		//相位补偿区域设置1
+      uint32_t Iregion2;		//相位补偿区域设置2
+      uint32_t Iregion3;		//相位补偿区域设置3
+      uint32_t Iregion4;		//相位补偿区域设置4
+      uint32_t Pgain0[3];		//A相功率增益0
+      uint32_t Pgain1[3];		//A相功率增益1
+      uint32_t PhsregA[5];		//A相区域0相位校正   
+      uint32_t PhsregB[5];		//B相区域0相位校正   
+      uint32_t PhsregC[5];		//C相区域0相位校正   
+      uint32_t Ugain[3];		//A相电压校正
+      uint32_t Irechg;			//比差补偿区域设置
+      uint32_t Istarstup;		//起动电流阀值设置   
+      uint32_t HFConst;			//高频脉冲输出设置
+      uint32_t Res3;
+      uint32_t Res4;
+      uint32_t Res5;
+      uint32_t Res6;
+      uint32_t Res7;
+      uint32_t Igain[3];		//A相电流校正
+      uint32_t FailVoltage;		// 失压阀值设置
+      uint32_t EAddMode;		//合相能量累加模式选择      
+      uint32_t GainAdc7;		//第七路ADC有效值校正    
+      uint32_t GCtrlT7Adc;		//温度/第七路ADC选择控制       
+      uint32_t EnLineFreq;		//基波测量使能控制       
+      uint32_t EnUAngle;		//电压夹角测量使能控制     
+      uint32_t SlectPQSU;		//基波电压功率使能控制     
+      uint32_t ENDtIorder;		//电流相序检测使能控制       
+      uint32_t LineFreqPg;		//基波功率校正        
+      uint32_t Res8;
+      uint32_t Res9;
+      uint32_t Res10;
+      uint32_t Res11;
+      uint32_t Res12;
+      uint32_t Res13;
+      uint32_t Res14;
+      uint32_t Res15;
+      uint32_t Res16;
+      uint32_t Res17;
+      uint32_t EnHarm;			//基波测量与谐波测量切换选择   
+      uint32_t Res18;
+      uint32_t HFDouble;		//脉冲常数加倍选择       
+      uint32_t UADCPga;			//电压通道ADC增益选择       
+      uint32_t CRC;				//以上数据的校验和
+      uint32_t CalitFlage;		//校表标识 0：没有校表 1：校表当中 2：完成校表      
 }t_att7022_cali, *p_att7022_cali;
 
 
