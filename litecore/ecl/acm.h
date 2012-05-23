@@ -14,7 +14,7 @@ typedef struct {
 	float cur[4];	//
 	float pp[4];	//
 	float pq[4];	//
-	float vi[4];	//
+	float ui[4];	//
 	float cos[4];	//
 	float au[3];	//电压角度
 	float ai[3];	//电流角度
