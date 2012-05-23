@@ -1,3 +1,4 @@
+#include <math.h>
 #include <string.h>
 #include <litecore.h>
 #include <drivers/tdk6515.h>
@@ -48,10 +49,11 @@ void acm_Init()
 void acm_JLRead()
 {
 	t_tdk6515 *p = &acm_xTdk6515;
-	t_acm_rtdata *pD = &acm_rtd;
+	t_acm_rtdata *pa = &acm_rtd;
 	t_tdk6515_rtdata *pT;
 	uint8_t *pTemp;
 	uint_t i, nCRC;
+	float fTemp;
 	buf b = {0};
 
 	if (tdk6515_IsJLReady() == SYS_R_OK) {
@@ -64,40 +66,45 @@ void acm_JLRead()
 				reverse(pTemp, 4);
 			pT = (t_tdk6515_rtdata *)(b->p);
 			//频率
-			pD->freq = pT->freq / 100.0f;
+			pa->freq = pT->freq / 100.0f;
 			//电压角度
-			pD->au[0] = 0;
-			pD->au[1] = pT->caangle / 10.0f;
-			pD->au[2] = pT->cbangle / 10.0f;
+			pa->ua[0] = 0;
+			pa->ua[1] = pT->caangle / 10.0f;
+			pa->ua[2] = pT->cbangle / 10.0f;
 			for (i = 0; i < 3; i++) {
 				//电压
-				pD->vol[i] = pT->v[i];
+				pa->u[i] = pT->u[i];
 				//电流角度
-				pD->ai[i] = pT->viangle[i + 1] + pD->au[i];
+				pa->ia[i] = pT->viangle[i + 1] + pa->ua[i];
 				//角度校正
-				if (pD->au[i] >= 360)
-					pD->au[i] -= 360;
-				else if (pD->au[i] <= -360)
-					pD->au[i] += 360;
-				if (pD->au[i] < 0)
-					pD->au[i] += 360;
-				if (pD->ai[i] >= 360)
-					pD->ai[i] -= 360;
-				else if (pD->ai[i] <= -360)
-					pD->ai[i] += 360;
-				if (pD->ai[i] < 0)
-					pD->ai[i] += 360;
+				if (pa->ua[i] >= 360)
+					pa->ua[i] -= 360;
+				else if (pa->ua[i] <= -360)
+					pa->ua[i] += 360;
+				if (pa->ua[i] < 0)
+					pa->ua[i] += 360;
+				if (pa->ia[i] >= 360)
+					pa->ia[i] -= 360;
+				else if (pa->ia[i] <= -360)
+					pa->ia[i] += 360;
+				if (pa->ia[i] < 0)
+					pa->ia[i] += 360;
 			}
 			for (i = 0; i < 4; i++) {
 				//电流
-				pD->cur[i] = pT->i[i];
+				pa->i[i] = pT->i[i];
 				//功率
-				pD->pp[i] = pT->p[i] / 1000.0f;
-				pD->pq[i] = pT->q[i] / 1000.0f;
-				pD->vi[i] = pT->vi[i] / 1000.0f;
+				pa->pp[i] = pT->p[i] / 1000.0f;
+				pa->pq[i] = pT->q[i] / 1000.0f;
+				pa->ui[i] = pT->ui[i] / 1000.0f;
 				//功率因数
-				pD->cos[i] = pT->cos[i];
+				pa->cos[i] = pT->cos[i];
 			}
+			//不平衡度
+			fTemp = (pa->u[0] + pa->u[1] + pa->u[2]) / 3;
+			pa->ub = (fabs(fTemp - pa->u[0]) + fabs(fTemp - pa->u[1]) + fabs(fTemp - pa->u[2])) / fTemp / 3;
+			fTemp = (pa->i[0] + pa->i[1] + pa->i[2]) / 3;
+			pa->ib = (fabs(fTemp - pa->i[0]) + fabs(fTemp - pa->i[1]) + fabs(fTemp - pa->i[2])) / fTemp / 3;
 		}
 		buf_Release(b);
 	}		 
@@ -156,9 +163,9 @@ void acm_MinSave(const uint8_t *pTime)
 	pTemp = xData.data;
 	xData.time = rtc_GetTimet();
 	for (i = 0; i < 3; i++)
-		gw3761_ConvertData_07(&pTemp[ACM_MSAVE_VOL + i * 2], FLOAT2FIX(pD->vol[i]));
+		gw3761_ConvertData_07(&pTemp[ACM_MSAVE_VOL + i * 2], FLOAT2FIX(pD->u[i]));
 	for (i = 0; i < 4; i++) {
-		gw3761_ConvertData_25(&pTemp[ACM_MSAVE_CUR + i * 3], FLOAT2FIX(pD->cur[i]), 1);
+		gw3761_ConvertData_25(&pTemp[ACM_MSAVE_CUR + i * 3], FLOAT2FIX(pD->i[i]), 1);
 		gw3761_ConvertData_09(&pTemp[ACM_MSAVE_PP + i * 3], FLOAT2FIX(pD->pp[i]), 1);
 		gw3761_ConvertData_09(&pTemp[ACM_MSAVE_PQ + i * 3], FLOAT2FIX(pD->pq[i]), 1);
 		gw3761_ConvertData_05_Percent(&pTemp[ACM_MSAVE_COS + i * 2], FLOAT2FIX(pD->cos[i]), 1);
@@ -188,12 +195,12 @@ void acm_QuarterSave(const uint8_t *pTime)
 		}
 	}
 	for (i = 0; i < 3; i++) {
-		gw3761_ConvertData_05(aBuf, FLOAT2FIX(pD->au[i]), 0);
+		gw3761_ConvertData_05(aBuf, FLOAT2FIX(pD->ua[i]), 0);
 		memcpy(pTemp, aBuf, 2);
 		pTemp += 2;
 	}
 	for (i = 0; i < 3; i++) {
-		gw3761_ConvertData_05(aBuf, FLOAT2FIX(pD->ai[i]), 0);
+		gw3761_ConvertData_05(aBuf, FLOAT2FIX(pD->ia[i]), 0);
 		memcpy(pTemp, aBuf, 2);
 		pTemp += 2;
 	}

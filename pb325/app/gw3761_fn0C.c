@@ -177,15 +177,15 @@ static void gw3761_Afn0C_F25(buf b, uint_t nDa)
 				buf_Push(b, aBuf, 2);
 			}
 			for (i = 0; i < 3; i++) {
-				gw3761_ConvertData_07(aBuf, FLOAT2FIX(pD->vol[i]));
+				gw3761_ConvertData_07(aBuf, FLOAT2FIX(pD->u[i]));
 				buf_Push(b, aBuf, 2);
 			}
 			for (i = 0; i < 4; i++) {
-				gw3761_ConvertData_25(aBuf, FLOAT2FIX(pD->cur[i]), 0);
+				gw3761_ConvertData_25(aBuf, FLOAT2FIX(pD->i[i]), 0);
 				buf_Push(b, aBuf, 3);
 			}
 			for (i = 0; i < 4; i++) {
-				gw3761_ConvertData_09(aBuf, FLOAT2FIX(pD->vi[i]), 0);
+				gw3761_ConvertData_09(aBuf, FLOAT2FIX(pD->ui[i]), 0);
 				buf_Push(b, aBuf, 3);
 			}
 		}
@@ -297,11 +297,11 @@ static void gw3761_Afn0C_F49(buf b, uint_t nDa)
 		if (acm_IsReady()) {
 			pD = &acm_rtd;
 			for (i = 0; i < 3; i++) {
-				gw3761_ConvertData_05(aBuf, FLOAT2FIX(pD->au[i]), 1);
+				gw3761_ConvertData_05(aBuf, FLOAT2FIX(pD->ua[i]), 1);
 				buf_Push(b, aBuf, 2);
 			}
 			for (i = 0; i < 3; i++) {
-				gw3761_ConvertData_05(aBuf, FLOAT2FIX(pD->ai[i]), 1);
+				gw3761_ConvertData_05(aBuf, FLOAT2FIX(pD->ia[i]), 1);
 				buf_Push(b, aBuf, 2);
 			}
 		}

@@ -237,37 +237,37 @@ static void disp_Handle(uint_t nSel)
 	switch (nSel) {
     case Dis_Va:		//Vrms_A
     	ht1621_Write(iConPhase, Icon_A);	
-		nTemp = pD->vol[0] * 1000;
+		nTemp = pD->u[0] * 1000;
 		Display_Vrms(nTemp);			
 		break;
 	case Dis_Vb:		//Vrms_B
 		ht1621_Write(iConPhase, Icon_B);	
-		nTemp = pD->vol[1] * 1000;
+		nTemp = pD->u[1] * 1000;
 		Display_Vrms(nTemp);
 		break;
 	case Dis_Vc:		//Vrms_C
 		ht1621_Write(iConPhase, Icon_C);	
-		nTemp = pD->vol[2] * 1000;
+		nTemp = pD->u[2] * 1000;
 		Display_Vrms(nTemp);
 		break;
 	case Dis_In:		//	Irms_ABC
 		ht1621_Write(iConPhase, Icon_Sum);
-		nTemp = pD->cur[3] * 1000;
+		nTemp = pD->i[3] * 1000;
 		Display_Irms(nTemp);	
 		break;						 
 	case Dis_Ia:		// Irms_A
 		ht1621_Write(iConPhase, Icon_A);
-		nTemp = pD->cur[0] * 1000;
+		nTemp = pD->i[0] * 1000;
 		Display_Irms(nTemp);
 		break;
 	case Dis_Ib:		// Irms_B
 		ht1621_Write(iConPhase, Icon_B);
-		nTemp = pD->cur[1] * 1000;
+		nTemp = pD->i[1] * 1000;
 		Display_Irms(nTemp);		
 		break;
 	case Dis_Ic:		//	Irms_C
 		ht1621_Write(iConPhase, Icon_C);	
-		nTemp = pD->cur[2] * 1000;
+		nTemp = pD->i[2] * 1000;
 		Display_Irms(nTemp);		
 		break;
 	case Dis_Pa:		//P_A

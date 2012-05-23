@@ -40,6 +40,26 @@ int gw3761_ResponseData2(p_gw3761 p)
 				nSucc = 0;
 				nFn = gw3761_ConvertDt2Fn((uDu.word[1] & 0xFF00) | BITMASK(j));
 				switch (nFn) {
+				case 25:
+					if (data_DayRead(pData, ps)) {
+						buf_Push(b, pData, 3);
+						gw3761_ConvertData_23(aBuf, FLOAT2FIX(ps->pmax[3]));
+						buf_Push(b, aBuf, 3);
+						gw3761_ConvertData_18(aBuf, ps->tpmax[3]);
+						buf_Push(b, aBuf, 3);
+						for (i = 0; i < 3; i++) {
+							gw3761_ConvertData_23(aBuf, FLOAT2FIX(ps->pmax[i]));
+							buf_Push(b, aBuf, 3);
+							gw3761_ConvertData_18(aBuf, ps->tpmax[i]);
+							buf_Push(b, aBuf, 3);
+						}
+						buf_PushData(b, ps->p0[3], 2);
+						for (i = 0; i < 3; i++)
+							buf_PushData(b, ps->p0[i], 2);
+						nSucc = 1;
+					}
+					pData += 3;
+					break;
 				case 27:
 					if (data_DayRead(pData, ps)) {
 						buf_Push(b, pData, 3);
@@ -67,7 +87,7 @@ int gw3761_ResponseData2(p_gw3761 p)
 						nSucc = 1;
 					}
 					pData += 3;
-					break;						
+					break;
 				case 28:
 					if (data_DayRead(pData, ps)) {
 						buf_Push(b, pData, 3);
@@ -84,7 +104,7 @@ int gw3761_ResponseData2(p_gw3761 p)
 						nSucc = 1;
 					}
 					pData += 3;
-					break;						
+					break;
 				case 29:
 					if (data_DayRead(pData, ps)) {
 						buf_Push(b, pData, 3);
@@ -102,7 +122,7 @@ int gw3761_ResponseData2(p_gw3761 p)
 						nSucc = 1;
 					}
 					pData += 3;
-					break;						
+					break;
 				case 30:
 					if (data_DayRead(pData, ps)) {
 						buf_Push(b, pData, 3);
@@ -111,7 +131,7 @@ int gw3761_ResponseData2(p_gw3761 p)
 						nSucc = 1;
 					}
 					pData += 3;
-					break;						
+					break;
 				case 49:
 					buf_Push(b, pData, 3);
 					buf_PushData(b, 1440, 2);
@@ -130,7 +150,6 @@ int gw3761_ResponseData2(p_gw3761 p)
 				case 10:
 				case 11:
 				case 12:
-				case 25:
 				case 26:
 				case 31:
 				case 32:
@@ -322,7 +341,7 @@ int gw3761_ResponseData2(p_gw3761 p)
 							nLen = 0;
 							break;
 	                    case 232:
-	                        //配电扩展组合数据读取
+							//配电扩展组合数据读取
 							buf_Push(b, pData, 7);
 							for (k = 0; k < nData; k++, tTime += nTemp) {
 								timet2array(tTime, aBuf, 1);

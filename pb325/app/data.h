@@ -34,7 +34,6 @@ typedef struct {
 //Í³¼Æ
 typedef struct {
 	uint16_t	run;
-	uint16_t	cnt;
 	uint16_t	uup[3];
 	uint16_t	iup[4];
 	uint16_t	uover[3];
@@ -45,6 +44,7 @@ typedef struct {
 	uint16_t	ibalance;
 	uint16_t	uiup;
 	uint16_t	uiover;
+	uint16_t	p0[4];
 	float		usum[3];
 	float		isum[4];
 	float		umin[3];
@@ -52,10 +52,12 @@ typedef struct {
 	float		ubmax;
 	float		imax[4];
 	float		ibmax;
+	float		pmax[4];
 	time_t		tumin[3];
 	time_t		tumax[3];
 	time_t		tubmax;
 	time_t		timax[4];
+	time_t		tpmax[4];
 	time_t		tibmax;
 }t_stat, *p_stat;
 

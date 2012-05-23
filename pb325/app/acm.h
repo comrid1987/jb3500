@@ -18,14 +18,16 @@ extern "C" {
 //Public Typedefs
 typedef struct {
 	float	freq;	//
-	float	vol[3];	//
-	float	cur[4];	//
+	float	u[3];	//
+	float	i[4];	//
 	float	pp[4];	//
 	float	pq[4];	//
-	float	vi[4];	//
+	float	ui[4];	//
 	float	cos[4];	//
-	float	au[3];	//电压角度
-	float	ai[3];	//电流角度
+	float	ua[3];	//电压角度
+	float	ia[3];	//电流角度
+	float	ub;		//电压不平衡度
+	float	ib;		//电流不平衡度
 }t_acm_rtdata;
 
 typedef struct {
