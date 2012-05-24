@@ -17,6 +17,8 @@ extern "C" {
 #define ECL_PRTL_DLT645_97			1
 #define ECL_PRTL_ACM				2
 #define ECL_PRTL_DLT645_07			30
+#define ECL_PRTL_DLQ_SY				201
+#define ECL_PRTL_DLQ_QL				202
 
 
 //Modem Type Defines
@@ -29,9 +31,14 @@ extern "C" {
 typedef const struct {
 	uint8_t		flag;
 	uint8_t		type;
-	uint16_t	di97;
 	uint32_t	di07;
-}t_ecl_rtdi;
+}t_ecl_rtdi07;
+
+typedef const struct {
+	uint8_t		flag;
+	uint8_t		type;
+	uint16_t	di97;
+}t_ecl_rtdi97;
 
 typedef struct {
 	uint8_t			ste;

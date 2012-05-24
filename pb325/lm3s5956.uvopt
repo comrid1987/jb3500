@@ -177,6 +177,38 @@
           <Name>-UV2077N9E -O14 -S1 -C0 -N00("ARM CoreSight JTAG-DP") -D00(3BA00477) -L00(4) -TO18 -TC10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP7 -FO7 -FD20000000 -FC800 -FN1 -FF0LM3S_256 -FS00 -FL040000)</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
+      <Breakpoint>
+        <Bp>
+          <Number>0</Number>
+          <Type>0</Type>
+          <LineNumber>186</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>52216</Address>
+          <ByteObject>0</ByteObject>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>dlrcp.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>1</Number>
+          <Type>0</Type>
+          <LineNumber>300</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>101128</Address>
+          <ByteObject>0</ByteObject>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>swuart.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+      </Breakpoint>
       <MemoryWindow1>
         <Mm>
           <WinNumber>1</WinNumber>
@@ -319,8 +351,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>88</TopLine>
+      <CurrentLine>115</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\main.c</PathWithFileName>
       <FilenameWithoutPath>main.c</FilenameWithoutPath>
@@ -401,10 +433,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>24</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>224</TopLine>
+      <CurrentLine>224</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\gw3761_fn0C.c</PathWithFileName>
       <FilenameWithoutPath>gw3761_fn0C.c</FilenameWithoutPath>
@@ -471,10 +503,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>26</ColumnNumber>
+      <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>19</TopLine>
-      <CurrentLine>37</CurrentLine>
+      <TopLine>91</TopLine>
+      <CurrentLine>115</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\upcomm.c</PathWithFileName>
       <FilenameWithoutPath>upcomm.c</FilenameWithoutPath>
@@ -565,10 +597,374 @@
     </File>
   </Group>
 
+  <AlienFiles>
+    <PathWithFilename>D:\Workspace\PB325\app\meter.h</PathWithFilename>
+    <TopLine>19</TopLine>
+    <CurrentLine>50</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
+    <PathWithFilename>D:\Workspace\PB325\config\bsp_cfg.h</PathWithFilename>
+    <TopLine>253</TopLine>
+    <CurrentLine>266</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
+    <PathWithFilename>D:\Workspace\litecore\drivers\swuart.c</PathWithFilename>
+    <TopLine>73</TopLine>
+    <CurrentLine>79</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
+    <PathWithFilename>D:\Workspace\litecore\os\rtt\idle.c</PathWithFilename>
+    <TopLine>135</TopLine>
+    <CurrentLine>156</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
+    <PathWithFilename>D:\Workspace\litecore\arch\cm3\lm3s\arch_gpio.c</PathWithFilename>
+    <TopLine>164</TopLine>
+    <CurrentLine>174</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
+    <PathWithFilename>D:\Workspace\litecore\arch\cm3\cpuport.c</PathWithFilename>
+    <TopLine>78</TopLine>
+    <CurrentLine>88</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
+    <PathWithFilename>D:\Workspace\litecore\os\rtt\kservice.h</PathWithFilename>
+    <TopLine>78</TopLine>
+    <CurrentLine>88</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
+    <PathWithFilename>D:\Workspace\litecore\drivers\spibus.c</PathWithFilename>
+    <TopLine>44</TopLine>
+    <CurrentLine>54</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
+    <PathWithFilename>D:\Workspace\litecore\cp\dlrcp.c</PathWithFilename>
+    <TopLine>166</TopLine>
+    <CurrentLine>186</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
+    <PathWithFilename>D:\Workspace\litecore\cp\gw376\gw3761.c</PathWithFilename>
+    <TopLine>289</TopLine>
+    <CurrentLine>305</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
+    <PathWithFilename>D:\Workspace\litecore\sys\rtc.c</PathWithFilename>
+    <TopLine>79</TopLine>
+    <CurrentLine>89</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
+    <PathWithFilename>D:\Workspace\litecore\chl\rs232.c</PathWithFilename>
+    <TopLine>1</TopLine>
+    <CurrentLine>9</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
+    <PathWithFilename>D:\Workspace\litecore\sys\uart.c</PathWithFilename>
+    <TopLine>122</TopLine>
+    <CurrentLine>153</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
+    <PathWithFilename>D:\Workspace\PB325\config\bsp_cfg.c</PathWithFilename>
+    <TopLine>289</TopLine>
+    <CurrentLine>300</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
   <WinLayout>
-    <sActiveDebugView>Default</sActiveDebugView>
-    <iActiveDebugViewLocation>1</iActiveDebugViewLocation>
-    <sActiveBuildView>Build</sActiveBuildView>
+    <sActiveDebugView></sActiveDebugView>
+    <iActiveDebugViewLocation>0</iActiveDebugViewLocation>
+    <sActiveBuildView></sActiveBuildView>
     <iActiveBuildViewLocation>0</iActiveBuildViewLocation>
     <View>
       <ViewName>Default</ViewName>
@@ -705,7 +1101,7 @@
         <AnchorWinID>197</AnchorWinID>
         <AnchorWinName>Build Output</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>Build Output</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -730,7 +1126,7 @@
         <AnchorWinID>198</AnchorWinID>
         <AnchorWinName>Command</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>Build Output</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -755,7 +1151,7 @@
         <AnchorWinID>199</AnchorWinID>
         <AnchorWinName>Find in Files</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>Build Output</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -780,7 +1176,7 @@
         <AnchorWinID>38007</AnchorWinID>
         <AnchorWinName>Browser</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>Build Output</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -805,7 +1201,7 @@
         <AnchorWinID>1939</AnchorWinID>
         <AnchorWinName>UART #1</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>Build Output</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -830,7 +1226,7 @@
         <AnchorWinID>1940</AnchorWinID>
         <AnchorWinName>UART #2</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>Build Output</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -855,7 +1251,7 @@
         <AnchorWinID>1941</AnchorWinID>
         <AnchorWinName>UART #3</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>Build Output</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -893,7 +1289,7 @@
         <FloatingRect_left>52</FloatingRect_left>
         <FloatingRect_bottom>600</FloatingRect_bottom>
         <FloatingRect_right>302</FloatingRect_right>
-        <ContainerPercent>42</ContainerPercent>
+        <ContainerPercent>50</ContainerPercent>
         <ActiveTab>0</ActiveTab>
         <Visible>0</Visible>
         <Dynamic>0</Dynamic>
@@ -918,7 +1314,7 @@
         <FloatingRect_left>52</FloatingRect_left>
         <FloatingRect_bottom>600</FloatingRect_bottom>
         <FloatingRect_right>302</FloatingRect_right>
-        <ContainerPercent>42</ContainerPercent>
+        <ContainerPercent>50</ContainerPercent>
         <ActiveTab>0</ActiveTab>
         <Visible>1</Visible>
         <Dynamic>0</Dynamic>
@@ -943,7 +1339,7 @@
         <FloatingRect_left>52</FloatingRect_left>
         <FloatingRect_bottom>600</FloatingRect_bottom>
         <FloatingRect_right>302</FloatingRect_right>
-        <ContainerPercent>42</ContainerPercent>
+        <ContainerPercent>50</ContainerPercent>
         <ActiveTab>1</ActiveTab>
         <Visible>1</Visible>
         <Dynamic>0</Dynamic>
@@ -968,7 +1364,7 @@
         <FloatingRect_left>52</FloatingRect_left>
         <FloatingRect_bottom>600</FloatingRect_bottom>
         <FloatingRect_right>302</FloatingRect_right>
-        <ContainerPercent>42</ContainerPercent>
+        <ContainerPercent>50</ContainerPercent>
         <ActiveTab>0</ActiveTab>
         <Visible>1</Visible>
         <Dynamic>0</Dynamic>
@@ -993,7 +1389,7 @@
         <FloatingRect_left>52</FloatingRect_left>
         <FloatingRect_bottom>600</FloatingRect_bottom>
         <FloatingRect_right>302</FloatingRect_right>
-        <ContainerPercent>42</ContainerPercent>
+        <ContainerPercent>50</ContainerPercent>
         <ActiveTab>0</ActiveTab>
         <Visible>0</Visible>
         <Dynamic>0</Dynamic>
@@ -1018,7 +1414,7 @@
         <FloatingRect_left>52</FloatingRect_left>
         <FloatingRect_bottom>600</FloatingRect_bottom>
         <FloatingRect_right>302</FloatingRect_right>
-        <ContainerPercent>42</ContainerPercent>
+        <ContainerPercent>50</ContainerPercent>
         <ActiveTab>0</ActiveTab>
         <Visible>1</Visible>
         <Dynamic>0</Dynamic>
@@ -1043,7 +1439,7 @@
         <FloatingRect_left>52</FloatingRect_left>
         <FloatingRect_bottom>600</FloatingRect_bottom>
         <FloatingRect_right>302</FloatingRect_right>
-        <ContainerPercent>42</ContainerPercent>
+        <ContainerPercent>50</ContainerPercent>
         <ActiveTab>0</ActiveTab>
         <Visible>0</Visible>
         <Dynamic>0</Dynamic>
@@ -1068,7 +1464,7 @@
         <FloatingRect_left>52</FloatingRect_left>
         <FloatingRect_bottom>600</FloatingRect_bottom>
         <FloatingRect_right>302</FloatingRect_right>
-        <ContainerPercent>42</ContainerPercent>
+        <ContainerPercent>50</ContainerPercent>
         <ActiveTab>0</ActiveTab>
         <Visible>0</Visible>
         <Dynamic>0</Dynamic>
@@ -1093,7 +1489,7 @@
         <FloatingRect_left>52</FloatingRect_left>
         <FloatingRect_bottom>600</FloatingRect_bottom>
         <FloatingRect_right>302</FloatingRect_right>
-        <ContainerPercent>42</ContainerPercent>
+        <ContainerPercent>50</ContainerPercent>
         <ActiveTab>0</ActiveTab>
         <Visible>0</Visible>
         <Dynamic>0</Dynamic>
@@ -1118,7 +1514,7 @@
         <FloatingRect_left>52</FloatingRect_left>
         <FloatingRect_bottom>600</FloatingRect_bottom>
         <FloatingRect_right>302</FloatingRect_right>
-        <ContainerPercent>42</ContainerPercent>
+        <ContainerPercent>50</ContainerPercent>
         <ActiveTab>0</ActiveTab>
         <Visible>1</Visible>
         <Dynamic>0</Dynamic>
@@ -1155,7 +1551,7 @@
         <AnchorWinID>1005</AnchorWinID>
         <AnchorWinName>Project</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>Project</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -1180,7 +1576,7 @@
         <AnchorWinID>109</AnchorWinID>
         <AnchorWinName>Books</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>Project</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -1205,7 +1601,7 @@
         <AnchorWinID>195</AnchorWinID>
         <AnchorWinName>Functions</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>Project</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -1230,7 +1626,7 @@
         <AnchorWinID>196</AnchorWinID>
         <AnchorWinName>Templates</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>Project</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -1280,7 +1676,7 @@
         <AnchorWinID>35885</AnchorWinID>
         <AnchorWinName>???</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>???</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -1305,7 +1701,7 @@
         <AnchorWinID>35886</AnchorWinID>
         <AnchorWinName>???</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>???</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -1330,7 +1726,7 @@
         <AnchorWinID>35887</AnchorWinID>
         <AnchorWinName>???</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>???</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -1355,7 +1751,7 @@
         <AnchorWinID>35888</AnchorWinID>
         <AnchorWinName>???</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>???</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -1380,7 +1776,7 @@
         <AnchorWinID>35889</AnchorWinID>
         <AnchorWinName>???</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>???</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -1405,7 +1801,7 @@
         <AnchorWinID>35890</AnchorWinID>
         <AnchorWinName>???</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>???</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -1430,7 +1826,7 @@
         <AnchorWinID>35891</AnchorWinID>
         <AnchorWinName>???</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>???</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -1455,7 +1851,7 @@
         <AnchorWinID>35892</AnchorWinID>
         <AnchorWinName>???</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>???</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -1480,7 +1876,7 @@
         <AnchorWinID>35893</AnchorWinID>
         <AnchorWinName>???</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>???</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -1505,7 +1901,7 @@
         <AnchorWinID>35894</AnchorWinID>
         <AnchorWinName>???</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>???</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -1530,7 +1926,7 @@
         <AnchorWinID>35895</AnchorWinID>
         <AnchorWinName>???</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>???</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -1555,7 +1951,7 @@
         <AnchorWinID>35896</AnchorWinID>
         <AnchorWinName>???</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>???</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -1580,7 +1976,7 @@
         <AnchorWinID>35897</AnchorWinID>
         <AnchorWinName>???</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>???</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -1605,7 +2001,7 @@
         <AnchorWinID>35898</AnchorWinID>
         <AnchorWinName>???</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>???</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -1630,7 +2026,7 @@
         <AnchorWinID>35899</AnchorWinID>
         <AnchorWinName>???</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>???</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -1655,7 +2051,7 @@
         <AnchorWinID>35900</AnchorWinID>
         <AnchorWinName>???</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>???</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -1680,7 +2076,7 @@
         <AnchorWinID>35901</AnchorWinID>
         <AnchorWinName>???</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>???</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -1705,7 +2101,7 @@
         <AnchorWinID>35902</AnchorWinID>
         <AnchorWinName>???</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>???</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -1730,7 +2126,7 @@
         <AnchorWinID>35903</AnchorWinID>
         <AnchorWinName>???</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>???</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -1755,7 +2151,7 @@
         <AnchorWinID>35904</AnchorWinID>
         <AnchorWinName>???</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>???</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
@@ -1786,13 +2182,13 @@
         <DockLocation>2</DockLocation>
         <Pinned>0</Pinned>
         <DockedRect_top>76</DockedRect_top>
-        <DockedRect_left>920</DockedRect_left>
+        <DockedRect_left>942</DockedRect_left>
         <DockedRect_bottom>641</DockedRect_bottom>
         <DockedRect_right>1388</DockedRect_right>
-        <FloatingRect_top>358</FloatingRect_top>
-        <FloatingRect_left>338</FloatingRect_left>
-        <FloatingRect_bottom>608</FloatingRect_bottom>
-        <FloatingRect_right>938</FloatingRect_right>
+        <FloatingRect_top>373</FloatingRect_top>
+        <FloatingRect_left>500</FloatingRect_left>
+        <FloatingRect_bottom>623</FloatingRect_bottom>
+        <FloatingRect_right>1100</FloatingRect_right>
         <ContainerPercent>100</ContainerPercent>
         <ActiveTab>1</ActiveTab>
         <Visible>1</Visible>
@@ -1805,19 +2201,19 @@
         <AnchorWinID>203</AnchorWinID>
         <AnchorWinName>Disassembly</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>Disassembly</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
         <Pinned>0</Pinned>
         <DockedRect_top>76</DockedRect_top>
-        <DockedRect_left>920</DockedRect_left>
+        <DockedRect_left>942</DockedRect_left>
         <DockedRect_bottom>641</DockedRect_bottom>
         <DockedRect_right>1388</DockedRect_right>
-        <FloatingRect_top>358</FloatingRect_top>
-        <FloatingRect_left>338</FloatingRect_left>
-        <FloatingRect_bottom>608</FloatingRect_bottom>
-        <FloatingRect_right>938</FloatingRect_right>
+        <FloatingRect_top>373</FloatingRect_top>
+        <FloatingRect_left>500</FloatingRect_left>
+        <FloatingRect_bottom>623</FloatingRect_bottom>
+        <FloatingRect_right>1100</FloatingRect_right>
         <ContainerPercent>100</ContainerPercent>
         <ActiveTab>0</ActiveTab>
         <Visible>0</Visible>
@@ -1830,19 +2226,19 @@
         <AnchorWinID>1913</AnchorWinID>
         <AnchorWinName>Instruction Trace</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>Disassembly</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
         <Pinned>0</Pinned>
         <DockedRect_top>76</DockedRect_top>
-        <DockedRect_left>920</DockedRect_left>
+        <DockedRect_left>942</DockedRect_left>
         <DockedRect_bottom>641</DockedRect_bottom>
         <DockedRect_right>1388</DockedRect_right>
-        <FloatingRect_top>358</FloatingRect_top>
-        <FloatingRect_left>338</FloatingRect_left>
-        <FloatingRect_bottom>608</FloatingRect_bottom>
-        <FloatingRect_right>938</FloatingRect_right>
+        <FloatingRect_top>373</FloatingRect_top>
+        <FloatingRect_left>500</FloatingRect_left>
+        <FloatingRect_bottom>623</FloatingRect_bottom>
+        <FloatingRect_right>1100</FloatingRect_right>
         <ContainerPercent>100</ContainerPercent>
         <ActiveTab>0</ActiveTab>
         <Visible>0</Visible>
@@ -1855,19 +2251,19 @@
         <AnchorWinID>343</AnchorWinID>
         <AnchorWinName>Performance Analyzer</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>Disassembly</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
         <Pinned>0</Pinned>
         <DockedRect_top>76</DockedRect_top>
-        <DockedRect_left>920</DockedRect_left>
+        <DockedRect_left>942</DockedRect_left>
         <DockedRect_bottom>641</DockedRect_bottom>
         <DockedRect_right>1388</DockedRect_right>
-        <FloatingRect_top>358</FloatingRect_top>
-        <FloatingRect_left>338</FloatingRect_left>
-        <FloatingRect_bottom>608</FloatingRect_bottom>
-        <FloatingRect_right>938</FloatingRect_right>
+        <FloatingRect_top>373</FloatingRect_top>
+        <FloatingRect_left>500</FloatingRect_left>
+        <FloatingRect_bottom>623</FloatingRect_bottom>
+        <FloatingRect_right>1100</FloatingRect_right>
         <ContainerPercent>100</ContainerPercent>
         <ActiveTab>0</ActiveTab>
         <Visible>0</Visible>
@@ -1880,19 +2276,19 @@
         <AnchorWinID>204</AnchorWinID>
         <AnchorWinName>Performance Analyzer</AnchorWinName>
         <OtherWinID>0</OtherWinID>
-        <OtherWinName></OtherWinName>
+        <OtherWinName>Disassembly</OtherWinName>
         <WinType>1</WinType>
         <DockType>4</DockType>
         <DockLocation>2</DockLocation>
         <Pinned>0</Pinned>
         <DockedRect_top>76</DockedRect_top>
-        <DockedRect_left>920</DockedRect_left>
+        <DockedRect_left>942</DockedRect_left>
         <DockedRect_bottom>641</DockedRect_bottom>
         <DockedRect_right>1388</DockedRect_right>
-        <FloatingRect_top>358</FloatingRect_top>
-        <FloatingRect_left>338</FloatingRect_left>
-        <FloatingRect_bottom>608</FloatingRect_bottom>
-        <FloatingRect_right>938</FloatingRect_right>
+        <FloatingRect_top>373</FloatingRect_top>
+        <FloatingRect_left>500</FloatingRect_left>
+        <FloatingRect_bottom>623</FloatingRect_bottom>
+        <FloatingRect_right>1100</FloatingRect_right>
         <ContainerPercent>100</ContainerPercent>
         <ActiveTab>0</ActiveTab>
         <Visible>0</Visible>
@@ -1900,5 +2296,118 @@
       </Window>
     </View>
   </WinLayout>
+
+  <MDIGroups>
+    <Orientation>1</Orientation>
+    <ActiveMDIGroup>0</ActiveMDIGroup>
+    <MDIGroup>
+      <Size>100</Size>
+      <ActiveTab>3</ActiveTab>
+      <Documents>
+        <Doc>
+          <Name>.\config\bsp_cfg.c</Name>
+          <ColumnNumber>2</ColumnNumber>
+          <TopLine>289</TopLine>
+          <CurrentLine>300</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>.\config\bsp_cfg.h</Name>
+          <ColumnNumber>26</ColumnNumber>
+          <TopLine>253</TopLine>
+          <CurrentLine>266</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>.\app\main.c</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>88</TopLine>
+          <CurrentLine>108</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>..\litecore\drivers/swuart.c</Name>
+          <ColumnNumber>78</ColumnNumber>
+          <TopLine>73</TopLine>
+          <CurrentLine>79</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>..\litecore\chl/rs232.c</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>1</TopLine>
+          <CurrentLine>9</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>..\litecore\sys/rtc.c</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>79</TopLine>
+          <CurrentLine>89</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>..\litecore\cp/gw376/gw3761.c</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>289</TopLine>
+          <CurrentLine>305</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>..\litecore\cp/dlrcp.c</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>166</TopLine>
+          <CurrentLine>186</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>..\litecore\drivers/spibus.c</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>44</TopLine>
+          <CurrentLine>54</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>..\litecore\os/rtt/idle.c</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>135</TopLine>
+          <CurrentLine>156</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>..\litecore\os/rtt/kservice.h</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>78</TopLine>
+          <CurrentLine>88</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>.\app\upcomm.c</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>91</TopLine>
+          <CurrentLine>115</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>.\app\gw3761_fn0C.c</Name>
+          <ColumnNumber>24</ColumnNumber>
+          <TopLine>224</TopLine>
+          <CurrentLine>224</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>app\meter.h</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>19</TopLine>
+          <CurrentLine>50</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>..\litecore\arch/cm3/lm3s/arch_gpio.c</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>164</TopLine>
+          <CurrentLine>174</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>..\litecore\arch/cm3/cpuport.c</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>78</TopLine>
+          <CurrentLine>88</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>..\litecore\sys/uart.c</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>122</TopLine>
+          <CurrentLine>153</CurrentLine>
+        </Doc>
+      </Documents>
+    </MDIGroup>
+  </MDIGroups>
 
 </ProjectOpt>

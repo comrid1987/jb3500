@@ -7,128 +7,237 @@
 
 
 //Private Defines
-#define ECL_RTR_T_DEFAULT			0
-#define ECL_RTR_T_ENERGY			1
-#define ECL_RTR_T_MAXPOWER			2
-#define ECL_RTR_T_POWER				3
-#define ECL_RTR_T_VOL				4
-#define ECL_RTR_T_CUR				5
-#define ECL_RTR_T_CUR0				6
-#define ECL_RTR_T_PF				7
+#define ECL_RTR_T_NONE				0
+#define ECL_RTR_T_ENERGY_4			1
+#define ECL_RTR_T_ENERGY_5			2
+#define ECL_RTR_T_MAXPOWER			3
+#define ECL_RTR_T_POWER				4
+#define ECL_RTR_T_VOL				5
+#define ECL_RTR_T_CUR				6
+#define ECL_RTR_T_CUR0				7
+#define ECL_RTR_T_PF				8
+#define ECL_RTR_T_MAXPOWER07		9
+
+#define ECL_RTR_T_DLQ_RT			16
 
 
 //Private Typedefs
-#define XBCount                     21
+
 
 
 //Private Consts
-static t_ecl_rtdi tbl_Di_Afn0CF25[] = {
-	0,	ECL_RTR_T_POWER,		0xB63F,	0x0203FF00,	//有功功率
-	0,	ECL_RTR_T_POWER,		0xB64F,	0x0204FF00,	//无功功率
-	0,	ECL_RTR_T_PF,			0xB65F,	0x0206FF00,	//功率因数
-	0,	ECL_RTR_T_VOL,			0xB61F,	0x0201FF00,	//电压
-	0,	ECL_RTR_T_CUR,			0xB62F,	0x0202FF00,	//电流
-	0,	ECL_RTR_T_CUR0,			0xB620,	0x02080001,	//零序电流
-	0,	ECL_RTR_T_POWER,		0xB63F,	0x0205FF00,	//视在功率,97表无
+static t_ecl_rtdi07 tbl_Di07_Afn0CF25[] = {
+	0,	ECL_RTR_T_POWER,		0x0203FF00,	//有功功率
+	0,	ECL_RTR_T_POWER,		0x0204FF00,	//无功功率
+	0,	ECL_RTR_T_PF,			0x0206FF00,	//功率因数
+	1,	ECL_RTR_T_VOL,			0x0201FF00,	//电压
+	1,	ECL_RTR_T_CUR,			0x0202FF00,	//电流
+	0,	ECL_RTR_T_CUR0,			0x02080001,	//零序电流
+	0,	ECL_RTR_T_POWER,		0x0205FF00,	//视在功率
 };
 
-static t_ecl_rtdi tbl_Di_Afn0CF33[] = {
-	1,	ECL_RTR_T_ENERGY,		0x901F,	0x0001FF00,
-	0,	ECL_RTR_T_DEFAULT,		0x911F,	0x0003FF00,
-	0,	ECL_RTR_T_DEFAULT,		0x913F,	0x0005FF00,
-	0,	ECL_RTR_T_DEFAULT,		0x914F,	0x0008FF00,
+static t_ecl_rtdi97 tbl_Di97_Afn0CF25[] = {
+	0,	ECL_RTR_T_POWER,		0xB63F,	//有功功率
+	0,	ECL_RTR_T_POWER,		0xB64F,	//无功功率
+	0,	ECL_RTR_T_PF,			0xB65F,	//功率因数
+	1,	ECL_RTR_T_VOL,			0xB61F,	//电压
+	1,	ECL_RTR_T_CUR,			0xB62F,	//电流
+	0,	ECL_RTR_T_CUR0,			0xB620,	//零序电流
+	0,	ECL_RTR_T_NONE,			12,	//视在功率,97表无
 };
 
-static t_ecl_rtdi tbl_Di_Afn0CF34[] = {
-	1,	ECL_RTR_T_ENERGY,		0x902F,	0x0002FF00,
-	0,	ECL_RTR_T_DEFAULT,		0x912F,	0x0004FF00,
-	0,	ECL_RTR_T_DEFAULT,		0x915F,	0x0006FF00,
-	0,	ECL_RTR_T_DEFAULT,		0x916F,	0x0007FF00,
+static t_ecl_rtdi07 tbl_DiSY_Afn0CF25[] = {
+	0,	ECL_RTR_T_NONE,			32,		//
+	0,	ECL_RTR_T_DLQ_RT,		0x02FF0000, //电压电流
+	0,	ECL_RTR_T_NONE, 		12, 	//
 };
 
-static t_ecl_rtdi tbl_Di_Afn0CF35[] = {
-	0,	ECL_RTR_T_MAXPOWER,		0xA01F,	0x0001FF00,
-	0,	ECL_RTR_T_DEFAULT,		0xB01F, 0x0003FF00,
-	0,	ECL_RTR_T_MAXPOWER,		0xA11F,	0x0003FF00,
-	0,	ECL_RTR_T_DEFAULT,		0xB11F, 0x0003FF00,
+static t_ecl_rtdi97 tbl_DiQL_Afn0CF25[] = {
+	0,	ECL_RTR_T_NONE,			32,		//
+	0,	ECL_RTR_T_DLQ_RT,		0xB66F,	//电压电流
+	0,	ECL_RTR_T_NONE,			12,		//视在功率,97表无
 };
 
-static t_ecl_rtdi tbl_Di_Afn0CF36[] = {
-	0,	ECL_RTR_T_MAXPOWER,		0xA02F,	0x0001FF00,
-	0,	ECL_RTR_T_DEFAULT,		0xB02F, 0x0003FF00,
-	0,	ECL_RTR_T_MAXPOWER,		0xA12F,	0x0003FF00,
-	0,	ECL_RTR_T_DEFAULT,		0xB12F, 0x0003FF00,
+static t_ecl_rtdi07 tbl_Di07_Afn0CF33[] = {
+	1,	ECL_RTR_T_ENERGY_5,		0x0001FF00,
+	0,	ECL_RTR_T_ENERGY_4,		0x0003FF00,
+	0,	ECL_RTR_T_ENERGY_4,		0x0005FF00,
+	0,	ECL_RTR_T_ENERGY_4,		0x0008FF00,
+};
+
+static t_ecl_rtdi97 tbl_Di97_Afn0CF33[] = {
+	1,	ECL_RTR_T_ENERGY_5,		0x901F,
+	0,	ECL_RTR_T_ENERGY_4,		0x911F,
+	0,	ECL_RTR_T_ENERGY_4,		0x913F,
+	0,	ECL_RTR_T_ENERGY_4,		0x914F,
+};
+
+static t_ecl_rtdi07 tbl_Di07_Afn0CF34[] = {
+	1,	ECL_RTR_T_ENERGY_5,		0x0002FF00,
+	0,	ECL_RTR_T_ENERGY_4,		0x0004FF00,
+	0,	ECL_RTR_T_ENERGY_4,		0x0006FF00,
+	0,	ECL_RTR_T_ENERGY_4,		0x0007FF00,
+};
+
+static t_ecl_rtdi97 tbl_Di97_Afn0CF34[] = {
+	1,	ECL_RTR_T_ENERGY_5,		0x902F,
+	0,	ECL_RTR_T_ENERGY_4,		0x912F,
+	0,	ECL_RTR_T_ENERGY_4,		0x915F,
+	0,	ECL_RTR_T_ENERGY_4,		0x916F,
+};
+
+static t_ecl_rtdi97 tbl_Di97_Afn0CF35[] = {
+	0,	ECL_RTR_T_MAXPOWER,		0xA01F,
+	0,	ECL_RTR_T_ENERGY_4,		0xB01F,
+	0,	ECL_RTR_T_MAXPOWER,		0xA11F,
+	0,	ECL_RTR_T_ENERGY_4,		0xB11F,
+};
+
+static t_ecl_rtdi07 tbl_Di07_Afn0CF35[] = {
+	0,	ECL_RTR_T_MAXPOWER07,	0x0101FF00,
+	0,	ECL_RTR_T_MAXPOWER07,	0x0103FF00,
+};
+
+static t_ecl_rtdi97 tbl_Di97_Afn0CF36[] = {
+	0,	ECL_RTR_T_MAXPOWER,		0xA02F,
+	0,	ECL_RTR_T_ENERGY_4,		0xB02F,
+	0,	ECL_RTR_T_MAXPOWER,		0xA12F,
+	0,	ECL_RTR_T_ENERGY_4,		0xB12F,
+};
+
+static t_ecl_rtdi07 tbl_Di07_Afn0CF36[] = {
+	0,	ECL_RTR_T_MAXPOWER07,	0x0102FF00,
+	0,	ECL_RTR_T_MAXPOWER07,	0x0104FF00,
 };
 
 
 
 //Internal Functions
-static int gw3761_Afn0C_RealRead(buf b, t_afn04_f10 *pF10, t_ecl_rtdi *p)
+static int gw3761_Afn0C_Type(int nType)
+{
+
+	switch (nType) {
+	case ECL_RTR_T_ENERGY_5:
+		return (ECL_RATE_QTY + 1) * 5;
+	case ECL_RTR_T_MAXPOWER:
+		return (ECL_RATE_QTY + 1) * 3;
+	case ECL_RTR_T_POWER:
+		return 12;
+	case ECL_RTR_T_VOL:
+		return 6;
+	case ECL_RTR_T_CUR:
+		return 9;
+	case ECL_RTR_T_CUR0:
+		return 3;
+	case ECL_RTR_T_PF:
+		return 8;
+	case ECL_RTR_T_MAXPOWER07:
+		return 40;
+	case ECL_RTR_T_DLQ_RT:
+		return 18;
+	default:
+		return (ECL_RATE_QTY + 1) * 4;
+	}
+}
+
+static int gw3761_Afn0C_07RealRead(buf b, t_afn04_f10 *pF10, t_ecl_rtdi07 *p, uint_t nIs3P)
 {
 	sys_res res;
-	int nRet;
-	uint_t i, nDiLen, nCode, nBaud, nLen;
-	uint32_t nDi;
+	int nRet = 0;
+	uint_t i, nLen;
 	uint8_t *pTemp;
 	buf bTx = {0};
 
-	if (pF10->prtl == ECL_PRTL_DLT645_97) {
-		nDi = p->di97;
-		nDiLen = 2;
-		nCode = DLT645_CODE_READ97;
-		nBaud = 1200;
+	if (p->type == ECL_RTR_T_NONE) {
+		nLen = p->di07;
 	} else {
-		nDi = p->di07;
-		nDiLen = 4;
-		nCode = DLT645_CODE_READ07;
-		nBaud = 2400;
-	}
-	switch (p->type) {
-	case ECL_RTR_T_ENERGY:
-		nLen = (ECL_RATE_QTY + 1) * 5;
-		break;
-	case ECL_RTR_T_MAXPOWER:
-		nLen = (ECL_RATE_QTY + 1) * 3;
-		break;
-	case ECL_RTR_T_POWER:
-		nLen = 12;
-		break;
-	case ECL_RTR_T_VOL:
-		nLen = 6;
-		break;
-	case ECL_RTR_T_CUR:
-		nLen = 9;
-		break;
-	case ECL_RTR_T_CUR0:
-		nLen = 3;
-		break;
-	case ECL_RTR_T_PF:
-		nLen = 8;
-		break;
-	default:
-		nLen = (ECL_RATE_QTY + 1) * 4;
-		break;
-	}
-	dlt645_Packet2Buf(bTx, pF10->madr, nCode, &nDi, nDiLen);
-	res = ecl_485_RealRead(bTx, nBaud, 2);
-	if ((res == SYS_R_OK) && (bTx->p[8] == (nCode | BITMASK(7)))) {
-		if (p->type == ECL_RTR_T_ENERGY) {
-			pTemp = &bTx->p[10 + nDiLen];
-			for (i = 0; i <= ECL_RATE_QTY; i++, pTemp += 4) {
-				buf_PushData(b, 0x00, 1);
-				buf_Push(b, pTemp, 4);
+		nLen = gw3761_Afn0C_Type(p->type);
+		dlt645_Packet2Buf(bTx, pF10->madr, DLT645_CODE_READ07, &p->di07, 4);
+		res = ecl_485_RealRead(bTx, 2400, 2);
+		if ((res == SYS_R_OK) && (bTx->p[8] == (DLT645_CODE_READ07 | BITMASK(7)))) {
+			pTemp = &bTx->p[14];
+			switch (p->type) {
+			case ECL_RTR_T_ENERGY_5:
+				for (i = 0; i <= ECL_RATE_QTY; i++, pTemp += 4) {
+					buf_PushData(b, 0x00, 1);
+					buf_Push(b, pTemp, 4);
+				}
+				break;
+			case ECL_RTR_T_MAXPOWER07:
+				for (i = 0; i <= ECL_RATE_QTY; i++, pTemp += 8) {
+					buf_Push(b, pTemp, 3);
+				}
+				pTemp = &bTx->p[17];
+				for (i = 0; i <= ECL_RATE_QTY; i++, pTemp += 8) {
+					buf_Push(b, pTemp, 4);
+				}
+				break;
+			case ECL_RTR_T_DLQ_RT:
+				pTemp += 16;
+				for (i = 0; i < 3; i++, pTemp -= 2)
+					buf_Push(b, pTemp, 2);
+				for (i = 0; i < 4; i++, pTemp -= 2) {
+					buf_PushData(b, 0x00, 1);
+					buf_Push(b, pTemp, 2);
+				}
+				break;
+			default:
+				buf_Push(b, pTemp, nLen);
+				break;
 			}
-		} else
-			buf_Push(b, &bTx->p[10 + nDiLen], nLen);
-		nRet = 1;
-	} else {
-		buf_Fill(b, GW3761_DATA_INVALID, nLen);
-		nRet = 0;
+			nRet = 1;
+		}
 	}
+	if (nRet == 0)
+		buf_Fill(b, GW3761_DATA_INVALID, nLen);
 	buf_Release(bTx);
 	return nRet;
 }
 
+static int gw3761_Afn0C_97RealRead(buf b, t_afn04_f10 *pF10, t_ecl_rtdi97 *p, uint_t nIs3P)
+{
+	sys_res res;
+	int nRet = 0;
+	uint_t i, nLen;
+	uint8_t *pTemp;
+	buf bTx = {0};
+
+	if (p->type == ECL_RTR_T_NONE) {
+		nLen = p->di97;
+	} else {
+		nLen = gw3761_Afn0C_Type(p->type);
+		dlt645_Packet2Buf(bTx, pF10->madr, DLT645_CODE_READ97, &p->di97, 2);
+		res = ecl_485_RealRead(bTx, 1200, 2);
+		if ((res == SYS_R_OK) && (bTx->p[8] == (DLT645_CODE_READ97 | BITMASK(7)))) {
+			pTemp = &bTx->p[12];
+			switch (p->type) {
+			case ECL_RTR_T_ENERGY_5:
+				for (i = 0; i <= ECL_RATE_QTY; i++, pTemp += 4) {
+					buf_PushData(b, 0x00, 1);
+					buf_Push(b, pTemp, 4);
+				}
+				break;
+			case ECL_RTR_T_DLQ_RT:
+				pTemp += 1;
+				for (i = 0; i < 3; i++, pTemp += 2)
+					buf_Push(b, pTemp, 2);
+				for (i = 0; i < 4; i++, pTemp += 2) {
+					buf_PushData(b, 0x00, 1);
+					buf_Push(b, pTemp, 2);
+				}
+				break;
+			default:
+				buf_Push(b, pTemp, nLen);
+				break;
+			}
+			nRet = 1;
+		}
+	}
+	if (nRet == 0)
+		buf_Fill(b, GW3761_DATA_INVALID, nLen);
+	buf_Release(bTx);
+	return nRet;
+}
 
 
 
@@ -153,8 +262,9 @@ static void gw3761_Afn0C_F25(buf b, uint_t nDa)
 	t_afn04_f10 xF10;
 	uint_t i;
 	uint8_t aBuf[5];
-	t_ecl_rtdi *pR;
 	t_acm_rtdata *pD;
+	t_ecl_rtdi97 *pR97;
+	t_ecl_rtdi07 *pR07;
 
 	if (icp_Meter4Tn(nDa, &xF10) == 0)
 		return;
@@ -193,17 +303,35 @@ static void gw3761_Afn0C_F25(buf b, uint_t nDa)
 	default:
 		gw3761_ConvertData_15(aBuf, rtc_GetTimet());
 		buf_Push(b, aBuf, 5);
-		for (pR = tbl_Di_Afn0CF25; pR < ARR_ENDADR(tbl_Di_Afn0CF25); pR++)
-			gw3761_Afn0C_RealRead(b, &xF10, pR);
+		switch (xF10.prtl) {
+		case ECL_PRTL_DLT645_97:
+			for (pR97 = tbl_Di97_Afn0CF25; pR97 < ARR_ENDADR(tbl_Di97_Afn0CF25); pR97++)
+				gw3761_Afn0C_97RealRead(b, &xF10, pR97, 1);
+			break;
+		case ECL_PRTL_DLQ_QL:
+			for (pR97 = tbl_DiQL_Afn0CF25; pR97 < ARR_ENDADR(tbl_DiQL_Afn0CF25); pR97++)
+				gw3761_Afn0C_97RealRead(b, &xF10, pR97, 1);
+			break;
+		case ECL_PRTL_DLQ_SY:
+			for (pR07 = tbl_DiSY_Afn0CF25; pR07 < ARR_ENDADR(tbl_DiSY_Afn0CF25); pR07++)
+				gw3761_Afn0C_07RealRead(b, &xF10, pR07, 1);
+			break;
+		default:
+			for (pR07 = tbl_Di07_Afn0CF25; pR07 < ARR_ENDADR(tbl_Di07_Afn0CF25); pR07++)
+				gw3761_Afn0C_07RealRead(b, &xF10, pR07, 1);
+			break;
+		}
 		break;
 	}
 }
 
-static void gw3761_Afn0C_F33(buf b, uint_t nDa)
+static void gw3761_Afn0C_F33(buf b, uint_t nDa, uint_t nMask)
 {
 	t_afn04_f10 xF10;
+	uint_t i;
 	uint8_t aBuf[5];
-	t_ecl_rtdi *pR;
+	t_ecl_rtdi97 *pR97;
+	t_ecl_rtdi07 *pR07;
 
 	if (icp_Meter4Tn(nDa, &xF10) == 0)
 		return;
@@ -214,17 +342,31 @@ static void gw3761_Afn0C_F33(buf b, uint_t nDa)
 		gw3761_ConvertData_15(aBuf, rtc_GetTimet());
 		buf_Push(b, aBuf, 5);
 		buf_PushData(b, ECL_RATE_QTY, 1);
-		for (pR = tbl_Di_Afn0CF33; pR < ARR_ENDADR(tbl_Di_Afn0CF33); pR++)
-			gw3761_Afn0C_RealRead(b, &xF10, pR);
+		switch (xF10.prtl) {
+		case ECL_PRTL_DLT645_97:
+			for (pR97 = tbl_Di97_Afn0CF33, i = 0; pR97 < ARR_ENDADR(tbl_Di97_Afn0CF33); pR97++, i++) {
+				if (nMask & BITMASK(i))
+					gw3761_Afn0C_97RealRead(b, &xF10, pR97, 1);
+			}
+			break;
+		default:
+			for (pR07 = tbl_Di07_Afn0CF33, i = 0; pR07 < ARR_ENDADR(tbl_Di07_Afn0CF33); pR07++, i++) {
+				if (nMask & BITMASK(i))
+					gw3761_Afn0C_07RealRead(b, &xF10, pR07, 1);
+			}
+			break;
+		}
 		break;
 	}
 }
 
-static void gw3761_Afn0C_F34(buf b, uint_t nDa)
+static void gw3761_Afn0C_F34(buf b, uint_t nDa, uint_t nMask)
 {
 	t_afn04_f10 xF10;
+	uint_t i;
 	uint8_t aBuf[5];
-	t_ecl_rtdi *pR;
+	t_ecl_rtdi97 *pR97;
+	t_ecl_rtdi07 *pR07;
 
 	if (icp_Meter4Tn(nDa, &xF10) == 0)
 		return;
@@ -235,8 +377,20 @@ static void gw3761_Afn0C_F34(buf b, uint_t nDa)
 		gw3761_ConvertData_15(aBuf, rtc_GetTimet());
 		buf_Push(b, aBuf, 5);
 		buf_PushData(b, ECL_RATE_QTY, 1);
-		for (pR = tbl_Di_Afn0CF34; pR < ARR_ENDADR(tbl_Di_Afn0CF34); pR++)
-			gw3761_Afn0C_RealRead(b, &xF10, pR);
+		switch (xF10.prtl) {
+		case ECL_PRTL_DLT645_97:
+			for (pR97 = tbl_Di97_Afn0CF34, i = 0; pR97< ARR_ENDADR(tbl_Di97_Afn0CF34); pR97++, i++) {
+				if (nMask & BITMASK(i))
+					gw3761_Afn0C_97RealRead(b, &xF10, pR97, 1);
+			}
+			break;
+		default:
+			for (pR07 = tbl_Di07_Afn0CF34, i = 0; pR07 < ARR_ENDADR(tbl_Di07_Afn0CF34); pR07++, i++) {
+				if (nMask & BITMASK(i))
+					gw3761_Afn0C_07RealRead(b, &xF10, pR07, 1);
+			}
+			break;
+		}
 		break;
 	}
 }
@@ -244,8 +398,10 @@ static void gw3761_Afn0C_F34(buf b, uint_t nDa)
 static void gw3761_Afn0C_F35(buf b, uint_t nDa)
 {
 	t_afn04_f10 xF10;
+	uint_t nIs3P;
 	uint8_t aBuf[5];
-	t_ecl_rtdi *pR;
+	t_ecl_rtdi97 *pR97;
+	t_ecl_rtdi07 *pR07;
 
 	if (icp_Meter4Tn(nDa, &xF10) == 0)
 		return;
@@ -256,8 +412,18 @@ static void gw3761_Afn0C_F35(buf b, uint_t nDa)
 		gw3761_ConvertData_15(aBuf, rtc_GetTimet());
 		buf_Push(b, aBuf, 5);
 		buf_PushData(b, ECL_RATE_QTY, 1);
-		for (pR = tbl_Di_Afn0CF35; pR < ARR_ENDADR(tbl_Di_Afn0CF35); pR++)
-			gw3761_Afn0C_RealRead(b, &xF10, pR);
+		switch (xF10.prtl) {
+		case ECL_PRTL_DLT645_97:
+			for (pR97 = tbl_Di97_Afn0CF35; pR97 < ARR_ENDADR(tbl_Di97_Afn0CF35); pR97++)
+				gw3761_Afn0C_97RealRead(b, &xF10, pR97, nIs3P);
+			break;
+		case ECL_PRTL_DLQ_SY:
+			break;
+		default:
+			for (pR07 = tbl_Di07_Afn0CF35; pR07 < ARR_ENDADR(tbl_Di07_Afn0CF35); pR07++)
+				gw3761_Afn0C_07RealRead(b, &xF10, pR07, nIs3P);
+			break;
+		}
 		break;
 	}
 }
@@ -265,8 +431,10 @@ static void gw3761_Afn0C_F35(buf b, uint_t nDa)
 static void gw3761_Afn0C_F36(buf b, uint_t nDa)
 {
 	t_afn04_f10 xF10;
+	uint_t nIs3P;
 	uint8_t aBuf[5];
-	t_ecl_rtdi *pR;
+	t_ecl_rtdi97 *pR97;
+	t_ecl_rtdi07 *pR07;
 
 	if (icp_Meter4Tn(nDa, &xF10) == 0)
 		return;
@@ -277,11 +445,20 @@ static void gw3761_Afn0C_F36(buf b, uint_t nDa)
 		gw3761_ConvertData_15(aBuf, rtc_GetTimet());
 		buf_Push(b, aBuf, 5);
 		buf_PushData(b, ECL_RATE_QTY, 1);
-		for (pR = tbl_Di_Afn0CF36; pR < ARR_ENDADR(tbl_Di_Afn0CF36); pR++)
-			gw3761_Afn0C_RealRead(b, &xF10, pR);
+		switch (xF10.prtl) {
+		case ECL_PRTL_DLT645_97:
+			for (pR97 = tbl_Di97_Afn0CF36; pR97 < ARR_ENDADR(tbl_Di97_Afn0CF36); pR97++)
+				gw3761_Afn0C_97RealRead(b, &xF10, pR97, nIs3P);
+			break;
+		default:
+			for (pR07 = tbl_Di07_Afn0CF36; pR07 < ARR_ENDADR(tbl_Di07_Afn0CF36); pR07++)
+				gw3761_Afn0C_07RealRead(b, &xF10, pR07, nIs3P);
+			break;
+		}
 		break;
 	}
 }
+
 
 static void gw3761_Afn0C_F49(buf b, uint_t nDa)
 {
@@ -360,7 +537,7 @@ static void gw3761_Afn0C_F58(buf b, uint_t nDa)
 	switch (xF10.port) {
 	case ECL_PORT_ACM:
 		if (acm_IsReady()) {
-			buf_PushData(b, XBCount, 1);
+			buf_PushData(b, 21, 1);
 			for (i = 0; i < 6; i++) {
 				if (i < 3) {
 					pD = &acm_uxb[i];
@@ -369,7 +546,7 @@ static void gw3761_Afn0C_F58(buf b, uint_t nDa)
 					pD = &acm_ixb[i - 3];
 					k = 1;
 				}
-				for (j = k; j < XBCount; j++) {
+				for (j = k; j < 21; j++) {
 					if (j & 1) {
 						buf_Fill(b, 0, 2);
 					} else {
@@ -455,11 +632,11 @@ int gw3761_ResponseData1(p_gw3761 p)
 					break;
 				case 33:
 					//当前正向有无功电能示值
-					gw3761_Afn0C_F33(b, nDa);
+					gw3761_Afn0C_F33(b, nDa, 0x0F);
 					break;
 				case 34:
 					//当前反向有无功电能示值
-					gw3761_Afn0C_F34(b, nDa);
+					gw3761_Afn0C_F34(b, nDa, 0x0F);
 					break;
 				case 35:
 					//当前正向有无功最大需量
@@ -480,6 +657,38 @@ int gw3761_ResponseData1(p_gw3761 p)
 				case 58:
 					//当前电压电流谐波含有率
 					gw3761_Afn0C_F58(b, nDa);
+					break;
+				case 129:
+					//当前正向有功电能示值
+					gw3761_Afn0C_F33(b, nDa, 0x01);
+					break;
+				case 130:
+					//当前正向无功电能示值
+					gw3761_Afn0C_F33(b, nDa, 0x02);
+					break;
+				case 131:
+					//当前反向有功电能示值
+					gw3761_Afn0C_F34(b, nDa, 0x01);
+					break;
+				case 132:
+					//当前反向无功电能示值
+					gw3761_Afn0C_F34(b, nDa, 0x02);
+					break;
+				case 133:
+					//当前无功1象限电能示值
+					gw3761_Afn0C_F33(b, nDa, 0x04);
+					break;
+				case 134:
+					//当前无功2象限电能示值
+					gw3761_Afn0C_F34(b, nDa, 0x04);
+					break;
+				case 135:
+					//当前无功3象限电能示值
+					gw3761_Afn0C_F34(b, nDa, 0x08);
+					break;
+				case 136:
+					//当前无功4象限电能示值
+					gw3761_Afn0C_F33(b, nDa, 0x08);
 					break;
 				default:
 					break;
