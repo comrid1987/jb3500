@@ -251,40 +251,40 @@ void tsk_Meter(void *args)
 	nMin = rtc_pTm()->tm_min;
 	nDay = rtc_pTm()->tm_mday;
 
-	for (nCnt = 0; ; nCnt++) {
+	for (nCnt = 0; ; os_thd_Slp1Tick()) {
 		//秒count
-		if (tTime != rtc_GetTimet()) {
-			tTime = rtc_GetTimet();
-			if ((nCnt & 0x3F) == 0)
-				icp_ParaRead(4, 26, TERMINAL, &xF26, sizeof(t_afn04_f26));
-	 		if ((nCnt & 0x0F) == 0)
-	            acm_XBRead();
-			if ((nCnt & 0x1F) == 0) {
-	            acm_JLRead();
-				evt_Terminal(&xF26);
-			}
-			//分钟
-			if (nMin != rtc_pTm()->tm_min) {
-				nMin = rtc_pTm()->tm_min;
-				evt_RunTimeWrite(tTime);
-				timet2array(tTime, aBuf, 1);
-				acm_MinSave(aBuf);
-				if ((nMin % 15) == 0)
-					acm_QuarterSave(aBuf);
-
-				stat_Handler(ps, &xF26, tTime);
-				//统计保存
-				evt_StatWrite(ps);
-			}
-			//跨日
-			if (nDay != rtc_pTm()->tm_mday) {
-				nDay = rtc_pTm()->tm_mday;
-				day4timet(tTime, -1, aBuf, 1);
-				data_DayWrite(aBuf, ps);
-				stat_Clear();
-			}
+		if (tTime == rtc_GetTimet())
+			continue;
+		tTime = rtc_GetTimet();
+		if ((nCnt & 0x3F) == 0)
+			icp_ParaRead(4, 26, TERMINAL, &xF26, sizeof(t_afn04_f26));
+ 		if ((nCnt & 0x0F) == 0)
+            acm_XBRead();
+		if ((nCnt & 0x1F) == 0) {
+            acm_JLRead();
+			evt_Terminal(&xF26);
 		}
-		os_thd_Slp1Tick();
+		nCnt += 1;
+		//分钟
+		if (nMin != rtc_pTm()->tm_min) {
+			nMin = rtc_pTm()->tm_min;
+			evt_RunTimeWrite(tTime);
+			timet2array(tTime, aBuf, 1);
+			acm_MinSave(aBuf);
+			if ((nMin % 15) == 0)
+				acm_QuarterSave(aBuf);
+
+			stat_Handler(ps, &xF26, tTime);
+			//统计保存
+			evt_StatWrite(ps);
+		}
+		//跨日
+		if (nDay != rtc_pTm()->tm_mday) {
+			nDay = rtc_pTm()->tm_mday;
+			day4timet(tTime, -1, aBuf, 1);
+			data_DayWrite(aBuf, ps);
+			stat_Clear();
+		}
 	}
 }
 

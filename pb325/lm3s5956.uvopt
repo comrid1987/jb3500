@@ -181,15 +181,15 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>31</LineNumber>
+          <LineNumber>264</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>70066</Address>
+          <Address>107240</Address>
           <ByteObject>0</ByteObject>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>gw3761_fn01.c</Filename>
+          <Filename>meter.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression></Expression>
         </Bp>
@@ -530,10 +530,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>10</ColumnNumber>
+      <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>258</TopLine>
-      <CurrentLine>271</CurrentLine>
+      <TopLine>271</TopLine>
+      <CurrentLine>288</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\meter.c</PathWithFileName>
       <FilenameWithoutPath>meter.c</FilenameWithoutPath>
@@ -583,6 +583,32 @@
   </Group>
 
   <AlienFiles>
+    <PathWithFilename>D:\Workspace\litecore\arch\cm3\cpuport.c</PathWithFilename>
+    <TopLine>1</TopLine>
+    <CurrentLine>1</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
     <PathWithFilename>D:\Workspace\PB325\config\bsp_cfg.h</PathWithFilename>
     <TopLine>520</TopLine>
     <CurrentLine>546</CurrentLine>
@@ -609,9 +635,9 @@
   </AlienFiles>
 
   <AlienFiles>
-    <PathWithFilename>D:\Workspace\litecore\arch\cm3\cpuport.c</PathWithFilename>
-    <TopLine>1</TopLine>
-    <CurrentLine>1</CurrentLine>
+    <PathWithFilename>D:\Workspace\litecore\os\rtt\idle.c</PathWithFilename>
+    <TopLine>56</TopLine>
+    <CurrentLine>66</CurrentLine>
     <Constant>0</Constant>
     <WindowPosition>
       <length>0</length>
@@ -1986,8 +2012,8 @@
         <Doc>
           <Name>.\app\meter.c</Name>
           <ColumnNumber>0</ColumnNumber>
-          <TopLine>250</TopLine>
-          <CurrentLine>263</CurrentLine>
+          <TopLine>252</TopLine>
+          <CurrentLine>266</CurrentLine>
         </Doc>
         <Doc>
           <Name>.\app\gw3761_fn01.c</Name>
@@ -2006,6 +2032,12 @@
           <ColumnNumber>26</ColumnNumber>
           <TopLine>19</TopLine>
           <CurrentLine>37</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>..\litecore\os/rtt/idle.c</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>56</TopLine>
+          <CurrentLine>66</CurrentLine>
         </Doc>
       </Documents>
     </MDIGroup>
