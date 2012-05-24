@@ -76,15 +76,27 @@ static void swuart_IrdaTimer(void *args)
 	arch_GpioSet(pDef->txport, pDef->txpin, p->txv);
 }
 
-static void swuart_TxOut(uint_t nFun, uint_t nPort, uint_t nPin, uint_t nValue)
+static void swuart_TxOut(p_uart_def pDef, uint_t nValue)
 {
+	uint_t nPort, nPin;
 
+#if SMARTCARD_ENABLE
+	if (pDef->fun == UART_FUN_SC) {
+		nPort = pDef->rxport;
+		nPin = pDef->rxpin;
+	} else {
+#endif
+		nPort = pDef->txport;
+		nPin = pDef->txpin;
+#if SMARTCARD_ENABLE
+	}
+#endif
 #if IRDA_ENABLE
-	if (nFun == UART_FUN_IRDA) {
+	if (pDef->fun == UART_FUN_IRDA) {
 #if IRDA_MODE == IRDA_MODE_TIM
 		if (nValue) {
 			irq_TimerStop(nPort);
-			arch_GpioSet(nPort, nPin, 1);
+			arch_GpioSet(nPort, nPin, pDef->fpin);
 		} else {
 			irq_TimerStart(nPort, arch_TimerClockGet() / 76000);
 		}
@@ -180,17 +192,6 @@ static void swuart_RxTx(void *args)
 		return;
 	}
 	if (p->txste != SWUART_IDLE) {
-#if SMARTCARD_ENABLE
-		if (pDef->fun == UART_FUN_SC) {
-			nPort = pDef->rxport;
-			nPin = pDef->rxpin;
-		} else {
-#endif
-			nPort = pDef->txport;
-			nPin = pDef->txpin;
-#if SMARTCARD_ENABLE
-		}
-#endif
 		switch (p->txste) {
 		case SWUART_START_BIT:
 #if IO_BUF_TYPE == BUF_T_BUFFER
@@ -213,15 +214,15 @@ static void swuart_RxTx(void *args)
 			p->txdata = nData;
 #endif
 			p->txpari = 0;
-			swuart_TxOut(pDef->fun, nPort, nPin, 0);
+			swuart_TxOut(pDef, 0);
 			p->txste = SWUART_DATA_1;
 			break;
 		case SWUART_DATA_7:
 			if (p->txdata & BITMASK(6)) {
-				swuart_TxOut(pDef->fun, nPort, nPin, 1);
+				swuart_TxOut(pDef, 1);
 				p->txpari ^= 1;
 			} else
-				swuart_TxOut(pDef->fun, nPort, nPin, 0);
+				swuart_TxOut(pDef, 0);
 			if (pUart->para.data == UART_DATA_7D) {
 				if (pUart->para.pari == UART_PARI_NO) {
 					p->txste = SWUART_STOP_1;
@@ -233,21 +234,21 @@ static void swuart_RxTx(void *args)
 		case SWUART_DATA_8:
 			if (pUart->para.data == UART_DATA_7D) {
 				if (pUart->para.pari == UART_PARI_EVEN) {
-					swuart_TxOut(pDef->fun, nPort, nPin, p->txpari);
+					swuart_TxOut(pDef, p->txpari);
 				} else {
 					if (p->txpari)
-						swuart_TxOut(pDef->fun, nPort, nPin, 0);
+						swuart_TxOut(pDef, 0);
 					else
-						swuart_TxOut(pDef->fun, nPort, nPin, 1);
+						swuart_TxOut(pDef, 1);
 				}
 				p->txste = SWUART_STOP_1;
 				break;
 			}
 			if (p->txdata & BITMASK(7)) {
-				swuart_TxOut(pDef->fun, nPort, nPin, 1);
+				swuart_TxOut(pDef, 1);
 				p->txpari ^= 1;
 			} else
-				swuart_TxOut(pDef->fun, nPort, nPin, 0);
+				swuart_TxOut(pDef, 0);
 			if (pUart->para.pari == UART_PARI_NO) {
 				p->txste = SWUART_STOP_1;
 				break;
@@ -256,17 +257,17 @@ static void swuart_RxTx(void *args)
 			break;
 		case SWUART_DATA_9:
 			if (pUart->para.pari == UART_PARI_EVEN) {
-				swuart_TxOut(pDef->fun, nPort, nPin, p->txpari);
+				swuart_TxOut(pDef, p->txpari);
 			} else {
 				if (p->txpari)
-					swuart_TxOut(pDef->fun, nPort, nPin, 0);
+					swuart_TxOut(pDef, 0);
 				else
-					swuart_TxOut(pDef->fun, nPort, nPin, 1);
+					swuart_TxOut(pDef, 1);
 			}
 			p->txste = SWUART_STOP_1;
 			break;
 		case SWUART_STOP_1:
-			swuart_TxOut(pDef->fun, nPort, nPin, 1);
+			swuart_TxOut(pDef, 1);
 			if (pUart->para.stop == UART_STOP_1D)
 				p->txste = SWUART_START_BIT;
 			else
@@ -277,10 +278,10 @@ static void swuart_RxTx(void *args)
 			break;
 		default:
 			if (p->txdata & BITMASK(p->txste - SWUART_DATA_1)) {
-				swuart_TxOut(pDef->fun, nPort, nPin, 1);
+				swuart_TxOut(pDef, 1);
 				p->txpari ^= 1;
 			} else
-				swuart_TxOut(pDef->fun, nPort, nPin, 0);
+				swuart_TxOut(pDef, 0);
 			p->txste += 1;
 			break;
 		}
@@ -330,7 +331,10 @@ void swuart_Init(p_dev_uart p)
 #if IRDA_ENABLE
 	case UART_FUN_IRDA:
 #if IRDA_MODE == IRDA_MODE_TIM
-		arch_GpioConf(pDef->txport, pDef->txpin, nMode, GPIO_INIT_HIGH);
+		if (pDef->fpin)
+			arch_GpioConf(pDef->txport, pDef->txpin, nMode, GPIO_INIT_HIGH);
+		else
+			arch_GpioConf(pDef->txport, pDef->txpin, nMode, GPIO_INIT_LOW);
 		irq_TimerRegister(pDef->txport, swuart_IrdaTimer, &swuart_aDev[pDef->id]);
 #else
 		arch_PwmConf(pDef->txport, pDef->txpin, nMode, 38000);

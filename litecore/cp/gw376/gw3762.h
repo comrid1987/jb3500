@@ -112,6 +112,7 @@ sys_res gw3762_Transmit2Meter(t_gw3762 *p, uint_t nAfn, uint_t nDT, const void *
 sys_res gw3762_HwReset(t_gw3762 *p, uint_t nTmo);
 sys_res gw3762_InfoGet(t_gw3762 *p, uint_t nTmo);
 sys_res gw3762_ModAdrSet(t_gw3762 *p, const void *pAdr, uint_t nTmo);
+sys_res gw3762_SubAdrQty(t_gw3762 *p, uint16_t *pQty, uint_t nTmo);
 sys_res gw3762_SubAdrRead(t_gw3762 *p, uint_t nSn, uint8_t *pAdr, uint_t nTmo);
 sys_res gw3762_SubAdrAdd(t_gw3762 *p, uint_t nSn, const void *pAdr, uint_t nTmo);
 sys_res gw3762_SubAdrDelete(t_gw3762 *p, const void *pAdr, uint_t nTmo);

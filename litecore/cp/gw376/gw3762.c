@@ -214,6 +214,28 @@ sys_res gw3762_ModAdrSet(t_gw3762 *p, const void *pAdr, uint_t nTmo)
 }
 
 //-------------------------------------------------------------------------------------
+// 读取从节点数量
+//-------------------------------------------------------------------------------------
+sys_res gw3762_SubAdrQty(t_gw3762 *p, uint16_t *pQty, uint_t nTmo)
+{
+	uint_t nTemp;
+
+	gw3762_Transmit2Module(p, GW3762_AFN_ROUTE_FETCH, 0x0001, &nTemp, 3);
+	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
+		if (gw3762_Analyze(p) == SYS_R_OK)
+			break;
+	}
+	if (nTmo == 0)
+		return SYS_R_TMO;
+	if (p->rmsg.afn != GW3762_AFN_ROUTE_FETCH)
+		return SYS_R_ERR;
+	if (p->rmsg.fn != 0x0001)
+		return SYS_R_ERR;
+	memcpy(pQty, &p->rmsg.data->p[0], 2);
+	return SYS_R_OK;
+}
+
+//-------------------------------------------------------------------------------------
 // 读取从节点信息
 //-------------------------------------------------------------------------------------
 sys_res gw3762_SubAdrRead(t_gw3762 *p, uint_t nSn, uint8_t *pAdr, uint_t nTmo)
