@@ -7,6 +7,25 @@
 
 
 //External Functions
+static void gw3761_Data2_Other(buf b, time_t tTime)
+{
+	uint8_t aBuf[6];
+	t_data_min xMin;
+
+	data_MinRead(&aBuf[1], &xMin);
+	if (xMin.time == GW3761_DATA_INVALID) {
+		buf_Fill(b, GW3761_DATA_INVALID, 62);
+	} else {
+		buf_Push(b, &xMin.data[ACM_MSAVE_PP], 12);
+		buf_Push(b, &xMin.data[ACM_MSAVE_PQ], 12);
+		buf_Push(b, &xMin.data[ACM_MSAVE_COS], 8);
+		buf_Push(b, &xMin.data[ACM_MSAVE_VOL], 6);
+		buf_Push(b, &xMin.data[ACM_MSAVE_CUR], 12);
+		buf_Push(b, &xMin.data[ACM_MSAVE_PP], 12);
+	}
+}
+
+
 int gw3761_ResponseData2(p_gw3761 p)
 {
 #if GW3761_TYPE == GW3761_T_GWJC2009
@@ -47,11 +66,13 @@ int gw3761_ResponseData2(p_gw3761 p)
 						buf_Push(b, aBuf, 3);
 						gw3761_ConvertData_18(aBuf, ps->tpmax[3]);
 						buf_Push(b, aBuf, 3);
+						gw3761_Data2_Other(b, ps->tpmax[3]);
 						for (i = 0; i < 3; i++) {
 							gw3761_ConvertData_23(aBuf, FLOAT2FIX(ps->pmax[i]));
 							buf_Push(b, aBuf, 3);
 							gw3761_ConvertData_18(aBuf, ps->tpmax[i]);
 							buf_Push(b, aBuf, 3);
+							gw3761_Data2_Other(b, ps->tpmax[i]);
 						}
 						buf_PushData(b, ps->p0[3], 2);
 						for (i = 0; i < 3; i++)
@@ -75,10 +96,12 @@ int gw3761_ResponseData2(p_gw3761 p)
 							buf_Push(b, aBuf, 2);
 							gw3761_ConvertData_18(aBuf, ps->tumax[i]);
 							buf_Push(b, aBuf, 3);
+							gw3761_Data2_Other(b, ps->tumax[i]);
 							gw3761_ConvertData_07(aBuf, FLOAT2FIX(ps->umin[i]));
 							buf_Push(b, aBuf, 2);
 							gw3761_ConvertData_18(aBuf, ps->tumin[i]);
 							buf_Push(b, aBuf, 3);
+							gw3761_Data2_Other(b, ps->tumin[i]);
 						}
 						for (i = 0; i < 3; i++) {
 							gw3761_ConvertData_07(aBuf, FLOAT2FIX(ps->usum[i] / (float)ps->run));
@@ -97,10 +120,12 @@ int gw3761_ResponseData2(p_gw3761 p)
 						buf_Push(b, aBuf, 2);
 						gw3761_ConvertData_18(aBuf, ps->tibmax);
 						buf_Push(b, aBuf, 3);
+						gw3761_Data2_Other(b, ps->tibmax);
 						gw3761_ConvertData_05_Percent(aBuf, FLOAT2FIX(ps->ubmax), 0);
 						buf_Push(b, aBuf, 2);
 						gw3761_ConvertData_18(aBuf, ps->tubmax);
 						buf_Push(b, aBuf, 3);
+						gw3761_Data2_Other(b, ps->tubmax);
 						nSucc = 1;
 					}
 					pData += 3;
@@ -118,6 +143,7 @@ int gw3761_ResponseData2(p_gw3761 p)
 							buf_Push(b, aBuf, 3);
 							gw3761_ConvertData_18(aBuf, ps->timax[i]);
 							buf_Push(b, aBuf, 3);
+							gw3761_Data2_Other(b, ps->timax[i]);
 						}
 						nSucc = 1;
 					}

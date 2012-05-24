@@ -7,7 +7,7 @@
 //硬件版本
 #define VER_HARD						0x0010
 //软件版本
-#define VER_SOFT						0x0072
+#define VER_SOFT						0x0073
 
 
 //Main Control Unit Select
@@ -76,7 +76,7 @@
 
 
 //看门狗使能
-#define WDG_ENABLE						0
+#define WDG_ENABLE						1
 #if WDG_ENABLE
 	//片内看门狗使能
 	#define WDT_INT_ENABLE				1
