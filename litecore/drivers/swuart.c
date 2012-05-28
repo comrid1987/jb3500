@@ -4,7 +4,6 @@
 
 //Private Defines
 #define SWUART_ISO7816_BAUD		4800
-#define SWUART_POLL_DIV			4
 
 #define SWUART_IDLE				0
 #define SWUART_START_BIT		1
@@ -67,26 +66,8 @@ static void swuart_RxStart(void *args)
 	p_uart_def pDef = p->parent->def;
 
 	p->rxste = SWUART_DATA_1;
-	if (pDef->rxmode == UART_MODE_IRQ)
-		irq_ExtDisable(p->rxint);
-	else
-		irq_TimerHandler(pDef->id, swuart_RxTx, p);
+	irq_ExtDisable(p->rxint);
 	irq_TimerStart(pDef->id, p->tick + (p->tick >> 1) - 200);
-}
-
-static void swuart_RxPoll(void *args)
-{
-	static uint_t nCnt = 0;
-	t_swuart *p = (t_swuart *)args;
-	p_uart_def pDef = p->parent->def;
-
-	if (arch_GpioRead(pDef->rxport, pDef->rxpin)) {
-		p->rxint = 1;
-	} else {
-		if (p->rxint)
-			swuart_RxStart(args);
-		p->rxint = 0;
-	}
 }
 
 static void swuart_IrdaTimer(void *args)
@@ -186,12 +167,7 @@ static void swuart_RxTx(void *args)
 #elif IO_BUF_TYPE == BUF_T_DQUEUE
 			dque_Push(dqueue, pUart->parent->id | UART_DQUE_RX_CHL, &p->rxdata, 1);
 #endif
-			if (pDef->rxmode == UART_MODE_IRQ) {
-				irq_ExtEnable(p->rxint);
-			} else {
-				irq_TimerHandler(pDef->id, swuart_RxPoll, p);
-				irq_TimerStart(pDef->id, p->tick / SWUART_POLL_DIV);
-			}
+			irq_ExtEnable(p->rxint);
 			if (pUart->para.stop == UART_STOP_1D)
 				p->rxste = SWUART_WAIT_1;
 			else
@@ -223,13 +199,8 @@ static void swuart_RxTx(void *args)
 		case SWUART_START_BIT:
 #if IO_BUF_TYPE == BUF_T_BUFFER
 			if (p->buftx->len == 0) {
-				if (pDef->rxmode == UART_MODE_IRQ) {
-					irq_ExtEnable(p->rxint);
-					irq_TimerStop(pDef->id);
-				} else {
-					irq_TimerHandler(pDef->id, swuart_RxPoll, p);
-					irq_TimerStart(pDef->id, p->tick / SWUART_POLL_DIV);
-				}
+				irq_ExtEnable(p->rxint);
+				irq_TimerStop(pDef->id);
 				p->txste = SWUART_IDLE;
 				break;
 			}
@@ -238,13 +209,8 @@ static void swuart_RxTx(void *args)
 #elif IO_BUF_TYPE == BUF_T_DQUEUE
 			nData = dque_PopChar(dqueue, pUart->parent->id | UART_DQUE_TX_CHL);
 			if (nData < 0) {
-				if (pDef->rxmode == UART_MODE_IRQ) {
-					irq_ExtEnable(p->rxint);
-					irq_TimerStop(pDef->id);
-				} else {
-					irq_TimerHandler(pDef->id, swuart_RxPoll, p);
-					irq_TimerStart(pDef->id, p->tick / SWUART_POLL_DIV);
-				}
+				irq_ExtEnable(p->rxint);
+				irq_TimerStop(pDef->id);
 				p->txste = SWUART_IDLE;
 				break;
 			}
@@ -408,18 +374,12 @@ sys_res swuart_Open(uint_t nId, p_uart_para pPara)
 	if (memcmp(&p->para, pPara, sizeof(p->para))) {
 		memcpy(&p->para, pPara, sizeof(p->para));
 		pSW->tick = arch_TimerClockGet() / pPara->baud;
-		if (pDef->rxmode == UART_MODE_IRQ) {
-			irq_TimerRegister(nId, swuart_RxTx, pSW);
-			nIntId = irq_ExtRegister(pDef->rxport, pDef->rxpin, IRQ_TRIGGER_FALLING, swuart_RxStart, pSW, IRQ_MODE_NORMAL);
-			if (nIntId == -1)
-				return SYS_R_ERR;
-			pSW->rxint = nIntId;
-			irq_ExtEnable(nIntId);
-		} else {
-			irq_TimerRegister(nId, swuart_RxPoll, pSW);
-			irq_TimerStart(nId, pSW->tick / SWUART_POLL_DIV);
-			pSW->rxint = 0;
-		}
+		irq_TimerRegister(nId, swuart_RxTx, pSW);
+		nIntId = irq_ExtRegister(pDef->rxport, pDef->rxpin, IRQ_TRIGGER_FALLING, swuart_RxStart, pSW, IRQ_MODE_NORMAL);
+		if (nIntId == -1)
+			return SYS_R_ERR;
+		pSW->rxint = nIntId;
+		irq_ExtEnable(nIntId);
 	}
 	return SYS_R_OK;
 }
@@ -435,10 +395,7 @@ void swuart_TxStart(uint_t nId)
 	if (p->txste == SWUART_IDLE) {
 		p->txste = SWUART_START_BIT;
 		if (p->rxste == SWUART_IDLE) {
-			if (p->parent->def->rxmode == UART_MODE_IRQ)
-				irq_ExtDisable(p->rxint);
-			else
-				irq_TimerHandler(nId, swuart_RxTx, p);
+			irq_ExtDisable(p->rxint);
 			irq_TimerStart(nId, p->tick);
 			swuart_RxTx(p);
 		}
