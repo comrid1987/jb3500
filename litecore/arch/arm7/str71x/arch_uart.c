@@ -44,7 +44,7 @@ void arch_UartInit(p_dev_uart p)
 	}
 
 	//Tx
-	if (p->def->outmode == DEV_PIN_OD)
+	if (p->def->pinmode == DEV_PIN_OD)
 		nPinMode = GPIO_AF_OD;
 	else
 		nPinMode = GPIO_AF_PP;

@@ -99,6 +99,15 @@ sys_res irq_TimerRegister(uint_t nId, void (*pHandler)(void *), void *args)
 	return SYS_R_OK;
 }
 
+void irq_TimerHandler(uint_t nId, void (*pHandler)(void *), void *args)
+{
+	t_irq_vector *p = &irq_aTimer[nId];
+
+	p->handler = pHandler;
+	p->args = args;
+}
+
+
 void irq_TimerStart(uint_t nId, uint_t nValue)
 {
 

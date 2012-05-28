@@ -47,7 +47,7 @@ static p_dev_uart lpc176x_uart_dev[4];
 void arch_UartInit(p_dev_uart p)
 {
 	t_uart_para xUart;
-	uint_t nMode, nSel = 0;
+	uint_t nTxMode, nRxMode, nSel = 0;
 	p_uart_def pDef = p->def;
 
 	lpc176x_uart_dev[pDef->id] = p;
@@ -75,12 +75,15 @@ void arch_UartInit(p_dev_uart p)
 	}
 
 	/* set UART pin */
-	arch_GpioConf(pDef->rxport, pDef->rxpin, GPIO_M_IN_PU, GPIO_INIT_HIGH);
-	if (pDef->outmode == DEV_PIN_PP)
-		nMode = GPIO_M_OUT_PP;
-	else
-		nMode = GPIO_M_OUT_OD;
-	arch_GpioConf(pDef->txport, pDef->txpin, nMode, GPIO_INIT_HIGH);
+	if (pDef->pinmode == DEV_PIN_PP) {
+		nRxMode = GPIO_M_IN_PU;
+		nTxMode = GPIO_M_OUT_PP;
+	} else {
+		nRxMode = GPIO_M_IN_FLOAT;
+		nTxMode = GPIO_M_OUT_OD;
+	}
+	arch_GpioConf(pDef->rxport, pDef->rxpin, nRxMode, GPIO_INIT_HIGH);
+	arch_GpioConf(pDef->txport, pDef->txpin, nTxMode, GPIO_INIT_HIGH);
 
 	switch (pDef->id) {
 	case 0:

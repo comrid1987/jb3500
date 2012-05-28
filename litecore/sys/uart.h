@@ -32,7 +32,7 @@ typedef const struct {
 				fport : 4,
 				fpin : 5,
 				fun : 2,
-				outmode : 1;
+				pinmode : 1;
 }t_uart_def, *p_uart_def;
 
 typedef struct {

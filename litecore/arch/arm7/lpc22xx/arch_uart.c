@@ -65,7 +65,7 @@ void arch_UartInit(p_dev_uart p)
 
 	/* set UART pin */
 	arch_GpioConf(p->def->rxport, p->def->rxpin, GPIO_M_IN_PU, GPIO_INIT_HIGH);
-	if (p->def->outmode == DEV_PIN_PP)
+	if (p->def->pinmode == DEV_PIN_PP)
 		nMode = GPIO_M_OUT_PP;
 	else
 		nMode = GPIO_M_OUT_OD;

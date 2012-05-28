@@ -81,7 +81,7 @@ void arch_UartInit(p_dev_uart p)
 		xGpio.GPIO_Mode = GPIO_Mode_AF_OD;
 	} else {
 #endif
-		if (pDef->outmode == DEV_PIN_OD)
+		if (pDef->pinmode == DEV_PIN_OD)
 			xGpio.GPIO_Mode = GPIO_Mode_AF_OD;
 		else
 			xGpio.GPIO_Mode = GPIO_Mode_AF_PP;
@@ -94,13 +94,13 @@ void arch_UartInit(p_dev_uart p)
 	xGpio.GPIO_Pin = BITMASK(pDef->rxpin);
 #if SMARTCARD_ENABLE
 	if (pDef->fun == UART_FUN_SC) {
-		if (pDef->outmode == DEV_PIN_OD)
+		if (pDef->pinmode == DEV_PIN_OD)
 			xGpio.GPIO_Mode = GPIO_Mode_Out_OD;
 		else
 			xGpio.GPIO_Mode = GPIO_Mode_Out_PP;
 	} else {
 #endif
-		if (pDef->outmode == DEV_PIN_OD)
+		if (pDef->pinmode == DEV_PIN_OD)
 			xGpio.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 		else
 			xGpio.GPIO_Mode = GPIO_Mode_IPU;
@@ -125,7 +125,7 @@ void arch_UartInit(p_dev_uart p)
 	if (pDef->fun == UART_FUN_SC) {
 		xGpio.GPIO_Pin = BITMASK(pDef->fpin);
 		stm32_GpioClockEnable(pDef->fport);
-		if (pDef->outmode == DEV_PIN_OD)
+		if (pDef->pinmode == DEV_PIN_OD)
 			xGpio.GPIO_Mode = GPIO_Mode_AF_OD;
 		else
 			xGpio.GPIO_Mode = GPIO_Mode_AF_PP;
