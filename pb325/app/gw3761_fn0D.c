@@ -1,3 +1,4 @@
+#include <math.h>
 #include <string.h>
 #include <litecore.h>
 #include "para.h"
@@ -9,9 +10,13 @@
 //External Functions
 static void gw3761_Data2_Other(buf b, time_t tTime)
 {
+	uint_t i;
+	uint32_t nP, nQ;
+	float fP, fQ;
 	uint8_t aBuf[6];
 	t_data_min xMin;
 
+	timet2array(tTime, aBuf, 1);
 	data_MinRead(&aBuf[1], &xMin);
 	if (xMin.time == GW3761_DATA_INVALID) {
 		buf_Fill(b, GW3761_DATA_INVALID, 62);
@@ -21,10 +26,17 @@ static void gw3761_Data2_Other(buf b, time_t tTime)
 		buf_Push(b, &xMin.data[ACM_MSAVE_COS], 8);
 		buf_Push(b, &xMin.data[ACM_MSAVE_VOL], 6);
 		buf_Push(b, &xMin.data[ACM_MSAVE_CUR], 12);
-		buf_Push(b, &xMin.data[ACM_MSAVE_PP], 12);
+		for (i = 0; i < 4; i++) {
+			memcpy(&nP, &xMin.data[ACM_MSAVE_PP + i * 3], 3);
+			fP = (float)bcd2bin32(nP & 0x007FFFFF) / 10000.0f;
+			memcpy(&nQ, &xMin.data[ACM_MSAVE_PQ + i * 3], 3);
+			fQ = (float)bcd2bin32(nQ & 0x007FFFFF) / 10000.0f;
+			fP = sqrtf(fP * fP + fQ * fQ);
+			gw3761_ConvertData_09(aBuf, FLOAT2FIX(fP), 0);
+			buf_Push(b, aBuf, 3);
+		}
 	}
 }
-
 
 int gw3761_ResponseData2(p_gw3761 p)
 {
