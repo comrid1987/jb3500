@@ -8,34 +8,40 @@
 
 
 //External Functions
+static void gw3761_Datat2_UI(uint8_t *pUI, const void *pP, const void *pQ)
+{
+	uint32_t nP, nQ;
+	float fP, fQ;
+
+	memcpy(&nP, pP, 3);
+	fP = (float)bcd2bin32(nP & 0x007FFFFF) / 10000.0f;
+	memcpy(&nQ, pQ, 3);
+	fQ = (float)bcd2bin32(nQ & 0x007FFFFF) / 10000.0f;
+	fP = sqrtf(fP * fP + fQ * fQ);
+	gw3761_ConvertData_09(pUI, FLOAT2FIX(fP), 0);
+}
+
+
 static void gw3761_Data2_Other(buf b, time_t tTime)
 {
 	uint_t i;
-	uint32_t nP, nQ;
-	float fP, fQ;
 	uint8_t aBuf[6];
 	t_data_min xMin;
 
 	timet2array(tTime, aBuf, 1);
 	data_MinRead(&aBuf[1], &xMin);
-	if (xMin.time == GW3761_DATA_INVALID) {
-		buf_Fill(b, GW3761_DATA_INVALID, 62);
-	} else {
+	if (xMin.time != GW3761_DATA_INVALID) {
 		buf_Push(b, &xMin.data[ACM_MSAVE_PP], 12);
 		buf_Push(b, &xMin.data[ACM_MSAVE_PQ], 12);
 		buf_Push(b, &xMin.data[ACM_MSAVE_COS], 8);
 		buf_Push(b, &xMin.data[ACM_MSAVE_VOL], 6);
 		buf_Push(b, &xMin.data[ACM_MSAVE_CUR], 12);
 		for (i = 0; i < 4; i++) {
-			memcpy(&nP, &xMin.data[ACM_MSAVE_PP + i * 3], 3);
-			fP = (float)bcd2bin32(nP & 0x007FFFFF) / 10000.0f;
-			memcpy(&nQ, &xMin.data[ACM_MSAVE_PQ + i * 3], 3);
-			fQ = (float)bcd2bin32(nQ & 0x007FFFFF) / 10000.0f;
-			fP = sqrtf(fP * fP + fQ * fQ);
-			gw3761_ConvertData_09(aBuf, FLOAT2FIX(fP), 0);
+			gw3761_Datat2_UI(aBuf, &xMin.data[ACM_MSAVE_PP + i * 3], &xMin.data[ACM_MSAVE_PQ + i * 3]);
 			buf_Push(b, aBuf, 3);
 		}
-	}
+	} else
+		buf_Fill(b, GW3761_DATA_INVALID, 62);
 }
 
 int gw3761_ResponseData2(p_gw3761 p)
@@ -388,6 +394,24 @@ int gw3761_ResponseData2(p_gw3761 p)
 									buf_Push(b, xMin.data, 42);
 								else
 									buf_Fill(b, GW3761_DATA_INVALID, 42);
+							}
+							nSucc = 1;
+							nLen = 0;
+							break;
+						case 233:
+						case 234:
+						case 235:
+						case 236:
+							//配电扩展视在功率读取
+							buf_Push(b, pData, 7);
+							for (k = 0; k < nData; k++, tTime += nTemp) {
+								timet2array(tTime, aBuf, 1);
+								data_MinRead(&aBuf[1], &xMin);
+								if (xMin.time != GW3761_DATA_INVALID) {
+									gw3761_Datat2_UI(aBuf, &xMin.data[ACM_MSAVE_PP + (nFn - 233) * 3], &xMin.data[ACM_MSAVE_PQ + (nFn - 233) * 3]);
+									buf_Push(b, aBuf, 3);
+								} else
+									buf_Fill(b, GW3761_DATA_INVALID, 3);
 							}
 							nSucc = 1;
 							nLen = 0;
