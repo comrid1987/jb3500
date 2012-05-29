@@ -68,17 +68,17 @@ static int icp_Default(uint_t nAfn, uint_t nFn, uint_t nPn, uint8_t *pBuf, uint_
 		break;
 	case 3:
 		pF3 = (t_afn04_f3 *)pBuf;
-		pF3->ip1[0] = 218;
-		pF3->ip1[1] = 58;
-		pF3->ip1[2] = 62;
-		pF3->ip1[3] = 114;
-		pF3->port1 = 2080;
+		pF3->ip1[0] = 10;
+		pF3->ip1[1] = 11;
+		pF3->ip1[2] = 50;
+		pF3->ip1[3] = 154;
+		pF3->port1 = 7916;
 		pF3->ip2[0] = 0;
 		pF3->ip2[1] = 0;
 		pF3->ip2[2] = 0;
 		pF3->ip2[3] = 0;
 		pF3->port2 = 0;
-		sprintf(pF3->apn, "cmnet");
+		sprintf(pF3->apn, "mydyj.sc");
 		break;
 	case 5:
 		break;
