@@ -5,7 +5,7 @@ uint8_t cs8(const void *pData, uint_t nLen)
 	uint_t nCS = 0;
 	uint8_t *p = (uint8_t *)pData;
 
-	for (; nLen; --nLen)
+	for (; nLen; nLen--)
 		nCS += *p++;
 	return (uint8_t)nCS;
 }
@@ -16,7 +16,7 @@ uint16_t cs16(const void *pData, uint_t nLen)
 	uint16_t nCS = 0;
 	uint16_t *p = (uint16_t *)pData;
 
-	for (; nLen; --nLen)
+	for (; nLen; nLen--)
 		nCS += *p++;
 	return (uint16_t)nCS;
 }
@@ -30,7 +30,7 @@ uint16_t crc16(const void* pData, uint_t nLen)
 	uint_t nChar;
 	uint8_t *p = (uint8_t *)pData;
 
-	for (; nLen; --nLen) {
+	for (; nLen; nLen--) {
 		nChar = *p++;
 		nCRC = ecc_tbl_CRC16[(nChar ^ nCRC) & 0x0F] ^ (nCRC >> 4);
 		nCRC = ecc_tbl_CRC16[((nChar >> 4) ^ nCRC) & 0x0F] ^ (nCRC >> 4);
