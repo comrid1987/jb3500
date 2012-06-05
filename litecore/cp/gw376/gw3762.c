@@ -3,7 +3,10 @@
 
 
 //Private Defines
+#define GW3762_DEBUG_ENABLE			1
+
 #define GW3762_HEADER_L_SIZE		2
+
 
 //GW376.2 Code Defines
 #define GW3762_CODE_T_PLC_FOCUS		1
@@ -27,7 +30,7 @@
 
 
 
-
+//Private Typedefs
 typedef __packed struct {
 	uint8_t		sc1;
 	uint16_t	len;
@@ -36,6 +39,31 @@ typedef __packed struct {
 
 
 
+//Private Macros
+
+
+//Internal Functions
+#if GW3762_DEBUG_ENABLE
+static void gw3762_DbgOut(uint_t nType, const void *pBuf, uint_t nLen)
+{
+	const uint8_t *pData, *pEnd;
+	char str[198];
+
+	pData = (const uint8_t *)pBuf;
+	pEnd = pData + nLen;
+
+	if (nType)
+		nLen = sprintf(str, "<376.2T>");
+	else
+		nLen = sprintf(str, "<376.2R>");
+	while ((pData < pEnd) && (nLen < (sizeof(str) - 3)))
+		nLen += sprintf(&str[nLen], " %02X", *pData++);
+
+	dbg_trace(str);
+}
+#else
+#define gw3762_DbgOut(...)
+#endif
 
 
 void gw3762_Init(t_gw3762 *p)
@@ -77,6 +105,9 @@ sys_res gw3762_Analyze(t_gw3762 *p)
 		//结束符
 		if (*pData != 0x16)
 			continue;
+
+		gw3762_DbgOut(0, pH, pH->len);
+
 		memcpy(&p->rmsg.rup, &p->rbuf->p[sizeof(t_gw3762_header)], 6);
 		if (p->rmsg.rup.module) {
 			memcpy(p->rmsg.madr, &p->rbuf->p[sizeof(t_gw3762_header) + 6], 6);
@@ -110,6 +141,9 @@ sys_res gw3762_Transmit2Module(t_gw3762 *p, uint_t nAfn, uint_t nDT, const void 
 	buf_Push(bTx, pData, nLen);
 	buf_PushData(bTx, cs8(&bTx->p[1 + GW3762_HEADER_L_SIZE], bTx->len - (1 + GW3762_HEADER_L_SIZE)) | 0x1600, 2);
 	memcpy(&bTx->p[1], &bTx->len, GW3762_HEADER_L_SIZE);
+
+	gw3762_DbgOut(1, bTx->p, bTx->len);
+
 	chl_Send(p->chl, bTx->p, bTx->len);
 	buf_Release(bTx);
 
@@ -143,6 +177,9 @@ sys_res gw3762_Transmit2Meter(t_gw3762 *p, uint_t nAfn, uint_t nDT, const void *
 	buf_Push(bTx, pData, nLen);
 	buf_PushData(bTx, cs8(&bTx->p[1 + GW3762_HEADER_L_SIZE], bTx->len - (1 + GW3762_HEADER_L_SIZE)) | 0x1600, 2);
 	memcpy(&bTx->p[1], &bTx->len, GW3762_HEADER_L_SIZE);
+
+	gw3762_DbgOut(1, bTx->p, bTx->len);
+
 	chl_Send(p->chl, bTx->p, bTx->len);
 	buf_Release(bTx);
 	
@@ -170,6 +207,25 @@ sys_res gw3762_HwReset(t_gw3762 *p, uint_t nTmo)
 	return SYS_R_OK;
 }
 
+//-------------------------------------------------------------------------------------
+//参数初始化
+//-------------------------------------------------------------------------------------
+sys_res gw3762_ParaReset(t_gw3762 *p, uint_t nTmo)
+{
+
+	gw3762_Transmit2Module(p, GW3762_AFN_RESET, 0x0002, NULL, 0);
+	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
+		if (gw3762_Analyze(p) == SYS_R_OK)
+			break;
+	}
+	if (nTmo == 0)
+		return SYS_R_TMO;
+	if (p->rmsg.afn != GW3762_AFN_CONFIRM)
+		return SYS_R_ERR;
+	if (p->rmsg.fn != 0x0001)
+		return SYS_R_ERR;
+	return SYS_R_OK;
+}
 
 //-------------------------------------------------------------------------------------
 // 获取厂商代码和版本信息
@@ -218,9 +274,8 @@ sys_res gw3762_ModAdrSet(t_gw3762 *p, const void *pAdr, uint_t nTmo)
 //-------------------------------------------------------------------------------------
 sys_res gw3762_SubAdrQty(t_gw3762 *p, uint16_t *pQty, uint_t nTmo)
 {
-	uint_t nTemp;
 
-	gw3762_Transmit2Module(p, GW3762_AFN_ROUTE_FETCH, 0x0001, &nTemp, 3);
+	gw3762_Transmit2Module(p, GW3762_AFN_ROUTE_FETCH, 0x0001, NULL, 0);
 	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
 		if (gw3762_Analyze(p) == SYS_R_OK)
 			break;

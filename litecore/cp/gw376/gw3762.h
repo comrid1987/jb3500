@@ -110,6 +110,7 @@ sys_res gw3762_Transmit2Module(t_gw3762 *p, uint_t nAfn, uint_t nDT, const void 
 sys_res gw3762_Transmit2Meter(t_gw3762 *p, uint_t nAfn, uint_t nDT, const void *pAdr, uint_t nRelay, const void *pRtAdr, const void *pData, uint_t nLen);
 
 sys_res gw3762_HwReset(t_gw3762 *p, uint_t nTmo);
+sys_res gw3762_ParaReset(t_gw3762 *p, uint_t nTmo);
 sys_res gw3762_InfoGet(t_gw3762 *p, uint_t nTmo);
 sys_res gw3762_ModAdrSet(t_gw3762 *p, const void *pAdr, uint_t nTmo);
 sys_res gw3762_SubAdrQty(t_gw3762 *p, uint16_t *pQty, uint_t nTmo);

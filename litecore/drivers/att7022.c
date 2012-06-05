@@ -3,6 +3,8 @@
 
 
 //Private Defines
+#define ATT7022_DEBUG_ENABLE		1
+
 #define ATT7022_PHASECALI_ENABLE	0
 
 #define ATT7022_SAMPLEPOINT   		128
@@ -20,8 +22,8 @@ static t_att7022 att7022;
 //Private Macros
 #define att7022_Sig()				sys_GpioRead(gpio_node(tbl_bspAtt7022, 1))
 
-#define att7022_CaliEnable(p)		att7022_WriteReg(p, ATT7022_CALIDATA_WEN, 0)
-#define att7022_CaliDisable(p)		att7022_WriteReg(p, ATT7022_CALIDATA_WEN, 1)
+#define att7022_WriteEnable(p)		att7022_WriteReg(p, ATT7022_CALIDATA_WEN, 0)
+#define att7022_WriteDisable(p)		att7022_WriteReg(p, ATT7022_CALIDATA_WEN, 1)
 #define att7022_CaliClear(p)		att7022_WriteReg(p, ATT7022_CALIDATA_CLR, 0)
 #define	att7022_SWRST(p)			att7022_WriteReg(p, ATT7022_SOFTRST_CMD, 0)
 
@@ -34,6 +36,14 @@ static t_att7022 att7022;
 
 
 //Internal Functions
+#if ATT7022_DEBUG_ENABLE
+#define att7022_DbgOut				dbg_trace
+#else
+#define att7022_DbgOut(...)
+#endif
+
+
+
 static p_dev_spi att7022_SpiGet()
 {
 	p_dev_spi p;
@@ -49,24 +59,24 @@ static p_dev_spi att7022_SpiGet()
 
 static sys_res att7022_WriteReg(p_att7022 p, uint_t nReg, uint32_t nData)
 {
-	uint32_t nCrc1, nCrc2;
+	uint32_t nCrc1, nCrc2, nTemp;
 
 	p->spi = att7022_SpiGet();
 
 	//写数据寄存器
 	nData &= ATT7022_DATA_MASK;
 	reverse(&nData, 3);
-	nReg = nReg | 0x80 | (nData << 8);
-	spi_Send(p->spi, &nReg, 4);
+	nTemp = nReg | 0x80 | (nData << 8);
+	spi_Send(p->spi, &nTemp, 4);
 	os_thd_Slp1Tick();
 	//读校验1寄存器
-	nReg = ATT7022_REG_WSPIData1;
-	spi_Transce(p->spi, &nReg, 1, &nCrc1, 3);
+	nTemp = ATT7022_REG_WSPIData1;
+	spi_Transce(p->spi, &nTemp, 1, &nCrc1, 3);
 	nCrc1 &= ATT7022_DATA_MASK;
 	//读校验2寄存器
 #if 0
-	nReg = ATT7022_REG_WSPIData2;
-	spi_Transce(p->spi, &nReg, 1, &nCrc2, 3);
+	nTemp = ATT7022_REG_WSPIData2;
+	spi_Transce(p->spi, &nTemp, 1, &nCrc2, 3);
 	nCrc2 &= ATT7022_DATA_MASK;
 #else
 	nCrc2 = nCrc1;
@@ -75,7 +85,7 @@ static sys_res att7022_WriteReg(p_att7022 p, uint_t nReg, uint32_t nData)
 	spi_Release(p->spi);
 
 	if ((nData != nCrc1) || (nData != nCrc2)) {
-		dbg_trace("<ATT7022>WriteReg Err %x %x %x", nData, nCrc1, nCrc2);
+		att7022_DbgOut("<ATT7022>WriteReg %02X Err %x %x %x", nReg, nData, nCrc1, nCrc2);
 		return SYS_R_ERR;
 	}
 	return SYS_R_OK;
@@ -132,7 +142,7 @@ uint32_t att7022_ReadReg(p_att7022 p, uint_t nReg)
 	spi_Release(p->spi);
 
 	if (nData != nCrc) {
-		dbg_trace("<ATT7022>ReadReg Err %x %x", nData, nCrc);
+		att7022_DbgOut("<ATT7022>ReadReg %02X Err %x %x", nReg, nData, nCrc);
 		nData = 0;
 	}
 	return nData;
@@ -150,7 +160,12 @@ sys_res att7022_Reset(p_att7022 p, p_att7022_cali pCali)
 	sys_GpioSet(gpio_node(tbl_bspAtt7022, 0), 0);
 	os_thd_Slp1Tick();
 
-	att7022_CaliEnable(p);
+	for (i = 0; i < 3; i++) {
+		if (att7022_WriteEnable(p) == SYS_R_OK)
+			break;
+	}
+	if (i >= 3)
+		return SYS_R_ERR;
 
 	att7022_CaliClear(p);
 
@@ -160,7 +175,7 @@ sys_res att7022_Reset(p_att7022 p, p_att7022_cali pCali)
 	att7022_WriteReg(p, ATT7022_REG_Istartup, nTemp);		//启动电流设置
 	att7022_WriteReg(p, ATT7022_REG_EnUAngle, 0x003584);	//使能电压夹角测量
 	att7022_WriteReg(p, ATT7022_REG_EnDtIorder, 0x005678);	//使能相序检测
-	att7022_WriteReg(p, ATT7022_REG_EAddMode, 1);			//合相能量三相四线代数和相加	
+	att7022_WriteReg(p, ATT7022_REG_EAddMode, 0);			//合相能量累加模式	
 	att7022_WriteReg(p, ATT7022_REG_GCtrlT7Adc, 5); 		//开启温度和ADC7测量 	
 	att7022_WriteReg(p, ATT7022_REG_EnlineFreq, 0x000000);	//禁止基波/谐波测量功能
 
@@ -184,7 +199,7 @@ sys_res att7022_Reset(p_att7022 p, p_att7022_cali pCali)
 		att7022_WriteReg(p, ATT7022_REG_PhsregC0 + i, pCali->PhsregC[i]);
 	}
 
-	return att7022_CaliDisable(p);
+	return att7022_WriteDisable(p);
 }
 
 //------------------------------------------------------------------------
@@ -482,11 +497,11 @@ uint32_t att7022_UgainCalibration(p_att7022 p, uint8_t nPhase )
 	sint32_t gain = 0; 
 
 	//校表使能  
-	att7022_CaliEnable(p);
+	att7022_WriteEnable(p);
 	//设置电压校正寄存器为0
 	att7022_WriteReg(p, ATT7022_REG_UgainA + nPhase, 0 ); 
 	//校表禁止 
-	att7022_CaliDisable(p); 
+	att7022_WriteDisable(p); 
 	//等1秒
 	os_thd_Sleep(1000);
 	//读取该相电压值 
@@ -512,11 +527,11 @@ uint32_t att7022_UgainCalibration(p_att7022 p, uint8_t nPhase )
 		} 
 
 		//校表使能  
-		att7022_CaliEnable(p);
+		att7022_WriteEnable(p);
 		//写入电压校表数据
 		att7022_WriteReg (p, ATT7022_REG_UgainA + nPhase, gain);
 		//校表禁止
-		att7022_CaliDisable(p); 
+		att7022_WriteDisable(p); 
 	}
 	return (uint32_t)gain;
 } 
@@ -536,11 +551,11 @@ uint32_t att7022_IgainCalibration(p_att7022 p, uint32_t nPhase)
 	float gain = 0.0f; 
 
 	//校表使能  
-	att7022_CaliEnable(p); 
+	att7022_WriteEnable(p); 
 	//设置电压校正寄存器为0
 	att7022_WriteReg(p, ATT7022_REG_IgainA + nPhase, 0 ); 
 	//校表禁止 
-	att7022_CaliDisable(p);  
+	att7022_WriteDisable(p);  
 	//等1秒
 	os_thd_Sleep(1000);
 	//读取该相电压值 
@@ -564,11 +579,11 @@ uint32_t att7022_IgainCalibration(p_att7022 p, uint32_t nPhase)
 			gain = MAX_VALUE2 + gain;
 		} 
 		//校表使能  
-		att7022_CaliEnable(p); 
+		att7022_WriteEnable(p); 
 		//写入电压校表数据
 		att7022_WriteReg (p, ATT7022_REG_IgainA + nPhase, (uint32_t)gain);
 		//校表禁止
-		att7022_CaliDisable(p); 
+		att7022_WriteDisable(p); 
 	}
 	return (uint32_t)gain;
 }
@@ -591,12 +606,12 @@ uint32_t att7022_PgainCalibration(p_att7022 p, uint8_t nPhase )
 	//脉冲输出系数
 	eck = 3200.0f / (float)ATT7022_CONST_EC;
 	//校表使能  
-	att7022_CaliEnable(p); 
+	att7022_WriteEnable(p); 
 	//先设置Pgain为0
 	att7022_WriteReg(p, ATT7022_REG_PgainA0 + nPhase, 0);
 	att7022_WriteReg(p, ATT7022_REG_PgainA1 + nPhase, 0);
 	//校表禁止 
-	att7022_CaliDisable(p); 						
+	att7022_WriteDisable(p); 						
 	//等待数值稳定
 	os_thd_Sleep(1000);
 	//读出测量到的功率
@@ -625,11 +640,11 @@ uint32_t att7022_PgainCalibration(p_att7022 p, uint8_t nPhase )
 			pgain = MAX_VALUE2 + err * MAX_VALUE1;			//计算Pgain
 		}
 		//校表使能  
-		att7022_CaliEnable(p); 
+		att7022_WriteEnable(p); 
 		att7022_WriteReg(p, ATT7022_REG_PgainA0 + nPhase, pgain);
 		att7022_WriteReg(p, ATT7022_REG_PgainA1 + nPhase, pgain);
 		//校表禁止
-		att7022_CaliDisable(p); 
+		att7022_WriteDisable(p); 
 	}
 			
 	return (uint32_t)pgain;
@@ -722,10 +737,10 @@ uint32_t att7022_PgainCalibration(p_att7022 p, uint8_t nPhase) {
 		return __FALSE;
 	}
 	eck = 3200.0f / (float)ATT7022_CONST_EC; //脉冲输出系数
-	att7022_CaliEnable(); //校表使能
+	att7022_WriteEnable(); //校表使能
 	att7022_WriteReg(ATT7022_REG_PgainA0 + nPhase, 0); //先设置Pgain为0
 	att7022_WriteReg(ATT7022_REG_PgainA1 + nPhase, 0);
-	att7022_CaliDisable(); //校表禁止 
+	att7022_WriteDisable(); //校表禁止 
 	sys_Delay(5000000); //等待数值稳定
 	att7022_pvalue = att7022_ReadReg(ATT7022_REG_PA + nPhase); //读出测量到的功率
 	if (att7022_pvalue > MAX_VALUE1) {
@@ -741,10 +756,10 @@ uint32_t att7022_PgainCalibration(p_att7022 p, uint8_t nPhase) {
 		} else {
 			pgain *= MAX_VALUE1; //计算Pgain
 		}
-		att7022_CaliEnable(); //校表使能
+		att7022_WriteEnable(); //校表使能
 		att7022_WriteReg(ATT7022_REG_PgainA0 + nPhase, (uint32_t)pgain); //更新Pgain_0参数
 		att7022_WriteReg(ATT7022_REG_PgainA1 + nPhase, (uint32_t)pgain); //更新Pgain_1参数
-		att7022_CaliDisable();
+		att7022_WriteDisable();
 	}
 	return (uint32_t)pgain;
 }
@@ -765,14 +780,14 @@ uint32_t att7022_IgainCalibration(p_att7022 p, uint8_t nPhase) {
 			return __FALSE;
 		}
 	} //参数错误返回 
-	att7022_CaliEnable(); //校表使能 
+	att7022_WriteEnable(); //校表使能 
 	if (nPhase != PHASE_ADC7) {
 		att7022_WriteReg(ATT7022_REG_IgainA + nPhase, 0);
 	} //先设置增益放大器为0 
 	else {
 		att7022_WriteReg(ATT7022_REG_gainADC7, 0);
 	} //先设置增益放大器为0 
-	att7022_CaliDisable(); //校表禁止 
+	att7022_WriteDisable(); //校表禁止 
 	sys_Delay(5000000);
 	if (nPhase != PHASE_ADC7) {
 		irms = att7022_ReadReg(ATT7022_REG_IRmsA + nPhase);
@@ -787,13 +802,13 @@ uint32_t att7022_IgainCalibration(p_att7022 p, uint8_t nPhase) {
 		if (k < 0) {
 			gain += MAX_VALUE2;
 		}
-		att7022_CaliEnable(); //校表使能 
+		att7022_WriteEnable(); //校表使能 
 		if (nPhase != PHASE_ADC7) {
 			att7022_WriteReg(ATT7022_REG_IgainA + nPhase, (uint32_t)gain);	//写入电压校表数据 
 		} else {
 			att7022_WriteReg(ATT7022_REG_gainADC7, (uint32_t)gain);			//写入电压校表数据 
 		}
-		att7022_CaliDisable();
+		att7022_WriteDisable();
 		return (uint32_t)gain;
 	}
 	return __FALSE;
@@ -815,14 +830,14 @@ uint32_t att7022_UgainCalibration(p_att7022 p, uint8_t nPhase)
 			return __FALSE;
 		}
 	} //参数错误返回 
-	att7022_CaliEnable(); //校表使能 
+	att7022_WriteEnable(); //校表使能 
 	if (nPhase != PHASE_ADC7) {
 		att7022_WriteReg(ATT7022_REG_UgainA + nPhase, 0);
 	} //先设置增益放大器为0 
 	else {
 		att7022_WriteReg(ATT7022_REG_gainADC7, 0);
 	} //先设置增益放大器为0 
-	att7022_CaliDisable(); //校表禁止 
+	att7022_WriteDisable(); //校表禁止 
 	sys_Delay(5000000);
 	if (nPhase != PHASE_ADC7) {
 		urms = att7022_ReadReg(ATT7022_REG_URmsA + nPhase);
@@ -837,14 +852,14 @@ uint32_t att7022_UgainCalibration(p_att7022 p, uint8_t nPhase)
 		if (k < 0) {
 			gain += MAX_VALUE2;
 		}
-		att7022_CaliEnable(); //校表使能 
+		att7022_WriteEnable(); //校表使能 
 		if (nPhase != PHASE_ADC7) {
 			att7022_WriteReg(ATT7022_REG_UgainA + nPhase, (uint32_t)gain);
 		} //写入电压校表数据 
 		else {
 			att7022_WriteReg(ATT7022_REG_gainADC7, (uint32_t)gain);
 		} //写入电压校表数据 
-		att7022_CaliDisable();
+		att7022_WriteDisable();
 		return (uint32_t)gain;
 	}
 	return __FALSE;
@@ -856,7 +871,7 @@ uint32_t att7022_UgainCalibration(p_att7022 p, uint8_t nPhase)
 void att7022_GainAD7(uint8_t channel) {
 #ifdef ATT7022B_ADC7_CALI
 	uint32_t gain;
-	att7022_CaliEnable();
+	att7022_WriteEnable();
 	//写入增益
 //	att7022_WriteGain();
 	if (channel < 6) {
@@ -877,7 +892,7 @@ void att7022_GainAD7(uint8_t channel) {
 			att7022_WriteReg(ATT7022_REG_PgainA1 + (channel - 3), (uint32_t)gain);
 		}
 	}
-	att7022_CaliDisable();
+	att7022_WriteDisable();
 #endif 
 }
 
@@ -1073,10 +1088,10 @@ float att7022_VBlanceCalc(void) {
 void att7022_IstartupSet(void) {
 	float isv, temp;
 	temp = IB_VO * ISTART_RATIO;
-	att7022_CaliEnable();
+	att7022_WriteEnable();
 	isv = temp * CONST_G * MAX_VALUE1;
 	att7022_WriteReg(ATT7022_REG_Istartup, (uint32_t)isv);
-	att7022_CaliDisable();
+	att7022_WriteDisable();
 }
 
 
@@ -1098,9 +1113,9 @@ uint32_t att7022_HFConstSet(void) {
 	irms = att7022_ReadReg(ATT7022_REG_IRmsA); //读取电流值 
 	irms = irms / ICALI_MUL;
 	hfcost = CONST_HF * CONST_G * CONST_G * urms * irms / (UCALI_CONST *ICALI_CONST * ATT7022_CONST_EC);
-	att7022_CaliEnable();
+	att7022_WriteEnable();
 	att7022_WriteReg(ATT7022_REG_HFConst, (uint32_t)hfcost); //设置HFConst
-	att7022_CaliDisable();
+	att7022_WriteDisable();
 	return ((uint32_t)hfcost);
 }
 
@@ -1116,13 +1131,13 @@ uint32_t att7022_HFConstSet(void) {
 void att7022_PhaseCali2Seg(uint8_t nPhase) {
 	uint32_t phv[2];
 	phv[1] = att7022_PhaseCalibration(PHASE_A, 1); //7.5A处校正
-	att7022_CaliEnable(); //ATT7022B校正使能
+	att7022_WriteEnable(); //ATT7022B校正使能
 	att7022_WriteReg(ATT7022_REG_PhsregA0 + nPhase * 5, phv[1]);
 	att7022_WriteReg(ATT7022_REG_PhsregA1 + nPhase * 5, phv[1]);
 	att7022_WriteReg(ATT7022_REG_PhsregA2 + nPhase * 5, phv[1]);
 	att7022_WriteReg(ATT7022_REG_PhsregA3 + nPhase * 5, phv[1]);
 	att7022_WriteReg(ATT7022_REG_PhsregA4 + nPhase * 5, phv[1]);
-	att7022_CaliDisable(); //ATT7022B校正禁止
+	att7022_WriteDisable(); //ATT7022B校正禁止
 }
 
 //------------------------------------------------------------------------
@@ -1139,7 +1154,7 @@ uint32_t att7022_PhaseCalibration(uint8_t nPhase, uint8_t nCali) {
 	float fPhase = 0;
 	switch (nCali) {
 		case 0:
-			att7022_CaliEnable();
+			att7022_WriteEnable();
 			for (i = 0; i < 5; i++) {
 				//清除所有校正寄存器值
 				att7022_WriteReg(ATT7022_REG_PhsregA0 + (nPhase *5) + i, 0);
@@ -1148,7 +1163,7 @@ uint32_t att7022_PhaseCalibration(uint8_t nPhase, uint8_t nCali) {
 				//清除寄存器值
 				att7022_WriteReg(ATT7022_REG_Irgion1 + i, 0);
 			}
-			att7022_CaliDisable();
+			att7022_WriteDisable();
 			sys_Delay(50000);
 			fPhase = att7022_FPhaseCaliData(nPhase, nCali);
 			break;
@@ -1216,10 +1231,10 @@ uint8_t att7022_IregionSet(float current_value, uint8_t field_num) {
 	if (field_num > 3) {
 		return __FALSE;
 	}
-	att7022_CaliEnable();
+	att7022_WriteEnable();
 	Iregion = CONST_G * current_value * MAX_VALUE1;
 	att7022_WriteReg(ATT7022_REG_Irgion1 + field_num, (uint32_t)Iregion);
-	att7022_CaliDisable();
+	att7022_WriteDisable();
 	return __TRUE;
 }
 

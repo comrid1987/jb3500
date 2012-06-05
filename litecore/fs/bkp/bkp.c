@@ -2,7 +2,7 @@
 #if BKP_ENABLE
 
 //Private Defines
-#define EEPROM_PAGE_SIZE			8
+#define EEPROM_PAGE_SIZE			4
 
 
 
