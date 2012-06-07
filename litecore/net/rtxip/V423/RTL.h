@@ -2,24 +2,24 @@
  *      RL-ARM - A P I 
  *----------------------------------------------------------------------------
  *      Name:    RTL.H 
- *      Purpose: Application Programming Interface 
- *      Rev.:    V4.53
+ *      Purpose: Application Programming Interface. 
+ *      Rev.:    V4.22
  *----------------------------------------------------------------------------
  *      This code is part of the RealView Run-Time Library.
- *      Copyright (c) 2004-2012 KEIL - An ARM Company. All rights reserved.
+ *      Copyright (c) 2004-2011 KEIL - An ARM Company. All rights reserved.
  *---------------------------------------------------------------------------*/
 
 #ifndef __RTL_H__
 #define __RTL_H__
 
 /* RL-ARM version number. */
-#define __RL_ARM_VER    453
+#define __RL_ARM_VER    422
  
 #define __task          __declspec(noreturn)
 #define __used          __attribute__((used))
 
 #ifndef NULL
- #ifdef __cplusplus
+ #ifdef __cplusplus              // EC++
   #define NULL          0
  #else
   #define NULL          ((void *) 0)
@@ -27,7 +27,7 @@
 #endif
 
 #ifndef EOF
- #define EOF            (-1)
+ #define EOF            -1
 #endif
 
 #ifndef __size_t
@@ -64,13 +64,21 @@ typedef unsigned int    BOOL;
  #define U32_LE(v)      (U32)(v)
  #define U16_LE(v)      (U16)(v)
 #endif
+#ifndef ntohs
 #define ntohs(v)        U16_BE(v)
+#endif
+#ifndef ntohl
 #define ntohl(v)        U32_BE(v)
+#endif
+#ifndef htons
 #define htons(v)        ntohs(v)
+#endif
+#ifndef htonl
 #define htonl(v)        ntohl(v)
+#endif
 
 
-#ifdef __cplusplus
+#ifdef __cplusplus               // EC++
 extern "C"  {
 #endif
 
@@ -161,56 +169,28 @@ typedef struct {                        /* RL Time format (FFS, TCPnet)      */
 #define MSG_DONTWAIT       0x01   /* Enables non-blocking operation          */
 #define MSG_PEEK           0x02   /* Peeks at the incoming data              */
 
-/* BSD Socket ioctl commands */
-#define FIONBIO            1      /* Set mode (blocking/non-blocking)        */
-#define FIO_DELAY_ACK      2      /* Set DELAY_ACK mode for stream socket    */
-#define FIO_KEEP_ALIVE     3      /* Set KEEP_ALIVE mode for stream socket   */
-
 /* ICMP (ping) Callback Events */
 #define ICMP_EVT_SUCCESS   0      /* Pinged Host responded                   */
 #define ICMP_EVT_TIMEOUT   1      /* Timeout, no ping response received      */
 
-/* DNS Client Callback Events */
+/* DNS Callback Events */
 #define DNS_EVT_SUCCESS    0      /* Host name successfully resolved         */
 #define DNS_EVT_NONAME     1      /* DNS Error, no such name                 */
 #define DNS_EVT_TIMEOUT    2      /* Timeout resolving host                  */
 #define DNS_EVT_ERROR      3      /* Erroneous response packet               */
 
 /* DNS 'get_host_by_name()' result codes */
-#define DNS_RES_OK         0      /* Resolver successfully started           */
-#define DNS_ERROR_BUSY     1      /* Resolver busy, can't process request    */
-#define DNS_ERROR_LABEL    2      /* Label in Hostname not valid             */
-#define DNS_ERROR_NAME     3      /* Entire Hostname not valid               */
+#define DNS_RES_OK         0      /* Function finished OK                    */
+#define DNS_ERROR_BUSY     1      /* DNS Client busy, can't process request  */
+#define DNS_ERROR_LABEL    2      /* Host name Label too long                */
+#define DNS_ERROR_NAME     3      /* Host name loo long                      */
 #define DNS_ERROR_NOSRV    4      /* Prim. DNS server not specified (0.0.0.0)*/
-#define DNS_ERROR_PARAM    5      /* Invalid parameter                       */
+#define DNS_ERROR_UDPSEND  5      /* UDP Send frame error                    */
 
-/* SMTP Client Callback Events */
+/* SMTP Callback Events */
 #define SMTP_EVT_SUCCESS   0      /* Email successfully sent                 */
 #define SMTP_EVT_TIMEOUT   1      /* Timeout sending email                   */
 #define SMTP_EVT_ERROR     2      /* Error when sending email                */
-
-/* FTP Client Commands */
-#define FTPC_CMD_PUT       0      /* Puts a file on FTP server               */
-#define FTPC_CMD_GET       1      /* Retrieves a file from FTP server        */
-#define FTPC_CMD_APPEND    2      /* Append file on FTP server (with create) */
-#define FTPC_CMD_DELETE    3      /* Deletes a file on FTP server            */
-#define FTPC_CMD_LIST      4      /* Lists files stored on FTP server        */
-
-/* FTP Client Callback Events */
-#define FTPC_EVT_SUCCESS   0      /* File operation successful               */
-#define FTPC_EVT_TIMEOUT   1      /* Timeout on file operation               */
-#define FTPC_EVT_LOGINFAIL 2      /* Login error, username/passw invalid     */
-#define FTPC_EVT_NOACCESS  3      /* File access not allowed                 */
-#define FTPC_EVT_NOTFOUND  4      /* File not found                          */
-#define FTPC_EVT_ERROR     5      /* Generic FTP client error                */
-
-/* TFTP Client Callback Events */
-#define TFTPC_EVT_SUCCESS  0      /* File operation successful               */
-#define TFTPC_EVT_TIMEOUT  1      /* Timeout on file operation               */
-#define TFTPC_EVT_NOACCESS 2      /* File access not allowed                 */
-#define TFTPC_EVT_NOTFOUND 3      /* File not found                          */
-#define TFTPC_EVT_DISKFULL 4      /* Disk full (local or remote)             */
-#define TFTPC_EVT_ERROR    5      /* Generic TFTP client error               */
 
 /* ARP Cache Entry types */
 #define ARP_FIXED_IP       0      /* Fixed IP adrs is refreshed after tout   */
@@ -278,13 +258,12 @@ extern BOOL tcp_close (U8 socket);
 extern BOOL tcp_abort (U8 socket);
 extern void tcp_reset_window (U8 socket);
 extern BOOL arp_cache_ip (U8 *ipadr, U8 type);
-extern BOOL arp_cache_mac (U8 *hwadr);
-extern void ppp_listen (const char *user, const char *passw);
-extern void ppp_connect (const char *dialnum, const char *user, const char *passw);
+extern void ppp_listen (char const *user, char const *passw);
+extern void ppp_connect (char const *dialnum, char const *user, char const *passw);
 extern void ppp_close (void);
 extern BOOL ppp_is_up (void);
 extern void slip_listen (void);
-extern void slip_connect (const char *dialnum);
+extern void slip_connect (char const *dialnum);
 extern void slip_close (void);
 extern BOOL slip_is_up (void);
 extern U8   get_host_by_name (U8 *hostn, void (*cbfunc)(U8 event, U8 *host_ip));
@@ -295,11 +274,6 @@ extern BOOL igmp_leave (U8 *group_ip);
 extern BOOL snmp_trap (U8 *manager_ip, U8 gen_trap, U8 spec_trap, U16 *obj_list);
 extern BOOL snmp_set_community (const char *community);
 extern BOOL icmp_ping (U8 *remip, void (*cbfunc)(U8 event));
-extern BOOL ftpc_connect (U8 *ipadr, U16 port, U8 command, void (*cbfunc)(U8 event));
-extern BOOL tftpc_put (U8 *ipadr, U16 port,
-                       const char *src, const char *dst, void (*cbfunc)(U8 event));
-extern BOOL tftpc_get (U8 *ipadr, U16 port, 
-                       const char *src, const char *dst, void (*cbfunc)(U8 event));
 
 /* BSD Socket API */
 extern int  socket (int family, int type, int protocol);
@@ -314,10 +288,9 @@ extern int  recvfrom (int sock, char *buf, int len, int flags, SOCKADDR *from, i
 extern int  closesocket (int sock);
 extern int  getpeername (int sock, SOCKADDR *name, int *namelen);
 extern int  getsockname (int sock, SOCKADDR *name, int *namelen);
-extern int  ioctlsocket (int sock, long cmd, unsigned long *argp);
-extern HOSTENT *gethostbyname (const char *name, int *err);
+extern HOSTENT *gethostbyname (char *name, int *err);
 
-#ifdef __cplusplus
+#ifdef __cplusplus               // EC++
 }
 #endif
 

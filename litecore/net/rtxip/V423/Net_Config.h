@@ -3,10 +3,10 @@
  *----------------------------------------------------------------------------
  *      Name:    NET_CONFIG.H
  *      Purpose: Common TCPnet Definitions
- *      Rev.:    V4.50
+ *      Rev.:    V4.23
  *----------------------------------------------------------------------------
  *      This code is part of the RealView Run-Time Library.
- *      Copyright (c) 2004-2012 KEIL - An ARM Company. All rights reserved.
+ *      Copyright (c) 2004-2011 KEIL - An ARM Company. All rights reserved.
  *---------------------------------------------------------------------------*/
 
 #ifndef __NET_CONFIG_H__
@@ -22,15 +22,12 @@
 #define PHY_HEADER_LEN  (2*ETH_ADRLEN + 2) /* network interfaces.            */
 #define ETH_MTU         1514      /* Ethernet Frame Max Transfer Unit        */
 #define PPP_PROT_IP     0x0021    /* PPP Protocol type: IP                   */
-#define TCP_DEF_WINSIZE 4380      /* TCP default window size                 */
 #define PASSW_SZ        20        /* Authentication Password Buffer size     */
 
 /* Network Interfaces */
 #define NETIF_ETH       0         /* Network interface: Ethernet             */
 #define NETIF_PPP       1         /* Network interface: PPP                  */
 #define NETIF_SLIP      2         /* Network interface: Slip                 */
-#define NETIF_LOCAL     3         /* Network interface: Localhost (loopback) */
-#define NETIF_NULL      4         /* Network interface: Null (none)          */
 
 /* Telnet Definitions */
 #define TNET_LBUFSZ     96        /* Command Line buffer size (bytes)        */
@@ -73,17 +70,11 @@
 #define MODULE_DNS      12        /* DNS Module ID                           */
 #define MODULE_SNMP     13        /* SNMP Module ID                          */
 #define MODULE_BSD      14        /* BSD Socket Module ID                    */
-#define MODULE_HTTP     15        /* HTTP Server Module ID                   */
-#define MODULE_FTP      16        /* FTP Server Module ID                    */
-#define MODULE_FTPC     17        /* FTP Client Module ID                    */
-#define MODULE_TNET     18        /* Telnet Server Module ID                 */
-#define MODULE_TFTP     19        /* TFTP Server Module ID                   */
-#define MODULE_TFTPC    20        /* TFTP Client Module ID                   */
-#define MODULE_SMTP     21        /* SMTP Client Module ID                   */
+#define MODULE_APP      15        /* Application Modules ID                  */
 
 /*---------------------------------------------------------------------------*/
 
-#ifdef __cplusplus
+#ifdef __cplusplus               // EC++
 extern "C"  {
 #endif
 
@@ -111,11 +102,10 @@ typedef struct igmp_info {        /* << IGMP Group info >>                   */
 
 typedef struct udp_info {         /* << UDP Socket info >>                   */
   U8  State;                      /* UDP Socket entry current state          */
-  U8  Opt;                        /* UDP Socket Options                      */
-  U8  Flags;                      /* State machine flags                     */
-  U8  Tos;                        /* UDP Type of Service                     */
-  U16 LocPort;                    /* Local UDP port of Socket                */
   U8  McastTtl;                   /* MultiCast Time To Live                  */
+  U16 LocPort;                    /* Local UDP port of Socket                */
+  U8  Tos;                        /* UDP Type of Service                     */
+  U8  Opt;                        /* UDP Socket Options                      */
                                   /* Application Event CallBack function     */
   U16 (*cb_func)(U8 socket, U8 *rem_ip, U16 port, U8 *buf, U16 len);
 } UDP_INFO;
@@ -191,41 +181,36 @@ typedef struct tnet_info {        /* << Telnet Session info >>               */
   U8  Flags;                      /* State machine Flags                     */
   U8  BCnt;                       /* Received Data byte count                */
   U16 Tout;                       /* Timeout delay counter                   */
-  U8  UserId;                     /* User Id (authentication enabled)        */
   U8  Widx;                       /* Fifo buffer Write index                 */
   U8  Ridx;                       /* Fifo buffer Read index                  */
-  U8  hNext;                      /* History command next position           */
-  U8  hCurr;                      /* History command current position        */
   U32 SVar;                       /* Session private var. (tnet_process_cmd) */
   U8  LBuf[TNET_LBUFSZ];          /* Data Line Buffer                        */
   U8  Fifo[TNET_FIFOSZ];          /* Fifo Buffer for received line/keycodes  */
+  U8  hNext;                      /* History command next position           */
+  U8  hCurr;                      /* History command current position        */
   U8  Hist[TNET_HISTSZ];          /* Command History buffer                  */
 } TNET_INFO;
 
 typedef struct tftp_info {        /* << TFTP Session info >>                 */
   U8  State;                      /* TFTP Session current state              */
-  U8  Socket;                     /* binded UDP Data Socket                  */
+  U8  Retries;                    /* Number of retries                       */
   U8  Flags;                      /* State machine Flags                     */
-  U8  Retries;                    /* Retry counter                           */
+  U16 Timer;                      /* Timeout Timer value                     */
   U8  RemIpAdr[IP_ADRLEN];        /* Remote IP address                       */
-  U16 RemPort;                    /* Remote UDP port (TID)                   */
-  U16 BlockSz;                    /* Transfer Block size                     */
+  U16 RemPort;                    /* Remote UDP port                         */
   U16 BlockNr;                    /* Block Number                            */
-  U8  Timer;                      /* Timeout Timer value                     */
-  U16 BufLen;                     /* Length of retransmit buffer             */
-  U8  *Buf;                       /* Transmit/Retransmit buffer              */
   void *File;                     /* File Handle pointer                     */
+  U32 FPos;                       /* File Position indicator                 */
 } TFTP_INFO;
 
 typedef struct ftp_info {         /* << FTP Session info >>                  */
   U8  State;                      /* FTP Session current state               */
   U8  Socket;                     /* binded TCP Control Socket               */
-  U16 Flags;                      /* State machine Flags                     */
+  U8  Flags;                      /* State machine Flags                     */
+  U8  Resp;                       /* FTP Server Response Code                */
   U8  RemIpAdr[IP_ADRLEN];        /* Client IP address                       */
   U16 DPort;                      /* TCP Data port (Server or Client)        */
   U8  DSocket;                    /* TCP Data Socket                         */
-  U8  UserId;                     /* User Id (authentication enabled)        */
-  U8  Resp;                       /* FTP Server Response Code                */
   U8  PathLen;                    /* Size of the Path string                 */
   U8 *Path;                       /* Current Working Directory               */
   U8 *Name;                       /* Absolute File/Folder Path Name          */
@@ -275,7 +260,6 @@ typedef struct arp_cfg {          /* << ARP Configuration info >>            */
   U8  TimeOut;                    /* Table Entry expiration time in seconds  */
   U8  MaxRetry;                   /* Number of Retries to resolve MAC addr.  */
   U8  Resend;                     /* Resend Timeout in seconds               */
-  U8  Notify;                     /* Notify on IP address changes             */
 } const ARP_CFG;
 
 typedef struct igmp_cfg {         /* << IGMP Configuration info >>           */
@@ -346,28 +330,15 @@ typedef struct tftp_cfg {         /* << TFTP Configuration info >>           */
   U8  DefTout;                    /* Inactive Session Timeout in seconds     */
 } const TFTP_CFG;
 
-typedef struct tftpc_cfg {        /* << TFTPC Configuration info >>          */
-  U16 BlockSize;                  /* Transfer Block size                     */
-  U16 RetryTout;                  /* Retry Timeout in ticks                  */
-  U8  MaxRetry;                   /* Number of Retries                       */
-} const TFTPC_CFG;
-
 typedef struct ftp_cfg {          /* << FTP Configuration info >>            */
   FTP_INFO *Scb;                  /* Session Control Block array             */
   U8  NumSess;                    /* Max. Number of Active Sessions          */
   U8  EnAuth;                     /* Enable User Authentication              */
   U16 PortNum;                    /* Listening Port number                   */
   U16 IdleTout;                   /* Idle Connection timeout in ticks        */
-  U8  MsgLen;                     /* Length of welcome message               */
-  U8 const *Msg;                  /* Server Welcome message                  */ 
   U8 const *User;                 /* Authentication User Name                */
   U8 *Passw;                      /* Authentication Password                 */
 } const FTP_CFG;
-
-typedef struct ftpc_cfg {         /* << FTPC Configuration info >>           */
-  U8  DefTout;                    /* Default inactivity timeout              */
-  U8  PasvMode;                   /* FTP Passive Mode used                   */
-} const FTPC_CFG;
 
 typedef struct dns_cfg {          /* << DNS Configuration info >>            */
   DNS_CACHE *Table;               /* Cache Table array                       */
@@ -391,13 +362,12 @@ typedef struct bsd_cfg {          /* << BSD Configuration info >>            */
 } const BSD_CFG;
 
 typedef enum {                    /* << Fatal System Error Codes >>          */
-  ERR_MEM_ALLOC,                  /* Alloc memory failed, out of memory      */
-  ERR_MEM_FREE,                   /* Free memory failed, memory slot invalid */
-  ERR_MEM_CORRUPT,                /* Memory corruption detected              */
-  ERR_MEM_LOCK,                   /* Locked memory function re-entered error */
-  ERR_UDP_ALLOC,                  /* No free UDP sockets available           */
-  ERR_TCP_ALLOC,                  /* No free TCP sockets available           */
-  ERR_TCP_STATE                   /* TCP socket in undefined state           */
+  ERR_MEM_ALLOC,
+  ERR_MEM_FREE,
+  ERR_MEM_CORRUPT,
+  ERR_UDP_ALLOC,
+  ERR_TCP_ALLOC,
+  ERR_TCP_STATE
 } ERROR_CODE;
 
 
@@ -408,6 +378,9 @@ typedef enum {                    /* << Fatal System Error Codes >>          */
 /* Net_Config.c */
 extern void init_system (void);
 extern void run_system (void);
+extern BOOL eth_chk_adr (OS_FRAME *frame);
+extern U8  *eth_get_adr (U8 *ipadr);
+__weak void arp_notify (void);
 extern void sys_error (ERROR_CODE code);
 
 /* at_Mem.c */
@@ -419,8 +392,6 @@ extern void eth_init_link (void);
 extern void eth_run_link (void);
 extern void put_in_queue (OS_FRAME *frame);
 extern BOOL eth_send_frame (OS_FRAME *frame);
-extern BOOL eth_chk_adr (OS_FRAME *frame);
-extern U8  *eth_get_adr (U8 *ipadr);
 
 /* at_Ppp.c */
 extern void ppp_init_link (void);
@@ -453,12 +424,7 @@ extern int  str_copy (U8 *dp, U8 *sp);
 extern void str_up_case (U8 *dp, U8 *sp);
 
 /* at_Arp.c */
-extern void arp_notify (void);
-extern BOOL arp_get_info (REMOTEM *info);
-
-/* at_Ip.c */
-extern void ip_init (void);
-extern void ip_run_local (void);
+extern void arp_send_req (int entry);
 
 /* at_Dhcp.c */
 extern void dhcp_cbfunc (U8 opt, U8 *val);
@@ -522,27 +488,15 @@ extern BOOL tnet_ccmp (U8 *buf, U8 *cmd);
 extern void tnet_set_delay (U16 cnt);
 extern void tnet_get_info (REMOTEM *info);
 extern U8   tnet_get_session (void);
-extern U8   tnet_get_user_id (void);
 extern BOOL tnet_msg_poll (U8 session);
-extern BOOL tnet_accept_host (U8 *rem_ip, U16 rem_port);
-extern U8   tnet_check_account (U8 code, U8 *id);
 
 /* at_Tftp.c */
 extern void tftp_init (void);
 extern void tftp_run_server (void);
 extern void *tftp_fopen (U8 *fname, U8 *mode);
 extern void tftp_fclose (void *file);
-extern U16  tftp_fread (void *file, U8 *buf, U16 len);
+extern U16  tftp_fread (void *file, U32 fpos, U8 *buf);
 extern U16  tftp_fwrite (void *file, U8 *buf, U16 len);
-extern BOOL tftp_accept_host (U8 *rem_ip, U16 rem_port);
-
-/* at_Tftpc.c */
-extern void tftpc_init (void);
-extern void tftpc_run_client (void);
-extern void *tftpc_fopen (U8 *fname, U8 *mode);
-extern void tftpc_fclose (void *file);
-extern U16  tftpc_fread (void *file, U8 *buf, U16 len);
-extern U16  tftpc_fwrite (void *file, U8 *buf, U16 len);
 
 /* at_Ftp.c */
 extern void ftp_init (void);
@@ -554,24 +508,11 @@ extern U16  ftp_fwrite (void *file, U8 *buf, U16 len);
 extern BOOL ftp_fdelete (U8 *fname);
 extern BOOL ftp_frename (U8 *fname, U8 *newn);
 extern U16  ftp_ffind (U8 code, U8 *buf, U8 *mask, U16 len);
-extern BOOL ftp_accept_host (U8 *rem_ip, U16 rem_port);
-extern U8   ftp_check_account (U8 code, U8 *id);
-extern U8   ftp_get_user_id (void);
-extern BOOL ftp_file_access (U8 *fname, U8 mode, U8 user_id);
-
-/* at_Ftpc.c */
-extern void ftpc_init (void);
-extern void ftpc_run_client (void);
-extern void *ftpc_fopen (U8 *mode);
-extern void ftpc_fclose (void *file);
-extern U16  ftpc_fread (void *file, U8 *buf, U16 len);
-extern U16  ftpc_fwrite (void *file, U8 *buf, U16 len);
-extern U16  ftpc_cbfunc (U8 code, U8 *buf, U16 buflen);
 
 /* at_Dhcp.c */
 extern void dhcp_init (void);
 extern void dhcp_run_client (void);
-#define init_dhcp   dhcp_init
+#define init_dhcp	dhcp_init
 
 /* at_Nbns.c */
 extern void nbns_init (void);
@@ -613,7 +554,7 @@ extern BOOL modem_online (void);
 extern BOOL modem_process (U8 ch);
 extern void modem_run (void);
 
-#ifdef __cplusplus
+#ifdef __cplusplus               // EC++
 }
 #endif
 
