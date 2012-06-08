@@ -71,13 +71,15 @@ static int vk321x_RegRead(uint_t nChl, uint_t nReg)
 	buf b = {0};
 
 	nReg |= (nChl << 4);
-	for (i = VK321X_TIMEOUT / 200; i; i--)
-		if (uart_Send(vk321x_port, &nReg, 1) == SYS_R_OK)
+	for (i = VK321X_TIMEOUT / 200; i; i--) {
+		if (uart_Send(vk321x_port, &nReg, 1) == SYS_R_OK) {
 			if (uart_RecData(vk321x_port, b, 200) == SYS_R_OK) {
 				res = b->p[0];
 				buf_Release(b);
 				break;
 			}
+		}
+	}
 	return res;
 }
 #else

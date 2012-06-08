@@ -1114,7 +1114,6 @@ int gw3761_ResponseSetParam(p_gw3761 p)
 	u_word2 uDu;
 	p_gw3761_item pItem, pItemEnd;
 	p_gw3761_dt pDT;
-	buf b = {0};
 
 	pData = p->rmsg.data->p;
 	pEnd = pData + p->rmsg.data->len;

@@ -27,7 +27,7 @@ extern "C" {
 #include <arch/cm3/lm3s/inc/hw_adc.h>
 #include <arch/cm3/lm3s/inc/hw_can.h>
 #include <arch/cm3/lm3s/inc/hw_comp.h>
-#include <arch/cm3/lm3s/inc/hw_ethernet.h>
+//#include <arch/cm3/lm3s/inc/hw_ethernet.h>
 #include <arch/cm3/lm3s/inc/hw_flash.h>
 #include <arch/cm3/lm3s/inc/hw_gpio.h>
 #include <arch/cm3/lm3s/inc/hw_hibernate.h>
@@ -49,7 +49,7 @@ extern "C" {
 #include <arch/cm3/lm3s/driverlib/comp.h>
 #include <arch/cm3/lm3s/driverlib/cpu.h>
 #include <arch/cm3/lm3s/driverlib/debug.h>
-#include <arch/cm3/lm3s/driverlib/ethernet.h>
+//#include <arch/cm3/lm3s/driverlib/ethernet.h>
 #include <arch/cm3/lm3s/driverlib/flash.h>
 #include <arch/cm3/lm3s/driverlib/gpio.h>
 #include <arch/cm3/lm3s/driverlib/hibernate.h>
