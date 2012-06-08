@@ -403,9 +403,9 @@ int gw3761_ResponseSetParam(p_gw3761 p)
 	if (res) {
 		evt_ERC3(p->parent.msta, &uDu);
 		gw3761_TmsgConfirm(p);
-	} else {
+	} else
 		gw3761_TmsgReject(p);
-	}
+	buf_Release(b);
 	return res;
 }
 

@@ -525,14 +525,14 @@
 //   <o>Number of TCP Sockets <1-20>
 //   <i> Number of available TCP sockets
 //   <i> Default: 5
-#define TCP_NUMSOCKS   5
+#define TCP_NUMSOCKS   6
 
 //   <o>Number of Retries <0-20>
 //   <i> How many times TCP module will try to retransmit data
 //   <i> before giving up. Increase this value for high-latency
 //   <i> and low_throughput networks.
 //   <i> Default: 5
-#define TCP_MAXRETRY   20
+#define TCP_MAXRETRY   2
 
 //   <o>Retry Timeout in seconds <1-10>
 //   <i> If data frame not acknowledged within this time frame,

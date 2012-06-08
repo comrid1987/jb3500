@@ -445,6 +445,7 @@ int gw3761_ResponseData2(p_gw3761 p)
 		gw3761_TmsgSend(p, GW3761_FUN_RESPONSE, GW3761_AFN_DATA_L2, b, DLRCP_TMSG_RESPOND);
 	else
 		gw3761_TmsgReject(p);
+	buf_Release(b);
 	return res;
 }
 

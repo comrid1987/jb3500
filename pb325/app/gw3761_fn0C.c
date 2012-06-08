@@ -187,10 +187,10 @@ static int gw3761_Afn0C_07RealRead(buf b, t_afn04_f10 *pF10, t_ecl_rtdi07 *p, ui
 			}
 			nRet = 1;
 		}
+		buf_Release(bTx);
 	}
 	if (nRet == 0)
 		buf_Fill(b, GW3761_DATA_INVALID, nLen);
-	buf_Release(bTx);
 	return nRet;
 }
 
@@ -232,10 +232,10 @@ static int gw3761_Afn0C_97RealRead(buf b, t_afn04_f10 *pF10, t_ecl_rtdi97 *p, ui
 			}
 			nRet = 1;
 		}
+		buf_Release(bTx);
 	}
 	if (nRet == 0)
 		buf_Fill(b, GW3761_DATA_INVALID, nLen);
-	buf_Release(bTx);
 	return nRet;
 }
 
@@ -257,7 +257,7 @@ static void gw3761_Afn0C_F3(buf b)
 	buf_Push(b, aBuf, sizeof(aBuf));
 }
 
-static void gw3761_Afn0C_F25(buf b, uint_t nDa)
+static int gw3761_Afn0C_F25(buf b, uint_t nDa)
 {
 	t_afn04_f10 xF10;
 	uint_t i;
@@ -267,7 +267,7 @@ static void gw3761_Afn0C_F25(buf b, uint_t nDa)
 	t_ecl_rtdi07 *pR07;
 
 	if (icp_Meter4Tn(nDa, &xF10) == 0)
-		return;
+		return 0;
 	switch (xF10.port) {
 	case ECL_PORT_ACM:
 		if (acm_IsReady()) {
@@ -323,9 +323,10 @@ static void gw3761_Afn0C_F25(buf b, uint_t nDa)
 		}
 		break;
 	}
+	return 1;
 }
 
-static void gw3761_Afn0C_F33(buf b, uint_t nDa, uint_t nMask)
+static int gw3761_Afn0C_F33(buf b, uint_t nDa, uint_t nMask)
 {
 	t_afn04_f10 xF10;
 	uint_t i;
@@ -334,7 +335,7 @@ static void gw3761_Afn0C_F33(buf b, uint_t nDa, uint_t nMask)
 	t_ecl_rtdi07 *pR07;
 
 	if (icp_Meter4Tn(nDa, &xF10) == 0)
-		return;
+		return 0;
 	switch (xF10.port) {
 	case ECL_PORT_ACM:
 		break;
@@ -358,9 +359,10 @@ static void gw3761_Afn0C_F33(buf b, uint_t nDa, uint_t nMask)
 		}
 		break;
 	}
+	return 1;
 }
 
-static void gw3761_Afn0C_F34(buf b, uint_t nDa, uint_t nMask)
+static int gw3761_Afn0C_F34(buf b, uint_t nDa, uint_t nMask)
 {
 	t_afn04_f10 xF10;
 	uint_t i;
@@ -369,7 +371,7 @@ static void gw3761_Afn0C_F34(buf b, uint_t nDa, uint_t nMask)
 	t_ecl_rtdi07 *pR07;
 
 	if (icp_Meter4Tn(nDa, &xF10) == 0)
-		return;
+		return 0;
 	switch (xF10.port) {
 	case ECL_PORT_ACM:
 		break;
@@ -393,9 +395,10 @@ static void gw3761_Afn0C_F34(buf b, uint_t nDa, uint_t nMask)
 		}
 		break;
 	}
+	return 1;
 }
 
-static void gw3761_Afn0C_F35(buf b, uint_t nDa)
+static int gw3761_Afn0C_F35(buf b, uint_t nDa)
 {
 	t_afn04_f10 xF10;
 	uint_t nIs3P;
@@ -404,7 +407,7 @@ static void gw3761_Afn0C_F35(buf b, uint_t nDa)
 	t_ecl_rtdi07 *pR07;
 
 	if (icp_Meter4Tn(nDa, &xF10) == 0)
-		return;
+		return 0;
 	switch (xF10.port) {
 	case ECL_PORT_ACM:
 		break;
@@ -426,9 +429,10 @@ static void gw3761_Afn0C_F35(buf b, uint_t nDa)
 		}
 		break;
 	}
+	return 1;
 }
 
-static void gw3761_Afn0C_F36(buf b, uint_t nDa)
+static int gw3761_Afn0C_F36(buf b, uint_t nDa)
 {
 	t_afn04_f10 xF10;
 	uint_t nIs3P;
@@ -437,7 +441,7 @@ static void gw3761_Afn0C_F36(buf b, uint_t nDa)
 	t_ecl_rtdi07 *pR07;
 
 	if (icp_Meter4Tn(nDa, &xF10) == 0)
-		return;
+		return 0;
 	switch (xF10.port) {
 	case ECL_PORT_ACM:
 		break;
@@ -457,10 +461,11 @@ static void gw3761_Afn0C_F36(buf b, uint_t nDa)
 		}
 		break;
 	}
+	return 1;
 }
 
 
-static void gw3761_Afn0C_F49(buf b, uint_t nDa)
+static int gw3761_Afn0C_F49(buf b, uint_t nDa)
 {
 	t_afn04_f10 xF10;
 	uint_t i;
@@ -468,7 +473,7 @@ static void gw3761_Afn0C_F49(buf b, uint_t nDa)
 	t_acm_rtdata *pD;
 
 	if (icp_Meter4Tn(nDa, &xF10) == 0)
-		return;
+		return 0;
 	switch (xF10.port) {
 	case ECL_PORT_ACM:
 		if (acm_IsReady()) {
@@ -486,9 +491,10 @@ static void gw3761_Afn0C_F49(buf b, uint_t nDa)
 	default:
 		break;
 	}
+	return 1;
 }
 
-static void gw3761_Afn0C_F57(buf b, uint_t nDa)
+static int gw3761_Afn0C_F57(buf b, uint_t nDa)
 {
 	t_afn04_f10 xF10;
 	uint_t i, j;
@@ -496,7 +502,7 @@ static void gw3761_Afn0C_F57(buf b, uint_t nDa)
 	t_acm_xbdata *pD;
 
 	if (icp_Meter4Tn(nDa, &xF10) == 0)
-		return;
+		return 0;
 	switch (xF10.port) {
 	case ECL_PORT_ACM:
 		if (acm_IsReady()) {
@@ -523,9 +529,10 @@ static void gw3761_Afn0C_F57(buf b, uint_t nDa)
 	default:
 		break;
 	}
+	return 1;
 }
 
-static void gw3761_Afn0C_F58(buf b, uint_t nDa)
+static int gw3761_Afn0C_F58(buf b, uint_t nDa)
 {
 	t_afn04_f10 xF10;
 	uint_t i, j, k;
@@ -533,7 +540,7 @@ static void gw3761_Afn0C_F58(buf b, uint_t nDa)
 	t_acm_xbdata *pD;
 
 	if (icp_Meter4Tn(nDa, &xF10) == 0)
-		return;
+		return 0;
 	switch (xF10.port) {
 	case ECL_PORT_ACM:
 		if (acm_IsReady()) {
@@ -560,6 +567,7 @@ static void gw3761_Afn0C_F58(buf b, uint_t nDa)
 	default:
 		break;
 	}
+	return 1;
 }
 
 
