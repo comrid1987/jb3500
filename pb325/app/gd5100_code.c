@@ -69,7 +69,7 @@ int gd5100_Response01(p_gd5100 p, buf b)
 			//厂商代号
 			aBuf[7] = 0x88;
 			//文件类型
-			aBuf[6] = 0x02;
+			aBuf[6] = 0x01;
 			//版本号
 			aBuf[5] = (uint8_t)VER_SOFT;
 			aBuf[4] = VER_SOFT >> 8;
