@@ -258,7 +258,6 @@ sys_res gw3761_TmsgReject(p_gw3761 p)
 //-------------------------------------------------------------------------
 sys_res gw3761_TmsgLinkcheck(void *p, uint_t nCmd)
 {
-	sys_res res;
 	buf b = {0};
 
 	switch (nCmd) {
@@ -268,14 +267,20 @@ sys_res gw3761_TmsgLinkcheck(void *p, uint_t nCmd)
 	case DLRCP_LINKCHECK_LOGOUT:
 		nCmd = 2;
 		break;
-	case DLRCP_LINKCHECK_KEEPALIVE:
+	default:
 		nCmd = 3;
 		break;
 	}
 	buf_PushData(b, gw3761_ConvertFn2Du(0, nCmd), 4);
-	res = gw3761_TmsgSend(p, GW3761_FUN_LINKCHECK, GW3761_AFN_LINKCHECK, b, DLRCP_TMSG_PULSEON);
+	gw3761_TmsgSend(p, GW3761_FUN_LINKCHECK, GW3761_AFN_LINKCHECK, b, DLRCP_TMSG_PULSEON);
 	buf_Release(b);
-	return res;
+#if 1
+	buf_PushData(b, gw3761_ConvertFn2Du(0, 7), 4);
+	buf_PushData(b, evt_GetCount(), 2);
+	gw3761_TmsgSend(p, GW3761_FUN_RESPONSE, GW3761_AFN_DATA_L1, b, DLRCP_TMSG_REPORT);
+	buf_Release(b);
+#endif
+	return SYS_R_OK;
 }
 
 
