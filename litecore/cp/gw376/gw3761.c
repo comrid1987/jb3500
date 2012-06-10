@@ -274,7 +274,7 @@ sys_res gw3761_TmsgLinkcheck(void *p, uint_t nCmd)
 	buf_PushData(b, gw3761_ConvertFn2Du(0, nCmd), 4);
 	gw3761_TmsgSend(p, GW3761_FUN_LINKCHECK, GW3761_AFN_LINKCHECK, b, DLRCP_TMSG_PULSEON);
 	buf_Release(b);
-#if 1
+#if GW3761_ECREPORT_ENABLE
 	buf_PushData(b, gw3761_ConvertFn2Du(0, 7), 4);
 	buf_PushData(b, evt_GetCount(), 2);
 	gw3761_TmsgSend(p, GW3761_FUN_RESPONSE, GW3761_AFN_DATA_L1, b, DLRCP_TMSG_REPORT);
