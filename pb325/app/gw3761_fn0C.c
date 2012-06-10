@@ -164,13 +164,11 @@ static int gw3761_Afn0C_07RealRead(buf b, t_afn04_f10 *pF10, t_ecl_rtdi07 *p, ui
 				}
 				break;
 			case ECL_RTR_T_MAXPOWER07:
-				for (i = 0; i <= ECL_RATE_QTY; i++, pTemp += 8) {
+				for (i = 0; i <= ECL_RATE_QTY; i++, pTemp += 8)
 					buf_Push(b, pTemp, 3);
-				}
 				pTemp = &bTx->p[17];
-				for (i = 0; i <= ECL_RATE_QTY; i++, pTemp += 8) {
+				for (i = 0; i <= ECL_RATE_QTY; i++, pTemp += 8)
 					buf_Push(b, pTemp, 4);
-				}
 				break;
 			case ECL_RTR_T_DLQ_RT:
 				pTemp += 16;
