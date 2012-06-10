@@ -10,6 +10,8 @@
 #include <cp/gw376/gw3761.h>
 #include <cp/gw376/gw3762.h>
 
+#include <cp/gw376/gw3762.h>
+
 #include <cp/gdfts.h>
 
 

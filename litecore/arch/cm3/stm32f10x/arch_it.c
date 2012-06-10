@@ -55,7 +55,7 @@ int arch_ExtIrqRegister(uint_t nPort, uint_t nPin, uint_t nTriggerMode)
 		nPortSource = GPIO_PortSourceGPIOG;
 		break;	
 	default:
-		return (-1);
+		return -1;
 	}
 	GPIO_EXTILineConfig(nPortSource, nPin);
 	xEXTI.EXTI_Line = BITMASK(nPin);
@@ -68,7 +68,7 @@ int arch_ExtIrqRegister(uint_t nPort, uint_t nPin, uint_t nTriggerMode)
 		xEXTI.EXTI_Trigger = EXTI_Trigger_Rising;
 		break;
 	default:
-		return (-1);
+		return -1;
 	}
 	xEXTI.EXTI_LineCmd = ENABLE;
 	EXTI_Init(&xEXTI);
