@@ -228,13 +228,22 @@ void icp_Clear()
 
 void icp_Init()
 {
+	uint_t nVer = 0, nInit = 0;
 
 #if ICP_LOCK_ENABLE
 	rt_sem_init(&icp_sem, "sem_icp", 1, RT_IPC_FLAG_FIFO);
 #endif
-	if (sfs_Read(&icp_SfsDev, 0xFFFF5987, NULL) != SYS_R_OK) {
+	if (sfs_Read(&icp_SfsDev, 0xFFFF5987, &nVer) != SYS_R_OK) {
 //		icp_Format();
-		sfs_Write(&icp_SfsDev, 0xFFFF5987, NULL, 0);
+		nInit = 1;
+	}
+	if (nVer < 0x0078)
+		nInit = 1;
+	if (nInit) {
+		data_Clear();
+		stat_Clear();
+		nVer = VER_SOFT;
+		sfs_Write(&icp_SfsDev, 0xFFFF5987, &nVer, 2);
 	}
 }
 

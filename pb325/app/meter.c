@@ -232,6 +232,18 @@ void stat_Handler(p_stat ps, t_afn04_f26 *pF26, t_afn04_f28 *pF28, time_t tTime)
 	}
 	//视在不平衡度
 	ps->uibsum += pa->uib;
+	//功率因数分段统计
+	fLow = (float)bcd2bin16(pF28->low) / 1000.0f;
+	fUp = (float)bcd2bin16(pF28->up) / 1000.0f;
+	fData = pa->cos[3];
+	if (fData < fLow) {
+		ps->cos[0] += 1;
+	} else {
+		if (fData > fUp)
+			ps->cos[2] += 1;
+		else
+			ps->cos[1] += 1;
+	}
 }
 
 
@@ -291,7 +303,7 @@ void tsk_Meter(void *args)
 			if ((nMin % 15) == 0)
 				acm_QuarterSave(aBuf);
 
-			stat_Handler(ps, &xF26, tTime);
+			stat_Handler(ps, &xF26, &xF28, tTime);
 			//统计保存
 			evt_StatWrite(ps);
 		}

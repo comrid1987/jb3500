@@ -179,6 +179,14 @@ int gw3761_ResponseData2(p_gw3761 p)
 					}
 					pData += 3;
 					break;
+				case 43:
+					if (data_DayRead(pData, ps)) {
+						for (i = 0; i < 3; i++)
+							buf_PushData(b, ps->cos[i], 2);
+						nSucc = 1;
+					}
+					pData += 3;
+					break;
 				case 49:
 					buf_Push(b, pData, 3);
 					buf_PushData(b, 1440, 2);
@@ -202,7 +210,6 @@ int gw3761_ResponseData2(p_gw3761 p)
 				case 32:
 				case 41:
 				case 42:
-				case 43:
 				case 45:
 				case 50:
 				case 53:
