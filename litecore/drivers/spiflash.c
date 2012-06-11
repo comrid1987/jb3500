@@ -114,6 +114,7 @@ static uint32_t _spif_Probe(p_dev_spi p)
 	uint_t nCmd = SPIF_CMD_JEDECID;
 	uint32_t nId = 0;
 
+	_spif_WriteDisable(p);
 	if (spi_Transce(p, &nCmd, 1, &nId, 3) == SYS_R_OK) {
 		nCmd = SPIF_CMD_WRSR_ENABLE;
 		spi_Send(p, &nCmd, 1);
