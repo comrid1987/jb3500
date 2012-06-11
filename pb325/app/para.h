@@ -115,6 +115,12 @@ typedef __packed struct {
 	uint8_t		losttime;			//连续失压时间限值
 }t_afn04_f26;
 
+//功率因数分段限值
+typedef __packed struct {
+	uint16_t	low;				//限值1
+	uint16_t	up;					//限值2
+}t_afn04_f28;
+
 //终端抄表运行参数
 typedef __packed struct {
 	uint16_t	flag;

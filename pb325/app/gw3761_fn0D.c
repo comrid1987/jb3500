@@ -95,6 +95,8 @@ int gw3761_ResponseData2(p_gw3761 p)
 						buf_PushData(b, ps->p0[3], 2);
 						for (i = 0; i < 3; i++)
 							buf_PushData(b, ps->p0[i], 2);
+						gw3761_ConvertData_05_Percent(aBuf, FLOAT2FIX(ps->uibsum / (float)ps->run), 0);
+						buf_Push(b, aBuf, 2);
 						nSucc = 1;
 					}
 					pData += 3;
@@ -109,6 +111,7 @@ int gw3761_ResponseData2(p_gw3761 p)
 							buf_PushData(b, ps->ulow[i], 2);
 							buf_PushData(b, ps->run - ps->uup[i] - ps->ulow[i], 2);
 						}
+						buf_PushData(b, ps->uok, 2);
 						for (i = 0; i < 3; i++) {
 							gw3761_ConvertData_07(aBuf, FLOAT2FIX(ps->umax[i]));
 							buf_Push(b, aBuf, 2);

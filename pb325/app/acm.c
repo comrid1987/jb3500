@@ -53,7 +53,7 @@ void acm_JLRead()
 	t_tdk6515_rtdata *pT;
 	uint8_t *pTemp;
 	uint_t i, nCRC;
-	float fTemp;
+	float fTemp, fMax;
 	buf b = {0};
 
 	if (tdk6515_IsJLReady() == SYS_R_OK) {
@@ -102,9 +102,28 @@ void acm_JLRead()
 			}
 			//²»Æ½ºâ¶È
 			fTemp = (pa->u[0] + pa->u[1] + pa->u[2]) / 3;
-			pa->ub = (fabs(fTemp - pa->u[0]) + fabs(fTemp - pa->u[1]) + fabs(fTemp - pa->u[2])) / fTemp / 3;
+			fMax = pa->u[0];
+			for (i = 1; i < 3; i++) {
+				if (fMax < pa->u[i])
+					fMax = pa->u[i];
+ 			}
+			pa->ub = (fMax - fTemp) / fTemp;
 			fTemp = (pa->i[0] + pa->i[1] + pa->i[2]) / 3;
-			pa->ib = (fabs(fTemp - pa->i[0]) + fabs(fTemp - pa->i[1]) + fabs(fTemp - pa->i[2])) / fTemp / 3;
+			fMax = pa->i[0];
+			for (i = 1; i < 3; i++) {
+				if (fMax < pa->i[i])
+					fMax = pa->i[i];
+ 			}
+			pa->ib = (fMax - fTemp) / fTemp;
+			fMax = pa->ui[0];
+			fTemp = pa->ui[0];
+			for (i = 1; i < 3; i++) {
+				if (fMax < pa->ui[i])
+					fMax = pa->ui[i];
+				if (fTemp > pa->ui[i])
+					fTemp = pa->ui[i];
+			}
+			pa->uib = (fMax - fTemp) / pa->ui[3];
 		}
 		buf_Release(b);
 	}		 

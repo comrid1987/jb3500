@@ -123,10 +123,10 @@ sys_res ecl_485_RealRead(buf b, uint_t nBaud, uint_t nTmo)
 	return res;
 }
 
-void stat_Handler(p_stat ps, t_afn04_f26 *pF26, time_t tTime)
+void stat_Handler(p_stat ps, t_afn04_f26 *pF26, t_afn04_f28 *pF28, time_t tTime)
 {
 	uint_t i;
-	uint32_t nData = 0;
+	uint32_t nData;
 	float fData, fLow, fUp, fUnder, fOver;
 	t_acm_rtdata *pa = &acm_rtd;
 	
@@ -136,17 +136,26 @@ void stat_Handler(p_stat ps, t_afn04_f26 *pF26, time_t tTime)
 	fUnder = (float)bcd2bin16(pF26->uunder) / 10.0f;
 	fUp = (float)bcd2bin16(pF26->uup) / 10.0f;
 	fOver = (float)bcd2bin16(pF26->uover) / 10.0f;
+	nData = 1;
 	for (i = 0; i < 3; i++) {
 		fData = pa->u[i];
 		ps->usum[i] += fData;
-		if (fData < fLow)
+		if (fData < fLow) {
 			ps->ulow[i] += 1;
-		if (fData > fUp)
+			nData = 0;
+		}
+		if (fData > fUp) {
 			ps->uup[i] += 1;
-		if (fData < fUnder)
+			nData = 0;
+		}
+		if (fData < fUnder) {
 			ps->uunder[i] += 1;
-		if (fData > fOver)
+			nData = 0;
+		}
+		if (fData > fOver) {
 			ps->uover[i] += 1;
+			nData = 0;
+		}
 		if (fData < ps->umin[i]) {
 			ps->umin[i] = fData;
 			ps->tumin[i] = tTime;
@@ -156,7 +165,10 @@ void stat_Handler(p_stat ps, t_afn04_f26 *pF26, time_t tTime)
 			ps->tumax[i] = tTime;
 		}
 	}		
+	if (nData)
+		ps->uok += 1;
 	//电流
+	nData = 0;
 	memcpy(&nData, pF26->iup, 3);
 	fUp = (float)bcd2bin32(nData) / 1000.0f;
 	memcpy(&nData, pF26->iover, 3);
@@ -218,6 +230,8 @@ void stat_Handler(p_stat ps, t_afn04_f26 *pF26, time_t tTime)
 			ps->tpmax[i] = tTime;
 		}
 	}
+	//视在不平衡度
+	ps->uibsum += pa->uib;
 }
 
 
@@ -235,6 +249,7 @@ void tsk_Meter(void *args)
 	t_ecl_energy xEnergy;
 	t_ecl_task *p = &ecl_Task485;
 	t_afn04_f26 xF26;
+	t_afn04_f28 xF28;
 
 	acm_Init();
 
@@ -256,8 +271,10 @@ void tsk_Meter(void *args)
 		if (tTime == rtc_GetTimet())
 			continue;
 		tTime = rtc_GetTimet();
-		if ((nCnt & 0x3F) == 0)
+		if ((nCnt & 0x3F) == 0) {
 			icp_ParaRead(4, 26, TERMINAL, &xF26, sizeof(t_afn04_f26));
+			icp_ParaRead(4, 28, TERMINAL, &xF28, sizeof(t_afn04_f28));
+		}
  		if ((nCnt & 0x0F) == 0)
             acm_XBRead();
 		if ((nCnt & 0x1F) == 0) {

@@ -28,6 +28,7 @@ typedef struct {
 	float	ia[3];	//电流角度
 	float	ub;		//电压不平衡度
 	float	ib;		//电流不平衡度
+	float	uib;	//负载不平衡度
 }t_acm_rtdata;
 
 typedef struct {

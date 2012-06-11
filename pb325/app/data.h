@@ -40,13 +40,16 @@ typedef struct {
 	uint16_t	iover[3];
 	uint16_t	ulow[3];
 	uint16_t	uunder[3];
+	uint16_t	uok;
 	uint16_t	ubalance;
 	uint16_t	ibalance;
 	uint16_t	uiup;
 	uint16_t	uiover;
+	uint16_t	cos[3];
 	uint16_t	p0[4];
 	float		usum[3];
 	float		isum[4];
+	float		uibsum;
 	float		umin[3];
 	float		umax[3];
 	float		ubmax;
