@@ -156,11 +156,11 @@ void stat_Handler(p_stat ps, t_afn04_f26 *pF26, t_afn04_f28 *pF28, time_t tTime)
 			ps->uover[i] += 1;
 			nData = 0;
 		}
-		if (fData < ps->umin[i]) {
+		if (fData <= ps->umin[i]) {
 			ps->umin[i] = fData;
 			ps->tumin[i] = tTime;
 		}
-		if (fData > ps->umax[i]) {
+		if (fData >= ps->umax[i]) {
 			ps->umax[i] = fData;
 			ps->tumax[i] = tTime;
 		}
@@ -179,7 +179,7 @@ void stat_Handler(p_stat ps, t_afn04_f26 *pF26, t_afn04_f28 *pF28, time_t tTime)
 			ps->iup[i] += 1;
 		if (fData > fOver)
 			ps->iover[i] += 1;
-		if (fData > ps->imax[i]) {
+		if (fData >= ps->imax[i]) {
 			ps->imax[i] = fData;
 			ps->timax[i] = tTime;
 		}
@@ -187,7 +187,7 @@ void stat_Handler(p_stat ps, t_afn04_f26 *pF26, t_afn04_f28 *pF28, time_t tTime)
 	fData = pa->i[3];
 	if (fData > fUp)
 		ps->iup[3] += 1;
-	if (fData > ps->imax[3]) {
+	if (fData >= ps->imax[3]) {
 		ps->imax[3] = fData;
 		ps->timax[3] = tTime;
 	}
@@ -196,7 +196,7 @@ void stat_Handler(p_stat ps, t_afn04_f26 *pF26, t_afn04_f28 *pF28, time_t tTime)
 	fData = pa->ub;
 	if (fData > fUp)
 		ps->ubalance += 1;
-	if (fData > ps->ubmax) {
+	if (fData >= ps->ubmax) {
 		ps->ubmax = fData;
 		ps->tubmax = tTime;
 	}
@@ -204,7 +204,7 @@ void stat_Handler(p_stat ps, t_afn04_f26 *pF26, t_afn04_f28 *pF28, time_t tTime)
 	fData = pa->ib;
 	if (fData > fUp)
 		ps->ibalance += 1;
-	if (fData > ps->ibmax) {
+	if (fData >= ps->ibmax) {
 		ps->ibmax = fData;
 		ps->tibmax = tTime;
 	}
@@ -225,7 +225,7 @@ void stat_Handler(p_stat ps, t_afn04_f26 *pF26, t_afn04_f28 *pF28, time_t tTime)
 		//功率为零时间
 		if (fData < 0.1f)
 			ps->p0[i] += 1;
-		if (fData > ps->pmax[i]) {
+		if (fData >= ps->pmax[i]) {
 			ps->pmax[i] = fData;
 			ps->tpmax[i] = tTime;
 		}
@@ -306,13 +306,13 @@ void tsk_Meter(void *args)
 			stat_Handler(ps, &xF26, &xF28, tTime);
 			//统计保存
 			evt_StatWrite(ps);
-		}
-		//跨日
-		if (nDay != rtc_pTm()->tm_mday) {
-			nDay = rtc_pTm()->tm_mday;
-			day4timet(tTime, -1, aBuf, 1);
-			data_DayWrite(aBuf, ps);
-			stat_Clear();
+			//跨日
+			if (nDay != rtc_pTm()->tm_mday) {
+				nDay = rtc_pTm()->tm_mday;
+				day4timet(tTime, -1, aBuf, 1);
+				data_DayWrite(aBuf, ps);
+				stat_Clear();
+			}
 		}
 	}
 }

@@ -628,6 +628,12 @@ int gw3761_ResponseData1(p_gw3761 p)
 					buf_PushData(b, 0, 4);
 					buf_PushData(b, 0, 4);
 					break;
+				case 12:
+					//终端网络信号品质及IP地址
+					buf_PushData(b, modem_GetSignal(), 1);
+					net_GetIpPPP(&aBuf[0], &aBuf[4], &aBuf[8]);
+					buf_Push(b, aBuf, 4);
+					break;
 				case 15:
 					//配电扩展,100次遥信
 					data_YXRead(b);

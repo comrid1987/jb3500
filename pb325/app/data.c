@@ -19,7 +19,7 @@
 #define ECL_DATA_DAY_BASE		(170 * 0x1000)
 #define ECL_DATA_DAY_HEADER		16
 #define ECL_DATA_DAY_MSIZE		sizeof(t_stat)
-#define ECL_DATA_DAY_ALLSIZE	(ECL_DATA_QUAR_HEADER + ECL_DATA_QUAR_MSIZE)
+#define ECL_DATA_DAY_ALLSIZE	(ECL_DATA_DAY_HEADER + ECL_DATA_DAY_MSIZE)
 
 #define ECL_DATA_MIN_BASE		(326 * 0x1000)
 #define ECL_DATA_MIN_HEADER		16
@@ -135,13 +135,10 @@ int data_DayRead(const uint8_t *pTime, void *pData)
 	spif_Read(nAdr, aBuf, 3);
 	if (memcmp(aBuf, pTime, 3) == 0) {
 		nAdr += ECL_DATA_DAY_HEADER;
-		spif_Read(nAdr, pData, ECL_DATA_DAY_ALLSIZE);
-		if (memcnt(pData, 0xEE, ECL_DATA_DAY_ALLSIZE) == 0) {
-			if (memcnt(pData, 0xFF, ECL_DATA_DAY_ALLSIZE) == 0)
-				return 1;
-		}
+		spif_Read(nAdr, pData, ECL_DATA_DAY_MSIZE);
+		return 1;
 	}
-	memset(pData, GW3761_DATA_INVALID, ECL_DATA_DAY_ALLSIZE);
+	memset(pData, GW3761_DATA_INVALID, ECL_DATA_DAY_MSIZE);
 	return 0;
 }
 
@@ -158,7 +155,7 @@ void data_DayWrite(const uint8_t *pTime, const void *pData)
 		spif_Write(nAdr, pTime, 3);
 	}
 	nAdr += ECL_DATA_DAY_HEADER;
-	spif_Write(nAdr, pData, ECL_DATA_DAY_ALLSIZE);
+	spif_Write(nAdr, pData, ECL_DATA_DAY_MSIZE);
 	flash_Flush(0);
 }
 
