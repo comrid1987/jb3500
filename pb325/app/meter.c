@@ -305,7 +305,8 @@ void tsk_Meter(void *args)
 
 			stat_Handler(ps, &xF26, &xF28, tTime);
 			//统计保存
-			evt_StatWrite(ps);
+			if ((nMin & 3) == 0)
+				evt_StatWrite(ps);
 			//跨日
 			if (nDay != rtc_pTm()->tm_mday) {
 				nDay = rtc_pTm()->tm_mday;
