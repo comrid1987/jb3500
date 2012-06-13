@@ -3,6 +3,7 @@
 #include <litecore.h>
 #include "alarm.h"
 #include "para.h"
+#include "data.h"
 #include "acm.h"
 
 
@@ -615,7 +616,7 @@ int evt_StatRead(void *pBuf)
 void evt_StatWrite(const void *pBuf)
 {
 
-	sfs_Write(&evt_SfsDev, EVT_STAT_ADDR, pBuf, sizeof(time_t));
+	sfs_Write(&evt_SfsDev, EVT_STAT_ADDR, pBuf, sizeof(t_stat));
 }
 
 void evt_Init()

@@ -63,8 +63,6 @@ void stat_Clear()
 	p_stat p = &acm_stat;
 
 	memset(p, 0, sizeof(t_stat));
-	for (i = 0; i < 3; i++)
-		p->umin[i] = 100000.0f;
 	evt_StatWrite(p);
 }
 
@@ -156,6 +154,8 @@ void stat_Handler(p_stat ps, t_afn04_f26 *pF26, t_afn04_f28 *pF28, time_t tTime)
 			ps->uover[i] += 1;
 			nData = 0;
 		}
+		if (ps->tumin[i] == 0)
+			ps->umin[i] = fData;
 		if (fData <= ps->umin[i]) {
 			ps->umin[i] = fData;
 			ps->tumin[i] = tTime;

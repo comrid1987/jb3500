@@ -181,6 +181,7 @@ int gw3761_ResponseData2(p_gw3761 p)
 					break;
 				case 43:
 					if (data_DayRead(pData, ps)) {
+						buf_Push(b, pData, 3);
 						for (i = 0; i < 3; i++)
 							buf_PushData(b, ps->cos[i], 2);
 						nSucc = 1;
