@@ -144,10 +144,12 @@ static sys_res _sfs_Write(sfs_dev pDev, uint32_t nRecord, const void *pData, uin
 					break;
 				}
 				//已到末尾
-				if (xIdx.ste == SFS_S_IDLE) break;
+				if (xIdx.ste == SFS_S_IDLE)
+					break;
 			}
 		}
-		if (nAdrOld && (pAct != NULL)) break;
+		if (nAdrOld && (pAct != NULL))
+			break;
 	}
 	if (pAct == NULL) {
 		//未找到激活的块
