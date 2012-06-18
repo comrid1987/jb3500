@@ -60,7 +60,7 @@ void dbg_trace(const char *fmt, ...)
 	uint_t nRemote = 0, nRS232 = 1;
 
 	if (g_sys_status & BITMASK(0))
-		nRS232 = 0
+		nRS232 = 0;
 	
 	if (rcp_aGw3761[1].parent.chl->ste == CHL_S_READY)
 		nRemote = 1;
