@@ -56,17 +56,28 @@ void tsk_Upcom1(void *args)
 void dbg_trace(const char *fmt, ...)
 {
 	va_list args;
-	char str[64];
-	p_gw3761 p = &rcp_aGw3761[1];
+	char str[200];
+	uint_t nRemote = 0, nRS232 = 1;
 
-	if (p->parent.chl->ste != CHL_S_READY)
-		return;
-	str[0] = '\r';
-	str[1] = '\n';
-	va_start(args, fmt);
-	vsnprintf(&str[2], sizeof(str) - 2, fmt, args);
-	va_end(args);
-	chl_Send(p->parent.chl, str, strlen(str));
+	if (g_sys_status & BITMASK(0))
+		nRS232 = 0
+	
+	if (rcp_aGw3761[1].parent.chl->ste == CHL_S_READY)
+		nRemote = 1;
+
+	if (nRS232 || nRemote) {
+		str[0] = '\r';
+		str[1] = '\n';
+		va_start(args, fmt);
+		vsnprintf(&str[2], sizeof(str) - 2, fmt, args);
+		va_end(args);
+
+		if (nRS232)
+			chl_Send(rcp_aGw3761[4].parent.chl, str, strlen(str));
+
+		if (nRemote)
+			chl_Send(rcp_aGw3761[1].parent.chl, str, strlen(str));
+	}
 }
 
 static t_gd5100 rcp_GD5100;
@@ -93,7 +104,7 @@ void tsk_Upcom2(void *args)
 	dlrcp_SetChl(&rcp_aGw3761[3].parent, CHL_T_RS232, 3, 1200, UART_PARI_EVEN, UART_DATA_8D, UART_STOP_1D);
 	//串口GW3761规约(开机按键启用)
 	os_thd_Sleep(500);
-	if ((g_sys_status & BITMASK(0))) {
+	if (g_sys_status & BITMASK(0)) {
 		pEnd = &rcp_aGw3761[3];
 	} else {
 		pEnd = &rcp_aGw3761[4];

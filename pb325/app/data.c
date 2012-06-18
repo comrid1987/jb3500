@@ -159,60 +159,6 @@ void data_DayWrite(const uint8_t *pTime, const void *pData)
 	flash_Flush(0);
 }
 
-
-#if 0
-void data_DayRead(uint_t nTn, const uint8_t *pAdr, const uint8_t *pTime, t_ecl_energy *pData)
-{
-	uint_t nAdr;
-	uint8_t aBuf[6];
-
-	if (nTn >= ECL_TN_MAX)
-		return;
-	//表号校验
-	nAdr = ECL_DATA_MADR_BASE + (nTn - 1) * 6;
-	spif_Read(nAdr, aBuf, 6);
-	if (memcmp(aBuf, pAdr, 6) == 0) {
-		nAdr = ECL_DATA_DAY_BASE + (bcd2bin8(pTime[0]) - 1) * ECL_DATA_DAY_ALLSIZE;
-		spif_Read(nAdr, aBuf, 3);
-		if (memcmp(aBuf, pTime, 3) == 0) {
-			nAdr += (ECL_DATA_DAY_HEADER + (nTn - 1) * ECL_DATA_DAY_MSIZE);
-			spif_Read(nAdr, pData, sizeof(t_ecl_energy));
-			return;
-		}
-	}
-	memset(pData, 0xEE, sizeof(t_ecl_energy));
-}
-
-void data_DayWrite(uint_t nTn, const uint8_t *pAdr, const uint8_t *pTime, t_ecl_energy *pData)
-{
-	uint_t i, nAdr;
-	uint8_t aBuf[6];
-
-	if (nTn >= ECL_TN_MAX)
-		return;
-	//表号校验
-	nAdr = ECL_DATA_MADR_BASE + (nTn - 1) * 6;
-	spif_Read(nAdr, aBuf, 6);
-	if (memcmp(aBuf, pAdr, 6)) {
-		//表号错误,初始化
-		spif_Write(nAdr, pAdr, 6);
-		nAdr = ECL_DATA_DAY_BASE + ECL_DATA_DAY_HEADER + (nTn - 1) * ECL_DATA_DAY_MSIZE;
-		for (i = 0; i < 31; i++, nAdr += ECL_DATA_DAY_ALLSIZE)
-			spif_Fill(nAdr, nAdr + ECL_DATA_DAY_MSIZE, 0xEE);
-	}
-	nAdr = ECL_DATA_DAY_BASE + (bcd2bin8(pTime[0]) - 1) * ECL_DATA_DAY_ALLSIZE;
-	spif_Read(nAdr, aBuf, 3);
-	if (memcmp(aBuf, pTime, 3)) {
-		//时间错,初始化
-		spif_Fill(nAdr, nAdr + ECL_DATA_DAY_ALLSIZE, 0xEE);
-		spif_Write(nAdr, pTime, 3);
-	}
-	nAdr += (ECL_DATA_DAY_HEADER + (nTn - 1) * ECL_DATA_DAY_MSIZE);
-	spif_Write(nAdr, pData, sizeof(t_ecl_energy));
-}
-#endif
-
-
 void data_YXRead(buf b)
 {
 	uint8_t *pBuf;
