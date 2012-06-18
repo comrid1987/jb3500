@@ -23,7 +23,7 @@
 typedef struct {
 	uint8_t	ste;
 	uint8_t	type;
-	int8_t	err;
+	sint8_t	err;
 	void *	pIf;
 }chl[1], t_chl;
 

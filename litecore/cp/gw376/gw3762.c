@@ -149,7 +149,6 @@ sys_res gw3762_Transmit2Module(t_gw3762 *p, uint_t nAfn, uint_t nDT, const void 
 	return SYS_R_OK;
 }
 
-
 sys_res gw3762_Transmit2Meter(t_gw3762 *p, uint_t nAfn, uint_t nDT, const void *pAdr, uint_t nRelay, const void *pRtAdr, const void *pData, uint_t nLen)
 {
 	buf bTx = {0};
@@ -172,6 +171,34 @@ sys_res gw3762_Transmit2Meter(t_gw3762 *p, uint_t nAfn, uint_t nDT, const void *
 		buf_PushData(bTx, 0x0002, 2);
 	else
 		buf_PushData(bTx, 0x02, 1);
+	buf_PushData(bTx, nLen, 1);
+	buf_Push(bTx, pData, nLen);
+	buf_PushData(bTx, cs8(&bTx->p[1 + GW3762_HEADER_L_SIZE], bTx->len - (1 + GW3762_HEADER_L_SIZE)) | 0x1600, 2);
+	memcpy(&bTx->p[1], &bTx->len, GW3762_HEADER_L_SIZE);
+
+	gw3762_DbgOut(1, bTx->p, bTx->len);
+
+	chl_Send(p->chl, bTx->p, bTx->len);
+	buf_Release(bTx);
+	
+	return SYS_R_OK;
+}
+
+sys_res gw3762_Transmit2MeterRT(t_gw3762 *p, const void *pAdr, const void *pData, uint_t nLen)
+{
+	buf bTx = {0};
+	t_gw3762_rdown xR = {0};
+
+	xR.module = GW3762_RZONE_M_2METER;
+
+	buf_PushData(bTx, 0x41000068, 4);
+	buf_Push(bTx, &xR, sizeof(xR));
+	buf_Push(bTx, p->adr, sizeof(p->adr));
+	buf_Push(bTx, pAdr, 6);
+
+	buf_PushData(bTx, GW3762_AFN_TRANSMIT_ROUTE, 1);
+	buf_PushData(bTx, 0x0001, 2);
+	buf_PushData(bTx, 0x0002, 2);
 	buf_PushData(bTx, nLen, 1);
 	buf_Push(bTx, pData, nLen);
 	buf_PushData(bTx, cs8(&bTx->p[1 + GW3762_HEADER_L_SIZE], bTx->len - (1 + GW3762_HEADER_L_SIZE)) | 0x1600, 2);
@@ -351,6 +378,23 @@ sys_res gw3762_SubAdrDelete(t_gw3762 *p, const void *pAdr, uint_t nTmo)
 	aBuf[0] = 1;
 	memcpy(&aBuf[1], pAdr, 6);
 	gw3762_Transmit2Module(p, GW3762_AFN_ROUTE_SET, 0x0002, aBuf, 7);
+	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
+		if (gw3762_Analyze(p) == SYS_R_OK)
+			break;
+	}
+	if (nTmo == 0)
+		return SYS_R_TMO;
+	if (p->rmsg.afn != GW3762_AFN_CONFIRM)
+		return SYS_R_ERR;
+	if (p->rmsg.fn != 0x0001)
+		return SYS_R_ERR;
+	return SYS_R_OK;
+}
+
+sys_res gw3762_RtCtrl(t_gw3762 *p, uint_t nDT, uint_t nTmo)
+{
+
+	gw3762_Transmit2Module(p, GW3762_AFN_ROUTE_SET, nDT, NULL, 0);
 	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
 		if (gw3762_Analyze(p) == SYS_R_OK)
 			break;
