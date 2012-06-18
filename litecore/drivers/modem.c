@@ -5,6 +5,13 @@
 #define MODEM_PPP_ID			0
 #define MODEM_DEBUG_ENABLE		1
 
+#if MODEM_DEBUG_ENABLE
+#define modem_DbgOut			dbg_trace
+#else
+#define modem_DbgOut(...)
+#endif
+
+
 /* Modem Operation */
 #if MODEM_DTR_ENABLE
 #define modem_Dtr(p, x)			sys_GpioSet(&(p)->dtr, x)
@@ -393,9 +400,7 @@ void modem_Run()
 		if (p->tmo > 3600)
 			p->tmo = 3600;
 		p->cnt = 0;
-#if MODEM_DEBUG_ENABLE
-		dbg_trace("<Modem> Power OFF %dS", p->tmo);
-#endif
+		modem_DbgOut("<Modem> Power OFF %dS", p->tmo);
 		break;
 	case MODEM_S_POWEROFF:
 //		if (modem_IsPowerOnEnable()) {
@@ -403,9 +408,7 @@ void modem_Run()
 			modem_Act(pDef, 1);
 			p->ste = MODEM_S_POWERON;
 			p->cnt = 0;
-#if MODEM_DEBUG_ENABLE
-			dbg_trace("<Modem> Power ON");
-#endif
+			modem_DbgOut("<Modem> Power ON");
 		}
 		break;
 	case MODEM_S_POWERON:
@@ -439,9 +442,7 @@ void modem_Run()
 		res = modem_InitCmd(p);
 		buf_Release(p->rbuf);
 		if (res == SYS_R_OK) {
-#if MODEM_DEBUG_ENABLE
-			dbg_trace("<Modem> Dial");
-#endif
+			modem_DbgOut("<Modem> Dial");
 			switch (p->type) {
 			case MODEM_TYPE_CDMA:
 				uart_Send(p->uart, "ATDT#777\r", 9);

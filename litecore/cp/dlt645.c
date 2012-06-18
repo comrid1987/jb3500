@@ -2,6 +2,8 @@
 
 
 //Private Defines
+#define DLT645_DEBUG_ENABLE			0
+
 #define DLT645_HEADER_SIZE			10
 
 
@@ -20,6 +22,27 @@ typedef __packed struct {
 
 
 //Internal Functions
+#if DLT645_DEBUG_ENABLE
+static void dlt645_DbgOut(uint_t nType, const void *pBuf, uint_t nLen)
+{
+	const uint8_t *pData, *pEnd;
+	char str[198];
+
+	pData = (const uint8_t *)pBuf;
+	pEnd = pData + nLen;
+
+	if (nType)
+		nLen = sprintf(str, "<645T>");
+	else
+		nLen = sprintf(str, "<645R>");
+	while ((pData < pEnd) && (nLen < (sizeof(str) - 3)))
+		nLen += sprintf(&str[nLen], " %02X", *pData++);
+
+	dbg_trace(str);
+}
+#else
+#define dlt645_DbgOut(...)
+#endif
 
 
 
@@ -72,20 +95,23 @@ uint8_t *dlt645_PacketAnalyze(uint8_t *p, uint_t nLen)
 
 sys_res dlt645_Transmit2Meter(chl c, buf bRx, const void *pAdr, const void *pBuf, uint_t nLen, uint_t nTmo)
 {
-	sys_res res;
-	uint8_t *pHeader;
+	uint8_t *pH;
 
-	res = chl_Send(c, pBuf, nLen);
-	if (res != SYS_R_OK)
-		return res;
+	chl_Send(c, pBuf, nLen);
+
+	dlt645_DbgOut(1, pBuf, nLen);
+
 	buf_Release(bRx);
 	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
 		if (chl_RecData(c, bRx, OS_TICK_MS) != SYS_R_OK)
 			continue;
-		pHeader = dlt645_PacketAnalyze(bRx->p, bRx->len);
-		if (pHeader == NULL)
+		pH = dlt645_PacketAnalyze(bRx->p, bRx->len);
+		if (pH == NULL)
 			continue;
-		buf_Remove(bRx, pHeader - bRx->p);
+		buf_Remove(bRx, pH - bRx->p);
+
+		dlt645_DbgOut(0, bRx->p, bRx->len);
+
 		if (memcmp(&bRx->p[1], pAdr, 6)) {
 			buf_Remove(bRx, DLT645_HEADER_SIZE);
 			continue;

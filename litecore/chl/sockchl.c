@@ -107,13 +107,15 @@ sys_res chl_soc_IsConnect(chl p)
 		return SYS_R_ERR;
 #if TCPPS_TYPE == TCPPS_T_LWIP
 	len = sizeof(adr);
-	if (getpeername((int)p->pIf, (struct sockaddr *)&adr, &len) != 0)
+	p->err = getpeername((int)p->pIf, (struct sockaddr *)&adr, &len)
+	if (p->err != 0)
 		return SYS_R_ERR;
 	if (adr.sin_port == 0)
 		return SYS_R_ERR;
 #endif
 #if TCPPS_TYPE == TCPPS_T_KEILTCP
-	if (recv((int)p->pIf, NULL, 0, MSG_DONTWAIT) != 0)
+	p->err = recv((int)p->pIf, NULL, 0, MSG_DONTWAIT);
+	if (p->err != 0)
 		return SYS_R_ERR;
 #endif
 	p->ste = CHL_S_READY;

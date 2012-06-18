@@ -261,14 +261,16 @@ int net_Connect(int s, struct sockaddr *name, int namelen)
 
 int net_IsConnect(int s)
 {
+	int nSte;
 
 	if (s > TCP_NUMSOCKS)
 		//UDP
 		return 0;
 	//TCP
-	if (tcp_get_state(s) == TCP_STATE_CONNECT)
+	nSte = tcp_get_state(s);
+	if (nSte == TCP_STATE_CONNECT)
 		return 0;
-	return -1;
+	return (nSte + 1);
 }
 
 int net_Send(int s, uint8_t *pBuf, uint_t nLen)

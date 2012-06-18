@@ -21,9 +21,10 @@
 
 
 typedef struct {
-	uint16_t	ste : 3,
-				type : 5;
-	void *		pIf;
+	uint8_t	ste;
+	uint8_t	type;
+	int8_t	err;
+	void *	pIf;
 }chl[1], t_chl;
 
 

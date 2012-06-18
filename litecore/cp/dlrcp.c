@@ -2,11 +2,11 @@
 
 
 //Private Defines
-#define DLRCP_DEBUG_ENABLE			0
+#define DLRCP_DEBUG_ENABLE			1
 #if DLRCP_DEBUG_ENABLE
-#define dlrcp_trace					dbg_trace
+#define dlrcp_DbgOut				dbg_trace
 #else
-#define dlrcp_trace(...)
+#define dlrcp_DbgOut(...)
 #endif
 
 //发送报文类型
@@ -160,7 +160,7 @@ sys_res dlrcp_Handler(p_dlrcp p)
 		case CHL_T_SOC_UC:
 			if (p->cnt == 0) {
 				chl_soc_Connect(p->chl, p->ip, p->chlid);
-				dlrcp_trace("\r\n[RCP] connect to %d.%d.%d.%d:%d", p->ip[0], p->ip[1], p->ip[2], p->ip[3], p->chlid);
+				dlrcp_DbgOut("\r\n[RCP] connect to %d.%d.%d.%d:%d", p->ip[0], p->ip[1], p->ip[2], p->ip[3], p->chlid);
 			} else {
 				if (p->time == (uint8_t)rtc_GetTimet()) {
 					os_thd_Slp1Tick();
@@ -210,7 +210,7 @@ sys_res dlrcp_Handler(p_dlrcp p)
 				p->cnt = 0;
 				p->ste = DLRCP_S_CHECK;
 				(p->linkcheck)(p, DLRCP_LINKCHECK_LOGIN);
-				dlrcp_trace("\r\n[RCP] login %d.%d.%d.%d:%d", p->ip[0], p->ip[1], p->ip[2], p->ip[3], p->chlid);
+				dlrcp_DbgOut("\r\n[RCP] login %d.%d.%d.%d:%d", p->ip[0], p->ip[1], p->ip[2], p->ip[3], p->chlid);
 			} else {
 				if (p->cnt > DLRCP_TCP_CONNECT_TMO)
 					chl_Release(p->chl);
@@ -245,15 +245,17 @@ sys_res dlrcp_Handler(p_dlrcp p)
 						case DLRCP_S_READY:
 							p->ste = DLRCP_S_CHECK;
 							(p->linkcheck)(p, DLRCP_LINKCHECK_KEEPALIVE);
-							dlrcp_trace("\r\n[RCP] keep-alive %d.%d.%d.%d:%d", p->ip[0], p->ip[1], p->ip[2], p->ip[3], p->chlid);
+							dlrcp_DbgOut("\r\n[RCP] keep-alive %d.%d.%d.%d:%d", p->ip[0], p->ip[1], p->ip[2], p->ip[3], p->chlid);
 							break;
 						default:
 							break;
 						}
 						p->cnt = 0;
 					}
-				} else
+				} else {
+					dlrcp_DbgOut("\r\n[RCP] unknow ste %d", p->chl->err);
 					chl_Release(p->chl);
+				}
 				break;
 			case CHL_T_SOC_TS:
 			case CHL_T_SOC_US:
@@ -290,7 +292,7 @@ sys_res dlrcp_Handler(p_dlrcp p)
 		}
 		res = (p->analyze)(p);
 		if (res == SYS_R_OK) {
-			dlrcp_trace("\r\n[RCP] recv from %d.%d.%d.%d:%d", p->ip[0], p->ip[1], p->ip[2], p->ip[3], p->chlid);
+			dlrcp_DbgOut("\r\n[RCP] recv from %d.%d.%d.%d:%d", p->ip[0], p->ip[1], p->ip[2], p->ip[3], p->chlid);
 			p->cnt = 0;
 			switch (p->chl->type) {
 #if TCPPS_ENABLE

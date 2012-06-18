@@ -1,6 +1,11 @@
 #ifndef __CP_H__
 #define __CP_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include <cp/dlt645.h>
 #include <cp/pulse.h>
 
@@ -15,6 +20,9 @@
 #include <cp/gdfts.h>
 
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

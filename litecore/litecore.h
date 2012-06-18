@@ -24,6 +24,7 @@ extern "C" {
 #include <cp/cp.h>
 #endif
 
+#include <dbg/dbg.h>
 
 
 //Warning
