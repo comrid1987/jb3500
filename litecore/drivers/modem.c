@@ -483,15 +483,15 @@ void modem_Run()
 		break;
 	case MODEM_S_READY:
 	case MODEM_S_ONLINE:
-		if (p->cnt < p->idle)
-			break;
+		if (p->cnt > p->idle) {
 #if TCPPS_TYPE == TCPPS_T_LWIP
-		pppClose(MODEM_PPP_ID);
-		p->ste = MODEM_S_RESET;
+			pppClose(MODEM_PPP_ID);
+			p->ste = MODEM_S_RESET;
 #endif
 #if TCPPS_TYPE == TCPPS_T_KEILTCP
-		p->ste = MODEM_S_RESET;
+			p->ste = MODEM_S_RESET;
 #endif
+		}
 		break;
 	default:
 		p->ste = MODEM_S_RESET;
