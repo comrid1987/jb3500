@@ -415,10 +415,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>7</ColumnNumber>
+      <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>420</TopLine>
-      <CurrentLine>448</CurrentLine>
+      <TopLine>48</TopLine>
+      <CurrentLine>56</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\gw3761_fn0D.c</PathWithFileName>
       <FilenameWithoutPath>gw3761_fn0D.c</FilenameWithoutPath>
@@ -471,10 +471,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>10</ColumnNumber>
+      <ColumnNumber>13</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>1</TopLine>
-      <CurrentLine>1</CurrentLine>
+      <TopLine>57</TopLine>
+      <CurrentLine>63</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\upcomm.c</PathWithFileName>
       <FilenameWithoutPath>upcomm.c</FilenameWithoutPath>
@@ -566,33 +566,7 @@
   </Group>
 
   <AlienFiles>
-    <PathWithFilename>D:\Workspace\litecore\net\rtxip\RTL.h</PathWithFilename>
-    <TopLine>56</TopLine>
-    <CurrentLine>67</CurrentLine>
-    <Constant>0</Constant>
-    <WindowPosition>
-      <length>0</length>
-      <flags>0</flags>
-      <showCmd>0</showCmd>
-      <MinPosition>
-        <xPos>0</xPos>
-        <yPos>0</yPos>
-      </MinPosition>
-      <MaxPosition>
-        <xPos>0</xPos>
-        <yPos>0</yPos>
-      </MaxPosition>
-      <NormalPosition>
-        <Top>0</Top>
-        <Left>0</Left>
-        <Right>0</Right>
-        <Bottom>0</Bottom>
-      </NormalPosition>
-    </WindowPosition>
-  </AlienFiles>
-
-  <AlienFiles>
-    <PathWithFilename>D:\Workspace\litecore\arch\cm3\lm3s\driverlib\ethernet.h</PathWithFilename>
+    <PathWithFilename>D:\Workspace\litecore\chl\chl.h</PathWithFilename>
     <TopLine>1</TopLine>
     <CurrentLine>1</CurrentLine>
     <Constant>0</Constant>
@@ -618,9 +592,9 @@
   </AlienFiles>
 
   <AlienFiles>
-    <PathWithFilename>D:\Workspace\litecore\arch\cm3\lm3s\driverlib\cpu.h</PathWithFilename>
+    <PathWithFilename>D:\Workspace\litecore\arch\cm3\lm3s\arch.h</PathWithFilename>
     <TopLine>1</TopLine>
-    <CurrentLine>1</CurrentLine>
+    <CurrentLine>12</CurrentLine>
     <Constant>0</Constant>
     <WindowPosition>
       <length>0</length>
@@ -644,33 +618,7 @@
   </AlienFiles>
 
   <AlienFiles>
-    <PathWithFilename>D:\Workspace\litecore\arch\cm3\lm3s\driverlib\comp.h</PathWithFilename>
-    <TopLine>1</TopLine>
-    <CurrentLine>1</CurrentLine>
-    <Constant>0</Constant>
-    <WindowPosition>
-      <length>0</length>
-      <flags>0</flags>
-      <showCmd>0</showCmd>
-      <MinPosition>
-        <xPos>0</xPos>
-        <yPos>0</yPos>
-      </MinPosition>
-      <MaxPosition>
-        <xPos>0</xPos>
-        <yPos>0</yPos>
-      </MaxPosition>
-      <NormalPosition>
-        <Top>0</Top>
-        <Left>0</Left>
-        <Right>0</Right>
-        <Bottom>0</Bottom>
-      </NormalPosition>
-    </WindowPosition>
-  </AlienFiles>
-
-  <AlienFiles>
-    <PathWithFilename>D:\Workspace\litecore\arch\cm3\lm3s\driverlib\can.h</PathWithFilename>
+    <PathWithFilename>D:\Workspace\litecore\arch\cm3\lm3s\inc\hw_watchdog.h</PathWithFilename>
     <TopLine>1</TopLine>
     <CurrentLine>1</CurrentLine>
     <Constant>0</Constant>
@@ -722,7 +670,7 @@
   </AlienFiles>
 
   <AlienFiles>
-    <PathWithFilename>D:\Workspace\litecore\arch\cm3\lm3s\inc\hw_watchdog.h</PathWithFilename>
+    <PathWithFilename>D:\Workspace\litecore\arch\cm3\lm3s\driverlib\can.h</PathWithFilename>
     <TopLine>1</TopLine>
     <CurrentLine>1</CurrentLine>
     <Constant>0</Constant>
@@ -748,9 +696,87 @@
   </AlienFiles>
 
   <AlienFiles>
-    <PathWithFilename>D:\Workspace\litecore\arch\cm3\lm3s\arch.h</PathWithFilename>
+    <PathWithFilename>D:\Workspace\litecore\arch\cm3\lm3s\driverlib\comp.h</PathWithFilename>
     <TopLine>1</TopLine>
-    <CurrentLine>12</CurrentLine>
+    <CurrentLine>1</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
+    <PathWithFilename>D:\Workspace\litecore\arch\cm3\lm3s\driverlib\cpu.h</PathWithFilename>
+    <TopLine>1</TopLine>
+    <CurrentLine>1</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
+    <PathWithFilename>D:\Workspace\litecore\arch\cm3\lm3s\driverlib\ethernet.h</PathWithFilename>
+    <TopLine>1</TopLine>
+    <CurrentLine>1</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
+    <PathWithFilename>D:\Workspace\litecore\net\rtxip\RTL.h</PathWithFilename>
+    <TopLine>56</TopLine>
+    <CurrentLine>67</CurrentLine>
     <Constant>0</Constant>
     <WindowPosition>
       <length>0</length>
@@ -2114,7 +2140,7 @@
     <ActiveMDIGroup>0</ActiveMDIGroup>
     <MDIGroup>
       <Size>100</Size>
-      <ActiveTab>7</ActiveTab>
+      <ActiveTab>8</ActiveTab>
       <Documents>
         <Doc>
           <Name>..\litecore\net/rtxip/RTL.h</Name>
@@ -2163,6 +2189,24 @@
           <ColumnNumber>16</ColumnNumber>
           <TopLine>1</TopLine>
           <CurrentLine>12</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>..\litecore\chl/chl.h</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>1</TopLine>
+          <CurrentLine>1</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>.\app\gw3761_fn0D.c</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>48</TopLine>
+          <CurrentLine>56</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>.\app\upcomm.c</Name>
+          <ColumnNumber>13</ColumnNumber>
+          <TopLine>57</TopLine>
+          <CurrentLine>63</CurrentLine>
         </Doc>
       </Documents>
     </MDIGroup>

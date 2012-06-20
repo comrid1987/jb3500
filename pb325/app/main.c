@@ -38,7 +38,7 @@ sys_res sys_IsUsbFormat()
 
 void tsk_Daemon(void *args)
 {
-	uint_t i, nCnt, nSpan;
+	uint_t i, nCnt, nRstCnt = 0;
 	os_que que;
 
     for (nCnt = 0; ; nCnt++) {
@@ -55,14 +55,25 @@ void tsk_Daemon(void *args)
 				}
 			}
 		}
+		//运行指示灯
 		if (g_sys_status & BITMASK(0))
-			nSpan = 3;
+			i = 3;
 		else
-			nSpan = 1;
-		if ((nCnt & nSpan) == 0)
+			i = 1;
+		if ((nCnt & i) == 0)
 			LED_RUN(1);
-		if ((nCnt & nSpan) == 1)
+		if ((nCnt & i) == 1)
 			LED_RUN(0);
+		//2小时不能登录复位终端
+		if ((nCnt & 0xFF) == 0) {
+			if (rcp_IsLogin() == SYS_R_OK) {
+				nRstCnt = 0;
+			} else {
+				nRstCnt += 1;
+				if (nRstCnt > 150)
+					sys_Reset();
+			}
+		}
 	}
 }
 
