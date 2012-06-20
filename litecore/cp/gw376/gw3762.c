@@ -319,7 +319,7 @@ sys_res gw3762_SubAdrQty(t_gw3762 *p, uint16_t *pQty, uint_t nTmo)
 //-------------------------------------------------------------------------------------
 // 读取从节点信息
 //-------------------------------------------------------------------------------------
-sys_res gw3762_SubAdrRead(t_gw3762 *p, uint_t nSn, uint8_t *pAdr, uint_t nTmo)
+sys_res gw3762_SubAdrRead(t_gw3762 *p, uint_t nSn, uint16_t *pQty, uint8_t *pAdr, uint_t nTmo)
 {
 	uint_t nTemp;
 
@@ -335,24 +335,47 @@ sys_res gw3762_SubAdrRead(t_gw3762 *p, uint_t nSn, uint8_t *pAdr, uint_t nTmo)
 		return SYS_R_ERR;
 	if (p->rmsg.fn != 0x0002)
 		return SYS_R_ERR;
+	if (pQty != NULL)
+		memcpy(pQty, &p->rmsg.data->p[0], 2);
 	if (p->rmsg.data->p[2] == 0)
 		return SYS_R_ERR;
 	memcpy(pAdr, &p->rmsg.data->p[3], 6);
 	return SYS_R_OK;
 }
 
+//-------------------------------------------------------------------------------------
+// 读取路由运行状态
+//-------------------------------------------------------------------------------------
+sys_res gw3762_StateGet(t_gw3762 *p, uint_t nTmo)
+{
+
+	gw3762_Transmit2Module(p, GW3762_AFN_ROUTE_FETCH, 0x0008, NULL, 0);
+	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
+		if (gw3762_Analyze(p) == SYS_R_OK)
+			break;
+	}
+	if (nTmo == 0)
+		return SYS_R_TMO;
+	if (p->rmsg.afn != GW3762_AFN_ROUTE_FETCH)
+		return SYS_R_ERR;
+	if (p->rmsg.fn != 0x0008)
+		return SYS_R_ERR;
+	if ((p->rmsg.data->p[0] & 1) == 0)
+		return SYS_R_ERR;
+	return SYS_R_OK;
+}
 
 //-------------------------------------------------------------------------------------
 // 添加从节点
 //-------------------------------------------------------------------------------------
-sys_res gw3762_SubAdrAdd(t_gw3762 *p, uint_t nSn, const void *pAdr, uint_t nTmo)
+sys_res gw3762_SubAdrAdd(t_gw3762 *p, uint_t nSn, const void *pAdr, uint_t nPrtl, uint_t nTmo)
 {
 	uint8_t aBuf[10];
 
 	aBuf[0] = 1;
 	memcpy(&aBuf[1], pAdr, 6);
 	memcpy(&aBuf[7], &nSn, 2);
-	aBuf[9] = 2;
+	aBuf[9] = nPrtl;
 	gw3762_Transmit2Module(p, GW3762_AFN_ROUTE_SET, 0x0001, aBuf, 10);
 	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
 		if (gw3762_Analyze(p) == SYS_R_OK)
@@ -391,10 +414,36 @@ sys_res gw3762_SubAdrDelete(t_gw3762 *p, const void *pAdr, uint_t nTmo)
 	return SYS_R_OK;
 }
 
+//-------------------------------------------------------------------------------------
+// 删除从节点
+//-------------------------------------------------------------------------------------
+sys_res gw3762_ModeSet(t_gw3762 *p, uint_t nMode, uint_t nTmo)
+{
+	uint8_t aBuf[3];
+
+	aBuf[0] = nMode;
+	aBuf[1] = 0xF4;
+	aBuf[2] = 0x01;
+	gw3762_Transmit2Module(p, GW3762_AFN_ROUTE_SET, 0x0008, aBuf, 3);
+	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
+		if (gw3762_Analyze(p) == SYS_R_OK)
+			break;
+	}
+	if (nTmo == 0)
+		return SYS_R_TMO;
+	if (p->rmsg.afn != GW3762_AFN_CONFIRM)
+		return SYS_R_ERR;
+	if (p->rmsg.fn != 0x0001)
+		return SYS_R_ERR;
+	return SYS_R_OK;
+}
+//-------------------------------------------------------------------------------------
+// 路由控制
+//-------------------------------------------------------------------------------------
 sys_res gw3762_RtCtrl(t_gw3762 *p, uint_t nDT, uint_t nTmo)
 {
 
-	gw3762_Transmit2Module(p, GW3762_AFN_ROUTE_SET, nDT, NULL, 0);
+	gw3762_Transmit2Module(p, GW3762_AFN_ROUTE_CTRL, nDT, NULL, 0);
 	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
 		if (gw3762_Analyze(p) == SYS_R_OK)
 			break;
