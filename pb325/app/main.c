@@ -38,16 +38,16 @@ sys_res sys_IsUsbFormat()
 
 void tsk_Daemon(void *args)
 {
-	uint_t i, nCnt, nRstCnt = 0;
+	uint_t i, nTemp, nCnt, nRstCnt = 0;
 	os_que que;
 
     for (nCnt = 0; ; nCnt++) {
 		que = os_que_Wait(QUE_EVT_PULSE, NULL, 200);
 		if (que != NULL) {
-			nSpan = que->data->val;
+			nTemp = que->data->val;
 			os_que_Release(que);
 			for (i = 0; i < 3; i++) {
-				if (nSpan & BITMASK(i)){
+				if (nTemp & BITMASK(i)){
                     BEEP(1);
                     data_YXWrite(i + 1);
 	                os_thd_Sleep(100);
@@ -57,12 +57,12 @@ void tsk_Daemon(void *args)
 		}
 		//运行指示灯
 		if (g_sys_status & BITMASK(0))
-			i = 3;
+			nTemp = 3;
 		else
-			i = 1;
-		if ((nCnt & i) == 0)
+			nTemp = 1;
+		if ((nCnt & nTemp) == 0)
 			LED_RUN(1);
-		if ((nCnt & i) == 1)
+		if ((nCnt & nTemp) == 1)
 			LED_RUN(0);
 		//2小时不能登录复位终端
 		if ((nCnt & 0xFF) == 0) {

@@ -40,7 +40,6 @@ void tsk_Upcom1(void *args)
 			p->parent.tmo = 5;
 			p->parent.retry = 3;
 			p->parent.refresh = xF1.span * 60;
-			p->parent.connect = 60;
 			icp_ParaRead(4, 3, TERMINAL, &xF3, sizeof(t_afn04_f3));
 			modem_Config(xF3.apn, xF1.span * 60, 5);
 			dlrcp_SetChl(&p->parent, CHL_T_SOC_TC, xF3.port1, xF3.ip1[0], xF3.ip1[1], xF3.ip1[2], xF3.ip1[3]);
@@ -94,7 +93,6 @@ void tsk_Upcom2(void *args)
 		p->parent.tmo = 5;
 		p->parent.retry = 3;
 		p->parent.refresh = 3 * 60;
-		p->parent.connect = 60;
 	}
 	//远程调试端口9000
 	dlrcp_SetChl(&rcp_aGw3761[1].parent, CHL_T_SOC_TS, 9000, 0, 0, 0, 0);
@@ -117,7 +115,6 @@ void tsk_Upcom2(void *args)
 	rcp_GD5100.parent.tmo = 5;
 	rcp_GD5100.parent.retry = 3;
 	rcp_GD5100.parent.refresh = 3 * 60;
-	rcp_GD5100.parent.connect = 60;
 	//远程南网GD5100规约端口777
 	dlrcp_SetChl(&rcp_GD5100.parent, CHL_T_SOC_TS, 777, 0, 0, 0, 0);
 
