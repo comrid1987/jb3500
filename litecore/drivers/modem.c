@@ -441,7 +441,10 @@ void modem_Run()
 		//Initiate modem and get type of modem
 		res = modem_InitCmd(p);
 		buf_Release(p->rbuf);
-		if (res == SYS_R_OK) {
+		if (res != SYS_R_OK) {
+			modem_DbgOut("<Modem> Init fail");
+			p->ste = MODEM_S_RESET;
+		} else {
 			modem_DbgOut("<Modem> Dial");
 			switch (p->type) {
 			case MODEM_TYPE_CDMA:
@@ -464,22 +467,22 @@ void modem_Run()
 #endif
 			p->ste = MODEM_S_WAITDIAL;
 			p->cnt = 0;
-		} else
-			p->ste = MODEM_S_RESET;
+		}
 		break;
 	case MODEM_S_WAITDIAL:
 		//Waitting for dial
-		if (p->cnt < 120) {
-			if (modem_IsOnline() == SYS_R_OK) {
-#if MODEM_DEBUG_ENABLE
-				modem_DbgIpInfo();
-#endif
-				p->ste = MODEM_S_READY;
-				p->cnt = 0;
-				p->tmo = 0;
-			}
-		} else
+		if (p->cnt > 120) {
 			p->ste = MODEM_S_RESET;
+			break;
+		}
+		if (modem_IsOnline() == SYS_R_OK) {
+#if MODEM_DEBUG_ENABLE
+			modem_DbgIpInfo();
+#endif
+			p->ste = MODEM_S_READY;
+			p->cnt = 0;
+			p->tmo = 0;
+		}
 		break;
 	case MODEM_S_READY:
 	case MODEM_S_ONLINE:
@@ -491,9 +494,11 @@ void modem_Run()
 #if TCPPS_TYPE == TCPPS_T_KEILTCP
 			p->ste = MODEM_S_RESET;
 #endif
+			modem_DbgOut("<Modem> Idle %d tmo %d", p->idle, p->cnt);
 		}
 		break;
 	default:
+		modem_DbgOut("<Modem> Unknow ste ", p->ste);
 		p->ste = MODEM_S_RESET;
 		break;
 	}

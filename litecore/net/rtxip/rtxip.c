@@ -116,7 +116,8 @@ void rtxip_TxBuf()
 		if (nLen) {
 			if (tcp_check_send(s) == __TRUE) {
 				nLen = MIN(tcp_max_dsize(s), nLen);
-				if ((pTemp = tcp_get_buf(nLen)) != NULL) {
+				pTemp = tcp_get_buf(nLen);
+				if (pTemp != NULL) {
 					rt_memcpy(pTemp, rtxip_xTxBuf[s - 1]->p, nLen);
 					if (tcp_send(s, pTemp, nLen) == __TRUE)
 						buf_Remove(rtxip_xTxBuf[s - 1], nLen);
@@ -312,6 +313,8 @@ int net_Send(int s, uint8_t *pBuf, uint_t nLen)
 #endif
 			nMaxLen = MIN(tcp_max_dsize(s), pEnd - pBuf);
 			pTemp = tcp_get_buf(nMaxLen);
+			if (pTemp == NULL)
+				break;
 			memcpy(pTemp, pBuf, nMaxLen);
 			if (tcp_send(s, pTemp, nMaxLen) != __TRUE)
 				break;

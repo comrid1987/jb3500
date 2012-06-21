@@ -2,7 +2,7 @@
 
 
 //Private Defines
-#define DLRCP_DEBUG_ENABLE			1
+#define DLRCP_DEBUG_ENABLE			0
 #if DLRCP_DEBUG_ENABLE
 #define dlrcp_DbgOut				dbg_trace
 #else
@@ -168,12 +168,8 @@ sys_res dlrcp_Handler(p_dlrcp p)
 				}
 				p->time = rtc_GetTimet();
 				p->cnt += 1;
-				if (p->cnt > p->connect)
+				if (p->cnt > 30)
 					p->cnt = 0;
-#if MODEM_ENABLE
-				if (modem_IsReady() == SYS_R_OK)
-					p->cnt = 0;
-#endif
 			}
 			break;
 		case CHL_T_SOC_TS:

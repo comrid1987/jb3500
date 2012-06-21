@@ -36,7 +36,6 @@ typedef struct {
 	uint8_t		tmo;
 	uint8_t		msta;
 	uint8_t		pfc;
-	uint16_t	connect;
 	uint16_t	refresh;
 	uint16_t	cnt;
 	uint16_t	chlid;
