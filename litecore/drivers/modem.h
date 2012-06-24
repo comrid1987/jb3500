@@ -79,6 +79,8 @@ void modem_SetPwd(char *pPwd);
 sys_res modem_IsOnline(void);
 int modem_GetSignal(void);
 int modem_GetState(void);
+sys_res modem_IsReady(void);
+void modem_Refresh(void);
 
 
 #endif

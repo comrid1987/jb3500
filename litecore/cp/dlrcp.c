@@ -296,8 +296,7 @@ sys_res dlrcp_Handler(p_dlrcp p)
 			case CHL_T_SOC_UC:
 				p->ste = DLRCP_S_READY;
 #if MODEM_ENABLE
-				if (modem_IsOnline() == SYS_R_OK)
-					modem_Refresh();
+				modem_Refresh();
 #endif
 				break;
 #endif

@@ -3,7 +3,6 @@
 //Network Protocal Stack Modules
 //-------------------------------------------------------------------------
 #if TCPPS_TYPE == TCPPS_T_KEILTCP
-#include <net/rtxip/Net_Config.h>
 #include "Net_Config.c"
 #if TELNET_SERVER_ENABLE
 #include "Telnet_uif.c"

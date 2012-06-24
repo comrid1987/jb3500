@@ -3,7 +3,7 @@
 
 //Private Defines
 #define MODEM_PPP_ID			0
-#define MODEM_DEBUG_ENABLE		1
+#define MODEM_DEBUG_ENABLE		0
 
 #if MODEM_DEBUG_ENABLE
 #define modem_DbgOut			dbg_trace
@@ -562,7 +562,8 @@ sys_res modem_IsReady()
 void modem_Refresh()
 {
 
-	gsmModem[MODEM_PPP_ID].cnt = 0;
+	if (modem_IsOnline() == SYS_R_OK)
+		gsmModem[MODEM_PPP_ID].cnt = 0;
 }
 
 

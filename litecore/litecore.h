@@ -26,6 +26,21 @@ extern "C" {
 
 #include <dbg/dbg.h>
 
+#if SPIFLASH_ENABLE
+#include <drivers/spiflash.h>
+#endif
+
+#if MODEM_ENABLE
+#include <drivers/modem.h>
+#endif
+
+
+
+#if TCPPS_ENABLE
+#include <net/net.h>
+#endif
+
+
 
 //Warning
 #if WDG_ENABLE == 0

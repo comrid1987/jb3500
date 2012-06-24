@@ -113,7 +113,7 @@ void gw3761_ConvertData_Time(uint8_t *p, time_t tTime, uint_t nType)
 
 	switch (nType) {
 	case GW3761_DATA_T_01:
-		nFlag = 0x7F;
+		nFlag = 0x3F;
 		break;
 	case GW3761_DATA_T_15:
 		nFlag = 0x3E;
@@ -138,11 +138,9 @@ void gw3761_ConvertData_Time(uint8_t *p, time_t tTime, uint_t nType)
 		*p++ = bin2bcd8(tmTime.tm_mday);
 	if (nFlag & BITMASK(4)) {
 		*p = bin2bcd8(tmTime.tm_mon + 1);
-		if (nFlag & BITMASK(6)) {
-			if (tmTime.tm_wday == 0)
-				tmTime.tm_wday = 7;
-			*p |= (tmTime.tm_wday << 5);
-		}
+		if (tmTime.tm_wday == 0)
+			tmTime.tm_wday = 7;
+		*p |= (tmTime.tm_wday << 5);
 		p += 1;
 	}
 	if (nFlag & BITMASK(5))
