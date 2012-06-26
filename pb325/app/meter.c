@@ -59,7 +59,6 @@ static t_stat acm_stat;
 
 void stat_Clear()
 {
-	uint_t i;
 	p_stat p = &acm_stat;
 
 	memset(p, 0, sizeof(t_stat));
