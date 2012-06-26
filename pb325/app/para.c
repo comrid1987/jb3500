@@ -234,7 +234,7 @@ void icp_Init()
 	rt_sem_init(&icp_sem, "sem_icp", 1, RT_IPC_FLAG_FIFO);
 #endif
 	if (sfs_Read(&icp_SfsDev, 0xFFFF5987, &nVer) != SYS_R_OK) {
-//		icp_Format();
+		icp_Format();
 		nInit = 1;
 	}
 	if (nVer < 0x0078)
