@@ -3,10 +3,10 @@
  *----------------------------------------------------------------------------
  *      Name:    NET_CONFIG.C
  *      Purpose: Configuration of RL TCPnet by user.
- *      Rev.:    V4.12
+ *      Rev.:    V5.00
  *----------------------------------------------------------------------------
  *      This code is part of the RealView Run-Time Library.
- *      Copyright (c) 2004-2010 KEIL - An ARM Company. All rights reserved.
+ *      Copyright (c) 2004-2012 KEIL - An ARM Company. All rights reserved.
  *---------------------------------------------------------------------------*/
 
 #include <Net_Config.h>
@@ -20,9 +20,9 @@
 //   <i> This is the name under which embedded host can be
 //   <i> accessed on a local area network.
 //   <i> Default: "mcb2300"
-#define LHOST_NAME     "PB325"
+#define LHOST_NAME     "pb325"
 
-//   <o>Memory Pool size <1500-32000:4><#/4>
+//   <o>Memory Pool size <1500-64000:4><#/4>
 //   <i> This is the size of a memory pool in bytes. Buffers for
 //   <i> TCPnet packets are allocated from this memory pool.
 //   <i> Default: 8000 bytes
@@ -62,15 +62,15 @@
 
 //     <o>Address byte 4 <0x00-0xff>
 //     <i> Default: 0x00
-#define _MAC4          0x11
+#define _MAC4          0xA2
 
 //     <o>Address byte 5 <0x00-0xff>
 //     <i> Default: 0x00
-#define _MAC5          0x11
+#define _MAC5          0x45
 
 //     <o>Address byte 6 <0x00-0xff>
 //     <i> Default: 0x01
-#define _MAC6          0x11
+#define _MAC6          0x5E
 
 //   </h>
 //   <h>IP Address
@@ -88,7 +88,7 @@
 
 //     <o>Address byte 3 <0-255>
 //     <i> Default: 0
-#define _IP3           0
+#define _IP3           18
 
 //     <o>Address byte 4 <0-255>
 //     <i> Default: 100
@@ -108,7 +108,7 @@
 
 //     <o>Mask byte 3 <0-255>
 //     <i> Default: 255
-#define _MSK3          255
+#define _MSK3          0
 
 //     <o>Mask byte 4 <0-255>
 //     <i> Default: 0
@@ -128,7 +128,7 @@
 
 //     <o>Address byte 3 <0-255>
 //     <i> Default: 0
-#define _GW3           0
+#define _GW3           18
 
 //     <o>Address byte 4 <0-255>
 //     <i> Default: 254
@@ -140,19 +140,19 @@
 //   <i> Primary DNS Server IP Address
 //     <o>Address byte 1 <0-255>
 //     <i> Default: 194
-#define _pDNS1         194
+#define _pDNS1         192
 
 //     <o>Address byte 2 <0-255>
 //     <i> Default: 25
-#define _pDNS2         25
+#define _pDNS2         168
 
 //     <o>Address byte 3 <0-255>
 //     <i> Default: 2
-#define _pDNS3         2
+#define _pDNS3         18
 
 //     <o>Address byte 4 <0-255>
 //     <i> Default: 129
-#define _pDNS4         129
+#define _pDNS4         1
 
 //   </h>
 //   <h>Secondary DNS Server
@@ -160,19 +160,19 @@
 //   <i> Secondary DNS Server IP Address
 //     <o>Address byte 1 <0-255>
 //     <i> Default: 194
-#define _sDNS1         194
+#define _sDNS1         192
 
 //     <o>Address byte 2 <0-255>
 //     <i> Default: 25
-#define _sDNS2         25
+#define _sDNS2         168
 
 //     <o>Address byte 3 <0-255>
 //     <i> Default: 2
-#define _sDNS3         2
+#define _sDNS3         18
 
 //     <o>Address byte 4 <0-255>
 //     <i> Default: 130
-#define _sDNS4         130
+#define _sDNS4         1
 
 //   </h>
 //   <h>ARP Definitions
@@ -240,6 +240,12 @@
 //     <i> to DHCP request message, identifying vendor type.
 //     <i> Default: ""
 #define DHCP_VCID      ""
+
+//     <q>Bootfile Name
+//     <i> This value is optional. If enabled, the Bootfile Name
+//     <i> (option 67) is also requested from DHCP server.
+//     <i> Default: disabled
+#define DHCP_BOOTF     0
 
 //   </e>
 // </e>
@@ -329,6 +335,21 @@
 #define _sDNS4P        130
 
 //   </h>
+//   <e>Logon Authentication
+//   =======================
+//   <i> Enable or disable user authentication
+#define PPP_AUTHEN     1
+
+//     <q>Unsecured password (PAP)
+//     <i>Allow or use Password Authentication Protocol.
+#define PPP_PAPEN      1
+
+//     <q>Secured password (CHAP-MD5)
+//     <i>Request or use Challenge Handshake Authentication
+//     <i>Protocol with MD5 digest algorithm.
+#define PPP_CHAPEN     1
+
+//   </e>
 //   <q>Obtain Client IP address automatically
 //   =========================================
 //   <i> This option only applies when PPP Dial-up is used to dial
@@ -343,75 +364,34 @@
 //   <i> is forwarded to Dial-up network instead.
 #define PPP_DEFGW      1
 
-//   <h>Async Control Character Map
-//   ==============================
-//   <i> A map of control characters 0..31 which are transmitted 
-//   <i> escaped as a 2 byte sequence.
-//     <o>Map char 31..24 mask <0x00-0xff>
-//     <i> Maps control characters from 31...24
-//     <i> Default: 0x00
-#define _ACCM1         0x00
+//   <o>Async Control Character Map <0x0-0xffffffff>
+//   <i> A bit-map of control characters 0-31, which are
+//   <i> transmitted escaped as a 2 byte sequence.
+//   <i> For XON/XOFF set this value to: 0x000A 0000
+//   <i> Default: 0x00000000
+#define PPP_ACCM       0x00000000
 
-//     <o>Map char 23..16 mask <0x00-0xff>
-//     <i> Maps control characters from 23...16
-//     <i> For XON/XOFF set this value to: 0x0A
-//     <i> Default: 0x00
-#define _ACCM2         0x0A
+//   <o>LCP Echo Interval in seconds <0-3600>
+//   <i> If no frames are received within this interval, PPP sends an
+//   <i> Echo Request and expects an Echo Response from the peer.
+//   <i> If the response is not received, the link is terminated.
+//   <i> A value of 0 disables the LCP Echo test.
+//   <i> Default: 30
+#define PPP_ECHOTOUT   0
 
-//     <o>Map char 15..8 mask <0x00-0xff>
-//     <i> Maps control characters from 15...8
-//     <i> Default: 0x00
-#define _ACCM3         0x00
+//   <o>Number of Retries <0-20>
+//   <i> How many times PPP will try to retransmit data
+//   <i> before giving up. Increase this value for links
+//   <i> with low baud rates or high latency.
+//   <i> Default: 3
+#define PPP_MAXRETRY   2
 
-//     <o>Map char 7..0 mask <0x00-0xff>
-//     <i> Maps control characters from 7...0
-//     <i> Default: 0x00
-#define _ACCM4         0x00
+//   <o>Retry Timeout in seconds <1-10>
+//   <i> If no response received within this time frame,
+//   <i> PPP module will try to resend the data again.
+//   <i> Default: 2
+#define PPP_RETRYTOUT  10
 
-//   </h>
-//   <h>Retransmissions and Timeouts
-//   ===============================
-//   <i> Several protocol settings.
-//     <o>LCP Number of Retries <0-20>
-//     <i> How many times Link Control Protocol will try to retransmit
-//     <i> data before giving up. Increase this value for links with
-//     <i> low baud rates or high latency.
-//     <i> Default: 2
-#define LCP_MAXRETRY   3
-
-//     <o>LCP Retry Timeout in seconds <1-10>
-//     <i> If no response received within this time frame,
-//     <i> LCP module will try to resend data again.
-//     <i> Default: 2
-#define LCP_RETRYTOUT  10
-
-//     <o>PAP Number of Retries <0-20>
-//     <i> How many times Password Authentication Protocol will try to 
-//     <i> retransmit data before giving up. Increase this value for links
-//     <i> with low baud rates or high latency.
-//     <i> Default: 3
-#define PAP_MAXRETRY   3
-
-//     <o>PAP Retry Timeout in seconds <1-10>
-//     <i> If no response received within this time frame,
-//     <i> PAP module will try to resend data again
-//     <i> Default: 3
-#define PAP_RETRYTOUT  10
-
-//     <o>IPCP Number of Retries <0-20>
-//     <i> How many times Internet Protocol Control Protocol will try
-//     <i> to retransmit data before giving up. Increase this value for
-//     <i> links with low baud rates or high latency.
-//     <i> Default: 3
-#define IPCP_MAXRETRY  3
-
-//     <o>IPCP Retry Timeout in seconds <1-10>
-//     <i> If no response received within this time frame,
-//     <i> IPCP module will try to resend data again
-//     <i> Default: 2
-#define IPCP_RETRYTOUT 10
-
-//   </h>
 // </e>
 // <e>SLIP Network Interface
 // ========================
@@ -536,7 +516,7 @@
 
 //   <o>Retry Timeout in seconds <1-10>
 //   <i> If data frame not acknowledged within this time frame,
-//   <i> TCP module will try to resend data again
+//   <i> TCP module will try to resend the data again.
 //   <i> Default: 4
 #define TCP_RETRYTOUT  10
 
@@ -545,6 +525,12 @@
 //   <i> with no TCP data frame send, TCP Connection is closed.
 //   <i> Default: 120
 #define TCP_DEFTOUT    600
+
+//   <o>Maximum Segment Size <536-1460>
+//   <i> The Maximum Segment Size specifies the maximum
+//   <i> number of bytes in the TCP segment's Data field.
+//   <i> Default: 1460
+#define TCP_MAXSEGSZ   1460
 
 /* TCP fixed timeouts */
 #define TCP_INIT_RETRY_TOUT 1     /* TCP initial Retransmit period in sec.   */
@@ -559,8 +545,6 @@
 
 //   <o>Number of HTTP Sessions <1-10>
 //   <i> Number of simultaneously active HTTP Sessions.
-//   <i> Modify also the number of TCP Sockets because
-//   <i> each HTTP session uses it's own TCP socket
 //   <i> Default: 3
 #define HTTP_NUMSESS   3
 
@@ -569,13 +553,19 @@
 //   <i> Default: 80
 #define HTTP_PORTNUM   80
 
+//   <s.50>Server-Id header
+//   <i> This value is optional. If specified, it overrides 
+//   <i> the default HTTP Server header from the library.
+//   <i> Default: ""
+#define HTTP_SRVID     ""
+
 //   <e>Enable User Authentication
 //     <i> When enabled, the user will have to authenticate
 //     <i> himself by username and password before accessing
 //     <i> any page on this Embedded WEB server.
 #define HTTP_ENAUTH    1
 
-//     <s.20>Authentication Realm string
+//     <s.20>Authentication Realm
 //     <i> Default: "Embedded WEB Server"
 #define HTTP_AUTHREALM "Embedded WEB Server"
 
@@ -596,8 +586,6 @@
 
 //   <o>Number of Telnet Connections <1-10>
 //   <i> Number of simultaneously active Telnet Connections.
-//   <i> Modify also the number of TCP Sockets because
-//   <i> each Telnet connection uses it's own TCP socket
 //   <i> Default: 1
 #define TNET_NUMSESS   1
 
@@ -605,6 +593,18 @@
 //   <i> Listening port number.
 //   <i> Default: 23
 #define TNET_PORTNUM   23
+
+//   <o>Idle Connection Timeout in seconds <0-3600>
+//   <i> When timeout expires, the connection is closed.
+//   <i> A value of 0 disables disconnection on timeout.
+//   <i> Default: 120
+#define TNET_IDLETOUT  600
+
+//   <q>Disable Echo
+//   <i> When disabled, the server will not echo
+//   <i> characters it receives.
+//   <i> Default: Not disabled
+#define TNET_NOECHO    1
 
 //   <e>Enable User Authentication
 //   <i> When enabled, the user will have to authenticate
@@ -614,11 +614,11 @@
 
 //     <s.15>Authentication Username
 //     <i> Default: "admin"
-#define TNET_AUTHUSER  "jzq_a0"
+#define TNET_AUTHUSER  "admin"
 
 //     <s.15>Authentication Password
 //     <i> Default: ""
-#define TNET_AUTHPASSW "a1b2c3d4e5"
+#define TNET_AUTHPASSW ""
 
 //   </e>
 // </e>
@@ -629,8 +629,6 @@
 
 //   <o>Number of TFTP Sessions <1-10>
 //   <i> Number of simultaneously active TFTP Sessions
-//   <i> All TFTP Sessions use the same UDP socket listening
-//   <i> on defalut TFTP Server port 69.
 //   <i> Default: 1
 #define TFTP_NUMSESS   1
 
@@ -640,16 +638,40 @@
 #define TFTP_PORTNUM   69
 
 //   <o>Inactive Session Timeout in seconds <5-120>
-//   <i> When timeout expires TFTP Session is closed. This timeout
-//   <i> is used when the UDP connection is broken because of error.
+//   <i> When timeout expires TFTP Session is closed.
 //   <i> Default: 15
-#define TFTP_DEFTOUT   120
+#define TFTP_DEFTOUT   15
 
 //   <o>Number of Retries <1-10>
-//   <i> How many times TFTP Server will try to retransmit data
-//   <i> before giving up.
+//   <i> How many times TFTP Server will try to
+//   <i> retransmit the data before giving up.
 //   <i> Default: 4
 #define TFTP_MAXRETRY  4
+
+// </e>
+// <e>TFTP Client
+// ==============
+// <i> Enable or disable TFTP Client
+#define TFTPC_ENABLE   0
+
+//   <o>Block Size <128=>128   <256=>256   <512=>512
+//                 <1024=>1024 <1428=>1428
+//   <i> Size of transfer block in bytes.
+//   <i> Default: 512
+#define TFTPC_BLOCKSZ  512
+
+//   <o>Number of Retries <1-10>
+//   <i> How many times TFTP Client will try to
+//   <i> retransmit the data before giving up.
+//   <i> Default: 4
+#define TFTPC_MAXRETRY 4
+
+//   <o>Retry Timeout <2=>200 ms <5=>500 ms <10=>1 sec
+//                    <20=>2 sec <50=>5 sec <100=>10 sec
+//   <i> If data frame not acknowledged within this time frame,
+//   <i> TFTP Client will try to resend the data again.
+//   <i> Default: 500 ms
+#define TFTPC_RETRYTO  5
 
 // </e>
 // <e>FTP Server
@@ -659,8 +681,6 @@
 
 //   <o>Number of FTP Sessions <1-10>
 //   <i> Number of simultaneously active FTP Sessions
-//   <i> Modify also the number of TCP Sockets because
-//   <i> each FTP connection uses 2 TCP sockets
 //   <i> Default: 1
 #define FTP_NUMSESS    1
 
@@ -669,21 +689,50 @@
 //   <i> Default: 21
 #define FTP_PORTNUM    21
 
+//   <s.50>Welcome Message
+//   <i> This value is optional. If specified,
+//   <i> it overrides the default welcome message.
+//   <i> Default: ""
+#define FTP_WELMSG     ""
+
+//   <o>Idle Session Timeout in seconds <0-3600>
+//   <i> When timeout expires, the connection is closed.
+//   <i> A value of 0 disables disconnection on timeout.
+//   <i> Default: 120
+#define FTP_IDLETOUT   120
+
 //   <e>Enable User Authentication
 //   <i> When enabled, the user will have to authenticate
 //   <i> himself by username and password before access
 //   <i> to the system is allowed.
-#define FTP_ENAUTH     0
+#define FTP_ENAUTH     1
 
 //     <s.15>Authentication Username
 //     <i> Default: "admin"
-#define FTP_AUTHUSER   "jzq_a0"
+#define FTP_AUTHUSER   "admin"
 
 //     <s.15>Authentication Password
 //     <i> Default: ""
-#define FTP_AUTHPASSW  "a1b2c3d4e5"
+#define FTP_AUTHPASSW  ""
 
 //   </e>
+// </e>
+// <e>FTP Client
+// =============
+// <i> Enable or disable FTP Client
+#define FTPC_ENABLE    0
+
+//     <o>Response Timeout in seconds <1-120>
+//     <i> This is a time for FTP Client to wait for a response from
+//     <i> the Server. If timeout expires, Client aborts operation.
+//     <i> Default: 10
+#define FTPC_DEFTOUT   10
+
+//     <q>Passive mode (PASV)
+//     <i> The client initiates a data connection to the server.
+//     <i> Default: Not passive (Active)
+#define FTPC_PASVMODE  0
+
 // </e>
 // <e>DNS Client
 // =============
@@ -745,16 +794,44 @@
 
 //   <o>Address byte 4 <0-255>
 //   <i> Default: 100
-#define SNMP_TRAPIP4   1
+#define SNMP_TRAPIP4   100
 
 //   </h>
+// </e>
+// <e>BSD Socket Interface
+// =======================
+// <i> Enable or disable Berkeley Socket Programming Interface
+#define BSD_ENABLE     0
+
+//   <o>Number of BSD Sockets <1-20>
+//   <i> Number of available Berkeley Sockets
+//   <i> Default: 2
+#define BSD_NUMSOCKS   2
+
+//   <o>Number of Streaming Server Sockets <0-20>
+//   <i> Defines a number of Streaming (TCP) Server sockets,
+//   <i> that listen for an incoming connection from the client.
+//   <i> Default: 1
+#define BSD_SRVSOCKS   1
+
+//   <o>Receive Timeout in seconds <0-600>
+//   <i> A timeout for socket receive in blocking mode.
+//   <i> Timeout value of 0 means indefinite timeout.
+//   <i> Default: 20
+#define BSD_RCVTOUT    20
+
+//   <q>Hostname Resolver
+//   <i> Enable or disable Berkeley style hostname resolver.
+#define BSD_GETHOSTEN  0
+
 // </e>
 //------------- <<< end of configuration section >>> -----------------------
 
 /*----------------------------------------------------------------------------
  *      Fatal Error Handler
  *---------------------------------------------------------------------------*/
-#if 0	//in rtxip.c
+//In rtxip.c
+#if 0
 void sys_error (ERROR_CODE code) {
   /* This function is called when a fatal error is encountered. The normal */
   /* program execution is not possible anymore. Add your crytical error   .*/
@@ -772,6 +849,12 @@ void sys_error (ERROR_CODE code) {
     case ERR_MEM_CORRUPT:
       /* Memory Link pointer is Corrupted. */
       /* More data written than the size of allocated mem block. */
+      break;
+
+    case ERR_MEM_LOCK:
+      /* Locked Memory management function (alloc/free) re-entered. */
+      /* RTX multithread protection malfunctioning, not implemented */
+      /* or interrupt disable is not functioning correctly. */
       break;
 
     case ERR_UDP_ALLOC:

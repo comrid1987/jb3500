@@ -3,26 +3,28 @@
  *----------------------------------------------------------------------------
  *      Name:    NET_DEBUG.C
  *      Purpose: Debug Module
- *      Rev.:    V4.12
+ *      Rev.:    V4.50
  *----------------------------------------------------------------------------
  *      This code is part of the RealView Run-Time Library.
- *      Copyright (c) 2004-2010 KEIL - An ARM Company. All rights reserved.
+ *      Copyright (c) 2004-2012 KEIL - An ARM Company. All rights reserved.
  *---------------------------------------------------------------------------*/
 
 #include <Net_Config.h>
-#include <stdarg.h>
-#include <stdio.h>
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> -----------------
 
+// <q>Print Time Stamp
+// ===================
+//   <i> Enable printing the time-info in debug messages
+#define DBG_TIME       1
+
 // <h>TCPnet Debug Definitions
 // ===========================
-
 //   <o>Memory Management Debug <0=> Off <1=> Errors only <2=> Full debug
 //   <i> Turn On/Off Dynamic Memory debug messages
 #define DBG_MEM        1
 
-//   <o>Ethernet Debug   <0=> Off <1=> Errors only <2=> Full debug
+//   <o>Ethernet Debug <0=> Off <1=> Errors only <2=> Full debug
 //   <i> Turn On/Off Ethernet debug messages
 #define DBG_ETH        1
 
@@ -30,7 +32,7 @@
 //   <i> Turn On/Off PPP debug messages
 #define DBG_PPP        2
 
-//   <o>SLIP Debug   <0=> Off <1=> Errors only <2=> Full debug
+//   <o>SLIP Debug  <0=> Off <1=> Errors only <2=> Full debug
 //   <i> Turn On/Off SLIP debug messages
 #define DBG_SLIP       0
 
@@ -58,26 +60,56 @@
 //   <i> Turn On/Off TCP debug messages
 #define DBG_TCP        1
 
-//   <o>NBNS Debug <0=> Off <1=> Errors only <2=> Full debug
+//   <o>NBNS Debug  <0=> Off <1=> Errors only <2=> Full debug
 //   <i> Turn On/Off NetBIOS Name Service debug messages
 #define DBG_NBNS       1
 
-//   <o>DHCP Debug <0=> Off <1=> Errors only <2=> Full debug
+//   <o>DHCP Debug  <0=> Off <1=> Errors only <2=> Full debug
 //   <i> Turn On/Off Dynamic Host Configuration debug messages
 #define DBG_DHCP       1
 
-//   <o>DNS Debug <0=> Off <1=> Errors only <2=> Full debug
+//   <o>DNS Debug   <0=> Off <1=> Errors only <2=> Full debug
 //   <i> Turn On/Off Domain Name Service debug messages
 #define DBG_DNS        1
 
-//   <o>SNMP Debug <0=> Off <1=> Errors only <2=> Full debug
+//   <o>SNMP Debug  <0=> Off <1=> Errors only <2=> Full debug
 //   <i> Turn On/Off Simple Network Management debug messages
 #define DBG_SNMP       1
 
-//   <o>Application Debug <0=> Off <1=> Errors only <2=> Full debug
-//   <i> Turn On/Off Application debug messages
-//   <I> for: HTTP, TFTP, SMTP, Telnet
-#define DBG_APP        1
+//   <o>BSD Debug   <0=> Off <1=> Errors only <2=> Full debug
+//   <i> Turn On/Off BSD Interface debug messages
+#define DBG_BSD        1
+
+// </h>
+// <h>Application Debug Definitions
+// ================================
+//   <o>HTTP Server Debug <0=> Off <1=> Errors only <2=> Full debug
+//   <i> Turn On/Off Web Server debug messages
+#define DBG_HTTP       1
+
+//   <o>FTP Server Debug <0=> Off <1=> Errors only <2=> Full debug
+//   <i> Turn On/Off FTP Server debug messages
+#define DBG_FTP        1
+
+//   <o>FTP Client Debug <0=> Off <1=> Errors only <2=> Full debug
+//   <i> Turn On/Off FTP Client debug messages
+#define DBG_FTPC       1
+
+//   <o>Telnet Server Debug <0=> Off <1=> Errors only <2=> Full debug
+//   <i> Turn On/Off Telnet Server debug messages
+#define DBG_TNET       1
+
+//   <o>TFTP Server Debug <0=> Off <1=> Errors only <2=> Full debug
+//   <i> Turn On/Off TFTP Server debug messages
+#define DBG_TFTP       1
+
+//   <o>TFTP Client Debug <0=> Off <1=> Errors only <2=> Full debug
+//   <i> Turn On/Off TFTP Client debug messages
+#define DBG_TFTPC      1
+
+//   <o>SMTP Client Debug <0=> Off <1=> Errors only <2=> Full debug
+//   <i> Turn On/Off SMTP Client debug messages
+#define DBG_SMTP       1
 
 // </h>
 
