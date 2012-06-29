@@ -315,12 +315,23 @@ static void gw3761_Afn04_F201(uint8_t **ppData)
 {
 	t_afn04_f85 xF85;
 
-	memcpy(&xF85, *ppData - 2, sizeof(t_afn04_f85));
 	xF85.mfcode = 0;
-	*ppData += 4;
+	xF85.area = ((*ppData)[1] << 8) | (*ppData)[0];
+	*ppData += 2;
+	xF85.addr = ((*ppData)[1] << 8) | (*ppData)[0];
+	*ppData += 2;
 	icp_ParaWrite(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
 }
 
+static int gw3761_Afn0A_F201(buf b)
+{
+	t_afn04_f85 xF85;
+
+	icp_ParaRead(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
+	buf_PushData(b, xF85.area, 2);
+	buf_PushData(b, xF85.addr, 2);
+	return 1;
+}
 
 
 
@@ -452,6 +463,10 @@ int gw3761_ResponseGetParam(p_gw3761 p, buf b, u_word2 *pDu, uint8_t **ppData)
 			case 33:
 				//终端抄表运行参数
 				gw3761_Afn0A_F33(b, ppData);
+				break;
+			case 201:
+				//终端地址
+				gw3761_Afn0A_F201(b);
 				break;
 			default:
 				nLen = gw3761_Afn04_GetFnLen(nFn);

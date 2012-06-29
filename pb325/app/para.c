@@ -8,7 +8,7 @@
 
 
 //Private Defines
-#define ICP_LOCK_ENABLE			0
+#define ICP_LOCK_ENABLE			1
 
 //Private Typedefs
 

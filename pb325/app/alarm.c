@@ -645,7 +645,7 @@ void evt_Clear()
 uint_t evt_GetCount()
 {
 	uint_t nCnt;
-	uint8_t aBuf[4];
+	uint8_t aBuf[4] = {0};
 
 	sfs_Read(&evt_SfsDev, EVT_CNT_ADDR, &aBuf[0]);
 	sfs_Read(&evt_SfsDev, EVT_CNT_ADDR + 1, &aBuf[2]);
