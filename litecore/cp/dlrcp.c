@@ -2,7 +2,7 @@
 
 
 //Private Defines
-#define DLRCP_DEBUG_ENABLE			0
+#define DLRCP_DEBUG_ENABLE			1
 #if DLRCP_DEBUG_ENABLE
 #define dlrcp_DbgOut				dbg_trace
 #else
