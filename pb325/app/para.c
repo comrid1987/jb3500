@@ -5,10 +5,10 @@
 #include "system.h"
 #include "para.h"
 #include "meter.h"
-
+#include "data.h"
 
 //Private Defines
-#define ICP_LOCK_ENABLE			1
+#define ICP_LOCK_ENABLE			0
 
 //Private Typedefs
 

@@ -110,8 +110,8 @@ void tsk_Upcom2(void *args)
 	}
 
 	gd5100_Init(&rcp_GD5100);
-	p->rtua = xF85.area;
-	p->terid = xF85.addr;
+	rcp_GD5100.rtua = xF85.area;
+	rcp_GD5100.terid = xF85.addr;
 	rcp_GD5100.parent.tmo = 5;
 	rcp_GD5100.parent.retry = 3;
 	rcp_GD5100.parent.refresh = 3 * 60;

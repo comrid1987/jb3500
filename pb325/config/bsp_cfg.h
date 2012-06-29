@@ -220,7 +220,7 @@
 	#if SPIFLASH_ENABLE
 		#define BSP_SPIF_QTY			1
 		#define SPIF_COMID				0
-		#define SPIF_PROTECT_ENABLE 	1
+		#define SPIF_PROTECT_ENABLE 	0
 		#define SPIF_PROTECT_SEC		64
 	#endif
 
@@ -236,6 +236,7 @@
 	//ATT7022使能
 	#define	ATT7022_ENABLE				0
 	#if ATT7022_ENABLE
+		#define ATT7022_DEBUG_ENABLE	1
 		#define ATT7022_COMID			0
 		#define ATT7022_CSID			6
 		#define	ATT7022_CONST_EC		8000
@@ -306,6 +307,8 @@
 	//MODEM使能
 	#define MODEM_ENABLE				1
 	#if MODEM_ENABLE
+		#define MODEM_DEBUG_ENABLE		0
+
 		#define BSP_MODEM_QTY			1
 		#define MODEM_PWR_ENABLE		1
 		#define MODEM_RST_ENABLE		1
@@ -451,7 +454,14 @@
 
 //通讯规约使能
 #define DLT645_ENABLE					1
+#if DLT645_ENABLE
+	#define DLT645_DEBUG_ENABLE			0
+#endif
+
 #define GW3762_ENABLE					0
+#if GW3762_ENABLE
+	#define GW3762_DEBUG_ENABLE			0
+#endif
 
 //RPC使能
 #define RPC_ENABLE						0
@@ -499,6 +509,8 @@
 
 #define DLRCP_ENABLE					1
 #if DLRCP_ENABLE
+	#define DLRCP_DEBUG_ENABLE			0
+
 	#define GD5100_ENABLE				1
 
 	#define GW3761_ENABLE				1
