@@ -2,8 +2,6 @@
 
 
 //Private Defines
-#define DLT645_DEBUG_ENABLE			0
-
 #define DLT645_HEADER_SIZE			10
 
 

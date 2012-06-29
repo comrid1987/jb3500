@@ -14,7 +14,6 @@
 
 //Private Defines
 #define SFS_LOCK_ENABLE			1
-#define SFS_DEBUG_METHOD		0
 
 #define SFS_RECORD_MASK			0xFFFFFFFF
 
@@ -75,7 +74,7 @@ static sys_res _sfs_Program(sfs_dev pDev, adr_t nAdr, const void *pData, uint_t 
 
 static adr_t _sfs_Find(sfs_dev pDev, uint32_t nAnd, uint32_t nRecord, p_sfs_idx pIdx)
 {
-	adr_t nIdx, nEnd;
+	adr_t nIdx, nEnd, nAdr = 0;
 	const t_sfs_blk *pBlk, *pEnd;
 	t_sfs_ste blk;
 
@@ -87,12 +86,18 @@ static adr_t _sfs_Find(sfs_dev pDev, uint32_t nAnd, uint32_t nRecord, p_sfs_idx 
 			nEnd = pBlk->start + pBlk->size;
 			for (; nIdx < nEnd; nIdx = ALIGN4(nIdx + sizeof(t_sfs_idx) + pIdx->len)) {
 				memcpy(pIdx, (uint8_t *)nIdx, sizeof(t_sfs_idx));
-				if (((pIdx->id & nAnd) == nRecord) && (pIdx->ste == SFS_S_VALID))
-					return nIdx;
+				if (pIdx->ste == SFS_S_VALID) {
+					if ((pIdx->id & nAnd) == nRecord) {
+						nAdr = nIdx;
+						break;
+					}
+				}
 			}
+			if (nAdr)
+				break;
 		}
 	}
-	return 0;
+	return nAdr;
 }
 
 static int _sfs_Free(sfs_dev pDev, const t_sfs_blk *pBlk, adr_t *pAdrIdx)

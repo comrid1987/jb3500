@@ -2,8 +2,6 @@
 
 
 //Private Defines
-#define GW3762_DEBUG_ENABLE			1
-
 #define GW3762_HEADER_L_SIZE		2
 
 

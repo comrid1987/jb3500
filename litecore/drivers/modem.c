@@ -3,7 +3,6 @@
 
 //Private Defines
 #define MODEM_PPP_ID			0
-#define MODEM_DEBUG_ENABLE		0
 
 #if MODEM_DEBUG_ENABLE
 #define modem_DbgOut			dbg_trace
@@ -189,7 +188,6 @@ static sys_res modem_SendCmd(p_modem p, const char *pCmd, const char *pRes, uint
 {
 	uint_t i;
 
-	dbg_trace(pCmd);
 	for (; nRetry; nRetry--) {
 		buf_Release(p->rbuf);
 		uart_Send(p->uart, pCmd, strlen(pCmd));
@@ -198,12 +196,12 @@ static sys_res modem_SendCmd(p_modem p, const char *pCmd, const char *pRes, uint
 			if (uart_RecData(p->uart, p->rbuf, OS_TICK_MS) != SYS_R_OK)
 				continue;
 			if (modem_FindStr(p, pRes) != NULL) {
-				dbg_trace("OK");
+				modem_DbgOut("<Modem> %s OK", pCmd);
 				return SYS_R_OK;
 			}
 		}
 	}
-	dbg_trace("ERR");
+	modem_DbgOut("<Modem> %s ERR", pCmd);
 	return SYS_R_TMO;
 }
 

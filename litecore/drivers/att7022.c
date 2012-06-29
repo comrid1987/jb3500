@@ -3,8 +3,6 @@
 
 
 //Private Defines
-#define ATT7022_DEBUG_ENABLE		1
-
 #define ATT7022_PHASECALI_ENABLE	0
 
 #define ATT7022_SAMPLEPOINT   		128

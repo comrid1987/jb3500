@@ -9,9 +9,9 @@
 #define BUF_BLK_MASK		(BUF_BLK_SIZE - 1)
 
 #if BUF_DEBUG_ENABLE
-#define buf_trace			rt_kprintf
+#define buf_DbgOut			dbg_trace
 #else
-#define buf_trace(...)
+#define buf_DbgOut(...)
 #endif
 
 
@@ -62,7 +62,7 @@ sys_res buf_Push(buf b, const void *pData, uint_t nLen)
 			res = SYS_R_ERR;
 	}
 	if (res == SYS_R_OK) {
-		buf_trace("buf push: new=%d alloc=%d b->p=%08x b->len=%d len=%d\n", nNew, nAlloc, b->p, b->len, nLen);
+		buf_DbgOut("buf push: new=%d alloc=%d b->p=%08x b->len=%d len=%d\n", nNew, nAlloc, b->p, b->len, nLen);
 		memcpy(b->p + b->len, pData, nLen);
 		b->len = nNew;
 	}
@@ -124,7 +124,7 @@ sys_res buf_Cut(buf b, uint_t nOffset, uint_t nLen)
 			}
 		}
 	}
-	buf_trace("buf cut: new=%d alloc=%d b->p=%08x b->len=%d len=%d\n", nNew, nAlloc, b->p, b->len, nLen);
+	buf_DbgOut("buf cut: new=%d alloc=%d b->p=%08x b->len=%d len=%d\n", nNew, nAlloc, b->p, b->len, nLen);
 	b->len = nNew;
 	buf_Unlock();
 	return SYS_R_OK;
@@ -141,7 +141,7 @@ void buf_Release(buf b)
 		return;
 	buf_Lock();
 	mem_Free(b->p);
-	buf_trace("buf release: b->p=%08x b->len=%d\n", b->p, b->len);
+	buf_DbgOut("buf release: b->p=%08x b->len=%d\n", b->p, b->len);
 	b->p = NULL;
 	b->len = 0;
 	buf_Unlock();
