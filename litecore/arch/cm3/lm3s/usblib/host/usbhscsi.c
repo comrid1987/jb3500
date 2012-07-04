@@ -627,8 +627,13 @@ USBHSCSIRead10(unsigned long ulInPipe, unsigned long ulOutPipe,
     // This also sets the Control value to 0 at offset 9.
     //
     SCSICmd.CBWCB[7] = (ulNumBlocks & 0xFF00) >> 8;
+#if 0
     *((unsigned long *)&SCSICmd.CBWCB[8]) = (ulNumBlocks & 0xFF);
     *((unsigned long *)&SCSICmd.CBWCB[12]) = 0;
+#else
+    *((__packed unsigned long *)&SCSICmd.CBWCB[8]) = (ulNumBlocks & 0xFF);
+    *((__packed unsigned long *)&SCSICmd.CBWCB[12]) = 0;
+#endif
 
     //
     // Send the command and get the results.
@@ -706,12 +711,17 @@ USBHSCSIWrite10(unsigned long ulInPipe, unsigned long ulOutPipe,
     SCSICmd.CBWCB[6] = 0;
 
     //
-    // Set the transfer length in blocks.
+    // Transfer length in blocks starts at offset 2.
     // This also sets the Control value to 0 at offset 9.
     //
     SCSICmd.CBWCB[7] = (ulNumBlocks & 0xFF00) >> 8;
+#if 0
     *((unsigned long *)&SCSICmd.CBWCB[8]) = (ulNumBlocks & 0xFF);
     *((unsigned long *)&SCSICmd.CBWCB[12]) = 0;
+#else
+    *((__packed unsigned long *)&SCSICmd.CBWCB[8]) = (ulNumBlocks & 0xFF);
+    *((__packed unsigned long *)&SCSICmd.CBWCB[12]) = 0;
+#endif
 
     //
     // Send the command and get the results.

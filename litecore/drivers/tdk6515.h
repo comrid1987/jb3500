@@ -79,8 +79,10 @@ typedef struct {
 
 
 //External Functions
+void tdk6515_Reset(t_tdk6515 *p);
 sys_res tdk6515_IsJLReady(void);
 sys_res tdk6515_IsXBReady(void);
+void tdk6515_CmdSend(t_tdk6515 *p, uint_t nWrite, uint_t nAdr, uint_t nLen);
 
 
 #ifdef __cplusplus

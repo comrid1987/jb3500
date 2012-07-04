@@ -2,23 +2,38 @@
 //
 // eeprom.c - Driver for programming the on-chip EEPROM.
 //
-// Copyright (c) 2010-2011 Texas Instruments Incorporated.  All rights reserved.
+// Copyright (c) 2010-2012 Texas Instruments Incorporated.  All rights reserved.
 // Software License Agreement
 // 
-// Texas Instruments (TI) is supplying this software for use solely and
-// exclusively on TI's microcontroller products. The software is owned by
-// TI and/or its suppliers, and is protected under applicable copyright
-// laws. You may not combine this software with "viral" open-source
-// software in order to form a larger program.
+//   Redistribution and use in source and binary forms, with or without
+//   modification, are permitted provided that the following conditions
+//   are met:
 // 
-// THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
-// NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
-// NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
-// CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
-// DAMAGES, FOR ANY REASON WHATSOEVER.
+//   Redistributions of source code must retain the above copyright
+//   notice, this list of conditions and the following disclaimer.
 // 
-// This is part of revision 8049 of the Stellaris Peripheral Driver Library.
+//   Redistributions in binary form must reproduce the above copyright
+//   notice, this list of conditions and the following disclaimer in the
+//   documentation and/or other materials provided with the  
+//   distribution.
+// 
+//   Neither the name of Texas Instruments Incorporated nor the names of
+//   its contributors may be used to endorse or promote products derived
+//   from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// 
+// This is part of revision 9107 of the Stellaris Peripheral Driver Library.
 //
 //*****************************************************************************
 
@@ -68,7 +83,7 @@
 //*****************************************************************************
 //
 // This function implements a workaround for a bug in Blizzard rev A silicon.
-// It ensure that only the 1KB flash sector containing a given EEPROM address
+// It ensures that only the 1KB flash sector containing a given EEPROM address
 // is erased if an erase/copy operation is required as a result of a following
 // EEPROM write.
 //
@@ -97,7 +112,7 @@ EEPROMSetSectorMask(unsigned long ulAddress)
 //*****************************************************************************
 //
 // Clear the FSM sector erase mask to ensure that any following main array flash
-// erase operations will operate as expected.
+// erase operations operate as expected.
 //
 //*****************************************************************************
 static void
@@ -137,18 +152,18 @@ EEPROMWaitForDone(void)
 //!
 //! This function must be called after SysCtlPeripheralEnable() and before
 //! the EEPROM is accessed to check for errors resulting from power failure
-//! during a previous write operation.  The function will detect these errors
-//! and perform as much recovery as possible before returning information to
-//! the caller on whether or not a previous data write was lost and will need
-//! to be retried.
+//! during a previous write operation.  The function detects these errors
+//! and performs as much recovery as possible before returning information to
+//! the caller on whether or not a previous data write was lost and must
+//! be retried.
 //!
 //! In cases where \b EEPROM_INIT_RETRY is returned, the application is
 //! responsible for determining which data write may have been lost and
-//! rewriting this data.  If \b EEPROM_INIT_ERROR is returned, this indicates
-//! that the EEPROM was unable to recover its state.  This condition may or
-//! may not be resolved on future resets depending upon the cause of the
-//! fault. For example, if the supply voltage is unstable, retrying the
-//! operation once the voltage is stabilized may clear the error.
+//! rewriting this data.  If \b EEPROM_INIT_ERROR is returned, the EEPROM was
+//! unable to recover its state.  This condition may or may not be resolved on
+//! future resets depending upon the cause of the fault. For example, if the
+//! supply voltage is unstable, retrying the operation once the voltage is
+//! stabilized may clear the error.
 //!
 //! Failure to call this function after a reset may lead to permanent data loss
 //! if the EEPROM is later written!
@@ -268,7 +283,7 @@ EEPROMBlockCountGet(void)
 //! Reads data from the EEPROM.
 //!
 //! \param pulData is a pointer to storage for the data read from the EEPROM.
-//! This must point to at least \e ulCount bytes of available memory.
+//! This pointer must point to at least \e ulCount bytes of available memory.
 //! \param ulAddress is the byte address within the EEPROM from which data is
 //! to be read.  This value must be a multiple of 4.
 //! \param ulCount is the number of bytes of data to read from the EEPROM.
@@ -368,12 +383,16 @@ EEPROMProgram(unsigned long *pulData, unsigned long ulAddress,
     ASSERT((ulCount & 3) == 0);
 
     //
-    // This is a workaround for a silicon problem on Blizzard rev A.
+    // Make sure the EEPROM is idle before we start.
     //
-    if(CLASS_IS_BLIZZARD && REVISION_IS_A0)
+    do
     {
-        EEPROMSetSectorMask(ulAddress);
+        //
+        // Read the status.
+        //
+        ulStatus = HWREG(EEPROM_EEDONE);
     }
+    while(ulStatus & EEPROM_EEDONE_WORKING);
 
     //
     // Set the block and offset appropriately to program the first word.
@@ -391,6 +410,17 @@ EEPROMProgram(unsigned long *pulData, unsigned long ulAddress,
     //
     while(ulCount)
     {
+        //
+        // This is a workaround for a silicon problem on Blizzard rev A.  We
+        // need to do this before every word write to ensure that we don't
+        // have problems in multi-word writes that span multiple flash sectors.
+        //
+        if(CLASS_IS_BLIZZARD && REVISION_IS_A0)
+        {
+            EEPROMSetSectorMask(ulAddress);
+            ulAddress += 4;
+        }
+
         //
         // Write the next word through the autoincrementing register.
         //
@@ -410,7 +440,7 @@ EEPROMProgram(unsigned long *pulData, unsigned long ulAddress,
 
         //
         // Make sure we completed the write without errors.  Note that we
-        // must check this per-word since write permission can be set per
+        // must check this per-word because write permission can be set per
         // block resulting in only a section of the write not being performed.
         //
         if(ulStatus & (EEPROM_EEDONE_NOPERM | EEPROM_EEDONE_INVPL))
@@ -520,7 +550,7 @@ EEPROMProgramNonBlocking(unsigned long ulData, unsigned long ulAddress)
 //
 //! Erases the EEPROM and returns it to the factory default condition.
 //!
-//! This function will completely erase the EEPROM and remove any and
+//! This function completely erases the EEPROM and removes any and
 //! all access protection on its blocks, leaving the device in the factory
 //! default condition.  After this operation, all EEPROM words contain the
 //! value 0xFFFFFFFF and all blocks are accessible for both read and write
@@ -539,6 +569,14 @@ unsigned long
 EEPROMMassErase(void)
 {
     //
+    // This is a workaround for a silicon problem on Blizzard rev A.
+    //
+    if(CLASS_IS_BLIZZARD && REVISION_IS_A0)
+    {
+        EEPROMClearSectorMask();
+    }
+
+    //
     // Start the mass erase processing
     //
     HWREG(EEPROM_EEDBGME) = EEPROM_MASS_ERASE_KEY | EEPROM_EEDBGME_ME;
@@ -549,7 +587,7 @@ EEPROMMassErase(void)
     EEPROMWaitForDone();
 
     //
-    // Reset the peripheral.  This si required so that all protection
+    // Reset the peripheral.  This is required so that all protection
     // mechanisms and passwords are reset now that the EEPROM data has been
     // scrubbed.
     //
@@ -618,9 +656,10 @@ EEPROMBlockProtectGet(unsigned long ulBlock)
 //! access to the EEPROM peripheral as a whole.  Protection settings applied to
 //! blocks numbered 1 and above are layered above any protection set on block 0
 //! such that the effective protection on each block is the logical OR of the
-//! protection flags set for block 0 and for the target block.  This allows
-//! global protection options to be set for the whole device via block 0 and
-//! more restrictive protection settings to be set on a block-by-block basis.
+//! protection flags set for block 0 and for the target block.  This protocol
+//! allows global protection options to be set for the whole device via block
+//! 0 and more restrictive protection settings to be set on a block-by-block
+//! basis.
 //!
 //! The protection flags indicate access permissions as follow:
 //!
@@ -1022,9 +1061,9 @@ EEPROMIntStatus(tBoolean bMasked)
         //
         // If asked for the unmasked interrupt status, infer that an interrupt
         // is pending if the WORKING bit of the EEDONE register is clear.  The
-        // actual interrupt will fire on the high to low transition of this bit
+        // actual interrupt fires on the high to low transition of this bit
         // but we don't have access to an unmasked interrupt status for the
-        // EEPROM since it's handled via the flash controller so we have to
+        // EEPROM because it's handled via the flash controller so we have to
         // make do with this instead.
         //
         return((HWREG(EEPROM_EEDONE) & EEPROM_EEDONE_WORKING) ?

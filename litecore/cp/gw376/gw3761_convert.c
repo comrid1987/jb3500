@@ -108,43 +108,19 @@ void gw3761_ConvertData(void *p, uint32_t nData, uint_t nDec, uint32_t nMark, ui
 //-------------------------------------------------------------------------
 void gw3761_ConvertData_Time(uint8_t *p, time_t tTime, uint_t nType)
 {
-	struct tm tmTime;
-	uint_t nFlag;
+	uint8_t aTime[6];
 
+	timet2array(tTime, aTime, 1);
+	memcpy(&p[0], &aTime[1], 3);
+	p += 3;
 	switch (nType) {
-	case GW3761_DATA_T_01:
-		nFlag = 0x3F;
-		break;
 	case GW3761_DATA_T_15:
-		nFlag = 0x3E;
-		break;
+		*p++ = aTime[4];
 	case GW3761_DATA_T_17:
-		nFlag = 0x1E;
-		break;
-	case GW3761_DATA_T_18:
-		nFlag = 0x0E;
-		break;
+		*p++ = aTime[5];
 	default:
-		return;
+		break;
 	}
-	localtime_r(&tTime, &tmTime);
-	if (nFlag & BITMASK(0))
-		*p++ = bin2bcd8(tmTime.tm_sec);
-	if (nFlag & BITMASK(1))
-		*p++ = bin2bcd8(tmTime.tm_min);
-	if (nFlag & BITMASK(2))
-		*p++ = bin2bcd8(tmTime.tm_hour);
-	if (nFlag & BITMASK(3))
-		*p++ = bin2bcd8(tmTime.tm_mday);
-	if (nFlag & BITMASK(4)) {
-		*p = bin2bcd8(tmTime.tm_mon + 1);
-		if (tmTime.tm_wday == 0)
-			tmTime.tm_wday = 7;
-		*p |= (tmTime.tm_wday << 5);
-		p += 1;
-	}
-	if (nFlag & BITMASK(5))
-		*p++ = bin2bcd8(tmTime.tm_year - 100);
 }
 
 
@@ -153,8 +129,20 @@ void gw3761_ConvertData_Time(uint8_t *p, time_t tTime, uint_t nType)
 //-------------------------------------------------------------------------
 void gw3761_ConvertData_01(void *p, time_t tTime)
 {
-
-	gw3761_ConvertData_Time(p, tTime, 1);
+	struct tm tmTime;
+	uint8_t *pData = (uint8_t *)p;
+	
+	localtime_r(&tTime, &tmTime);
+	*pData++ = bin2bcd8(tmTime.tm_sec);
+	*pData++ = bin2bcd8(tmTime.tm_min);
+	*pData++ = bin2bcd8(tmTime.tm_hour);
+	*pData++ = bin2bcd8(tmTime.tm_mday);
+	*pData = bin2bcd8(tmTime.tm_mon + 1);
+	if (tmTime.tm_wday == 0)
+		tmTime.tm_wday = 7;
+	*pData |= (tmTime.tm_wday << 5);
+	pData += 1;
+	*pData++ = bin2bcd8(tmTime.tm_year - 100);
 }
 
 //-------------------------------------------------------------------------

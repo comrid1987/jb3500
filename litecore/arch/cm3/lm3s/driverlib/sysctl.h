@@ -2,23 +2,38 @@
 //
 // sysctl.h - Prototypes for the system control driver.
 //
-// Copyright (c) 2005-2011 Texas Instruments Incorporated.  All rights reserved.
+// Copyright (c) 2005-2012 Texas Instruments Incorporated.  All rights reserved.
 // Software License Agreement
 // 
-// Texas Instruments (TI) is supplying this software for use solely and
-// exclusively on TI's microcontroller products. The software is owned by
-// TI and/or its suppliers, and is protected under applicable copyright
-// laws. You may not combine this software with "viral" open-source
-// software in order to form a larger program.
+//   Redistribution and use in source and binary forms, with or without
+//   modification, are permitted provided that the following conditions
+//   are met:
 // 
-// THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
-// NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
-// NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
-// CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
-// DAMAGES, FOR ANY REASON WHATSOEVER.
+//   Redistributions of source code must retain the above copyright
+//   notice, this list of conditions and the following disclaimer.
 // 
-// This is part of revision 8049 of the Stellaris Peripheral Driver Library.
+//   Redistributions in binary form must reproduce the above copyright
+//   notice, this list of conditions and the following disclaimer in the
+//   documentation and/or other materials provided with the  
+//   distribution.
+// 
+//   Neither the name of Texas Instruments Incorporated nor the names of
+//   its contributors may be used to endorse or promote products derived
+//   from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// 
+// This is part of revision 9107 of the Stellaris Peripheral Driver Library.
 //
 //*****************************************************************************
 
@@ -113,6 +128,8 @@ extern "C"
 #define SYSCTL_PERIPH2_CAN2     0xf0003402  // CAN 2
 #define SYSCTL_PERIPH2_COMP0    0xf0003c00  // Analog comparator 0
 #define SYSCTL_PERIPH_EEPROM0   0xf0005800  // EEPROM 0
+#define SYSCTL_PERIPH2_EPI0     0xf0001000  // EPI0
+#define SYSCTL_PERIPH2_ETH      0xf0002c00  // ETH
 #define SYSCTL_PERIPH_FAN0      0xf0005400  // FAN 0
 #define SYSCTL_PERIPH2_GPIOA    0xf0000800  // GPIO A
 #define SYSCTL_PERIPH2_GPIOB    0xf0000801  // GPIO B
@@ -138,6 +155,7 @@ extern "C"
 #define SYSCTL_PERIPH_I2C3      0xf0002003  // I2C 3
 #define SYSCTL_PERIPH_I2C4      0xf0002004  // I2C 4
 #define SYSCTL_PERIPH_I2C5      0xf0002005  // I2C 5
+#define SYSCTL_PERIPH2_I2S0     0xf0002400  // I2S0
 #define SYSCTL_PERIPH_LPC0      0xf0004800  // LPC 0
 #define SYSCTL_PERIPH_PECI0     0xf0005000  // PECI 0
 #define SYSCTL_PERIPH2_PWM0     0xf0004000  // PWM 0
@@ -172,6 +190,8 @@ extern "C"
 #define SYSCTL_PERIPH2_USB0     0xf0002800  // USB 0
 #define SYSCTL_PERIPH2_WDOG0    0xf0000000  // Watchdog 0
 #define SYSCTL_PERIPH2_WDOG1    0xf0000001  // Watchdog 1
+#define SYSCTL_PERIPH2_HIBERNATE \
+                                0xf0001400  // Hibernate
 
 //*****************************************************************************
 //
@@ -571,6 +591,7 @@ extern "C"
 #define SYSCTL_MOSC_VALIDATE    0x00000001  // Enable MOSC validation
 #define SYSCTL_MOSC_INTERRUPT   0x00000002  // Generate interrupt on MOSC fail
 #define SYSCTL_MOSC_NO_XTAL     0x00000004  // No crystal is attached to MOSC
+
 
 //*****************************************************************************
 //

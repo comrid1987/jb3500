@@ -2,23 +2,38 @@
 //
 // lpc.c - Driver for the Low Pin Count (LPC) module.
 //
-// Copyright (c) 2010-2011 Texas Instruments Incorporated.  All rights reserved.
+// Copyright (c) 2010-2012 Texas Instruments Incorporated.  All rights reserved.
 // Software License Agreement
 // 
-// Texas Instruments (TI) is supplying this software for use solely and
-// exclusively on TI's microcontroller products. The software is owned by
-// TI and/or its suppliers, and is protected under applicable copyright
-// laws. You may not combine this software with "viral" open-source
-// software in order to form a larger program.
+//   Redistribution and use in source and binary forms, with or without
+//   modification, are permitted provided that the following conditions
+//   are met:
 // 
-// THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
-// NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
-// NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
-// CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
-// DAMAGES, FOR ANY REASON WHATSOEVER.
+//   Redistributions of source code must retain the above copyright
+//   notice, this list of conditions and the following disclaimer.
 // 
-// This is part of revision 8049 of the Stellaris Peripheral Driver Library.
+//   Redistributions in binary form must reproduce the above copyright
+//   notice, this list of conditions and the following disclaimer in the
+//   documentation and/or other materials provided with the  
+//   distribution.
+// 
+//   Neither the name of Texas Instruments Incorporated nor the names of
+//   its contributors may be used to endorse or promote products derived
+//   from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// 
+// This is part of revision 9107 of the Stellaris Peripheral Driver Library.
 //
 //*****************************************************************************
 
@@ -79,7 +94,7 @@ LPCChannelValid(unsigned long ulChannel)
 //!
 //! The \e ulConfig parameter is the logical OR of the following values:
 //! - \b LPC_CFG_WAKE - Force assertion of the LPC0CLKRUN signal when the
-//! LPC bus is powered down (LPC0PD asserted).
+//! LPC bus is powered down (LPC0PD is asserted).
 //!
 //! \return None.
 //
@@ -478,11 +493,11 @@ LPCIRQSend(unsigned long ulBase)
 //! \param pfnHandler is a pointer to the function to be called when the
 //! LPC interrupt occurs.
 //!
-//! This sets the handler to be called when an LPC interrupt occurs.  This
-//! will enable the global interrupt in the interrupt controller; specific
-//! LPC interrupts must be enabled via LPCIntEnable().  If necessary, it is
-//! the interrupt handler's responsibility to clear the interrupt source via
-//! LPCIntClear().
+//! This function registers the handler to be called when an LPC interrupt
+//! occurs. This function enables the global interrupt in the interrupt
+//! controller; specific LPC interrupts must be enabled via LPCIntEnable().
+//! If necessary, it is the interrupt handler's responsibility to clear the
+//! interrupt source via LPCIntClear().
 //!
 //! \sa IntRegister() for important information about registering interrupt
 //! handlers.
@@ -516,9 +531,9 @@ LPCIntRegister(unsigned long ulBase, void (*pfnHandler)(void))
 //!
 //! \param ulBase specifies the LPC module base address.
 //!
-//! This function will clear the handler to be called when an LPC interrupt
-//! occurs.  This will also mask off the interrupt in the interrupt controller
-//! so that the interrupt handler no longer is called.
+//! This function unregisters the handler to be called when an LPC interrupt
+//! occurs.  This fucntion also masks off the interrupt in the interrupt
+//! controller so that the interrupt handler is no longer called.
 //!
 //! \sa IntRegister() for important information about registering interrupt
 //! handlers.
@@ -552,9 +567,9 @@ LPCIntUnregister(unsigned long ulBase)
 //! \param ulBase specifies the LPC module base address.
 //! \param ulIntFlags is a bit mask of the interrupt sources to be enabled.
 //!
-//! Enables the indicated LPC interrupt sources.  Only the sources that are
-//! enabled can be reflected to the processor interrupt; disabled sources have
-//! no effect on the processor.
+//! This function enables the indicated LPC interrupt sources.  Only the
+//! sources that are enabled can be reflected to the processor interrupt;
+//! disabled sources have no effect on the processor.
 //!
 //! The \e ulIntFlags parameter can be any of the following values:
 //! \b LPC_INT_RST, \b LPC_INT_SLEEP, \b LPC_INT_COMx, \b LPC_INT_SIRQ,
@@ -588,9 +603,9 @@ LPCIntEnable(unsigned long ulBase, unsigned long ulIntFlags)
 //! \param ulBase specifies the LPC module base address.
 //! \param ulIntFlags is a bit mask of the interrupt sources to be disabled.
 //!
-//! Disables the indicated LPC interrupt sources.  Only the sources that are
-//! enabled can be reflected to the processor interrupt; disabled sources have
-//! no effect on the processor.
+//! This funciton disables the indicated LPC interrupt sources.  Only the
+//! sources that are enabled can be reflected to the processor interrupt;
+//! disabled sources have no effect on the processor.
 //!
 //! \sa The description of the LPCIntEnable() function provides detailed
 //! information for the bit-mapped values in \e ulIntFlags.
@@ -734,7 +749,7 @@ LPCChannelEnable(unsigned long ulBase, unsigned long ulChannel)
 //! \param ulBase specifies the LPC module base address.
 //! \param ulChannel specifies the LPC channel to disable.
 //!
-//! The specified LPC Channel is disabled.
+//! This function disables the specified LPC Channel.
 //!
 //! \sa The description of the LPCChannelEnable() function provides detailed
 //! information for the values that can be usd for the \e ulChannel parameter.
@@ -769,7 +784,7 @@ LPCChannelDisable(unsigned long ulBase, unsigned long ulChannel)
 //! \param ulAddress specifies the LPC bus address (IO and/or MEM) for this
 //! channel.
 //!
-//! The specified LPC Channel is enabled as an endpoint.
+//! This function enables the specified LPC Channel as an endpoint.
 //!
 //! \return None.
 //
@@ -821,7 +836,7 @@ LPCChannelConfigEPSet(unsigned long ulBase, unsigned long ulChannel,
 //! \param ulAddress specifies the LPC bus address (IO and/or MEM) for this
 //! channel.
 //!
-//! The specified LPC Channel is enabled as a mailbox.
+//! This function enables the specified LPC Channel as a mailbox.
 //!
 //! \return None.
 //
@@ -946,7 +961,8 @@ LPCChannelConfigCOMxSet(unsigned long ulBase, unsigned long ulChannel,
 //! \param pulAddress is a pointer to storage for the channel bus address.
 //! \param pulCOMxMode is a pointer to storage for the channel COMx mode.
 //!
-//! The configuration for the specified channel is determined and returned.
+//! This function determines and returns the configuration for the specified
+//! channel.
 //!
 //! \return Returns the bit-mapped channel control register value.
 //
@@ -979,8 +995,7 @@ LPCChannelConfigGet(unsigned long ulBase, unsigned long ulChannel,
     }
 
     //
-    // Get the IO/Memory address that this endpoint will respond
-    // to.
+    // Get the IO/Memory address that this endpoint responds to.
     //
     if(pulAddress)
     {
@@ -1008,10 +1023,10 @@ LPCChannelConfigGet(unsigned long ulBase, unsigned long ulChannel,
 //! \param ulBase specifies the LPC module base address.
 //! \param ulChannel specifies the LPC channel to configure.
 //!
-//! The absolute address of the channel pool is calculated from the channel
-//! configuration setting and returned.
+//! Thos function calculates the absolute address of the channel pool from the
+//! channel configuration setting and returns it.
 //!
-//! \return Returns absolute base address of the channel pool.
+//! \return Returns the absolute base address of the channel pool.
 //
 //*****************************************************************************
 unsigned long
@@ -1056,7 +1071,8 @@ LPCChannelPoolAddressGet(unsigned long ulBase, unsigned long ulChannel)
 //! \param ulBase specifies the LPC module base address.
 //! \param ulChannel specifies the LPC Channel.
 //!
-//! Reads the status word from an LPC channel and returns it to the caller.
+//! This function reads the status word from an LPC channel and returns it to
+//! the caller.
 //!
 //! \return content of the channel status register.
 //
@@ -1084,7 +1100,8 @@ LPCChannelStatusGet(unsigned long ulBase, unsigned long ulChannel)
 //! \param ulChannel specifies the LPC Channel.
 //! \param ulStatus is the user bit values to set.
 //!
-//! Sets the selected user bits of the status word for an LPC channel.
+//! This function sets the selected user bits of the status word for an LPC
+//! channel.
 //!
 //! \return None
 //
@@ -1103,7 +1120,7 @@ LPCChannelStatusSet(unsigned long ulBase, unsigned long ulChannel,
     ASSERT((ulStatus & (~LPC_CH0ST_USER_M)) == 0);
 
     //
-    // Read thestatus from the LPC Channel, and set new values for
+    // Read the status from the LPC Channel, and set new values for
     // the user bits.
     //
     ulTemp = HWREG(ulBase + LPC_O_CH0ST + (ulChannel * 0x10));
@@ -1119,7 +1136,8 @@ LPCChannelStatusSet(unsigned long ulBase, unsigned long ulChannel,
 //! \param ulChannel specifies the LPC Channel.
 //! \param ulStatus is the user bit values to clear.
 //!
-//! Sets the selected user bits of the status word for an LPC channel.
+//! This function sets the selected user bits of the status word for an LPC
+//! channel.
 //!
 //! \return None
 //
@@ -1138,7 +1156,7 @@ LPCChannelStatusClear(unsigned long ulBase, unsigned long ulChannel,
     ASSERT((ulStatus & (~LPC_CH0ST_USER_M)) == 0);
 
     //
-    // Read thestatus from the LPC Channel, and set new values for
+    // Read the status from the LPC Channel, and set new values for
     // the user bits.
     //
     ulTemp = HWREG(ulBase + LPC_O_CH0ST + (ulChannel * 0x10));
@@ -1154,8 +1172,8 @@ LPCChannelStatusClear(unsigned long ulBase, unsigned long ulChannel,
 //! \param ulConfig specifies the DMA channel configuration.
 //! \param ulMask specifies the configuration mask to be used.
 //!
-//! Sets the specified DMA channel operation based on the \e ulConfig
-//! parameter.
+//! This function sets the specified DMA channel operation based on the
+//! \e ulConfig parameter.
 //!
 //! \return None.
 //
@@ -1192,7 +1210,7 @@ LPCChannelDMAConfigSet(unsigned long ulBase, unsigned long ulConfig,
 //!
 //! \param ulBase specifies the LPC module base address.
 //!
-//! Returns the configuration of the LPC DMA channels.
+//! This function returns the configuration of the LPC DMA channels.
 //!
 //! \return Returns the bit-mapped DMA channel configuration.
 //
@@ -1219,7 +1237,7 @@ LPCChannelDMAConfigGet(unsigned long ulBase)
 //! \param ulOffset specifies the offset from the beginning of the LPC channel
 //! pool.
 //!
-//! This function may be called to read a byte from the channel pool.
+//! This function reads a byte from the channel pool.
 //!
 //! \return Returns the byte read from the pool memory.
 //
@@ -1249,7 +1267,7 @@ LPCByteRead(unsigned long ulBase, unsigned long ulOffset)
 //! pool.
 //! \param ucData specifies the byte to write.
 //!
-//! Ths function may be called to write a byte to the channel pool.
+//! This function writes a byte to the channel pool.
 //!
 //! \return None
 //
@@ -1279,8 +1297,8 @@ LPCByteWrite(unsigned long ulBase, unsigned long ulOffset,
 //! \param ulOffset specifies the offset from the beginning of the LPC channel
 //! pool.
 //!
-//! This function may be called to read a half-word from the channel pool.  The
-//! \e ulOffset specified must be half-word aligned.
+//! This function reads a half-word from the channel pool.  The \e ulOffset
+//! specified must be half-word aligned.
 //!
 //! \return Returns the half-word read from the pool memory.
 //
@@ -1311,8 +1329,8 @@ LPCHalfWordRead(unsigned long ulBase, unsigned long ulOffset)
 //! pool.
 //! \param usData specifies the byte to write.
 //!
-//! Ths function may be called to write a half-word to the channel pool.  The
-//! \e ulOffset specified must be half-word aligned.
+//! This function writes a half-word to the channel pool.  The \e ulOffset
+//! specified must be half-word aligned.
 //!
 //! \return None
 //
@@ -1343,10 +1361,10 @@ LPCHalfWordWrite(unsigned long ulBase, unsigned long ulOffset,
 //! \param ulOffset specifies the offset from the beginning of the LPC channel
 //! pool.
 //!
-//! This function may be called to read a word from the channel pool.  The
-//! \e ulOffset specified must be word aligned.
+//! This function reads a word from the channel pool.  The \e ulOffset
+//! specified must be word aligned.
 //!
-//! \return Returns the half-word read from the pool memory.
+//! \return Returns the word read from the pool memory.
 //
 //*****************************************************************************
 unsigned long
@@ -1368,15 +1386,15 @@ LPCWordRead(unsigned long ulBase, unsigned long ulOffset)
 
 //*****************************************************************************
 //
-//! Writes a byte to the LPC channel pool.
+//! Writes a word to the LPC channel pool.
 //!
 //! \param ulBase specifies the LPC module base address.
 //! \param ulOffset specifies the offset from the beginning of the LPC channel
 //! pool.
-//! \param ulData specifies the byte to write.
+//! \param ulData specifies the word to write.
 //!
-//! Ths function may be called to write a half-word to the channel pool.  The
-//! \e ulOffset specified must be half-word aligned.
+//! This function writes a word to the channel pool.  The \e ulOffset
+//! specified must be word aligned.
 //!
 //! \return None
 //
@@ -1406,8 +1424,8 @@ LPCWordWrite(unsigned long ulBase, unsigned long ulOffset,
 //! \param ulBase specifies the LPC module base address.
 //! \param ulIntFlags is a bit mask of the interrupt sources to be enabled.
 //!
-//! Enables the indicated COMx interrupt sources to trigger the COMx interrupt
-//! in the primary LPC interrupt registers.
+//! This function enables the indicated COMx interrupt sources to trigger the
+//! COMx interrupt in the primary LPC interrupt registers.
 //!
 //! \return None.
 //
@@ -1435,8 +1453,8 @@ LPCCOMxIntEnable(unsigned long ulBase, unsigned long ulIntFlags)
 //! \param ulBase specifies the LPC module base address.
 //! \param ulIntFlags is a bit mask of the interrupt sources to be disabled.
 //!
-//! Disables the indicated COMx interrupt sources from triggering the COMx
-//! interrupt in the primary LPC interrupt registers.
+//! This function disables the indicated COMx interrupt sources from triggering
+//! the COMx interrupt in the primary LPC interrupt registers.
 //!
 //! \return None.
 //
@@ -1500,8 +1518,8 @@ LPCCOMxIntStatus(unsigned long ulBase, tBoolean bMasked)
 //! \param ulBase specifies the LPC module base address.
 //! \param ulIntFlags is a bit mask of the interrupt sources to be cleared.
 //!
-//! The specified COMx interrupt sources are cleared so that they no longer
-//! assert.
+//! This function clears the specified COMx interrupt sources so that they no
+//! longer assert.
 //!
 //! \return None.
 //

@@ -394,7 +394,6 @@ void USBDeviceIntHandlerInternal(unsigned long ulIndex, unsigned long ulStatus)
 }
 
 
-
 void usb_Init()
 {
 
