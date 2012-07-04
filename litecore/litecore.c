@@ -88,18 +88,7 @@ dque	dqueue = {ARR_SIZE(__dqueue), __dqueue};
 //-------------------------------------------------------------------------
 //Memory Technology Device Modules
 //-------------------------------------------------------------------------
-#if INTFLASH_ENABLE
-#include <drivers/intflash.c>
-#endif
-#if NORFLASH_ENABLE
-#include <drivers/norflash.c>
-#endif	  
-#if SPIFLASH_ENABLE
-#include <drivers/spiflash.c>
-#endif
-#if FLASH_ENABLE
 #include <sys/flash.c>
-#endif
 
 
 //-------------------------------------------------------------------------

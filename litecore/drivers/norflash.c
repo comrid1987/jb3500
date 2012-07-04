@@ -90,7 +90,7 @@ sys_res norf_Erase(adr_t adr)
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-sys_res norf_nolockProgram(adr_t adr, void *pBuf, uint_t nLen)
+sys_res norf_nolockProgram(adr_t adr, const void *pBuf, uint_t nLen)
 {
 	uint_t nData;
 	uint8_t *pData = (uint8_t *)pBuf;
@@ -122,7 +122,7 @@ sys_res norf_nolockProgram(adr_t adr, void *pBuf, uint_t nLen)
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-sys_res norf_Program(adr_t adr, void *pBuf, uint_t nLen)
+sys_res norf_Program(adr_t adr, const void *pBuf, uint_t nLen)
 {
 	sys_res res;
 	

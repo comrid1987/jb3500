@@ -37,6 +37,9 @@ extern "C" {
 #define __IO	volatile
 
 
+#if defined ( __CC_ARM   )
+#pragma anon_unions
+#endif
 
 /*------------- General Purpose Input/Output (GPIO) --------------------------*/
 typedef struct
@@ -121,6 +124,9 @@ typedef struct
 #define LPC_UART0             ((LPC_UART_TypeDef     *) 0xE000C000    )
 #define LPC_UART1             ((LPC_UART_TypeDef     *) 0xE0010000    )
 
+#if defined ( __CC_ARM   )
+#pragma no_anon_unions
+#endif
 
 
 

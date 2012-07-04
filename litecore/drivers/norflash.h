@@ -26,8 +26,8 @@ void norf_Init(void);
 sys_res norf_EraseChip(void);
 sys_res norf_nolockErase(adr_t adr);
 sys_res norf_Erase(adr_t adr);
-sys_res norf_nolockProgram(adr_t adr, void *pBuf, uint_t nSize);
-sys_res norf_Program(adr_t adr, void *pBuf, uint_t nSize);
+sys_res norf_nolockProgram(adr_t adr, const void *pBuf, uint_t nSize);
+sys_res norf_Program(adr_t adr, const void *pBuf, uint_t nSize);
 sys_res norf_Read(adr_t adr, void *pBuf, uint_t nLen);
 
 

@@ -12,8 +12,8 @@
  * 2011-06-15     aozima       the first version for lpc214x
  */
 
-#include <os/rtt/rtthread.h>
-#include <arch/arm7/lpc22xx/arch.h>
+#include <litecore.h>
+
 
 #define MAX_HANDLERS	32
 #define SVCMODE		    0x13

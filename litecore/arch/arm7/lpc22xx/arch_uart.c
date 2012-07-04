@@ -160,7 +160,7 @@ void arch_UartScReset(uint_t nId, uint_t nHL)
 //-------------------------------------------------------------------------
 void arch_UartSend(uint_t nId, const void *pData, uint_t nLen)
 {
-	LPC_UART_TypeDef *pUart = lpc176x_tblUartBase[nId];
+	LPC_UART_TypeDef *pUart = lpc22xx_tblUartBase[nId];
 	uint8_t *pBuf = (uint8_t *)pData;
 
 	for (; nLen; nLen--) {
@@ -176,7 +176,7 @@ void arch_UartSend(uint_t nId, const void *pData, uint_t nLen)
 //-------------------------------------------------------------------------
 int arch_UartGetChar(uint_t nId)
 {
-	LPC_UART_TypeDef *pUart = lpc176x_tblUartBase[nId];
+	LPC_UART_TypeDef *pUart = lpc22xx_tblUartBase[nId];
 
 	while ((pUart->LSR & LSR_RDR) == 0);
 	return pUart->RBR;
@@ -189,12 +189,12 @@ int arch_UartGetChar(uint_t nId)
 //-------------------------------------------------------------------------
 void arch_UartISR(uint_t nId)
 {
-	LPC_UART_TypeDef *pUart = lpc176x_tblUartBase[nId];
+	LPC_UART_TypeDef *pUart = lpc22xx_tblUartBase[nId];
 	p_dev_uart p;
 	uint8_t aTemp[16], *pTemp = aTemp;
 	int i;
 
-	p = lpc176x_uart_dev[nId];
+	p = lpc22xx_uart_dev[nId];
 
 	if ((pUart->IIR & IIR_PEND) == 0) {
 		while (pUart->LSR & LSR_RDR) {

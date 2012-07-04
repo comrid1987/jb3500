@@ -1,28 +1,17 @@
-#if FLASH_ENABLE
 
 
-
-sys_res flash_Erase(uint_t nDev, adr_t nAdr)
-{
-	sys_res res;
-
-	switch (nDev) {
 #if INTFLASH_ENABLE
-	case FLASH_DEV_INT:
-		res = intf_Erase(nAdr);
-		break;
+#include <drivers/intflash.c>
 #endif
 #if NORFLASH_ENABLE
-	case FLASH_DEV_EXTNOR:
-		res = norf_Erase(nAdr);
-		break;
+#include <drivers/norflash.c>
+#endif	  
+#if SPIFLASH_ENABLE
+#include <drivers/spiflash.c>
 #endif
-	default:
-		res = SYS_R_EMPTY;
-		break;
-	}
-	return res;
-}
+
+
+
 
 sys_res flash_nolockErase(uint_t nDev, adr_t nAdr)
 {
@@ -46,7 +35,52 @@ sys_res flash_nolockErase(uint_t nDev, adr_t nAdr)
 	return res;
 }
 
+sys_res flash_nolockProgram(uint_t nDev, adr_t nAdr, const void *pData, uint_t nLen)
+{
+	sys_res res;
 
+	switch (nDev) {
+#if INTFLASH_ENABLE
+	case FLASH_DEV_INT:
+		res = intf_nolockProgram(nAdr, pData, nLen);
+		break;
+#endif
+#if NORFLASH_ENABLE
+	case FLASH_DEV_EXTNOR:
+		res = norf_nolockProgram(nAdr, pData, nLen);
+		break;
+#endif
+	default:
+		res = SYS_R_EMPTY;
+		break;
+	}
+	return res;
+}
+
+
+#if FLASH_ENABLE
+
+sys_res flash_Erase(uint_t nDev, adr_t nAdr)
+{
+	sys_res res;
+
+	switch (nDev) {
+#if INTFLASH_ENABLE
+	case FLASH_DEV_INT:
+		res = intf_Erase(nAdr);
+		break;
+#endif
+#if NORFLASH_ENABLE
+	case FLASH_DEV_EXTNOR:
+		res = norf_Erase(nAdr);
+		break;
+#endif
+	default:
+		res = SYS_R_EMPTY;
+		break;
+	}
+	return res;
+}
 
 sys_res flash_Program(uint_t nDev, adr_t nAdr, const void *pData, uint_t nLen)
 {
@@ -61,28 +95,6 @@ sys_res flash_Program(uint_t nDev, adr_t nAdr, const void *pData, uint_t nLen)
 #if NORFLASH_ENABLE
 	case FLASH_DEV_EXTNOR:
 		res = norf_Program(nAdr, pData, nLen);
-		break;
-#endif
-	default:
-		res = SYS_R_EMPTY;
-		break;
-	}
-	return res;
-}
-
-sys_res flash_nolockProgram(uint_t nDev, adr_t nAdr, const void *pData, uint_t nLen)
-{
-	sys_res res;
-
-	switch (nDev) {
-#if INTFLASH_ENABLE
-	case FLASH_DEV_INT:
-		res = intf_nolockProgram(nAdr, pData, nLen);
-		break;
-#endif
-#if NORFLASH_ENABLE
-	case FLASH_DEV_EXTNOR:
-		res = norf_nolockProgram(nAdr, pData, nLen);
 		break;
 #endif
 	default:
@@ -157,6 +169,9 @@ static void _flash_Flush(uint_t nDelay)
 #endif
 #if NORFLASH_ENABLE
 		case FLASH_DEV_EXTNOR:
+			nAdr = p->sector * NORFLASH_BLK_SIZE;
+			norf_Erase(nAdr);
+			norf_Program(nAdr, p->fbuf, NORFLASH_BLK_SIZE);
 			break;
 #endif
 #if SPIFLASH_ENABLE
