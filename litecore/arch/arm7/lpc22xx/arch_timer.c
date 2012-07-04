@@ -16,20 +16,12 @@ void arch_TimerInit(uint_t nId)
 
 	switch (nId) {
 	case 0:
-		SETBIT(LPC_SC->PCONP, 1);
-		NVIC_EnableIRQ(TIMER0_IRQn);
+		rt_hw_interrupt_install(TIMER0_INT, TIMER0_IRQHandler, RT_NULL);
+		rt_hw_interrupt_umask(TIMER0_INT);
 		break;
 	case 1:
-		SETBIT(LPC_SC->PCONP, 2);
-		NVIC_EnableIRQ(TIMER1_IRQn);
-		break;
-	case 2:
-		SETBIT(LPC_SC->PCONP, 22);
-		NVIC_EnableIRQ(TIMER2_IRQn);
-		break;
-	case 3:
-		SETBIT(LPC_SC->PCONP, 23);
-		NVIC_EnableIRQ(TIMER3_IRQn);
+		rt_hw_interrupt_install(TIMER1_INT, TIMER1_IRQHandler, RT_NULL);
+		rt_hw_interrupt_umask(TIMER1_INT);
 		break;
 	default:
 		break;
@@ -50,7 +42,6 @@ void arch_TimerStart(uint_t nId, uint_t nValue)
 	pTimer->TCR = BITMASK(1);
 	pTimer->TC = 0;
 	pTimer->IR = BITMASK(0);
-	pTimer->CTCR = 0;
 	pTimer->PR = 0;
 	pTimer->PC = 0;
 	pTimer->MR0 = nValue;

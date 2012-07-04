@@ -261,6 +261,7 @@
 #define SSPICR         (*((volatile unsigned char *) 0xE005C020))
 
 /* Real Time Clock (RTC) */
+#if 0
 #define ILR            (*((volatile unsigned char *) 0xE0024000))
 #define CTC            (*((volatile unsigned short*) 0xE0024004))
 #define CCR            (*((volatile unsigned char *) 0xE0024008))
@@ -287,6 +288,7 @@
 #define ALYEAR         (*((volatile unsigned short*) 0xE002407C))
 #define PREINT         (*((volatile unsigned short*) 0xE0024080))
 #define PREFRAC        (*((volatile unsigned short*) 0xE0024084))
+#endif
 
 /* Analog to Digital Converter (ADC) */
 #define ADCR           (*((volatile unsigned long *) 0xE0034000))
@@ -431,5 +433,6 @@
 #define WDTC           (*((volatile unsigned long *) 0xE0000004))
 #define WDFEED         (*((volatile unsigned char *) 0xE0000008))
 #define WDTV           (*((volatile unsigned long *) 0xE000000C))
+
 
 #endif  // __LPC22xx_H

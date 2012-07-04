@@ -58,9 +58,8 @@ void arch_GpioConf(uint_t nPort, uint_t nPin, uint_t nMode, uint_t nInit)
 			break;
 		}
 		SETBIT(p->FIODIR, nPin);
-	} else {
+	} else
 		CLRBIT(p->FIODIR, nPin);
-	}
 	//Set as GPIO function
 	arch_GpioSel(nPort, nPin, 0);
 }

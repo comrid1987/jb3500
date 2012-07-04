@@ -21,10 +21,12 @@ extern "C" {
 #elif MCU_FREQUENCY == MCU_SPEED_HALF
 #error "not support half speed yet"
 #else
-#define MCU_CLOCK			11059200UL
+#define MCU_CLOCK			__CORE_CLK
 #endif
 
-#define PERI_CLOCK			(__CORE_CLK / 4)
+#define __CORE_CLK			(11059200 * 4)			//系统频率，必须为OSC_CLK的整数倍(1~32)，且<=60MHZ
+#define FCCO_CLK			(__CORE_CLK * 4)		//CCO频率，必须为__CORE_CLK的2、4、8、16倍，范围为156MHz~320MHz
+#define PERI_CLOCK			(__CORE_CLK / 4)		//VPB时钟频率，只能为(__CORE_CLK / 4)的1 ~ 4倍
 
 
 
@@ -122,14 +124,10 @@ typedef struct
 
 
 
-
-
-
-
 /*------------- Interrupt (IRQ) -------------------------------------------------*/
 #define VIC_BASE_ADDR	0xFFFFF000
 
-enum LPC214x_INT
+enum LPC22xx_INT
 {
 	WDT_INT	= 0,
 	SW_INT_reserved,
