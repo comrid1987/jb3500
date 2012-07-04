@@ -190,17 +190,16 @@ static void disp_Handle(uint_t nSel)
 	ht1621_Write(iDIGIT7, BLANK);
 #if MODEM_ENABLE
     nTemp = modem_GetSignal();
-    if((nTemp > 0)&&(nTemp != 99)){
-        if(nTemp < 2)
-            ht1621_Write(iConGprs, 0x01);
-        if((nTemp < 5)&&(nTemp >= 2))
-            ht1621_Write(iConGprs, 0x03);
-        if((nTemp < 10)&&(nTemp >= 5))
-             ht1621_Write(iConGprs, 0x07);
-        if(nTemp >= 10)
-             ht1621_Write(iConGprs, 0x0F);
-    }
-	else
+	if ((nTemp > 0) && (nTemp != 99)){
+		if (nTemp < 6)
+			ht1621_Write(iConGprs, 0x01);
+		else if (nTemp < 12)
+			ht1621_Write(iConGprs, 0x03);
+        else if (nTemp < 20)
+			ht1621_Write(iConGprs, 0x07);
+		else
+			ht1621_Write(iConGprs, 0x0F);
+    } else
 		ht1621_Write(iConGprs, BLANK);
 	if (rcp_IsLogin() == SYS_R_OK)
 		ht1621_Write(iConOnline, IconPhone);
