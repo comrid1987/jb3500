@@ -14,7 +14,6 @@ extern "C" {
 #include <sys/dev.h>
 
 #include <sys/battery.h>
-#include <sys/flash.h>
 #include <sys/gpio.h>
 #include <sys/i2c.h>
 #include <sys/iap.h>

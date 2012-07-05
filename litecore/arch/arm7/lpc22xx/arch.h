@@ -24,8 +24,8 @@ extern "C" {
 #define MCU_CLOCK			__CORE_CLK
 #endif
 
-#define __CORE_CLK			(11059200 * 4)			//系统频率，必须为OSC_CLK的整数倍(1~32)，且<=60MHZ
-#define FCCO_CLK			(__CORE_CLK * 4)		//CCO频率，必须为__CORE_CLK的2、4、8、16倍，范围为156MHz~320MHz
+#define __CORE_CLK			(11059200 * 5)			//系统频率，必须为OSC_CLK的整数倍(1~32)，且<=60MHZ
+#define FCCO_CLK			(__CORE_CLK * 2)		//CCO频率，必须为__CORE_CLK的2、4、8、16倍，范围为156MHz~320MHz
 #define PERI_CLOCK			(__CORE_CLK / 4)		//VPB时钟频率，只能为(__CORE_CLK / 4)的1 ~ 4倍
 
 
@@ -71,7 +71,7 @@ typedef struct
 	__IO uint32_t MR1;
 	__IO uint32_t MR2;
 	__IO uint32_t MR3;
-	__I  uint32_t CCR0;
+	__IO uint32_t CCR0;
 	__I  uint32_t CR0;
 	__I  uint32_t CR1;
 	__I  uint32_t CR2;

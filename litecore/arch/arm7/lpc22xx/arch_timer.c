@@ -46,6 +46,7 @@ void arch_TimerStart(uint_t nId, uint_t nValue)
 	pTimer->PC = 0;
 	pTimer->MR0 = nValue;
 	pTimer->MCR = BITMASK(0) | BITMASK(1);
+	pTimer->CCR0 = 0x0C00;
 	pTimer->TCR = BITMASK(0);
 }
 

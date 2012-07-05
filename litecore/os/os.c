@@ -85,8 +85,14 @@ void os_Start()
 	rt_system_timer_init();
 #ifdef RT_USING_HEAP
 #if EXTSRAM_ENABLE
-	rt_memset((void *)EXTSRAM_BASE_ADR, 0, EXTSRAM_SIZE);
-	rt_system_heap_init((void*)EXTSRAM_BASE_ADR, (void*)(EXTSRAM_BASE_ADR + EXTSRAM_SIZE));
+	#ifdef __CC_ARM
+		rt_system_heap_init((void*)&Image$$RW_IRAM1$$ZI$$Limit, (void*)(EXTSRAM_BASE_ADR + EXTSRAM_SIZE));
+	#elif __ICCARM__
+		rt_system_heap_init(__segment_end("HEAP"), (void*)(EXTSRAM_BASE_ADR + EXTSRAM_SIZE));
+	#else
+		/* init memory system */
+		rt_system_heap_init((void*)&__bss_end, (void*)(EXTSRAM_BASE_ADR + EXTSRAM_SIZE));
+	#endif
 #else	
 	#ifdef __CC_ARM
 		rt_system_heap_init((void*)&Image$$RW_IRAM1$$ZI$$Limit, (void*)(MCU_SRAM_BASE_ADR + MCU_SRAM_SIZE));

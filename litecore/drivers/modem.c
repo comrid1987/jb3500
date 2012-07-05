@@ -316,24 +316,23 @@ static int modem_IsPowerOnEnable()
 {
 	p_modem p = &gsmModem[MODEM_PPP_ID];
 	int res = 1;
-	struct tm *pTm;
 	static uint8_t nHour;
 
 	if (p->retrytime) {
-		pTm = rtc_pTm();
 		if (p->retryed >= p->retrytime) {
 			res = 0;
-			if (nHour != pTm->tm_hour)
+			if (nHour != rtc_pTm()->tm_hour)
 				p->retryed = 0;
 		} else
-			nHour = pTm->tm_hour;
+			nHour = rtc_pTm()->tm_hour;
 	}
-	if (res)
+	if (res) {
 		if (p->cnt++ > p->span) {
 			p->cnt = 0;
 			p->retryed += 1;
 		} else
 			res = 0;
+	}
 	return res;
 }
 
@@ -428,7 +427,7 @@ void modem_Run()
 			modem_Act(pDef, 0);
 		if (p->cnt == 11) {
 			modem_Act(pDef, 1);
-			uart_Config(p->uart, 115200, UART_PARI_NO, UART_DATA_8D, UART_STOP_1D); //打开串口，设置串口参数
+			uart_Config(p->uart, pDef->baud, UART_PARI_NO, UART_DATA_8D, UART_STOP_1D); //打开串口，设置串口参数
 		}
 		if (p->cnt > 16) {
 			p->ste = MODEM_S_INIT;

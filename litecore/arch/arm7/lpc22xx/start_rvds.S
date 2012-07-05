@@ -62,7 +62,7 @@ SVC_Stack_Size  EQU     0x00000100
 ABT_Stack_Size  EQU     0x00000000
 FIQ_Stack_Size  EQU     0x00000000
 IRQ_Stack_Size  EQU     0x00000100
-USR_Stack_Size  EQU     0x00000100
+USR_Stack_Size  EQU     0x00000200
 
 ISR_Stack_Size  EQU     (UND_Stack_Size + SVC_Stack_Size + ABT_Stack_Size + \
                          FIQ_Stack_Size + IRQ_Stack_Size)
@@ -268,7 +268,7 @@ Reset_Handler
 
 
 ; Setup External Memory Pins
-                IF      :DEF:EXTERNAL_MODE
+                IF      EMC_SETUP <> 0
                 LDR     R0, =PINSEL2
                 LDR     R1, =PINSEL2_Val
                 STR     R1, [R0]

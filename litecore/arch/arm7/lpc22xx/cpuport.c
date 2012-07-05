@@ -173,7 +173,7 @@ void rt_hw_trap_irq()
 	isr_func(0);
 
 	/* acknowledge Interrupt */
-	// VICVectAddr = 0;
+	VICVectAddr = 0;
 }
 
 void rt_hw_trap_fiq()

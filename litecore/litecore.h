@@ -16,7 +16,9 @@ extern "C" {
 #include <lib/lib.h>
 
 #if OS_TYPE
+#include <mtd/flash.h>
 #include <fs/fs.h>
+
 #include <chl/chl.h>
 
 #include <reg/reg.h>

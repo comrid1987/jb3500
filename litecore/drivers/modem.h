@@ -43,6 +43,7 @@ typedef struct {
 
 typedef const struct {
 	uint8_t		uartid;
+	uint32_t	baud;
 	uint8_t		act_effect;
 	t_gpio_def	act;
 #if MODEM_PWR_ENABLE

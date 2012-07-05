@@ -90,6 +90,7 @@ sys_res norf_Erase(adr_t adr)
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
+#if 0
 sys_res norf_nolockProgram(adr_t adr, const void *pBuf, uint_t nLen)
 {
 	uint_t nData;
@@ -118,6 +119,29 @@ sys_res norf_nolockProgram(adr_t adr, const void *pBuf, uint_t nLen)
 	}
 	return SYS_R_OK;
 }
+#else
+sys_res norf_nolockProgram(adr_t adr, const void *pBuf, uint_t nLen)
+{
+	uint_t nData;
+	uint8_t *pData = (uint8_t *)pBuf;
+
+	for (nLen += adr; adr < nLen; adr += 2, pData += 2) {
+		nData = (*(pData + 1) << 8) | *pData;
+		if (*(volatile uint16_t *)adr == nData)
+			continue;
+		sysAddress(0x0555) = 0x00AA;
+		sysAddress(0x02AA) = 0x0055;
+		sysAddress(0x0555) = 0x00A0;
+		specAddress(adr) = nData;
+		if (norf_IsToggleDone(adr, 0) != SYS_R_OK) {
+			//Ê§°Ü, ¸´Î»Flash
+			specAddress(NORFLASH_BASE_ADR) = 0x00F0;
+			return SYS_R_TMO;
+		}
+	}
+	return SYS_R_OK;
+}
+#endif
 
 //-------------------------------------------------------------------------
 //

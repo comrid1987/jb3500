@@ -1,5 +1,7 @@
 #if GUI_LCD_TYPE == GUI_LCD_T_160_UC1698
 
+//Private Defines
+#define LCD_DELAY					3
 
 //============================================================
 //¼Ä´æÆ÷Ö¸Áî
@@ -73,11 +75,6 @@ static uint8_t gui_aBuf[LCD_Y_MAX][LCD_X_MAX / 2];
 #endif
 
 //Private Macros
-#if EPI_ENABLE
-#define lcd_WriteCmd(v)		__raw_writeb((v), GUI_LCD_ADR_CMD)
-#define lcd_WriteData(v)	__raw_writeb((v), GUI_LCD_ADR_DATA)
-#endif
-
 #define lcd_Rst(x)			sys_GpioSet(gpio_node(tbl_bspLcdCtrl, 0), (x))
 #define lcd_Bgc(x)			sys_GpioSet(gpio_node(tbl_bspLcdCtrl, 1), (x))
 
@@ -124,7 +121,21 @@ static const uint8_t uc1698_tblParam[] = {
 	UC1698_SetDE | 5,	//display on,select on/off mode.Green Enhance mode disable
 };
 
-#if EPI_ENABLE == 0
+#if EPI_ENABLE
+void lcd_WriteCmd(int nData)
+{
+
+	__raw_writeb(nData, GUI_LCD_ADR_CMD);
+	sys_Delay(LCD_DELAY);
+}
+
+void lcd_WriteData(int nData)
+{
+
+	__raw_writeb(nData, GUI_LCD_ADR_DATA);
+	sys_Delay(LCD_DELAY);
+}
+#else
 static lcd_SpiSend(int nData)
 {
 	p_dev_spi p;
@@ -207,7 +218,7 @@ void lcd_Init()
 	sys_Delay(1000);
 	lcd_Rst(1);//rst high
 	//Initialize
-	//lcd_WriteCmd(UC1698_SetRST);		//reset by command
+	lcd_WriteCmd(UC1698_SetRST);		//reset by command
 	os_thd_Sleep(150);
 }
 
