@@ -26,7 +26,7 @@ static void iap_SetFlag(uint32_t nSize)
 
 	//检查传输过程是否有漏包(超过256个字节0xFF)
 	for (nLen = 0; nLen < nSize; i++, nLen += sizeof(aBuf)) {
-		spif_Read((UPDATE_SECTOR_START + 1) * SPIF_SEC_SIZE + nLen, aBuf, sizeof(aBuf));
+		spif_Read((UPDATE_SECTOR_BOOT + 1) * SPIF_SEC_SIZE + nLen, aBuf, sizeof(aBuf));
 		for (i = 0; i < sizeof(aBuf); i++)
 			if (aBuf[i] != 0xFF)
 				break;
@@ -36,7 +36,7 @@ static void iap_SetFlag(uint32_t nSize)
 	if (nLen >= nSize) {
 		iap.magic = IAP_MAGIC_WORD;
 		iap.size = nSize;
-		spif_Write(UPDATE_SECTOR_START * SPIF_SEC_SIZE, &iap, sizeof(struct iap_info));
+		spif_Write(UPDATE_SECTOR_BOOT * SPIF_SEC_SIZE, &iap, sizeof(struct iap_info));
 		flash_Flush(0);
 	}
 }
@@ -81,7 +81,7 @@ int gw3761_ResponseFileTrans(p_gw3761 p, buf b, u_word2 *pDu, uint8_t **ppData)
 		default:
 			if (pft->sector != pft->offset)
 				nUpdateOffset = (pft->offset - 1) * pft->size;
-			spif_Write((UPDATE_SECTOR_START + 1) * SPIF_SEC_SIZE + nUpdateOffset, pft->data, pft->size);
+			spif_Write((UPDATE_SECTOR_BOOT + 1) * SPIF_SEC_SIZE + nUpdateOffset, pft->data, pft->size);
 			nUpdateOffset += pft->size;
 			*ppData += pft->size;
 			if (pft->sector == pft->offset) {
