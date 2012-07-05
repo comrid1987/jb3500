@@ -3,6 +3,9 @@
 #if INTFLASH_ENABLE
 #include <drivers/intflash.c>
 #endif
+#if NANDFLASH_ENABLE
+#include <drivers/nandflash.c>
+#endif
 #if NORFLASH_ENABLE
 #include <drivers/norflash.c>
 #endif	  

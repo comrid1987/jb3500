@@ -102,12 +102,6 @@ dque	dqueue = {ARR_SIZE(__dqueue), __dqueue};
 //-------------------------------------------------------------------------
 //External Parallel Interface Modules
 //-------------------------------------------------------------------------
-#if NORFLASH_ENABLE
-
-#endif
-#if NANDFLASH_ENABLE
-#include <drivers/nandflash.c>
-#endif
 #if GUI_ENABLE
 #include <hi/gui.c>
 #endif

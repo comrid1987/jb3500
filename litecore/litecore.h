@@ -26,10 +26,6 @@ extern "C" {
 
 #include <dbg/dbg.h>
 
-#if SPIFLASH_ENABLE
-#include <drivers/spiflash.h>
-#endif
-
 #if MODEM_ENABLE
 #include <drivers/modem.h>
 #endif

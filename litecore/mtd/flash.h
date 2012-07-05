@@ -2,15 +2,23 @@
 #define __SYS_FLASH_H__
 
 
-
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
-
-
+//Header Files
+#if INTFLASH_ENABLE
+#include <drivers/intflash.h>
+#endif
+#if NANDFLASH_ENABLE
+#include <drivers/nandflash.h>
+#endif	  
+#if NORFLASH_ENABLE
+#include <drivers/norflash.h>
+#endif	  
+#if SPIFLASH_ENABLE
+#include <drivers/spiflash.h>
+#endif
 
 
 
@@ -55,7 +63,6 @@ void spif_Write(uint_t nAdr, const void *pBuf, uint_t nLen);
 void spif_Fill(uint_t nAdr, uint_t nEnd, uint_t nVal);
 
 void flash_Flush(uint_t nDelay);
-
 
 
 
