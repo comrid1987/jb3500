@@ -10,15 +10,15 @@ static void lpc176x_ExtIrqISR()
 	if (LPC_GPIOINT->IntStatus & BITMASK(0)) {
 		for (i = 0; i < ARCH_EXTIRQ_QTY / 2; i++)
 			if ((LPC_GPIOINT->IO0IntStatR & BITMASK(i)) || (LPC_GPIOINT->IO0IntStatF & BITMASK(i))) {
-				SETBIT(LPC_GPIOINT->IO0IntClr, i);
 				irq_ExtISR(i);
+				SETBIT(LPC_GPIOINT->IO0IntClr, i);
 			}
 	}
 	if (LPC_GPIOINT->IntStatus & BITMASK(2)) {
 		for (i = 0; i < ARCH_EXTIRQ_QTY / 2; i++)
 			if ((LPC_GPIOINT->IO2IntStatR & BITMASK(i)) || (LPC_GPIOINT->IO2IntStatF & BITMASK(i))) {
-				SETBIT(LPC_GPIOINT->IO2IntClr, i);
 				irq_ExtISR(ARCH_EXTIRQ_QTY / 2 + i);
+				SETBIT(LPC_GPIOINT->IO2IntClr, i);
 			}
 	}
 }
@@ -26,8 +26,8 @@ static void lpc176x_ExtIrqISR()
 static void lpc176x_TimerISR(uint_t nId)
 {
 
-	arch_TimerIntClear(nId);
 	irq_TimerISR(nId);
+	arch_TimerIntClear(nId);
 }
 
 
@@ -41,15 +41,6 @@ int arch_ExtIrqRegister(uint_t nPort, uint_t nPin, uint_t nTriggerMode)
 	if (nPort)
 		return (ARCH_EXTIRQ_QTY / 2 + nPin);
 	return nPin;
-}
-
-void arch_ExtIrqClear(uint_t nPort, uint_t nPin)
-{
-
-	if (nPort)
-		SETBIT(LPC_GPIOINT->IO2IntClr, nPin);
-	else
-		SETBIT(LPC_GPIOINT->IO0IntClr, nPin);
 }
 
 void arch_ExtIrqEnable(uint_t nPort, uint_t nPin, uint_t nMode)

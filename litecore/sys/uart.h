@@ -62,9 +62,6 @@ typedef struct {
 #define UART_FUN_SC				1
 #define UART_FUN_IRDA			2
 
-#define IRDA_MODE_PWM			0
-#define IRDA_MODE_TIM			1
-
 #define UART_MODE_POLL			0
 #define UART_MODE_IRQ			1
 
@@ -80,7 +77,11 @@ typedef struct {
 #define UART_STOP_1_5D			2
 #define UART_STOP_2D			3
 
+#define IRDA_MODE_PWM			0
+#define IRDA_MODE_TIM			1
 
+#define SWUART_RX_M_EINT		0
+#define SWUART_RX_M_CAP			1
 
 
 

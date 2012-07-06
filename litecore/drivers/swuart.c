@@ -65,9 +65,9 @@ static void swuart_RxStart(void *args)
 	t_swuart *p = (t_swuart *)args;
 	p_uart_def pDef = p->parent->def;
 
-	p->rxste = SWUART_DATA_1;
 	irq_ExtDisable(p->rxint);
-	irq_TimerStart(pDef->id, p->tick + (p->tick >> 1) - 200);
+	p->rxste = SWUART_DATA_1;
+	irq_TimerStart(pDef->id, p->tick + (p->tick >> 8));
 }
 
 static void swuart_IrdaTimer(void *args)
@@ -122,7 +122,9 @@ static void swuart_RxTx(void *args)
 	int nData;
 	uint_t nPort, nPin;
 
-	if (p->rxste != SWUART_IDLE) {
+	if (p->rxste == SWUART_IDLE) {
+
+	} else {
 		nPort = pDef->rxport;
 		nPin = pDef->rxpin;
 		switch (p->rxste) {
@@ -167,7 +169,8 @@ static void swuart_RxTx(void *args)
 #elif IO_BUF_TYPE == BUF_T_DQUEUE
 			dque_Push(dqueue, pUart->parent->id | UART_DQUE_RX_CHL, &p->rxdata, 1);
 #endif
-			irq_ExtEnable(p->rxint);
+			if (p->txste == SWUART_IDLE)
+				irq_ExtEnable(p->rxint);
 			if (pUart->para.stop == UART_STOP_1D)
 				p->rxste = SWUART_WAIT_1;
 			else
@@ -199,9 +202,11 @@ static void swuart_RxTx(void *args)
 		case SWUART_START_BIT:
 #if IO_BUF_TYPE == BUF_T_BUFFER
 			if (p->buftx->len == 0) {
-				irq_ExtEnable(p->rxint);
-				irq_TimerStop(pDef->id);
 				p->txste = SWUART_IDLE;
+				if (p->rxste == SWUART_IDLE) {
+					irq_ExtEnable(p->rxint);
+					irq_TimerStop(pDef->id);
+				}
 				break;
 			}
 			p->txdata = pUart->buftx->p[0];
@@ -209,9 +214,11 @@ static void swuart_RxTx(void *args)
 #elif IO_BUF_TYPE == BUF_T_DQUEUE
 			nData = dque_PopChar(dqueue, pUart->parent->id | UART_DQUE_TX_CHL);
 			if (nData < 0) {
-				irq_ExtEnable(p->rxint);
-				irq_TimerStop(pDef->id);
 				p->txste = SWUART_IDLE;
+				if (p->rxste == SWUART_IDLE) {
+					irq_ExtEnable(p->rxint);
+					irq_TimerStop(pDef->id);
+				}
 				break;
 			}
 			p->txdata = nData;
@@ -272,11 +279,17 @@ static void swuart_RxTx(void *args)
 		case SWUART_STOP_1:
 			swuart_TxOut(pDef, 1);
 			if (pUart->para.stop == UART_STOP_1D)
-				p->txste = SWUART_START_BIT;
+				p->txste = SWUART_WAIT_1;
 			else
 				p->txste = SWUART_STOP_2;
 			break;
 		case SWUART_STOP_2:
+		case SWUART_WAIT_1:
+		case SWUART_WAIT_2:
+		case SWUART_WAIT_3:
+			p->txste += 1;
+			break;
+		case SWUART_WAIT_4:
 			p->txste = SWUART_START_BIT;
 			break;
 		default:
@@ -322,7 +335,14 @@ void swuart_Init(p_dev_uart p)
 		arch_GpioConf(pDef->rxport, pDef->rxpin, GPIO_M_OUT_OD, GPIO_INIT_HIGH);
 	else
 #endif
+	{
 		arch_GpioConf(pDef->rxport, pDef->rxpin, nRxMode, GPIO_INIT_NULL);
+#if SWUART_RX_MODE == SWUART_RX_M_EINT
+		arch_ExtIrqRxConf(pDef->rxport, pDef->rxpin);
+#else
+		arch_TimerCapConf(pDef->rxport, pDef->rxpin);
+#endif
+	}
 
 	//Tx Pin Init
 	switch (pDef->fun) {
@@ -351,7 +371,7 @@ void swuart_Init(p_dev_uart p)
 #endif
 	default:
 		arch_GpioConf(pDef->txport, pDef->txpin, nTxMode, GPIO_INIT_HIGH);
-		xUart.baud = 115200;
+		xUart.baud = 4800;
 		break;
 	}
 	xUart.pari = UART_PARI_EVEN;
@@ -375,11 +395,15 @@ sys_res swuart_Open(uint_t nId, p_uart_para pPara)
 		memcpy(&p->para, pPara, sizeof(p->para));
 		pSW->tick = arch_TimerClockGet() / pPara->baud;
 		irq_TimerRegister(nId, swuart_RxTx, pSW);
+#if SWUART_RX_MODE == SWUART_RX_M_EINT
 		nIntId = irq_ExtRegister(pDef->rxport, pDef->rxpin, IRQ_TRIGGER_FALLING, swuart_RxStart, pSW, IRQ_MODE_NORMAL);
 		if (nIntId == -1)
 			return SYS_R_ERR;
 		pSW->rxint = nIntId;
 		irq_ExtEnable(nIntId);
+#else
+		arch_TimerCapStart(nId);
+#endif
 	}
 	return SYS_R_OK;
 }

@@ -65,12 +65,6 @@ int arch_ExtIrqRegister(uint_t nPort, uint_t nPin, uint_t nTriggerMode)
 	return nPort;
 }
 
-void arch_ExtIrqClear(uint_t nPort, uint_t nPin)
-{
-
-	MAP_GPIOPinIntClear(arch_GpioPortBase(nPort), BITMASK(nPin));
-}
-
 void arch_ExtIrqEnable(uint_t nPort, uint_t nPin, uint_t nMode)
 {
 	uint_t nBase;

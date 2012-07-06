@@ -6,8 +6,8 @@
 #include <drivers/r202x.c>
 #elif RTC_TYPE == RTC_T_RX802X
 #include <drivers/rx802x.c>
-#elif RTC_TYPE == RTC_T_R802XSA
-#include <drivers/r802xsa.c>
+#elif RTC_TYPE == RTC_T_RTCST
+#include <drivers/rtcst.c>
 #endif
 
 //Private Defines

@@ -21,7 +21,7 @@ extern "C" {
 #define RTC_T_DS323X			(RTC_T_I2C | 1)
 #define RTC_T_R202X				(RTC_T_I2C | 2)
 #define RTC_T_RX802X			(RTC_T_I2C | 3)
-#define RTC_T_R802XSA			(RTC_T_I2C | 4)
+#define RTC_T_RTCST				(RTC_T_I2C | 4)
 
 
 

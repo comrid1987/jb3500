@@ -32,7 +32,7 @@ void arch_TimerIntClear(uint_t nId)
 {
 	LPC_TIM_TypeDef *pTimer = lpc22xx_tblTimerBase[nId];
 
-	pTimer->IR = BITMASK(0);
+	pTimer->IR = 0xFF;
 }
 
 void arch_TimerStart(uint_t nId, uint_t nValue)
@@ -41,7 +41,7 @@ void arch_TimerStart(uint_t nId, uint_t nValue)
 
 	pTimer->TCR = BITMASK(1);
 	pTimer->TC = 0;
-	pTimer->IR = BITMASK(0);
+	pTimer->IR = 0xFF;
 	pTimer->PR = 0;
 	pTimer->PC = 0;
 	pTimer->MR0 = nValue;
@@ -61,6 +61,25 @@ uint_t arch_TimerClockGet()
 {
 
 	return PERI_CLOCK;
+}
+
+void arch_TimerCapConf(uint_t nPort, uint_t nPin)
+{
+
+	arch_GpioSel(nPort, nPin, 2);
+}
+
+void arch_TimerCapStart(uint_t nId)
+{
+	LPC_TIM_TypeDef *pTimer = lpc22xx_tblTimerBase[nId];
+
+	pTimer->TCR = BITMASK(1);
+	pTimer->TC = 0;
+	pTimer->IR = 0xFF;
+	pTimer->PR = 0;
+	pTimer->PC = 0;
+	pTimer->CCR0 = 0x0C00;
+	pTimer->TCR = BITMASK(0);
 }
 
 

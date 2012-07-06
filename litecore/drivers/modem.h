@@ -9,7 +9,6 @@ enum {
 	MODEM_S_POWERON,
 	MODEM_S_INIT,
 	MODEM_S_WAITDIAL,
-	MODEM_S_READY,
 	MODEM_S_ONLINE,
 };
 
@@ -80,7 +79,6 @@ void modem_SetPwd(char *pPwd);
 sys_res modem_IsOnline(void);
 int modem_GetSignal(void);
 int modem_GetState(void);
-sys_res modem_IsReady(void);
 void modem_Refresh(void);
 
 

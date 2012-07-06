@@ -476,12 +476,11 @@ void modem_Run()
 #if MODEM_DEBUG_ENABLE
 			modem_DbgIpInfo();
 #endif
-			p->ste = MODEM_S_READY;
+			p->ste = MODEM_S_ONLINE;
 			p->cnt = 0;
 			p->tmo = 0;
 		}
 		break;
-	case MODEM_S_READY:
 	case MODEM_S_ONLINE:
 		if (p->cnt > p->idle) {
 #if TCPPS_TYPE == TCPPS_T_LWIP
@@ -543,17 +542,6 @@ int modem_GetState()
 {
 
 	return gsmModem[MODEM_PPP_ID].ste;
-}
-
-sys_res modem_IsReady()
-{
-	p_modem p = &gsmModem[MODEM_PPP_ID];
-
-	if (p->ste == MODEM_S_READY) {
-		p->ste = MODEM_S_ONLINE;
-		return SYS_R_OK;
-	}
-	return SYS_R_ERR;
 }
 
 void modem_Refresh()
