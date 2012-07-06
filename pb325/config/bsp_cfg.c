@@ -316,6 +316,7 @@ IR              rx PE4
 #if MODEM_ENABLE
 	t_modem_def tbl_bspModem01 = {
 		2,
+		115200,
 		MODEM_EFFECT_LOW, 
 		{GPIO_T_HC595,	GPIO_P0,	5,		GPIO_M_OUT_PP,		GPIO_INIT_NULL},	//Act
 		MODEM_EFFECT_HIGH,
