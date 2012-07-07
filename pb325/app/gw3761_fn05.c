@@ -41,6 +41,7 @@ int gw3761_ResponseCtrlCmd(p_gw3761 p, u_word2 *pDu, uint8_t **ppData)
 				dlt645_Packet2Buf(bTx, xF10.madr, 0x04, ecl_DlqQlCmd[nFn - 1], 3);
 				if (ecl_485_RealRead(bTx, 1200, 2) == SYS_R_OK)
 					res += 1;
+				buf_Release(bTx);
 				break;
 			case 31:
 				//∂‘ ±√¸¡Ó
