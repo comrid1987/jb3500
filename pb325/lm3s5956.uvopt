@@ -376,8 +376,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>1</TopLine>
+      <CurrentLine>1</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\gw3761_fn05.c</PathWithFileName>
       <FilenameWithoutPath>gw3761_fn05.c</FilenameWithoutPath>
@@ -416,10 +416,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>16</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>165</TopLine>
-      <CurrentLine>175</CurrentLine>
+      <TopLine>31</TopLine>
+      <CurrentLine>47</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\gw3761_fn0D.c</PathWithFileName>
       <FilenameWithoutPath>gw3761_fn0D.c</FilenameWithoutPath>
@@ -556,10 +556,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>25</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>421</TopLine>
-      <CurrentLine>447</CurrentLine>
+      <TopLine>205</TopLine>
+      <CurrentLine>228</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\display.c</PathWithFileName>
       <FilenameWithoutPath>display.c</FilenameWithoutPath>

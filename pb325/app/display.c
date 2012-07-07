@@ -221,11 +221,8 @@ static void disp_Handle(uint_t nSel)
 	case MODEM_S_WAITDIAL:
 		ht1621_Write(iConTri,0x0F); 	 //wei：三角显示，高三位必为0
 		break;
-	case MODEM_S_READY:
-		ht1621_Write(iConTri,0x1F); 	 //wei：三角显示，高三位必为0
-		break;
 	case MODEM_S_ONLINE:
-		ht1621_Write(iConTri,0x3F); 	 //wei：三角显示，高三位必为0
+		ht1621_Write(iConTri,0x1F); 	 //wei：三角显示，高三位必为0
 		break;
 	default:
 		ht1621_Write(iConTri,BLANK);	  //wei：三角显示，高三位必为0
