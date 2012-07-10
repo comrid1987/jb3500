@@ -92,8 +92,8 @@ int gw3761_ResponseData2(p_gw3761 p)
 							buf_Push(b, aBuf, 3);
 							gw3761_Data2_Other(b, ps->tpmax[i]);
 						}
-						buf_PushData(b, ps->p0[3], 2);
-						for (i = 0; i < 3; i++)
+						buf_PushData(b, ps->p0[0], 2);
+						for (i = 1; i < 4; i++)
 							buf_PushData(b, ps->p0[i], 2);
 						gw3761_ConvertData_05_Percent(aBuf, FLOAT2FIX(ps->uibsum / (float)ps->run), 0);
 						buf_Push(b, aBuf, 2);
