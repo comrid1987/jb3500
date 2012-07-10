@@ -258,7 +258,7 @@ void arch_IdleEntry()
 void arch_Reset()
 {
 
-	os_thd_Lock();
+	os_interrupt_Disable();
 	while(1);
 }
 

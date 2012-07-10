@@ -13,10 +13,10 @@
 //错误编码
 #define GD5100_ERR_NO_ERROR				0x00	//正确,无错误
 #define GD5100_ERR_RELAY_FALE			0x01	//中继命令没有返回
-#define GD5100_ERR_INVALUE				0x02	//设置内容非法
+#define GD5100_ERR_INVALID				0x02	//设置内容非法
 #define GD5100_ERR_NO_PERMIT			0x03	//密码权限不足
 #define GD5100_ERR_NO_DATA				0x04	//无此项数据
-#define GD5100_ERR_TIME_INVALUE			0x05	//命令时间失效
+#define GD5100_ERR_TIME_INVALID			0x05	//命令时间失效
 #define GD5100_ERR_NO_ADDR				0x11	//目标地址不存在
 #define GD5100_ERR_SEND_FALE			0x12	//发送失败
 #define GD5100_ERR_SMS_LONG				0x13	//短消息帧太长
