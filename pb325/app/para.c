@@ -9,6 +9,7 @@
 
 //Private Defines
 #define ICP_LOCK_ENABLE			0
+#define ICP_MAGIC_WORD			0xFFFF5987
 
 //Private Typedefs
 
@@ -136,9 +137,12 @@ static int icp_Default(uint_t nAfn, uint_t nFn, uint_t nPn, uint8_t *pBuf, uint_
 
 static void icp_Format()
 {
+	uint_t nVer;
 
 	icp_Lock();
 	sfs_Init(&icp_SfsDev);
+	nVer = VER_SOFT;
+	sfs_Write(&icp_SfsDev, ICP_MAGIC_WORD, &nVer, 2);
 	icp_Unlock();
 }
 
@@ -233,17 +237,14 @@ void icp_Init()
 #if ICP_LOCK_ENABLE
 	rt_sem_init(&icp_sem, "sem_icp", 1, RT_IPC_FLAG_FIFO);
 #endif
-	if (sfs_Read(&icp_SfsDev, 0xFFFF5987, &nVer) != SYS_R_OK) {
-		icp_Format();
+	if (sfs_Read(&icp_SfsDev, ICP_MAGIC_WORD, &nVer) != SYS_R_OK)
 		nInit = 1;
-	}
 	if (nVer < 0x0078)
 		nInit = 1;
 	if (nInit) {
 		data_Clear();
 		stat_Clear();
-		nVer = VER_SOFT;
-		sfs_Write(&icp_SfsDev, 0xFFFF5987, &nVer, 2);
+		icp_Format();
 	}
 }
 
