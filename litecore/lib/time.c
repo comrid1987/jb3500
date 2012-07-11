@@ -76,26 +76,32 @@ void day4timet(time_t tTime, int nDay, uint8_t *p, uint_t nIsBcd)
 	memcpy(p, &aTime[3], 3);
 }
 
-void monthprev(time_t tTime, uint8_t *p, uint_t nIsBcd)
+void monthprev(time_t tTime, int nMon, uint8_t *p, uint_t nIsBcd)
 {
 	uint8_t aTime[6];
+	int i;
 
-	timet2array(tTime, aTime, nIsBcd);
-	if (aTime[4] <= 1) {
-		if (nIsBcd) {
-			aTime[4] = 0x12;
-			aTime[5] = bin2bcd8(bcd2bin8(aTime[1]) - 1);
-		} else {
-			aTime[4] = 12;
-			aTime[5] -= 1;
+	if (nMon < 0) {
+		nMon = -nMon;
+		timet2array(tTime, aTime, nIsBcd);
+		for (i = 0; i < nMon; i++) {
+			if (aTime[4] <= 1) {
+				if (nIsBcd) {
+					aTime[4] = 0x12;
+					aTime[5] = bin2bcd8(bcd2bin8(aTime[5]) - 1);
+				} else {
+					aTime[4] = 12;
+					aTime[5] -= 1;
+				}
+			} else {
+				if (nIsBcd)
+					aTime[4] = bin2bcd8(bcd2bin8(aTime[4]) - 1);
+				else
+					aTime[4] -= 1;
+			}
 		}
-	} else {
-		if (nIsBcd)
-			aTime[4] = bin2bcd8(bcd2bin8(aTime[0]) - 1);
-		else
-			aTime[4] -= 1;
+		memcpy(p, &aTime[4], 2);
 	}
-	memcpy(p, &aTime[4], 2);
 }
 
 

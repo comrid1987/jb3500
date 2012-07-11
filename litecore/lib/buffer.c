@@ -3,7 +3,7 @@
 
 //Private Defines
 #define BUF_DEBUG_ENABLE	0
-#define BUF_LOCK_ENABLE		1
+#define BUF_LOCK_ENABLE		0
 
 #define BUF_BLK_SIZE		(1 << 6)
 #define BUF_BLK_MASK		(BUF_BLK_SIZE - 1)

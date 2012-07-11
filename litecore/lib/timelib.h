@@ -24,7 +24,7 @@ time_t bin2timet(uint_t nSec, uint_t nMin, uint_t nHour, uint_t nDay, uint_t nMo
 time_t array2timet(uint8_t *p, uint_t nIsBcd);
 int timet2array(time_t tTime, uint8_t *p, uint_t nIsBcd);
 void day4timet(time_t tTime, int nDay, uint8_t *p, uint_t nIsBcd);
-void monthprev(time_t tTime, uint8_t *p, uint_t nIsBcd);
+void monthprev(time_t tTime, int nMon, uint8_t *p, uint_t nIsBcd);
 
 
 #ifdef __cplusplus
