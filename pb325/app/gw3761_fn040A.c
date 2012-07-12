@@ -94,7 +94,7 @@ static int gw3761_Afn0A_F10(buf b, uint8_t **ppData)
 {
 	int res = 0;
 	uint_t i, nQty, nPn, nOffset = 0;
-	t_afn04_f10 xF10;
+	t_afn04_f10 xPM;
 
 	nQty = ((*ppData)[1] << 8) | (*ppData)[0];
 	*ppData += 2;
@@ -105,10 +105,10 @@ static int gw3761_Afn0A_F10(buf b, uint8_t **ppData)
 	for (i = 0; i < nQty; i++) {
 		nPn = ((*ppData)[1] << 8) | (*ppData)[0];
 		*ppData += 2;
-		icp_MeterRead(nPn, &xF10);
-		if ((xF10.tn != 0) && (xF10.tn < ECL_SN_MAX)) {
+		icp_MeterRead(nPn, &xPM);
+		if ((xPM.tn != 0) && (xPM.tn < ECL_SN_MAX)) {
 			buf_PushData(b, nPn, 2);
-			buf_Push(b, &xF10, sizeof(t_afn04_f10));
+			buf_Push(b, &xPM, sizeof(t_afn04_f10));
 			res += 1;
 		}
 	}

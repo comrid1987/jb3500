@@ -187,7 +187,7 @@ int icp_MeterRead(uint_t nSn, t_afn04_f10 *p)
 	return icp_ParaRead(4, 10, nSn, p, sizeof(t_afn04_f10));
 }
 
-void icp_MeterWrite(uint_t nSn, t_afn04_f10 *p)
+void icp_MeterWrite(uint_t nSn, const t_afn04_f10 *p)
 {
 
 	icp_ParaWrite(4, 10, nSn, p, sizeof(t_afn04_f10));

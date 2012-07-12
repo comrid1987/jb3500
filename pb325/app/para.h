@@ -149,7 +149,7 @@ typedef __packed struct {
 int icp_ParaRead(uint_t nAfn, uint_t nFn, uint_t nPn, void *pBuf, uint_t nLen);
 int icp_ParaWrite(uint_t nAfn, uint_t nFn, uint_t nPn, const void *pBuf, uint_t nLen);
 int icp_MeterRead(uint_t nSn, t_afn04_f10 *p);
-void icp_MeterWrite(uint_t nSn, t_afn04_f10 *p);
+void icp_MeterWrite(uint_t nSn, const t_afn04_f10 *p);
 int icp_Meter4Tn(uint_t nTn, t_afn04_f10 *p);
 void icp_Clear(void);
 void icp_Init(void);

@@ -257,16 +257,16 @@ static void gw3761_Afn0C_F3(buf b)
 
 static int gw3761_Afn0C_F25(buf b, uint_t nDa)
 {
-	t_afn04_f10 xF10;
+	t_afn04_f10 xPM;
 	uint_t i;
 	uint8_t aBuf[5];
 	t_acm_rtdata *pD;
 	t_ecl_rtdi97 *pR97;
 	t_ecl_rtdi07 *pR07;
 
-	if (icp_Meter4Tn(nDa, &xF10) == 0)
+	if (icp_Meter4Tn(nDa, &xPM) == 0)
 		return 0;
-	switch (xF10.port) {
+	switch (xPM.port) {
 	case ECL_PORT_ACM:
 		if (acm_IsReady()) {
 			pD = &acm_rtd;
@@ -301,22 +301,22 @@ static int gw3761_Afn0C_F25(buf b, uint_t nDa)
 	default:
 		gw3761_ConvertData_15(aBuf, rtc_GetTimet());
 		buf_Push(b, aBuf, 5);
-		switch (xF10.prtl) {
+		switch (xPM.prtl) {
 		case ECL_PRTL_DLT645_97:
 			for (pR97 = tbl_Di97_Afn0CF25; pR97 < ARR_ENDADR(tbl_Di97_Afn0CF25); pR97++)
-				gw3761_Afn0C_97RealRead(b, &xF10, pR97, 1);
+				gw3761_Afn0C_97RealRead(b, &xPM, pR97, 1);
 			break;
 		case ECL_PRTL_DLQ_QL:
 			for (pR97 = tbl_DiQL_Afn0CF25; pR97 < ARR_ENDADR(tbl_DiQL_Afn0CF25); pR97++)
-				gw3761_Afn0C_97RealRead(b, &xF10, pR97, 1);
+				gw3761_Afn0C_97RealRead(b, &xPM, pR97, 1);
 			break;
 		case ECL_PRTL_DLQ_SY:
 			for (pR07 = tbl_DiSY_Afn0CF25; pR07 < ARR_ENDADR(tbl_DiSY_Afn0CF25); pR07++)
-				gw3761_Afn0C_07RealRead(b, &xF10, pR07, 1);
+				gw3761_Afn0C_07RealRead(b, &xPM, pR07, 1);
 			break;
 		default:
 			for (pR07 = tbl_Di07_Afn0CF25; pR07 < ARR_ENDADR(tbl_Di07_Afn0CF25); pR07++)
-				gw3761_Afn0C_07RealRead(b, &xF10, pR07, 1);
+				gw3761_Afn0C_07RealRead(b, &xPM, pR07, 1);
 			break;
 		}
 		break;
@@ -326,32 +326,32 @@ static int gw3761_Afn0C_F25(buf b, uint_t nDa)
 
 static int gw3761_Afn0C_F33(buf b, uint_t nDa, uint_t nMask)
 {
-	t_afn04_f10 xF10;
+	t_afn04_f10 xPM;
 	uint_t i;
 	uint8_t aBuf[5];
 	t_ecl_rtdi97 *pR97;
 	t_ecl_rtdi07 *pR07;
 
-	if (icp_Meter4Tn(nDa, &xF10) == 0)
+	if (icp_Meter4Tn(nDa, &xPM) == 0)
 		return 0;
-	switch (xF10.port) {
+	switch (xPM.port) {
 	case ECL_PORT_ACM:
 		break;
 	default:
 		gw3761_ConvertData_15(aBuf, rtc_GetTimet());
 		buf_Push(b, aBuf, 5);
 		buf_PushData(b, ECL_RATE_QTY, 1);
-		switch (xF10.prtl) {
+		switch (xPM.prtl) {
 		case ECL_PRTL_DLT645_97:
 			for (pR97 = tbl_Di97_Afn0CF33, i = 0; pR97 < ARR_ENDADR(tbl_Di97_Afn0CF33); pR97++, i++) {
 				if (nMask & BITMASK(i))
-					gw3761_Afn0C_97RealRead(b, &xF10, pR97, 1);
+					gw3761_Afn0C_97RealRead(b, &xPM, pR97, 1);
 			}
 			break;
 		default:
 			for (pR07 = tbl_Di07_Afn0CF33, i = 0; pR07 < ARR_ENDADR(tbl_Di07_Afn0CF33); pR07++, i++) {
 				if (nMask & BITMASK(i))
-					gw3761_Afn0C_07RealRead(b, &xF10, pR07, 1);
+					gw3761_Afn0C_07RealRead(b, &xPM, pR07, 1);
 			}
 			break;
 		}
@@ -362,32 +362,32 @@ static int gw3761_Afn0C_F33(buf b, uint_t nDa, uint_t nMask)
 
 static int gw3761_Afn0C_F34(buf b, uint_t nDa, uint_t nMask)
 {
-	t_afn04_f10 xF10;
+	t_afn04_f10 xPM;
 	uint_t i;
 	uint8_t aBuf[5];
 	t_ecl_rtdi97 *pR97;
 	t_ecl_rtdi07 *pR07;
 
-	if (icp_Meter4Tn(nDa, &xF10) == 0)
+	if (icp_Meter4Tn(nDa, &xPM) == 0)
 		return 0;
-	switch (xF10.port) {
+	switch (xPM.port) {
 	case ECL_PORT_ACM:
 		break;
 	default:
 		gw3761_ConvertData_15(aBuf, rtc_GetTimet());
 		buf_Push(b, aBuf, 5);
 		buf_PushData(b, ECL_RATE_QTY, 1);
-		switch (xF10.prtl) {
+		switch (xPM.prtl) {
 		case ECL_PRTL_DLT645_97:
 			for (pR97 = tbl_Di97_Afn0CF34, i = 0; pR97< ARR_ENDADR(tbl_Di97_Afn0CF34); pR97++, i++) {
 				if (nMask & BITMASK(i))
-					gw3761_Afn0C_97RealRead(b, &xF10, pR97, 1);
+					gw3761_Afn0C_97RealRead(b, &xPM, pR97, 1);
 			}
 			break;
 		default:
 			for (pR07 = tbl_Di07_Afn0CF34, i = 0; pR07 < ARR_ENDADR(tbl_Di07_Afn0CF34); pR07++, i++) {
 				if (nMask & BITMASK(i))
-					gw3761_Afn0C_07RealRead(b, &xF10, pR07, 1);
+					gw3761_Afn0C_07RealRead(b, &xPM, pR07, 1);
 			}
 			break;
 		}
@@ -398,31 +398,31 @@ static int gw3761_Afn0C_F34(buf b, uint_t nDa, uint_t nMask)
 
 static int gw3761_Afn0C_F35(buf b, uint_t nDa)
 {
-	t_afn04_f10 xF10;
+	t_afn04_f10 xPM;
 	uint_t nIs3P;
 	uint8_t aBuf[5];
 	t_ecl_rtdi97 *pR97;
 	t_ecl_rtdi07 *pR07;
 
-	if (icp_Meter4Tn(nDa, &xF10) == 0)
+	if (icp_Meter4Tn(nDa, &xPM) == 0)
 		return 0;
-	switch (xF10.port) {
+	switch (xPM.port) {
 	case ECL_PORT_ACM:
 		break;
 	default:
 		gw3761_ConvertData_15(aBuf, rtc_GetTimet());
 		buf_Push(b, aBuf, 5);
 		buf_PushData(b, ECL_RATE_QTY, 1);
-		switch (xF10.prtl) {
+		switch (xPM.prtl) {
 		case ECL_PRTL_DLT645_97:
 			for (pR97 = tbl_Di97_Afn0CF35; pR97 < ARR_ENDADR(tbl_Di97_Afn0CF35); pR97++)
-				gw3761_Afn0C_97RealRead(b, &xF10, pR97, nIs3P);
+				gw3761_Afn0C_97RealRead(b, &xPM, pR97, nIs3P);
 			break;
 		case ECL_PRTL_DLQ_SY:
 			break;
 		default:
 			for (pR07 = tbl_Di07_Afn0CF35; pR07 < ARR_ENDADR(tbl_Di07_Afn0CF35); pR07++)
-				gw3761_Afn0C_07RealRead(b, &xF10, pR07, nIs3P);
+				gw3761_Afn0C_07RealRead(b, &xPM, pR07, nIs3P);
 			break;
 		}
 		break;
@@ -432,29 +432,29 @@ static int gw3761_Afn0C_F35(buf b, uint_t nDa)
 
 static int gw3761_Afn0C_F36(buf b, uint_t nDa)
 {
-	t_afn04_f10 xF10;
+	t_afn04_f10 xPM;
 	uint_t nIs3P;
 	uint8_t aBuf[5];
 	t_ecl_rtdi97 *pR97;
 	t_ecl_rtdi07 *pR07;
 
-	if (icp_Meter4Tn(nDa, &xF10) == 0)
+	if (icp_Meter4Tn(nDa, &xPM) == 0)
 		return 0;
-	switch (xF10.port) {
+	switch (xPM.port) {
 	case ECL_PORT_ACM:
 		break;
 	default:
 		gw3761_ConvertData_15(aBuf, rtc_GetTimet());
 		buf_Push(b, aBuf, 5);
 		buf_PushData(b, ECL_RATE_QTY, 1);
-		switch (xF10.prtl) {
+		switch (xPM.prtl) {
 		case ECL_PRTL_DLT645_97:
 			for (pR97 = tbl_Di97_Afn0CF36; pR97 < ARR_ENDADR(tbl_Di97_Afn0CF36); pR97++)
-				gw3761_Afn0C_97RealRead(b, &xF10, pR97, nIs3P);
+				gw3761_Afn0C_97RealRead(b, &xPM, pR97, nIs3P);
 			break;
 		default:
 			for (pR07 = tbl_Di07_Afn0CF36; pR07 < ARR_ENDADR(tbl_Di07_Afn0CF36); pR07++)
-				gw3761_Afn0C_07RealRead(b, &xF10, pR07, nIs3P);
+				gw3761_Afn0C_07RealRead(b, &xPM, pR07, nIs3P);
 			break;
 		}
 		break;
@@ -465,14 +465,14 @@ static int gw3761_Afn0C_F36(buf b, uint_t nDa)
 
 static int gw3761_Afn0C_F49(buf b, uint_t nDa)
 {
-	t_afn04_f10 xF10;
+	t_afn04_f10 xPM;
 	uint_t i;
 	uint8_t aBuf[5];
 	t_acm_rtdata *pD;
 
-	if (icp_Meter4Tn(nDa, &xF10) == 0)
+	if (icp_Meter4Tn(nDa, &xPM) == 0)
 		return 0;
-	switch (xF10.port) {
+	switch (xPM.port) {
 	case ECL_PORT_ACM:
 		if (acm_IsReady()) {
 			pD = &acm_rtd;
@@ -494,14 +494,14 @@ static int gw3761_Afn0C_F49(buf b, uint_t nDa)
 
 static int gw3761_Afn0C_F57(buf b, uint_t nDa)
 {
-	t_afn04_f10 xF10;
+	t_afn04_f10 xPM;
 	uint_t i, j;
 	uint8_t aBuf[5];
 	t_acm_xbdata *pD;
 
-	if (icp_Meter4Tn(nDa, &xF10) == 0)
+	if (icp_Meter4Tn(nDa, &xPM) == 0)
 		return 0;
-	switch (xF10.port) {
+	switch (xPM.port) {
 	case ECL_PORT_ACM:
 		if (acm_IsReady()) {
 			buf_PushData(b, 19, 1);
@@ -532,14 +532,14 @@ static int gw3761_Afn0C_F57(buf b, uint_t nDa)
 
 static int gw3761_Afn0C_F58(buf b, uint_t nDa)
 {
-	t_afn04_f10 xF10;
+	t_afn04_f10 xPM;
 	uint_t i, j, k;
 	uint8_t aBuf[5];
 	t_acm_xbdata *pD;
 
-	if (icp_Meter4Tn(nDa, &xF10) == 0)
+	if (icp_Meter4Tn(nDa, &xPM) == 0)
 		return 0;
-	switch (xF10.port) {
+	switch (xPM.port) {
 	case ECL_PORT_ACM:
 		if (acm_IsReady()) {
 			buf_PushData(b, 21, 1);

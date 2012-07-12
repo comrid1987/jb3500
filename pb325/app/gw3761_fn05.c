@@ -20,7 +20,7 @@ int gw3761_ResponseCtrlCmd(p_gw3761 p, u_word2 *pDu, uint8_t **ppData)
 #endif
 	int res = 0;
 	uint_t i, j, nFn, nDa, nDaQty;
-	t_afn04_f10 xF10;
+	t_afn04_f10 xPM;
 	buf bTx = {0};
 	
 	nDaQty = gw3761_ConvertDa2Map(pDu->word[0], aDa);
@@ -34,11 +34,11 @@ int gw3761_ResponseCtrlCmd(p_gw3761 p, u_word2 *pDu, uint8_t **ppData)
 			case 1:	//Ò£¿ØÌøÕ¢
 				*ppData += 1;
 			case 2:	//Ò£¿ØºÏÕ¢
-				if (icp_MeterRead(nDa, &xF10) < 0)
+				if (icp_MeterRead(nDa, &xPM) < 0)
 					break;
-				if (xF10.prtl != ECL_PRTL_DLQ_QL)
+				if (xPM.prtl != ECL_PRTL_DLQ_QL)
 					break;
-				dlt645_Packet2Buf(bTx, xF10.madr, 0x04, ecl_DlqQlCmd[nFn - 1], 3);
+				dlt645_Packet2Buf(bTx, xPM.madr, 0x04, ecl_DlqQlCmd[nFn - 1], 3);
 				if (ecl_485_RealRead(bTx, 1200, 2) == SYS_R_OK)
 					res += 1;
 				buf_Release(bTx);
