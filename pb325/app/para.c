@@ -91,10 +91,9 @@ static int icp_Default(uint_t nAfn, uint_t nFn, uint_t nPn, uint8_t *pBuf, uint_
 		break;
 	case 21:
 		memset(&pBuf[0], 3, 14);	//00:00-07:00（费率4）谷
-		memset(&pBuf[14], 2, 2);	//07:00-08:00（费率3）平
-		memset(&pBuf[16], 1, 6);	//08:00-11:00（费率2）峰
-		memset(&pBuf[22], 2, 14);	//11:00-18:00（费率3）平
-		memset(&pBuf[36], 1, 10);	//18:00-23:00（费率2）峰
+		memset(&pBuf[14], 1, 8);	//07:00-11:00（费率2）峰
+		memset(&pBuf[22], 2, 16);	//11:00-19:00（费率3）平
+		memset(&pBuf[38], 1, 8);	//18:00-23:00（费率2）峰
 		memset(&pBuf[46], 3, 2);	//23:00-00:00（费率4）谷
 		pBuf[48] = 4;
 		break;
@@ -239,7 +238,7 @@ void icp_Init()
 #endif
 	if (sfs_Read(&icp_SfsDev, ICP_MAGIC_WORD, &nVer) != SYS_R_OK)
 		nInit = 1;
-	if (nVer < 0x0078)
+	if (nVer < 0x0087)
 		nInit = 1;
 	if (nInit) {
 		data_Clear();

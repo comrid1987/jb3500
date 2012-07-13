@@ -49,13 +49,13 @@ static t_ecl_rtdi97 tbl_Di97_Afn0CF25[] = {
 static t_ecl_rtdi07 tbl_DiSY_Afn0CF25[] = {
 	0,	ECL_RTR_T_NONE,			32,		//
 	0,	ECL_RTR_T_DLQ_RT,		0x02FF0000, //电压电流
-	0,	ECL_RTR_T_NONE, 		12, 	//
+	0,	ECL_RTR_T_NONE, 		11, 	//
 };
 
 static t_ecl_rtdi97 tbl_DiQL_Afn0CF25[] = {
 	0,	ECL_RTR_T_NONE,			32,		//
 	0,	ECL_RTR_T_DLQ_RT,		0xB66F,	//电压电流
-	0,	ECL_RTR_T_NONE,			12,		//视在功率,97表无
+	0,	ECL_RTR_T_NONE,			11,		//
 };
 
 static t_ecl_rtdi07 tbl_Di07_Afn0CF33[] = {
@@ -134,7 +134,7 @@ static int gw3761_Afn0C_Type(int nType)
 	case ECL_RTR_T_MAXPOWER07:
 		return 40;
 	case ECL_RTR_T_DLQ_RT:
-		return 18;
+		return 19;
 	default:
 		return (ECL_RATE_QTY + 1) * 4;
 	}
@@ -178,6 +178,7 @@ static int gw3761_Afn0C_07RealRead(buf b, t_afn04_f10 *pF10, t_ecl_rtdi07 *p, ui
 					buf_PushData(b, 0x00, 1);
 					buf_Push(b, pTemp, 2);
 				}
+				buf_PushData(b, 0, 1);
 				break;
 			default:
 				buf_Push(b, pTemp, nLen);
@@ -196,7 +197,7 @@ static int gw3761_Afn0C_97RealRead(buf b, t_afn04_f10 *pF10, t_ecl_rtdi97 *p, ui
 {
 	sys_res res;
 	int nRet = 0;
-	uint_t i, nLen;
+	uint_t i, nLen, nData;
 	uint8_t *pTemp;
 	buf bTx = {0};
 
@@ -216,13 +217,14 @@ static int gw3761_Afn0C_97RealRead(buf b, t_afn04_f10 *pF10, t_ecl_rtdi97 *p, ui
 				}
 				break;
 			case ECL_RTR_T_DLQ_RT:
-				pTemp += 1;
+				nData = *pTemp++;
 				for (i = 0; i < 3; i++, pTemp += 2)
 					buf_Push(b, pTemp, 2);
 				for (i = 0; i < 4; i++, pTemp += 2) {
 					buf_PushData(b, 0x00, 1);
 					buf_Push(b, pTemp, 2);
 				}
+				buf_PushData(b, nData, 1);
 				break;
 			default:
 				buf_Push(b, pTemp, nLen);

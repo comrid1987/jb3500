@@ -120,13 +120,26 @@ sys_res ecl_485_RealRead(buf b, uint_t nBaud, uint_t nTmo)
 	return res;
 }
 
+static uint_t stat_RateGet(time_t tTime)
+{
+	uint8_t aBuf[52];
+	uint_t nRate;
+
+	nRate = ((tTime - 1) / (30 * 60)) % 48;
+	icp_ParaRead(4, 21, TERMINAL, aBuf, 49);
+	nRate = aBuf[nRate];
+	if (nRate >= ECL_RATE_QTY)
+		nRate = 2;
+	return nRate;
+}
+
 void stat_Handler(p_stat ps, t_afn04_f26 *pF26, t_afn04_f28 *pF28, time_t tTime)
 {
 	uint_t i;
 	uint32_t nData;
 	float fData, fLow, fUp, fUnder, fOver;
 	t_acm_rtdata *pa = &acm_rtd;
-	
+
 	ps->run += 1;
 	//电压
 	fLow = (float)bcd2bin16(pF26->ulow) / 10.0f;
@@ -229,8 +242,8 @@ void stat_Handler(p_stat ps, t_afn04_f26 *pF26, t_afn04_f28 *pF28, time_t tTime)
 			ps->tpmax[i] = tTime;
 		}
 	}
-	//视在不平衡度
-	ps->uibsum += pa->uib;
+	//视在不平衡度平均
+	ps->uibsum[stat_RateGet(tTime)] += pa->uib;
 	//功率因数分段统计
 	fLow = (float)bcd2bin16(pF28->low) / 1000.0f;
 	fUp = (float)bcd2bin16(pF28->up) / 1000.0f;

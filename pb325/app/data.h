@@ -49,7 +49,7 @@ typedef struct {
 	uint16_t	p0[4];
 	float		usum[3];
 	float		isum[4];
-	float		uibsum;
+	float		uibsum[4];
 	float		umin[3];
 	float		umax[3];
 	float		ubmax;
