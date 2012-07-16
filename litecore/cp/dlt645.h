@@ -8,7 +8,9 @@ extern "C" {
 
 //¿ØÖÆÂë¶¨Òå
 #define DLT645_CODE_READ97		0x01
+#define DLT645_CODE_WRITE97		0x04
 #define DLT645_CODE_READ07		0x11
+#define DLT645_CODE_WRITE07		0x14
 #define DLT645_CODE_BROADCAST	0x08
 
 
