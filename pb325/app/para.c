@@ -282,6 +282,7 @@ void icp_UdiskLoad(void)
     	icp_ParaWrite(4, 3, TERMINAL, &xF3, sizeof(t_afn04_f3));
 		fs_close(fd);
 	}
+    os_thd_Sleep(1000);
     BEEP(0);
 }
 
