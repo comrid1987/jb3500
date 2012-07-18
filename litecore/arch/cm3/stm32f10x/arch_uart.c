@@ -241,7 +241,7 @@ void arch_UartSend(uint_t nId, const void *pData, uint_t nLen)
 	uint8_t *pBuf = (uint8_t *)pData;
 
 	for (; nLen; nLen--) {
-		while ((pUart->SR & USART_FLAG_TXE)== 0);
+		while ((pUart->SR & USART_FLAG_TXE) == 0);
 		pUart->DR = *pBuf++;
 	}
 }

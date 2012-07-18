@@ -66,7 +66,11 @@ void tsk_OsEntry(void *args)
 //Return          : None
 //----------------------------------------------------------------------------
 #ifdef __CC_ARM
+#if EXTSRAM_ENABLE
+extern int Image$$RW_RAM1$$ZI$$Limit;
+#else
 extern int Image$$RW_IRAM1$$ZI$$Limit;
+#endif
 #elif __ICCARM__
 #pragma section = "HEAP"
 #else
@@ -86,7 +90,7 @@ void os_Start()
 #ifdef RT_USING_HEAP
 #if EXTSRAM_ENABLE
 	#ifdef __CC_ARM
-		rt_system_heap_init((void*)&Image$$RW_IRAM1$$ZI$$Limit, (void*)(EXTSRAM_BASE_ADR + EXTSRAM_SIZE));
+		rt_system_heap_init((void*)&Image$$RW_RAM1$$ZI$$Limit, (void*)(EXTSRAM_BASE_ADR + EXTSRAM_SIZE));
 	#elif __ICCARM__
 		rt_system_heap_init(__segment_end("HEAP"), (void*)(EXTSRAM_BASE_ADR + EXTSRAM_SIZE));
 	#else

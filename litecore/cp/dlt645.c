@@ -95,7 +95,14 @@ sys_res dlt645_Transmit2Meter(chl c, buf bRx, const void *pAdr, const void *pBuf
 {
 	uint8_t *pH;
 
+#if DLT645_DIR_CTRL
+	gpio_Set(2, 0);
 	chl_Send(c, pBuf, nLen);
+	os_thd_Sleep(20);
+	gpio_Set(2, 1);
+#else
+	chl_Send(c, pBuf, nLen);
+#endif
 
 	dlt645_DbgOut(1, pBuf, nLen);
 

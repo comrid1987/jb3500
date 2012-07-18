@@ -169,6 +169,7 @@ void arch_UartSend(uint_t nId, const void *pData, uint_t nLen)
 		/* write data */
 		pUart->THR = *pBuf++;
 	}
+	while ((pUart->LSR & LSR_THRE) == 0);
 }
 
 //-------------------------------------------------------------------------

@@ -37,7 +37,6 @@ typedef struct {
  	uint8_t		code : 6,		//控制码
  				abn : 1,		//异常标志
  				dir : 1;		//传送方向
-	uint8_t		tmo;			//超时处理
  	buf			data;			//接收数据
 }gd5100_rmsg[1];
 
