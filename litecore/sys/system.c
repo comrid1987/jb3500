@@ -22,8 +22,8 @@ void sys_IOHandle(void *args)
 #endif
 
 	nCnt += 1;
-#if IRQ_ENABLE
-	//中断处理
+#if IRQ_HALF_ENABLE
+	//底半中断处理
 	if (irq_Wait() == SYS_R_OK)
 		irq_BottomHandler();
 #endif

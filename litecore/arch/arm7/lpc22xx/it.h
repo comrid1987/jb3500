@@ -15,8 +15,8 @@ extern "C" {
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
-#define ARCH_EXTIRQ_QTY			4
-#define ARCH_TIMER_QTY			2
+#define ARCH_EXTIRQ_QTY			1
+#define ARCH_TIMER_QTY			1
 
 
 /* Exported functions ------------------------------------------------------- */

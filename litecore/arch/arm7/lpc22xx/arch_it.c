@@ -3,20 +3,6 @@
 
 
 //Private Functions
-static void lpc22xx_ExtIrqISR(uint_t nId)
-{
-
-	irq_ExtISR(nId);
-	SETBIT(EXTINT, nId);
-}
-
-static void lpc22xx_TimerISR(uint_t nId)
-{
-
-	irq_TimerISR(nId);
-	arch_TimerIntClear(nId);
-}
-
 static uint_t lpc22xx_ExtIrqId(uint_t nPin)
 {
 
@@ -66,13 +52,15 @@ void WDT_IRQHandler(int vector)
 void TIMER0_IRQHandler(int vector)
 {
 
-	lpc22xx_TimerISR(0);
+	irq_TimerISR(0);
+	arch_TimerIntClear(1);
 }
 
 void TIMER1_IRQHandler(int vector)
 {
 
-	lpc22xx_TimerISR(1);
+	irq_TimerISR(1);
+	arch_TimerIntClear(1);
 }
 
 void UART0_IRQHandler(int vector)
@@ -90,25 +78,29 @@ void UART1_IRQHandler(int vector)
 void EINT0_IRQHandler(int vector)
 {
 
-	lpc22xx_ExtIrqISR(0);
+	irq_ExtISR(0);
+	SETBIT(EXTINT, 0);
 }
 
 void EINT1_IRQHandler(int vector)
 {
 
-	lpc22xx_ExtIrqISR(1);
+	irq_ExtISR(1);
+	SETBIT(EXTINT, 1);
 }
 
 void EINT2_IRQHandler(int vector)
 {
 
-	lpc22xx_ExtIrqISR(2);
+	irq_ExtISR(2);
+	SETBIT(EXTINT, 2);
 }
 
 void EINT3_IRQHandler(int vector)
 {
 
-	lpc22xx_ExtIrqISR(3);
+	irq_ExtISR(3);
+	SETBIT(EXTINT, 3);
 }
 
 
