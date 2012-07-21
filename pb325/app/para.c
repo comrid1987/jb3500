@@ -136,11 +136,10 @@ static int icp_Default(uint_t nAfn, uint_t nFn, uint_t nPn, uint8_t *pBuf, uint_
 
 static void icp_Format()
 {
-	uint_t nVer;
+	uint_t nVer = VER_SOFT;
 
 	icp_Lock();
 	sfs_Init(&icp_SfsDev);
-	nVer = VER_SOFT;
 	sfs_Write(&icp_SfsDev, ICP_MAGIC_WORD, &nVer, 2);
 	icp_Unlock();
 }
