@@ -23,11 +23,13 @@ static sys_res norf_IsToggleDone(adr_t adr, int nIsErase)
 		nTarget = specAddress(adr);
 		if ((nTarget & 0x0044) == (specAddress(adr) & 0x0044))
 			return SYS_R_OK;
-		if ((nTarget & 0x0020) == 0x0020) {
+		if ((nTarget & BITMASK(5)) == 0) {
+			if (nIsErase)
+				os_thd_Slp1Tick();
+		} else {
 			if ((specAddress(adr) & 0x0044) != (specAddress(adr) & 0x0044))
 				return SYS_R_ERR;
-		} else if (nIsErase)
-			os_thd_Slp1Tick();
+		}
 	}
 	return SYS_R_TMO;
 }

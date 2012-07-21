@@ -250,7 +250,7 @@ void spif_Init()
 				break;
 			}
 #if OS_TYPE
-			os_thd_Sleep(10);
+			os_thd_Slp1Tick();
 #else
 			sys_Delay(10000);
 #endif

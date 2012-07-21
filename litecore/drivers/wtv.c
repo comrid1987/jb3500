@@ -28,11 +28,11 @@ sys_res wtv_Cmd(p_dev_spi p, uint_t nCmd, uint_t nIsBusy)
 	sys_res res;
 
 	wtv_Reset(0);
-	os_thd_Sleep(6);
+	os_thd_Slp1Tick();
 	wtv_Reset(1);
-	os_thd_Sleep(9);
+	os_thd_Slp1Tick();
 	wtv_Nss(0);
-	os_thd_Sleep(6);
+	os_thd_Slp1Tick();
 	nCmd = invert_bits(nCmd, 8);
 	res = spi_Send(p, &nCmd, 1);
 	wtv_Nss(1);

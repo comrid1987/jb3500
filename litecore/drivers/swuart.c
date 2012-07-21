@@ -444,7 +444,8 @@ static void SimuCapSendByte(uint8_t SChar)
 {
 	unsigned char temp,count;
 
-		rt_hw_interrupt_mask(TIMER1_INT);
+//	os_interrupt_Disable();
+	rt_hw_interrupt_mask(TIMER1_INT);
   	T0CCR=0;                           	//禁止接收捕获
  	T0TC=0;
   	T0TCR=0x03;                        	//启动定时器
@@ -473,7 +474,8 @@ static void SimuCapSendByte(uint8_t SChar)
   	T0TCR=0x00;                        	//停止定时器
   	T0CCR=0xc00;                        //允许接收捕获
   	T0TC=0;
-		rt_hw_interrupt_umask(TIMER1_INT);
+//	os_interrupt_Enable();
+	rt_hw_interrupt_umask(TIMER1_INT);
 }
 
 
@@ -508,7 +510,8 @@ static void IRQ_SimuUart(void *args)
 
 	//SimuFlag = 1;
 
-		rt_hw_interrupt_mask(TIMER1_INT);
+//	os_interrupt_Disable();
+	rt_hw_interrupt_mask(TIMER1_INT);
    	if((T0IR&0x80)!=0)			//捕获到起始位
    	{             
 	    T0IR |= 0x80;							//复位捕获中断	
@@ -555,7 +558,8 @@ static void IRQ_SimuUart(void *args)
 	T0TC=0;      						//停止定时器	
 	PINSEL1 &= 0xf0ffffff;
 	PINSEL1 |= 0x08000000;              //设定TXD引脚工作CPIO，RXD引脚工作在捕捉(3)模式
-		rt_hw_interrupt_umask(TIMER1_INT);
+//	os_interrupt_Enable();
+	rt_hw_interrupt_umask(TIMER1_INT);
 /*	irq_TimerRegister(pDef->id, IRQ_SimuUart, pSW);
 	arch_TimerCapStart(pDef->id);
 
