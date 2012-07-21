@@ -172,9 +172,10 @@ int dque_IsNotEmpty(dque pQue, uint_t nChl)
 {
 	p_dque p = pQue->list, pEnd;
 
-	for (pEnd = p + pQue->qty; p < pEnd; p++)
+	for (pEnd = p + pQue->qty; p < pEnd; p++) {
 		if ((p->chl == nChl) && (p->in > p->out))
 			return 1;
+	}
 	return 0;
 }
 
@@ -187,9 +188,10 @@ void dque_Clear(dque pQue, uint_t nChl)
 	p_dque p = pQue->list, pEnd;
 
 	dque_Lock();
-	for (pEnd = p + pQue->qty; p < pEnd; p++)
+	for (pEnd = p + pQue->qty; p < pEnd; p++) {
 		if ((p->chl == nChl) && p->in)
 			dque_Release(p);
+	}
 	dque_Unlock();
 }
 
