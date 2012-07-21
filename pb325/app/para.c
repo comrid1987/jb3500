@@ -232,6 +232,7 @@ void icp_Clear()
 void icp_Init()
 {
 	uint_t nVer = 0, nInit = 0;
+	t_afn04_f85 xF85;
 
 #if ICP_LOCK_ENABLE
 	rt_sem_init(&icp_sem, "sem_icp", 1, RT_IPC_FLAG_FIFO);
@@ -243,7 +244,9 @@ void icp_Init()
 	if (nInit) {
 		data_Clear();
 		stat_Clear();
+		icp_ParaRead(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
 		icp_Format();
+		icp_ParaWrite(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
 	}
 }
 
