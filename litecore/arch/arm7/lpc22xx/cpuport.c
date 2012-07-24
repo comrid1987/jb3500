@@ -18,10 +18,12 @@
 #define MAX_HANDLERS	32
 #define SVCMODE		    0x13
 
-extern rt_uint32_t rt_interrupt_nest;
+
+
+extern volatile rt_uint8_t rt_interrupt_nest;
 
 /**
- * @addtogroup LPC214x
+ * @addtogroup LPC22xx
  */
 /*@{*/
 
@@ -73,7 +75,7 @@ rt_uint32_t rt_thread_switch_interrupt_flag;
 
 void rt_hw_interrupt_handler(int vector)
 {
-	rt_kprintf("Unhandled interrupt %d occured!!!\n", vector);
+
 }
 
 /**
@@ -146,25 +148,6 @@ void rt_hw_interrupt_install(int vector, rt_isr_handler_t new_handler, rt_isr_ha
 	}
 }
 
-/**
- * this function will reset CPU
- *
- */
-void rt_hw_cpu_reset()
-{
-}
-
-/**
- * this function will shutdown CPU
- *
- */
-void rt_hw_cpu_shutdown()
-{
-	rt_kprintf("shutdown...\n");
-
-	while (1);
-}
-
 void rt_hw_trap_irq()
 {
 	rt_isr_handler_t isr_func;
@@ -178,7 +161,18 @@ void rt_hw_trap_irq()
 
 void rt_hw_trap_fiq()
 {
-    rt_kprintf("fast interrupt request\n");
+
 }
 
-/*@}*/
+/**
+ * This is the timer interrupt service routine.
+ * @param vector the irq number for timer
+ */
+void rt_hw_timer_handler(int vector)
+{
+	rt_tick_increase();
+
+	/* clear interrupt flag */
+	T1IR |= 0x01;
+}
+

@@ -464,7 +464,7 @@ sys_res att7022_GetHarmonic(p_att7022 p, uint_t Ch, sint16_t *pbuf)
 	for (i = 20; i; i--) {   //Ò»°ãÖØ¸´3´Î¾ÍÐÐÁË¡
 		if(att7022_ReadReg(p, 0x7e)>=240)
 			break;
-		os_thd_Sleep(2s0);
+		os_thd_Sleep(20);
 	}
 	if (i) {
 		att7022_WriteReg(p, 0xc1, 0);
