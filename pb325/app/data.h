@@ -56,13 +56,17 @@ typedef struct {
 	float		imax[4];
 	float		ibmax;
 	float		pmax[4];
+	float		uimax[4];
 	time_t		tumin[3];
 	time_t		tumax[3];
 	time_t		tubmax;
 	time_t		timax[4];
 	time_t		tpmax[4];
+	time_t		tuimax[4];
 	time_t		tibmax;
 }t_stat, *p_stat;
+
+
 
 //External Functions
 void data_Clear(void);
@@ -70,8 +74,8 @@ void data_MinRead(const uint8_t *pTime, t_data_min *pData);
 void data_MinWrite(const uint8_t *pTime, t_data_min *pData);
 void data_QuarterRead(const uint8_t *pTime, t_data_quarter *pData);
 void data_QuarterWrite(const uint8_t *pTime, t_data_quarter *pData);
-int data_DayRead(const uint8_t *pTime, void *pData);
-void data_DayWrite(const uint8_t *pTime, const void *pData);
+int data_DayRead(const uint8_t *pTime, t_stat *ps);
+void data_DayWrite(const uint8_t *pTime, const t_stat *ps);
 void data_YXRead(buf b);
 void data_YXWrite(uint_t nId);
 void data_Copy2Udisk(void);

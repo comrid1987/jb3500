@@ -3,7 +3,6 @@
 #include <litecore.h>
 #include <drivers/tdk6515.h>
 #include "acm.h"
-#include "data.h"
 
 
 //Private Defines
@@ -26,8 +25,26 @@ static t_tdk6515 acm_xTdk6515;
 t_acm_rtdata acm_rtd;
 t_acm_xbdata acm_uxb[3];
 t_acm_xbdata acm_ixb[3];
+#if DAY_ENABLE
+static t_stat acm_stat;
+#endif
+
+
 
 //Internal Functions
+static uint_t stat_RateGet(time_t tTime)
+{
+	uint8_t aBuf[52];
+	uint_t nRate;
+
+	nRate = ((tTime - 1) / (30 * 60)) % 48;
+	icp_ParaRead(4, 21, TERMINAL, aBuf, 49);
+	nRate = aBuf[nRate];
+	if (nRate >= ECL_RATE_QTY)
+		nRate = 2;
+	return nRate;
+}
+
 
 
 
@@ -46,6 +63,39 @@ void acm_Init()
 	p->ste = 1;
 }
 
+void acm_Balance(t_acm_rtdata *pa)
+{
+	float fTemp, fMax;
+	uint_t i;
+
+	//不平衡度
+	fTemp = (pa->u[0] + pa->u[1] + pa->u[2]) / 3;
+	fMax = pa->u[0];
+	for (i = 1; i < 3; i++) {
+		if (fMax < pa->u[i])
+			fMax = pa->u[i];
+	}
+	pa->ub = (fMax - fTemp) / fTemp;
+	fTemp = (pa->i[0] + pa->i[1] + pa->i[2]) / 3;
+	fMax = pa->i[0];
+	for (i = 1; i < 3; i++) {
+		if (fMax < pa->i[i])
+			fMax = pa->i[i];
+	}
+	pa->ib = (fMax - fTemp) / fTemp;
+	fMax = pa->ui[0];
+	fTemp = pa->ui[0];
+	for (i = 1; i < 3; i++) {
+		if (fMax < pa->ui[i])
+			fMax = pa->ui[i];
+		if (fTemp > pa->ui[i])
+			fTemp = pa->ui[i];
+	}
+	pa->uib = (fMax - fTemp) / pa->ui[3];
+}
+
+
+
 void acm_JLRead()
 {
 	t_tdk6515 *p = &acm_xTdk6515;
@@ -53,7 +103,6 @@ void acm_JLRead()
 	t_tdk6515_rtdata *pT;
 	uint8_t *pTemp;
 	uint_t i, nCRC;
-	float fTemp, fMax;
 	buf b = {0};
 
 	if (tdk6515_IsJLReady() == SYS_R_OK) {
@@ -100,30 +149,7 @@ void acm_JLRead()
 				//功率因数
 				pa->cos[i] = pT->cos[i];
 			}
-			//不平衡度
-			fTemp = (pa->u[0] + pa->u[1] + pa->u[2]) / 3;
-			fMax = pa->u[0];
-			for (i = 1; i < 3; i++) {
-				if (fMax < pa->u[i])
-					fMax = pa->u[i];
- 			}
-			pa->ub = (fMax - fTemp) / fTemp;
-			fTemp = (pa->i[0] + pa->i[1] + pa->i[2]) / 3;
-			fMax = pa->i[0];
-			for (i = 1; i < 3; i++) {
-				if (fMax < pa->i[i])
-					fMax = pa->i[i];
- 			}
-			pa->ib = (fMax - fTemp) / fTemp;
-			fMax = pa->ui[0];
-			fTemp = pa->ui[0];
-			for (i = 1; i < 3; i++) {
-				if (fMax < pa->ui[i])
-					fMax = pa->ui[i];
-				if (fTemp > pa->ui[i])
-					fTemp = pa->ui[i];
-			}
-			pa->uib = (fMax - fTemp) / pa->ui[3];
+			acm_Balance(pa);
 		}
 		buf_Release(b);
 	}		 
@@ -234,6 +260,152 @@ int acm_IsReady()
 {
 
 	return acm_xTdk6515.ste;
+}
+
+
+
+
+#if DAY_ENABLE
+void stat_Clear()
+{
+	p_stat p = &acm_stat;
+
+	memset(p, 0, sizeof(t_stat));
+	evt_StatWrite(p);
+}
+#endif
+  
+
+void stat_Handler(p_stat ps, t_afn04_f26 *pF26, t_afn04_f28 *pF28, time_t tTime)
+{
+	uint_t i;
+	uint32_t nData;
+	float fData, fLow, fUp, fUnder, fOver;
+	t_acm_rtdata *pa = &acm_rtd;
+
+	ps->run += 1;
+	//电压
+	fLow = (float)bcd2bin16(pF26->ulow) / 10.0f;
+	fUnder = (float)bcd2bin16(pF26->uunder) / 10.0f;
+	fUp = (float)bcd2bin16(pF26->uup) / 10.0f;
+	fOver = (float)bcd2bin16(pF26->uover) / 10.0f;
+	nData = 1;
+	for (i = 0; i < 3; i++) {
+		fData = pa->u[i];
+		ps->usum[i] += fData;
+		if (fData < fLow) {
+			ps->ulow[i] += 1;
+			nData = 0;
+		}
+		if (fData > fUp) {
+			ps->uup[i] += 1;
+			nData = 0;
+		}
+		if (fData < fUnder) {
+			ps->uunder[i] += 1;
+			nData = 0;
+		}
+		if (fData > fOver) {
+			ps->uover[i] += 1;
+			nData = 0;
+		}
+		if (ps->tumin[i] == 0)
+			ps->umin[i] = fData;
+		if (fData <= ps->umin[i]) {
+			ps->umin[i] = fData;
+			ps->tumin[i] = tTime;
+		}
+		if (fData >= ps->umax[i]) {
+			ps->umax[i] = fData;
+			ps->tumax[i] = tTime;
+		}
+	}		
+	if (nData)
+		ps->uok += 1;
+	//电流
+	nData = 0;
+	memcpy(&nData, pF26->iup, 3);
+	fUp = (float)bcd2bin32(nData) / 1000.0f;
+	memcpy(&nData, pF26->iover, 3);
+	fOver = (float)bcd2bin32(nData) / 1000.0f;
+	for (i = 0; i < 3; i++) {
+		fData = pa->i[i];
+		if (fData > fUp)
+			ps->iup[i] += 1;
+		if (fData > fOver)
+			ps->iover[i] += 1;
+		if (fData >= ps->imax[i]) {
+			ps->imax[i] = fData;
+			ps->timax[i] = tTime;
+		}
+	}
+	fData = pa->i[3];
+	if (fData > fUp)
+		ps->iup[3] += 1;
+	if (fData >= ps->imax[3]) {
+		ps->imax[3] = fData;
+		ps->timax[3] = tTime;
+	}
+	//不平衡
+	fUp = (float)bcd2bin16(pF26->ubalance) / 1000.0f;
+	fData = pa->ub;
+	if (fData > fUp)
+		ps->ubalance += 1;
+	if (fData >= ps->ubmax) {
+		ps->ubmax = fData;
+		ps->tubmax = tTime;
+	}
+	fUp = (float)bcd2bin16(pF26->ibalance) / 1000.0f;
+	fData = pa->ib;
+	if (fData > fUp)
+		ps->ibalance += 1;
+	if (fData >= ps->ibmax) {
+		ps->ibmax = fData;
+		ps->tibmax = tTime;
+	}
+	//功率
+	memcpy(&nData, pF26->uiup, 3);
+	fUp = (float)bcd2bin32(nData) / 10000.0f;
+	memcpy(&nData, pF26->uiover, 3);
+	fOver = (float)bcd2bin32(nData) / 10000.0f;
+	for (i = 0; i < 4; i++) {
+		fData = pa->ui[i];
+		//总视在功率越限
+		if (i == 3) {
+			if (fData > fUp)
+				ps->uiup += 1;
+			if (fData > fOver)
+				ps->uiover+= 1;
+		}
+		//功率为零时间
+		if (fData < 0.1f)
+			ps->p0[i] += 1;
+		//视在功率最大值
+		if (fData >= ps->uimax[i]) {
+			ps->uimax[i] = fData;
+			ps->tuimax[i] = tTime;
+		}
+		fData = pa->pp[i];
+		//有功功率最大值
+		if (fData >= ps->pmax[i]) {
+			ps->pmax[i] = fData;
+			ps->tpmax[i] = tTime;
+		}
+	}
+	//视在不平衡度平均
+	ps->uibsum[stat_RateGet(tTime)] += pa->uib;
+	//功率因数分段统计
+	fLow = (float)bcd2bin16(pF28->low) / 1000.0f;
+	fUp = (float)bcd2bin16(pF28->up) / 1000.0f;
+	fData = pa->cos[3];
+	if (fData < fLow) {
+		ps->cos[0] += 1;
+	} else {
+		if (fData > fUp)
+			ps->cos[2] += 1;
+		else
+			ps->cos[1] += 1;
+	}
 }
 
 

@@ -5,6 +5,9 @@
 extern "C" {
 #endif
 
+//Header Files
+#include "para.h"
+#include "data.h"
 
 //Public Defines
 #define ACM_MSAVE_VOL		0
@@ -50,9 +53,17 @@ extern t_acm_xbdata acm_ixb[3];
 
 //External Functions
 void acm_Init(void);
+void acm_Balance(t_acm_rtdata *pa);
 void acm_JLRead(void);
 void acm_XBRead(void);
+void acm_MinSave(const uint8_t *pTime);
+void acm_QuarterSave(const uint8_t *pTime);
 int acm_IsReady(void);
+
+void stat_Clear(void);
+void stat_Handler(p_stat ps, t_afn04_f26 *pF26, t_afn04_f28 *pF28, time_t tTime);
+
+
 
 
 #ifdef __cplusplus

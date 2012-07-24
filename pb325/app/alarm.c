@@ -605,6 +605,7 @@ void evt_RunTimeWrite(time_t tTime)
 	sfs_Write(&evt_SfsDev, EVT_RUNTIME_ADDR, &tTime, sizeof(time_t));
 }
 
+#if DAY_ENABLE
 int evt_StatRead(void *pBuf)
 {
 
@@ -618,6 +619,7 @@ void evt_StatWrite(const void *pBuf)
 
 	sfs_Write(&evt_SfsDev, EVT_STAT_ADDR, pBuf, sizeof(t_stat));
 }
+#endif
 
 void evt_Init()
 {

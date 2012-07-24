@@ -242,7 +242,9 @@ void icp_Init()
 		nInit = 1;
 	if (nInit) {
 		data_Clear();
+#if DAY_ENABLE
 		stat_Clear();
+#endif
 		icp_ParaRead(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
 		icp_Format();
 		icp_ParaWrite(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));

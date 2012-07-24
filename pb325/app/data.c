@@ -1,11 +1,10 @@
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <litecore.h>
-#include "para.h"
 #include "alarm.h"
 #include "acm.h"
-#include "data.h"
 #include "system.h"
 
 //Private Defines
@@ -16,10 +15,12 @@
 #define ECL_DATA_QUAR_MSIZE		sizeof(t_data_quarter)
 #define ECL_DATA_QUAR_ALLSIZE	(ECL_DATA_QUAR_HEADER + 96 * ECL_DATA_QUAR_MSIZE)
 
+#if DAY_ENABLE
 #define ECL_DATA_DAY_BASE		(170 * 0x1000)
 #define ECL_DATA_DAY_HEADER		16
 #define ECL_DATA_DAY_MSIZE		sizeof(t_stat)
 #define ECL_DATA_DAY_ALLSIZE	(ECL_DATA_DAY_HEADER + ECL_DATA_DAY_MSIZE)
+#endif
 
 #define ECL_DATA_MIN_BASE		(326 * 0x1000)
 #define ECL_DATA_MIN_HEADER		16
@@ -126,7 +127,8 @@ void data_QuarterWrite(const uint8_t *pTime, t_data_quarter *pData)
 	flash_Flush(0);
 }
 
-int data_DayRead(const uint8_t *pTime, void *pData)
+#if DAY_ENABLE
+int data_DayRead(const uint8_t *pTime, t_stat *ps)
 {
 	uint_t nAdr;
 	uint8_t aBuf[6];
@@ -135,14 +137,14 @@ int data_DayRead(const uint8_t *pTime, void *pData)
 	spif_Read(nAdr, aBuf, 3);
 	if (memcmp(aBuf, pTime, 3) == 0) {
 		nAdr += ECL_DATA_DAY_HEADER;
-		spif_Read(nAdr, pData, ECL_DATA_DAY_MSIZE);
+		spif_Read(nAdr, ps, ECL_DATA_DAY_MSIZE);
 		return 1;
 	}
-	memset(pData, GW3761_DATA_INVALID, ECL_DATA_DAY_MSIZE);
+	memset(ps, GW3761_DATA_INVALID, ECL_DATA_DAY_MSIZE);
 	return 0;
 }
 
-void data_DayWrite(const uint8_t *pTime, const void *pData)
+void data_DayWrite(const uint8_t *pTime, const t_stat *ps)
 {
 	uint_t nAdr;
 	uint8_t aBuf[6];
@@ -155,9 +157,70 @@ void data_DayWrite(const uint8_t *pTime, const void *pData)
 		spif_Write(nAdr, pTime, 3);
 	}
 	nAdr += ECL_DATA_DAY_HEADER;
-	spif_Write(nAdr, pData, ECL_DATA_DAY_MSIZE);
+	spif_Write(nAdr, ps, ECL_DATA_DAY_MSIZE);
 	flash_Flush(0);
 }
+#else
+int data_DayRead(const uint8_t *pTime, t_stat *ps)
+{
+	uint8_t *pTemp, aTime[6];
+	char str[10];
+	uint_t i;
+	time_t tTime, tEnd;
+	t_data_min xMin;
+	t_acm_rtdata xRtd;
+	t_afn04_f26 xF26;
+	t_afn04_f28 xF28;
+
+	memset(ps, 0, sizeof(t_stat));
+	icp_ParaRead(4, 26, TERMINAL, &xF26, sizeof(t_afn04_f26));
+	icp_ParaRead(4, 28, TERMINAL, &xF28, sizeof(t_afn04_f28));
+
+	memset(aTime, 0, 6);
+	memcpy(&aTime[3], pTime, 3);
+	tTime = array2timet(aTime, 1);
+	tEnd = tTime + (24 * 60 * 60);
+	for (tTime += 60; tTime < tEnd; tTime += 60) {
+		timet2array(tTime, aTime, 1);
+		data_MinRead(&aTime[1], &xMin);
+		if (xMin.time == GW3761_DATA_INVALID)
+			continue;
+		for (i = 0; i < 3; i++) {
+			pTemp = &xMin.data[ACM_MSAVE_VOL + i * 2];
+			sprintf(str, "%02X%1X.%1X", pTemp[1], pTemp[0] >> 4, pTemp[0] & 0x0F);
+			xRtd.u[i] = atof(str);
+		}
+		for (i = 0; i < 4; i++) {
+			pTemp = &xMin.data[ACM_MSAVE_CUR + i * 3];
+			sprintf(str, "%02X%1X.%1X%02X", pTemp[2] & 0x7F, pTemp[1] >> 4, pTemp[1] & 0x0F, pTemp[0]);
+			xRtd.i[i] = atof(str);
+			if (pTemp[2] & BITMASK(7))
+				xRtd.i[i] = 0.0f - xRtd.i[i];
+			pTemp = &xMin.data[ACM_MSAVE_PP + i * 3];
+			sprintf(str, ",%02X.%02X%02X", pTemp[2] & 0x7F, pTemp[1], pTemp[0]);
+			xRtd.pp[i] = atof(str);
+			if (pTemp[2] & BITMASK(7))
+				xRtd.pp[i] = 0.0f - xRtd.pp[i];
+			pTemp = &xMin.data[ACM_MSAVE_PQ + i * 3];
+			sprintf(str, ",%02X.%02X%02X", pTemp[2] & 0x7F, pTemp[1], pTemp[0]);
+			xRtd.pq[i] = atof(str);
+			if (pTemp[2] & BITMASK(7))
+				xRtd.pq[i] = 0.0f - xRtd.pq[i];
+			pTemp = &xMin.data[ACM_MSAVE_COS + i * 2];
+			sprintf(str, ",%1X.%1X%02X", (pTemp[1] >> 4) & 0x07, pTemp[1] & 0xF, pTemp[0]);
+			xRtd.cos[i] = atof(str);
+			if (pTemp[1] & BITMASK(7))
+				xRtd.cos[i] = 0.0f - xRtd.cos[i];
+			//计算视在功率
+			xRtd.ui[i] = sqrtf(xRtd.pp[i] * xRtd.pp[i] + xRtd.pq[i] * xRtd.pq[i]);
+		}
+		//不平衡度
+		acm_Balance(&xRtd);
+		stat_Handler(ps, &xF26, &xF28, tTime);
+	}
+	return ps->run;
+}
+#endif
 
 void data_YXRead(buf b)
 {
@@ -254,32 +317,32 @@ void data_Copy2Udisk()
 				fs_write(fd1, str, sprintf(str, "20%02X-%02X-%02X %02X:%02X:00", aTime[5], aTime[4], aTime[3], aTime[2], aTime[1]));
 				for (i = 0; i < 3; i++) {
 					pTemp = &xMin.data[ACM_MSAVE_CUR + i * 3];
-					fs_write(fd1, str, sprintf(str, ",%1X%1X.%1X%1X", pTemp[2] & 0xF, pTemp[1] >> 4, pTemp[1] & 0xF, pTemp[0] >> 4));
+					fs_write(fd1, str, sprintf(str, ",%1X%1X.%1X%1X", pTemp[2] & 0x0F, pTemp[1] >> 4, pTemp[1] & 0x0F, pTemp[0] >> 4));
 				}
 				for (i = 0; i < 3; i++) {
 					pTemp = &xMin.data[ACM_MSAVE_VOL + i * 2];
-					fs_write(fd1, str, sprintf(str, ",%02X%1X.%1X", pTemp[1], pTemp[0] >> 4, pTemp[0] & 0xF));
+					fs_write(fd1, str, sprintf(str, ",%02X%1X.%1X", pTemp[1], pTemp[0] >> 4, pTemp[0] & 0x0F));
 				}
 				for (i = 1; i < 4; i++) {
 					pTemp = &xMin.data[ACM_MSAVE_PP + i * 3];
-					fs_write(fd1, str, sprintf(str, ",%1X.%1X%1X%1X", pTemp[2] & 0xF, pTemp[1] >> 4, pTemp[1] & 0xF, pTemp[0] >> 4));
+					fs_write(fd1, str, sprintf(str, ",%1X.%02X%1X", pTemp[2] & 0x0F, pTemp[1], pTemp[0] >> 4));
 				}
 				for (i = 1; i < 4; i++) {
 					pTemp = &xMin.data[ACM_MSAVE_PQ + i * 3];
-					fs_write(fd1, str, sprintf(str, ",%1X.%1X%1X%1X", pTemp[2] & 0xF, pTemp[1] >> 4, pTemp[1] & 0xF, pTemp[0] >> 4));
+					fs_write(fd1, str, sprintf(str, ",%1X.%02X%1X", pTemp[2] & 0x0F, pTemp[1], pTemp[0] >> 4));
 				}
 				for (i = 1; i < 4; i++) {
 					pTemp = &xMin.data[ACM_MSAVE_COS + i * 2];
-					fs_write(fd1, str, sprintf(str, ",%1X.%1X%1X", (pTemp[1] >> 4) & 0x07, pTemp[1] & 0xF, pTemp[0] >> 4));
+					fs_write(fd1, str, sprintf(str, ",%1X.%1X%1X", (pTemp[1] >> 4) & 0x07, pTemp[1] & 0x0F, pTemp[0] >> 4));
 				}
 				pTemp = &xMin.data[ACM_MSAVE_CUR + 9];
-				fs_write(fd1, str, sprintf(str, ",%1X%1X.%1X%1X", pTemp[2] & 0xF, pTemp[1] >> 4, pTemp[1] & 0xF, pTemp[0] >> 4));
+				fs_write(fd1, str, sprintf(str, ",%1X%1X.%1X%1X", pTemp[2] & 0x0F, pTemp[1] >> 4, pTemp[1] & 0x0F, pTemp[0] >> 4));
 				pTemp = &xMin.data[ACM_MSAVE_PP];
-				fs_write(fd1, str, sprintf(str, ",%1X.%1X%1X%1X", pTemp[2] & 0xF, pTemp[1] >> 4, pTemp[1] & 0xF, pTemp[0] >> 4));
+				fs_write(fd1, str, sprintf(str, ",%1X.%02X%1X", pTemp[2] & 0x0F, pTemp[1], pTemp[0] >> 4));
 				pTemp = &xMin.data[ACM_MSAVE_PQ];
-				fs_write(fd1, str, sprintf(str, ",%1X.%1X%1X%1X", pTemp[2] & 0xF, pTemp[1] >> 4, pTemp[1] & 0xF, pTemp[0] >> 4));
+				fs_write(fd1, str, sprintf(str, ",%1X.%02X%1X", pTemp[2] & 0x0F, pTemp[1], pTemp[0] >> 4));
 				pTemp = &xMin.data[ACM_MSAVE_COS];
-				fs_write(fd1, str, sprintf(str, ",%1X.%1X%1X\r\n", (pTemp[1] >> 4) & 0x07, pTemp[1] & 0xF, pTemp[0] >> 4));
+				fs_write(fd1, str, sprintf(str, ",%1X.%1X%1X\r\n", (pTemp[1] >> 4) & 0x07, pTemp[1] & 0x0F, pTemp[0] >> 4));
 			}
 		}
 
@@ -290,11 +353,11 @@ void data_Copy2Udisk()
 					fs_write(fd2, str, sprintf(str, "20%02X-%02X-%02X %02X:%02X:00", aTime[5], aTime[4], aTime[3], aTime[2], aTime[1]));
 					for (i = 0; i < 66; i++) {
 						pTemp = &xQuar.data[i * 2];
-						fs_write(fd2, str, sprintf(str, ",%1X.%1X%02X", pTemp[1] >> 4, pTemp[1] & 0xF, pTemp[0]));
+						fs_write(fd2, str, sprintf(str, ",%1X.%1X%02X", pTemp[1] >> 4, pTemp[1] & 0x0F, pTemp[0]));
 					}
 					for (i = 0; i < 6; i++) {
 						pTemp = &xQuar.data[132 + i * 2];
-						fs_write(fd2, str, sprintf(str, ",%02X%1X.%1X", pTemp[1], pTemp[0] >> 4, pTemp[0] & 0xF));
+						fs_write(fd2, str, sprintf(str, ",%02X%1X.%1X", pTemp[1], pTemp[0] >> 4, pTemp[0] & 0x0F));
 					}
 					pTemp = &xQuar.data[144];
 					fs_write(fd2, str, sprintf(str, ",%02X.%02X\r\n", pTemp[1], pTemp[0]));
