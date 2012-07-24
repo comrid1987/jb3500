@@ -38,6 +38,11 @@
 
 //中断系统使能
 #define IRQ_ENABLE						1
+#if IRQ_ENABLE
+	#define IRQ_HALF_ENABLE				0
+	#define IRQ_EXT_ENABLE				1
+	#define IRQ_TIMER_ENABLE			1
+#endif
 
 //调试使能
 #define DEBUG_ENABLE					0
