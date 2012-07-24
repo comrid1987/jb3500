@@ -237,6 +237,7 @@ void stat_Handler(p_stat ps, t_afn04_f26 *pF26, t_afn04_f28 *pF28, time_t tTime)
 		//功率为零时间
 		if (fData < 0.1f)
 			ps->p0[i] += 1;
+		//视在功率最大值
 		if (fData >= ps->pmax[i]) {
 			ps->pmax[i] = fData;
 			ps->tpmax[i] = tTime;
