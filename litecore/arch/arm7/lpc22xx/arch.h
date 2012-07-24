@@ -11,7 +11,10 @@ extern "C" {
 
 #include <arch/arm7/lpc22xx/gpio.h>
 #include <arch/arm7/lpc22xx/timer.h>
+
+#if OS_TYPE
 #include <arch/arm7/lpc22xx/uart.h>
+#endif
 
 #include <arch/arm7/lpc22xx/it.h>
 

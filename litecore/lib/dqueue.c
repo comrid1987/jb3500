@@ -2,7 +2,7 @@
 
 
 //Private Defines
-#define DQUE_LOCK_ENABLE		1
+#define DQUE_LOCK_ENABLE		(1 & OS_TYPE)
 
 #define DQUE_INVALID_FLAG		0x7F
 

@@ -1,3 +1,4 @@
+#if UART_ENABLE
 
 
 
@@ -245,5 +246,5 @@ void arch_UartISR(uint_t nId)
 	}
 }
 
-
+#endif
 

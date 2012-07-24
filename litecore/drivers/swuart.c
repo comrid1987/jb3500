@@ -433,7 +433,7 @@ void swuart_TxStart(uint_t nId)
 }
 
 
-
+#if SWUART_RX_MODE == SWUART_RX_M_CAP
 /****************************************************************************
 * 名   称： SimuSendByte
 * 功   能： 模拟串口发送字符
@@ -648,4 +648,4 @@ static void IRQ_SimuUart(void *args)
 }               
 #endif
 
-
+#endif

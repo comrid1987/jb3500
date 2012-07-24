@@ -6,6 +6,9 @@
 #define MAX_HANDLERS	32
 #define SVCMODE		    0x13
 
+
+#if OS_TYPE
+
 extern volatile rt_uint8_t rt_interrupt_nest;
 
 /**
@@ -180,6 +183,7 @@ void rt_hw_timer_handler(int vector)
 	/* clear interrupt flag */
 	T1IR |= 0x01;
 }
+#endif
 
 
 static void lpc22xx_RccInit()
@@ -187,6 +191,7 @@ static void lpc22xx_RccInit()
 
 }
 
+#if IRQ_ENABLE
 static void lpc22xx_IrqInit()
 {
 
@@ -207,6 +212,7 @@ static void lpc22xx_IrqInit()
 	rt_hw_interrupt_install(TIMER1_INT, rt_hw_timer_handler, RT_NULL);
 	rt_hw_interrupt_umask(TIMER1_INT);
 }
+#endif
 
 static void lpc22xx_GpioIdleInit()
 {
@@ -220,13 +226,6 @@ static void lpc22xx_GpioIdleInit()
 static void lpc22xx_DbgInit()
 {
 
-	DBGMCU_Config(0x00000127, ENABLE);
-	*(vu32 *)0xE0000FB0 = 0xC5ACCE55;
-	*(vu32 *)0xE0000E80 = 0x00010017;
-	*(vu32 *)0xE0000E40 = 0x00000081;
-	*(vu32 *)0xE0000E00 = 0x80000001;
-	*(vu32 *)0xE00400F0 = 0x00000002;
-	*(vu32 *)0xE0040304 = 0x00000102;
 }
 #endif
 
@@ -240,7 +239,9 @@ void arch_Init()
 	lpc22xx_DbgInit();
 #endif
 	//中断初始化
+#if IRQ_ENABLE
 	lpc22xx_IrqInit();
+#endif
 	//GPIO初始化
 	lpc22xx_GpioIdleInit();
 }
