@@ -17,7 +17,7 @@ uint_t pulse_Read()
 
 	for (i = 0, p = tbl_bspPulse[0]; p < tbl_bspPulse[1]; i++, p++) {
 		if (sys_GpioRead(p)) {
-			if (GETBIT(nSaved, i) == 0) {
+			if ((nSaved & BITMASK(i)) == 0) {
 				SETBIT(nSaved, i);
 				SETBIT(n, i);
 			}

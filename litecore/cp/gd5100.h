@@ -18,7 +18,7 @@
 #define GD5100_ERR_NO_DATA				0x04	//无此项数据
 #define GD5100_ERR_TIME_INVALID			0x05	//命令时间失效
 #define GD5100_ERR_NO_ADDR				0x11	//目标地址不存在
-#define GD5100_ERR_SEND_FALE			0x12	//发送失败
+#define GD5100_ERR_SEND_FAIL			0x12	//发送失败
 #define GD5100_ERR_SMS_LONG				0x13	//短消息帧太长
 
 #define GD5100_DATA_INVALID				0xFFFFFFFF

@@ -17,7 +17,7 @@ uint_t key_Read()
 	for (p = tbl_bspKeypad[0]; p < tbl_bspKeypad[1]; p++, i++) {
 		if (sys_GpioRead(p)) {
 			//有按键被按下
-			if (GETBIT(nSaved, i)) {
+			if (nSaved & BITMASK(i)) {
 				CLRBIT(nSaved, i);
 				SETBIT(n, i);
 			}

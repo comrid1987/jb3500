@@ -395,7 +395,7 @@ int reg_GetBit(uint_t nDa, uint_t nID, uint_t nBit)
 	uint64_t nData;
 
 	reg_Get(nDa, nID, &nData);
-	if (GETBIT(nData, nBit))
+	if (nData & BITMASK(nBit))
 		return 1;
 	return 0;
 }

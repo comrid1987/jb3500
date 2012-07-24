@@ -419,7 +419,7 @@ void ht1621_Write(uint_t nIcon, uint_t nMask)
 
 	seg = icons[nIcon];	//要显示的第seg个数字
 	for (i = 0; i < num_segs[nIcon]; i++, seg++) {		//笔画数
-		if (GETBIT(nMask, i))//wei:取mask的最低位，为1表示显示该段
+		if (nMask & BITMASK(i))//wei:取mask的最低位，为1表示显示该段
 			ht1621_DisSection(*seg);    // Activate segment.
 		else			//为0时表示该段不显示，故清显示
 			ht1621_UnDisSection(*seg);   // DeActivate segment.

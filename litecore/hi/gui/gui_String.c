@@ -45,7 +45,7 @@ void gui_DrawString_ASC6x8(int x, int y, const char *pStr, t_color nColor)
 		pOffset = FONT6x8ASCII + (int)(*pStr++ - ' ') * ASC6x8_SIZE;	//将ASCII转换成实际值"!"的ASCII为33。
 		for(i = 0; i < ASC6x8_SIZE; i++, pOffset++)
 			for(j = 0; j < 8; j++)
-				if (GETBIT(*pOffset, j))
+				if (*pOffset & BITMASK(j))
 					gui_DrawPoint(x + i, y + j, nColor);
 				else
 					gui_DrawPoint(x + i, y + j, ~nColor);
@@ -67,7 +67,7 @@ void gui_DrawString_ASC6x12(int x, int y, const char *pStr, t_color nColor)
 		p = FONT6x12ASCII + (int)(*pStr++ - ' ') * ASC6x12_SIZE;	//将ASCII转换成实际值"!"的ASCII为33。
         for(i = 0; i < 12; i++, p++) {
             for(j = 0; j < 6; j++) {
-                if (GETBIT(*p, j))
+                if (*p & BITMASK(j))
                     lcd_DrawPoint(x + j, y + i, nColor);
                 else
                     lcd_DrawPoint(x + j, y + i, ~nColor);
@@ -91,11 +91,11 @@ void gui_DrawString_ASC6x16(int x, int y, const char *pStr, t_color nColor)
 		p2 = p1 + 6;
 		for(i = 0; i < 6; i++, p1++, p2++) {
 			for(j = 0; j < 8; j++) {
-				if (GETBIT(*p1, j))
+				if (*p1 & BITMASK(j))
 				    lcd_DrawPoint(x + i, y + j, nColor);
 				else
 				    lcd_DrawPoint(x + i, y + j, ~nColor);
-				if (GETBIT(*p2, j))
+				if (*p2 & BITMASK(j))
 				    lcd_DrawPoint(x + i, y + j + 8, nColor);
 				else
 				    lcd_DrawPoint(x + i, y + j + 8, ~nColor);
@@ -249,7 +249,7 @@ void gui_DrawChar_HZ16(int x, int y, const char *pStr, t_color nColor)
 		for (i = 7; x < x1; i--, x++) {
 			if (i == 7)
 				nByte = *pOffset++;
-			if (GETBIT(nByte, i))
+			if (nByte & BITMASK(i))
 				gui_DrawPoint(x, y, nColor);
 			else
 				gui_DrawPoint(x, y, ~nColor);
@@ -273,7 +273,7 @@ void gui_DrawChar_ASC4HZK(int x, int y, char *pStr, t_color nColor)
 	for (i = 0; i < HZ_HEIGHT; i++, y++, x -= ASC_WIDTH) {
 		//取8bits
 		for (j = ASC_WIDTH - 1; j >= 0; j--, x++)
-			if (GETBIT(*pOffset, j))
+			if (*pOffset & BITMASK(j))
 				gui_DrawPoint(x, y, nColor);
 			else
 				gui_DrawPoint(x, y, ~nColor);

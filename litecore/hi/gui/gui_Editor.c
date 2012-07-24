@@ -200,7 +200,7 @@ void gui_Editor_DayDone(char *pStr, uint8_t *pTime)
 //-------------------------------------------------------------------------
 //数字设置
 //-------------------------------------------------------------------------
-void gui_Editor_NumberCreate(char *pStr, sint32_t nNum, uint_t nBits, int nBcd)
+void gui_Editor_NumberCreate(char *pStr, sint32_t nNum, uint_t nBits, int nHex)
 {
 	char strNum[32];
 	uint_t nTemp;
@@ -208,7 +208,7 @@ void gui_Editor_NumberCreate(char *pStr, sint32_t nNum, uint_t nBits, int nBcd)
 	//转换数字为规格字符串
 	rt_memset(pStr, '0', nBits);
 	*(pStr+	nBits) = 0;
-	if (nBcd)
+	if (nHex)
 		sprintf(strNum, "%lX", nNum);
 	else
 		sprintf(strNum, "%ld", nNum);
@@ -219,7 +219,7 @@ void gui_Editor_NumberCreate(char *pStr, sint32_t nNum, uint_t nBits, int nBcd)
 		memcpy(&pStr[nBits - nTemp], &strNum[0], nTemp); 
 }
 
-void gui_Editor_NumberSet(int y, char *pStr, int nIndex, int nSelect, int nSign, int nBcd)
+void gui_Editor_NumberSet(int y, char *pStr, int nIndex, int nSelect, int nSign, int nHex)
 {
 	int x;
 
@@ -229,27 +229,27 @@ void gui_Editor_NumberSet(int y, char *pStr, int nIndex, int nSelect, int nSign,
 		x = 0;
 	else
 		x = 1;
-	if (nBcd)
-		nBcd = 15;
+	if (nHex)
+		nHex = 15;
 	else
-		nBcd = 9;
-	pStr[nIndex] = gui_EditorCompnet_Number(pStr[nIndex], x, x + nBcd, nSelect);
+		nHex = 9;
+	pStr[nIndex] = gui_EditorCompnet_Number(pStr[nIndex], x, x + nHex, nSelect);
 	//绘制数字及光标
 	x = gui_DrawString_Mixed_Align(0, y, pStr, COLOR_BLACK, GUI_ALIGN_CENTER) + ASC_WIDTH * nIndex;
 	gui_DrawHLine(x, y + HZ_HEIGHT, x + 6, COLOR_BLACK);
 }
 
-sint64_t gui_Editor_NumberDone(char *pStr, int nBcd)
+sint64_t gui_Editor_NumberDone(char *pStr, int nHex)
 {
 	//转换规格字符串为数字
 	sint64_t n;
 	char **ppStr = NULL;
 	
-	if (nBcd)
-		nBcd = 16;
+	if (nHex)
+		nHex = 16;
 	else
-		nBcd = 10;
-	n = strtoul(pStr, ppStr, nBcd);
+		nHex = 10;
+	n = strtoul(pStr, ppStr, nHex);
 	return n;
 }
 

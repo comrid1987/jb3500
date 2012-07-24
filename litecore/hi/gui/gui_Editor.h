@@ -35,9 +35,9 @@ void gui_Editor_DayCreate(char *pStr, time_t tTime);
 void gui_Editor_DaySet(int y, char *pStr, int nIndex, int nSelect);
 void gui_Editor_DayDone(char *pStr, uint8_t *pTime);
 
-void gui_Editor_NumberCreate(char *pStr, sint32_t nNum, uint_t nBits, int nBcd);
-void gui_Editor_NumberSet(int y, char *pStr, int nIndex, int nSelect, int nSign, int nBcd);
-sint64_t gui_Editor_NumberDone(char *pStr, int nBcd);
+void gui_Editor_NumberCreate(char *pStr, sint32_t nNum, uint_t nBits, int nHex);
+void gui_Editor_NumberSet(int y, char *pStr, int nIndex, int nSelect, int nSign, int nHex);
+sint64_t gui_Editor_NumberDone(char *pStr, int nHex);
 void gui_Editor_StringDcmCreate(char *pStr, int nIndex);
 void gui_Editor_StringDcmSet(int y,char * pStr,int nIndex,int nSelect,int nType);
 
