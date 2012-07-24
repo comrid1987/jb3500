@@ -2,9 +2,17 @@
 #include <drivers/norflash.h>
 
 //Private Defines
+#define NORFLASH_LOCK_ENABLE	(1 & OS_TYPE)
+
+
+//Private Const
+#if NORFLASH_LOCK_ENABLE
 #define norf_Lock()				os_thd_Lock()
 #define norf_Unlock()			os_thd_Unlock()
-
+#else
+#define norf_Lock(...)
+#define norf_Unlock(...)
+#endif
 
 
 //Public variables
@@ -24,9 +32,11 @@ static sys_res norf_IsToggleDone(adr_t adr, int nIsErase)
 		if ((nTarget & 0x0044) == (specAddress(adr) & 0x0044))
 			return SYS_R_OK;
 		if ((nTarget & BITMASK(5)) == 0) {
+#if OS_TYPE
 			if (nIsErase)
 				os_thd_Slp1Tick();
-		} else {
+#endif
+			} else {
 			if ((specAddress(adr) & 0x0044) != (specAddress(adr) & 0x0044))
 				return SYS_R_ERR;
 		}

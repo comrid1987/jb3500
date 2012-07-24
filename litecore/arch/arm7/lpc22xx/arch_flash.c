@@ -56,7 +56,7 @@ INT32U paramout[8];                                                    /* IAP³ö¿
 ** output parameters:   paramout[0]:    IAP²Ù×÷×´Ì¬Âë,IAP·µ»ØÖµ     
 ** Returned value:      paramout[0]:    IAP²Ù×÷×´Ì¬Âë,IAP·µ»ØÖµ                     
 *********************************************************************************************************/
-static INT32U sectorPrepare(INT8U sec1, INT8U sec2)
+INT32U sectorPrepare(INT8U sec1, INT8U sec2)
 {  
     paramin[0] = IAP_Prepare;                                           /* ÉèÖÃÃüÁî×Ö                   */
     paramin[1] = sec1;                                                  /* ÉèÖÃ²ÎÊý                     */
@@ -75,7 +75,7 @@ static INT32U sectorPrepare(INT8U sec1, INT8U sec2)
 ** output parameters:   paramout[0]:    IAP²Ù×÷×´Ì¬Âë,IAP·µ»ØÖµ     
 ** Returned value:      paramout[0]:    IAP²Ù×÷×´Ì¬Âë,IAP·µ»ØÖµ                     
 *********************************************************************************************************/
-static INT32U ramToFlash(INT32U dst, INT32U src, INT32U no)
+INT32U ramToFlash(INT32U dst, INT32U src, INT32U no)
 {  
     paramin[0] = IAP_RAMTOFLASH;                                        /* ÉèÖÃÃüÁî×Ö                   */
     paramin[1] = dst;                                                   /* ÉèÖÃ²ÎÊý                     */
@@ -95,7 +95,7 @@ static INT32U ramToFlash(INT32U dst, INT32U src, INT32U no)
 ** output parameters:   paramout[0]:    IAP²Ù×÷×´Ì¬Âë,IAP·µ»ØÖµ
 ** Returned value:      paramout[0]:    IAP²Ù×÷×´Ì¬Âë,IAP·µ»ØÖµ                     
 *********************************************************************************************************/
-static INT32U sectorErase(INT8U sec1, INT8U sec2)
+INT32U sectorErase(INT8U sec1, INT8U sec2)
 {  
     paramin[0] = IAP_ERASESECTOR;                                       /* ÉèÖÃÃüÁî×Ö                   */
     paramin[1] = sec1;                                                  /* ÉèÖÃ²ÎÊý                     */
@@ -117,7 +117,9 @@ sys_res arch_IntfErase(adr_t adr)
 	uint_t nBlk;
 
 	nBlk = adr / INTFLASH_BLK_SIZE;
+#if OS_TYPE
 	os_interrupt_Disable();
+#endif
 #if WDG_ENABLE
 	wdg_Reload(0);
 #endif
@@ -129,7 +131,9 @@ sys_res arch_IntfErase(adr_t adr)
 #if WDG_ENABLE
 	wdg_Reload(0);
 #endif
+#if OS_TYPE
 	os_interrupt_Enable();
+#endif
 	return SYS_R_OK;
 }
 
@@ -138,7 +142,9 @@ sys_res arch_IntfProgram(adr_t adr, const void *pData, uint_t nLen)
 	uint_t nBlk;
 
 	nBlk = adr / INTFLASH_BLK_SIZE;
+#if OS_TYPE
 	os_interrupt_Disable();
+#endif
 #if WDG_ENABLE
 	wdg_Reload(0);
 #endif
@@ -150,7 +156,9 @@ sys_res arch_IntfProgram(adr_t adr, const void *pData, uint_t nLen)
 #if WDG_ENABLE
 	wdg_Reload(0);
 #endif
+#if OS_TYPE
 	os_interrupt_Enable();
+#endif
 	return SYS_R_OK;
 }
 

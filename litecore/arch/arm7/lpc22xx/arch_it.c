@@ -1,4 +1,4 @@
-
+#if IRQ_ENABLE
 
 
 
@@ -103,5 +103,4 @@ void EINT3_IRQHandler(int vector)
 	SETBIT(EXTINT, 3);
 }
 
-
-
+#endif

@@ -1,4 +1,4 @@
-
+#if IRQ_TIMER_ENABLE
 
 
 
@@ -132,3 +132,4 @@ void arch_TimerCapStart(uint_t nId, uint_t nValue)
 }
 #endif
 
+#endif

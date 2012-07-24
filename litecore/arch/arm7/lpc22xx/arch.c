@@ -7,7 +7,11 @@
 #define SVCMODE		    0x13
 
 
-#if OS_TYPE
+#if OS_TYPE == OS_T_NULL
+#include <os/rtt/rtdef.h>
+#include <os/rtt/rtthread.h>
+
+#endif
 
 extern volatile rt_uint8_t rt_interrupt_nest;
 
@@ -64,7 +68,7 @@ rt_uint32_t rt_thread_switch_interrupt_flag;
 
 void rt_hw_interrupt_handler(int vector)
 {
-	rt_kprintf("Unhandled interrupt %d occured!!!\n", vector);
+
 }
 
 /**
@@ -137,25 +141,6 @@ void rt_hw_interrupt_install(int vector, rt_isr_handler_t new_handler, rt_isr_ha
 	}
 }
 
-/**
- * this function will reset CPU
- *
- */
-void rt_hw_cpu_reset()
-{
-}
-
-/**
- * this function will shutdown CPU
- *
- */
-void rt_hw_cpu_shutdown()
-{
-	rt_kprintf("shutdown...\n");
-
-	while (1);
-}
-
 void rt_hw_trap_irq()
 {
 	rt_isr_handler_t isr_func;
@@ -169,7 +154,7 @@ void rt_hw_trap_irq()
 
 void rt_hw_trap_fiq()
 {
-    rt_kprintf("fast interrupt request\n");
+
 }
 
 /**
@@ -183,7 +168,7 @@ void rt_hw_timer_handler(int vector)
 	/* clear interrupt flag */
 	T1IR |= 0x01;
 }
-#endif
+
 
 
 static void lpc22xx_RccInit()
@@ -259,7 +244,9 @@ void arch_IdleEntry()
 void arch_Reset()
 {
 
+#if OS_TYPE
 	os_interrupt_Disable();
+#endif
 	while(1);
 }
 
