@@ -93,8 +93,9 @@ int gw3761_ResponseData2(p_gw3761 p)
 							gw3761_Data2_Other(b, ps->tuimax[i]);
 						}
 						buf_PushData(b, ps->p0[0], 2);
-						for (i = 1; i < 4; i++)
+						for (i = 1; i < 4; i++) {
 							buf_PushData(b, ps->p0[i], 2);
+						}
 						gw3761_ConvertData_23(aBuf, FLOAT2FIX(ps->pmax[3]));
 						buf_Push(b, aBuf, 3);
 						gw3761_ConvertData_18(aBuf, ps->tpmax[3]);
@@ -108,8 +109,9 @@ int gw3761_ResponseData2(p_gw3761 p)
 							gw3761_Data2_Other(b, ps->tpmax[i]);
 						}
 						nTemp = 0;
-						for (i = 0; i < 4; i++)
+						for (i = 0; i < 4; i++) {
 							nTemp += ps->uibsum[i];
+						}
 						gw3761_ConvertData_05_Percent(aBuf, FLOAT2FIX((float)nTemp / (float)ps->run), 0);
 						buf_Push(b, aBuf, 2);
 						for (i = 0; i < 4; i++) {
@@ -201,8 +203,15 @@ int gw3761_ResponseData2(p_gw3761 p)
 				case 43:
 					if (data_DayRead(pData, ps)) {
 						buf_Push(b, pData, 3);
-						for (i = 0; i < 3; i++)
+						for (i = 0; i < 3; i++) {
 							buf_PushData(b, ps->cos[i], 2);
+						}
+						gw3761_ConvertData_05_Percent(aBuf, FLOAT2FIX((float)ps->cossum[3] / (float)ps->run), 0);
+						buf_Push(b, aBuf, 2);
+						for (i = 0; i < 3; i++) {
+							gw3761_ConvertData_05_Percent(aBuf, FLOAT2FIX((float)ps->cossum[i] / (float)ps->run), 0);
+							buf_Push(b, aBuf, 2);
+						}						
 						nSucc = 1;
 					}
 					pData += 3;

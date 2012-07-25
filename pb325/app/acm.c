@@ -394,6 +394,10 @@ void stat_Handler(p_stat ps, t_afn04_f26 *pF26, t_afn04_f28 *pF28, time_t tTime)
 	}
 	//视在不平衡度平均
 	ps->uibsum[stat_RateGet(tTime)] += pa->uib;
+	//功率因数平均值
+	for (i = 0; i < 4; i++) {
+		ps->cossum[i] += pa->cos[i];
+	}
 	//功率因数分段统计
 	fLow = (float)bcd2bin16(pF28->low) / 1000.0f;
 	fUp = (float)bcd2bin16(pF28->up) / 1000.0f;

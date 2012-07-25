@@ -50,6 +50,7 @@ typedef struct {
 	float		usum[3];
 	float		isum[4];
 	float		uibsum[4];
+	float		cossum[4];
 	float		umin[3];
 	float		umax[3];
 	float		ubmax;
