@@ -32,11 +32,14 @@ static sys_res norf_IsToggleDone(adr_t adr, int nIsErase)
 		if ((nTarget & 0x0044) == (specAddress(adr) & 0x0044))
 			return SYS_R_OK;
 		if ((nTarget & BITMASK(5)) == 0) {
+			if (nIsErase) {
 #if OS_TYPE
-			if (nIsErase)
 				os_thd_Slp1Tick();
+#else
+				wdg_Reload(0);
 #endif
-			} else {
+			}
+		} else {
 			if ((specAddress(adr) & 0x0044) != (specAddress(adr) & 0x0044))
 				return SYS_R_ERR;
 		}

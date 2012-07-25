@@ -476,6 +476,7 @@ static void SimuCapSendByte(uint8_t SChar)
   	T0TC=0;
 //	os_interrupt_Enable();
 	rt_hw_interrupt_umask(TIMER1_INT);
+	wdg_Reload(0);
 }
 
 
@@ -560,6 +561,7 @@ static void IRQ_SimuUart(void *args)
 	PINSEL1 |= 0x08000000;              //设定TXD引脚工作CPIO，RXD引脚工作在捕捉(3)模式
 //	os_interrupt_Enable();
 	rt_hw_interrupt_umask(TIMER1_INT);
+	wdg_Reload(0);
 /*	irq_TimerRegister(pDef->id, IRQ_SimuUart, pSW);
 	arch_TimerCapStart(pDef->id);
 

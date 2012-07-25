@@ -14,6 +14,12 @@ extern LOCALM localm[];
 //·¢ËÍ»º³åÊ¹ÄÜ
 #define RTXIP_TXBUF_ENABLE	0
 
+#define TCP_NUMSOCKS   6
+#define UDP_NUMSOCKS   2
+#define TICK_INTERVAL  10
+
+
+
 //Private Variables
 static uint16_t rtxip_aLocPort[TCP_NUMSOCKS + UDP_NUMSOCKS];
 static buf rtxip_xBuf[TCP_NUMSOCKS + UDP_NUMSOCKS];

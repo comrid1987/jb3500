@@ -68,11 +68,14 @@
 
 
 //Private Variables
+#pragma arm section rwdata = "SRAM", zidata = "SRAM"		//Unfinished
 #if GUI_COLOR_SIZE == 2
 static uint8_t gui_aBuf[LCD_Y_MAX][LCD_X_MAX / 8 + 1];
 #else
 static uint8_t gui_aBuf[LCD_Y_MAX][LCD_X_MAX / 2];
 #endif
+#pragma arm section
+
 
 //Private Macros
 #define lcd_Rst(x)			sys_GpioSet(gpio_node(tbl_bspLcdCtrl, 0), (x))
