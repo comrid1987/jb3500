@@ -44,29 +44,6 @@ static U8 const tnet_header[] = {
   "*===JieBao_PB325_V0067===*\r\n" TNORM
   };
 
-static U8 const tcp_stat[] = {
-  CLS "\r\n"
-  "     " TBLUE
-  "=============================================================\r\n" TNORM
-  "     " TBLUE
-  " Socket   State       Rem_IP       Rem_Port  Loc_Port  Timer \r\n" TNORM
-  "     " TBLUE
-  "=============================================================\r\n" TNORM
-  };
-
-static char const state[][11] = {
-  "FREE",
-  "CLOSED",
-  "LISTEN",
-  "SYN_REC",
-  "SYN_SENT",
-  "FINW1",
-  "FINW2",
-  "CLOSING",
-  "LAST_ACK",
-  "TWAIT",
-  "CONNECT"};
-
 static U32 unsol_msg;
 
 
@@ -155,53 +132,7 @@ U16 tnet_process_cmd (U8 *cmd, U8 *buf, U16 buflen, U32 *pvar) {
   /*            This is a U32 variable - size is 4 bytes. Value is:         */
   /*            - on 1st call = 0                                           */
   /*            - 2nd call    = as set by this function on first call       */
-  TCP_INFO *tsoc;
   U16 len = 0;
-
-  switch (MYBUF(pvar)->id) {
-    case 0:
-      /* First call to this function, the value of '*pvar' is 0 */
-      break;
-
-    case 1:
-      /* Repeated call, TCP status display. */
-      while (len < buflen-80) {
-        /* Let's use as much of the buffer as possible. */
-        /* This will produce less packets and speedup the transfer. */
-        if (MYBUF(pvar)->idx == 0) {
-          len += str_copy (buf, (U8 *)tcp_stat);
-        }
-        tsoc = &tcp_socket[MYBUF(pvar)->idx];
-        len += sprintf   ((char *)(buf+len), "\r\n%9d %10s  ", MYBUF(pvar)->idx, 
-                          state[tsoc->State]);
-        if (tsoc->State <= TCP_STATE_CLOSED) {
-          len += sprintf ((char *)(buf+len),
-                          "        -             -         -       -\r\n");
-        }
-        else if (tsoc->State == TCP_STATE_LISTEN) {
-          len += sprintf ((char *)(buf+len),
-                          "        -             -     %5d       -\r\n",
-                          tsoc->LocPort);
-        }
-        else {
-          /* First temporary print for alignment. */
-          sprintf ((char *)(buf+len+16),"%d.%d.%d.%d",tsoc->RemIpAdr[0],
-                tsoc->RemIpAdr[1],tsoc->RemIpAdr[2],tsoc->RemIpAdr[3]);
-          len += sprintf ((char *)(buf+len),"%15s    %5d    %5d     %4d\r\n",
-                          buf+len+16,tsoc->RemPort,tsoc->LocPort,tsoc->AliveTimer);
-        }
-        if (++MYBUF(pvar)->idx >= tcp_NumSocks) {
-          /* OK, we are done, reset the index counter for next callback. */
-          MYBUF(pvar)->idx = 0;
-          /* Setup a callback delay. This function will be called again after    */
-          /* delay has expired. It is set to 20 system ticks 20 * 100ms = 2 sec. */
-          tnet_set_delay (500);
-          break;
-        }
-      }
-      /* Request a repeated call, bit 14 is a repeat flag. */
-      return (len |= 0x4000);
-  }
 
   /* Simple Command line parser */
   len = strlen ((const char *)cmd);
