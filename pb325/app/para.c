@@ -4,6 +4,7 @@
 #include <litecore.h>
 #include "system.h"
 #include "para.h"
+#include "alarm.h"
 #include "meter.h"
 #include "data.h"
 
@@ -212,6 +213,24 @@ int icp_Meter4Tn(uint_t nTn, t_afn04_f10 *p)
 	return 0;
 }
 
+uint_t icp_GetVersion()
+{
+	uint_t nVer = 0;
+
+	icp_Lock();
+	sfs_Read(&icp_SfsDev, ICP_MAGIC_WORD, &nVer);
+	icp_Unlock();
+	return nVer;
+}
+
+void icp_SetVersion()
+{
+	uint_t nVer = VER_SOFT;
+
+	icp_Lock();
+	sfs_Write(&icp_SfsDev, ICP_MAGIC_WORD, &nVer, 2);
+	icp_Unlock();
+}
 
 void icp_Clear()
 {
@@ -236,15 +255,7 @@ void icp_Init()
 #if ICP_LOCK_ENABLE
 	rt_sem_init(&icp_sem, "sem_icp", 1, RT_IPC_FLAG_FIFO);
 #endif
-	if (sfs_Read(&icp_SfsDev, ICP_MAGIC_WORD, &nVer) != SYS_R_OK)
-		nInit = 1;
-	if (nVer < 0x0087)
-		nInit = 1;
-	if (nInit) {
-		data_Clear();
-#if DAY_ENABLE
-		stat_Clear();
-#endif
+	if (sfs_Read(&icp_SfsDev, ICP_MAGIC_WORD, &nVer) != SYS_R_OK) {
 		icp_ParaRead(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
 		icp_Format();
 		icp_ParaWrite(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));

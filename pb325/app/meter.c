@@ -120,10 +120,6 @@ void tsk_Meter(void *args)
 	uint8_t *pTemp, aBuf[6];
 	t_ecl_energy xEnergy;
 	t_ecl_task *p = &ecl_Task485;
-#if DAY_ENABLE
-	p_stat ps = &acm_stat;
-	t_afn04_f28 xF28;
-#endif
 	t_afn04_f26 xF26;
 	
 	acm_Init();
@@ -138,12 +134,6 @@ void tsk_Meter(void *args)
 	nMin = rtc_pTm()->tm_min;
 	nDay = rtc_pTm()->tm_mday;
 	
-#if DAY_ENABLE
-	//统计恢复
-	if (evt_StatRead(ps) == 0)
-		stat_Clear();
-#endif
-	
 	for (nCnt = 0; ; os_thd_Slp1Tick()) {
 		//秒count
 		if (tTime == rtc_GetTimet())
@@ -151,9 +141,6 @@ void tsk_Meter(void *args)
 		tTime = rtc_GetTimet();
 		if ((nCnt & 0x3F) == 0) {
 			icp_ParaRead(4, 26, TERMINAL, &xF26, sizeof(t_afn04_f26));
-#if DAY_ENABLE
-			icp_ParaRead(4, 28, TERMINAL, &xF28, sizeof(t_afn04_f28));
-#endif
 		}
  		if ((nCnt & 0x0F) == 0)
             acm_XBRead();
@@ -170,20 +157,6 @@ void tsk_Meter(void *args)
 			acm_MinSave(aBuf);
 			if ((nMin % 15) == 0)
 				acm_QuarterSave(aBuf);
-
-#if DAY_ENABLE
-			stat_Handler(ps, &xF26, &xF28, tTime);
-			//统计保存
-			if ((nMin & 3) == 0)
-				evt_StatWrite(ps);
-			//跨日
-			if (nDay != rtc_pTm()->tm_mday) {
-				nDay = rtc_pTm()->tm_mday;
-				day4timet(tTime, -1, aBuf, 1);
-				data_DayWrite(aBuf, ps);
-				stat_Clear();
-			}
-#endif
 		}
 	}
 }

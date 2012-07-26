@@ -21,9 +21,6 @@ int gw3761_ResponseReset(p_gw3761 p)
 		res += 1;
 		break;
 	case 2:		//F2
-#if DAY_ENABLE
-		stat_Clear();
-#endif
 		data_Clear();
 		evt_Clear();
 		res += 1;
@@ -31,9 +28,6 @@ int gw3761_ResponseReset(p_gw3761 p)
 	case 4:		//F3
 	case 8:		//F4
 		icp_Clear();
-#if DAY_ENABLE
-		stat_Clear();
-#endif
 		data_Clear();
 		evt_Clear();
 		res += 1;

@@ -15,13 +15,6 @@
 #define ECL_DATA_QUAR_MSIZE		sizeof(t_data_quarter)
 #define ECL_DATA_QUAR_ALLSIZE	(ECL_DATA_QUAR_HEADER + 96 * ECL_DATA_QUAR_MSIZE)
 
-#if DAY_ENABLE
-#define ECL_DATA_DAY_BASE		(170 * 0x1000)
-#define ECL_DATA_DAY_HEADER		16
-#define ECL_DATA_DAY_MSIZE		sizeof(t_stat)
-#define ECL_DATA_DAY_ALLSIZE	(ECL_DATA_DAY_HEADER + ECL_DATA_DAY_MSIZE)
-#endif
-
 #define ECL_DATA_MIN_BASE		(326 * 0x1000)
 #define ECL_DATA_MIN_HEADER		16
 #define ECL_DATA_MIN_MSIZE		sizeof(t_data_min)
@@ -127,40 +120,6 @@ void data_QuarterWrite(const uint8_t *pTime, t_data_quarter *pData)
 	flash_Flush(0);
 }
 
-#if DAY_ENABLE
-int data_DayRead(const uint8_t *pTime, t_stat *ps)
-{
-	uint_t nAdr;
-	uint8_t aBuf[6];
-
-	nAdr = ECL_DATA_DAY_BASE + (pTime[0] - 1) * ECL_DATA_DAY_ALLSIZE;
-	spif_Read(nAdr, aBuf, 3);
-	if (memcmp(aBuf, pTime, 3) == 0) {
-		nAdr += ECL_DATA_DAY_HEADER;
-		spif_Read(nAdr, ps, ECL_DATA_DAY_MSIZE);
-		return 1;
-	}
-	memset(ps, GW3761_DATA_INVALID, ECL_DATA_DAY_MSIZE);
-	return 0;
-}
-
-void data_DayWrite(const uint8_t *pTime, const t_stat *ps)
-{
-	uint_t nAdr;
-	uint8_t aBuf[6];
-
-	nAdr = ECL_DATA_DAY_BASE + (pTime[0] - 1) * ECL_DATA_DAY_ALLSIZE;
-	spif_Read(nAdr, aBuf, 3);
-	if (memcmp(aBuf, pTime, 3)) {
-		//时间错,初始化
-		spif_Fill(nAdr, nAdr + ECL_DATA_DAY_ALLSIZE, GW3761_DATA_INVALID);
-		spif_Write(nAdr, pTime, 3);
-	}
-	nAdr += ECL_DATA_DAY_HEADER;
-	spif_Write(nAdr, ps, ECL_DATA_DAY_MSIZE);
-	flash_Flush(0);
-}
-#else
 int data_DayRead(const uint8_t *pTime, t_stat *ps)
 {
 	uint8_t *pTemp, aTime[6];
@@ -220,7 +179,6 @@ int data_DayRead(const uint8_t *pTime, t_stat *ps)
 	}
 	return ps->run;
 }
-#endif
 
 void data_YXRead(buf b)
 {

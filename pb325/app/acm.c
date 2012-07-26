@@ -25,9 +25,6 @@ static t_tdk6515 acm_xTdk6515;
 t_acm_rtdata acm_rtd;
 t_acm_xbdata acm_uxb[3];
 t_acm_xbdata acm_ixb[3];
-#if DAY_ENABLE
-static t_stat acm_stat;
-#endif
 
 
 
@@ -265,15 +262,6 @@ int acm_IsReady()
 
 
 
-#if DAY_ENABLE
-void stat_Clear()
-{
-	p_stat p = &acm_stat;
-
-	memset(p, 0, sizeof(t_stat));
-	evt_StatWrite(p);
-}
-#endif
   
 
 void stat_Handler(p_stat ps, t_afn04_f26 *pF26, t_afn04_f28 *pF28, time_t tTime)

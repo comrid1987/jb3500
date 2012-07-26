@@ -19,7 +19,6 @@
 #define EVT_CNT_ADDR			0xFFFF0001	// 4
 #define EVT_FLAG_ADDR			0xFFFF0010	// 8
 
-#define EVT_RUNVER_ADDR			0xFFFF0101	// 4
 #define EVT_RUNTIME_ADDR		0xFFFF0102	// 4
 
 #define EVT_BALANCE_ADDR		0xFFFF0111	// 1
@@ -30,7 +29,6 @@
 #define EVT_UIOVER_ADDR			0xFFFF0141	// 1
 #define EVT_UIUP_ADDR			0xFFFF0142	// 1
 
-#define EVT_STAT_ADDR			0xFFFF0201	//
 
 //Private Variables
 #if EVT_LOCK_ENABLE
@@ -156,30 +154,19 @@ static void evt_Save(uint_t nERC, const void *pBuf, uint_t nLen, uint_t nAtt)
 
 
 
-//数据初始化和版本变更事件
-static void evt_ERC1(uint_t nFlag)
+//版本变更事件
+static void evt_ERC1(uint_t nVer)
 {
-	uint8_t aBuf[14];
+	uint8_t aBuf[16];
 	uint_t nAtt;
-	char str1[5], str2[5];
 
 	nAtt = evt_Attrib(1);
 	if (nAtt) {
-		sfs_Read(&evt_SfsDev, EVT_RUNVER_ADDR, str1);
-		sprintf(str2, "%04X", VER_SOFT);
-		if (nFlag & BITMASK(1)) {
-			if (memcmp(str1, str2, 4))
-				sfs_Write(&evt_SfsDev, EVT_RUNVER_ADDR, str2, 4);
-			else
-				nAtt = 0;
-		}
-		if (nAtt) {
-			gw3761_ConvertData_15(aBuf, rtc_GetTimet());
-			aBuf[5] = nFlag;
-			memcpy(&aBuf[6], str1, 4);
-			memcpy(&aBuf[10], str2, 4);
-			evt_Save(1, aBuf, sizeof(aBuf), nAtt);
-		}
+		gw3761_ConvertData_15(aBuf, rtc_GetTimet());
+		aBuf[5] = BITMASK(1);
+		sprintf((char *)&aBuf[6], "%04X", nVer);
+		sprintf((char *)&aBuf[10], "%04X", VER_SOFT);
+		evt_Save(1, aBuf, sizeof(aBuf), nAtt);
 	}
 }
 
@@ -605,34 +592,27 @@ void evt_RunTimeWrite(time_t tTime)
 	sfs_Write(&evt_SfsDev, EVT_RUNTIME_ADDR, &tTime, sizeof(time_t));
 }
 
-#if DAY_ENABLE
-int evt_StatRead(void *pBuf)
-{
-
-	if (sfs_Read(&evt_SfsDev, EVT_STAT_ADDR, pBuf) == SYS_R_OK)
-		return 1;
-	return 0;
-}
-
-void evt_StatWrite(const void *pBuf)
-{
-
-	sfs_Write(&evt_SfsDev, EVT_STAT_ADDR, pBuf, sizeof(t_stat));
-}
-#endif
-
 void evt_Init()
 {
+	uint_t nVer, nInit = 0;
 
 #if EVT_LOCK_ENABLE
 	rt_sem_init(&evt_sem, "sem_evt", 1, RT_IPC_FLAG_FIFO);
 #endif
 	if (sfs_Read(&evt_SfsDev, EVT_MAGIC_WORD, NULL) != SYS_R_OK)
+		nInit = 1;
+	nVer = icp_GetVersion();
+	if (nVer < 0x0089)
+		nInit = 1;
+	if (nInit)
 		evt_Format();
+	if (nVer != VER_SOFT) {
+		//版本变更事件
+		evt_ERC1(nVer);
+		icp_SetVersion();
+	}
 	//停上电事件
 	evt_ERC14();
-	//版本变更事件
-	evt_ERC1(BITMASK(1));
 }
 
 void evt_Clear()
