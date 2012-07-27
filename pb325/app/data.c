@@ -27,7 +27,7 @@
 
 
 //Private Consts
-static const uint32_t data_Invalid = GW3761_DATA_INVALID;
+
 
 //Private Macros
 #define LED_UDISK(x)    		gpio_Set(1, (x) ^ 1)		//低电平有效
@@ -38,15 +38,17 @@ static const uint32_t data_Invalid = GW3761_DATA_INVALID;
 void data_Clear()
 {
 	uint_t i, nAdr;
+	uint32_t nInValid = GW3761_DATA_INVALID;
 
 	for (i = 0; i < 31; i++) {
 		nAdr = ECL_DATA_QUAR_BASE + i * ECL_DATA_QUAR_ALLSIZE;
-		spif_Write(nAdr, &data_Invalid, 3);
+		spif_Write(nAdr, &nInValid, 3);
 		nAdr = ECL_DATA_MIN_BASE + i * ECL_DATA_MIN_ALLSIZE;
-		spif_Write(nAdr, &data_Invalid, 3);
+		spif_Write(nAdr, &nInValid, 3);
 	}
-	spif_Write(ECL_DATA_YX_BASE, &data_Invalid, 4);
+	spif_Write(ECL_DATA_YX_BASE, &nInValid, 4);
 }
+
 
 void data_MinRead(const uint8_t *pTime, t_data_min *pData)
 {

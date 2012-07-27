@@ -111,14 +111,11 @@ sys_res ecl_485_RealRead(buf b, uint_t nBaud, uint_t nTmo)
 
 void tsk_Meter(void *args)
 {
-	sys_res res;
 	chl chlRS485;
 	time_t tTime;
 	int nMin= -1, nDay = -1;
-	uint_t nCnt, nCode, nBaud;
-	uint32_t nRecDI, nData1, nData2;
-	uint8_t *pTemp, aBuf[6];
-	t_ecl_energy xEnergy;
+	uint_t nCnt;
+	uint8_t aBuf[6];
 	t_ecl_task *p = &ecl_Task485;
 	t_afn04_f26 xF26;
 	

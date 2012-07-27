@@ -181,7 +181,7 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>245</LineNumber>
+          <LineNumber>171</LineNumber>
           <EnabledFlag>1</EnabledFlag>
           <Address>0</Address>
           <ByteObject>0</ByteObject>
@@ -190,7 +190,7 @@
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>0</BreakIfRCount>
-          <Filename>D:\Workspace\PB325\app\para.c</Filename>
+          <Filename>D:\Workspace\PB325\app\gd5100_code.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression></Expression>
         </Bp>
@@ -337,8 +337,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>22</TopLine>
-      <CurrentLine>123</CurrentLine>
+      <TopLine>76</TopLine>
+      <CurrentLine>99</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\main.c</PathWithFileName>
       <FilenameWithoutPath>main.c</FilenameWithoutPath>
@@ -351,8 +351,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>1</TopLine>
+      <CurrentLine>1</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\gd5100_code.c</PathWithFileName>
       <FilenameWithoutPath>gd5100_code.c</FilenameWithoutPath>
@@ -491,8 +491,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>98</TopLine>
+      <CurrentLine>120</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\upcomm.c</PathWithFileName>
       <FilenameWithoutPath>upcomm.c</FilenameWithoutPath>
@@ -533,8 +533,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>1</TopLine>
+      <CurrentLine>17</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\meter.c</PathWithFileName>
       <FilenameWithoutPath>meter.c</FilenameWithoutPath>
@@ -547,8 +547,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>1</TopLine>
-      <CurrentLine>1</CurrentLine>
+      <TopLine>239</TopLine>
+      <CurrentLine>252</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\para.c</PathWithFileName>
       <FilenameWithoutPath>para.c</FilenameWithoutPath>
@@ -561,8 +561,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>1</TopLine>
+      <CurrentLine>1</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\data.c</PathWithFileName>
       <FilenameWithoutPath>data.c</FilenameWithoutPath>

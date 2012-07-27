@@ -112,18 +112,10 @@ void app_Entry()
 		os_thd_Create(Idle, 20);
 }
 
-void hold()
-{
-	uint_t i;
-
-	for (i = 1; i; );
-}
-
 int main(void)
 {
 
 	BEEP(0);
-//	hold();
 	sys_Start();
 }
 

@@ -133,9 +133,9 @@ int gd5100_Response0F(p_gd5100 p, buf b)
 		nCRC = crc16(pData, 2048);
 		if(nCRC == pFrame->crc) {		//CRC效验正确
 			if(pFrame->num == nSaved) {
-				spif_Write((UPDATE_SECTOR_BOOT + 1) * SPIF_SEC_SIZE + nSaved * 2048, pData, 2048);
+				spif_Write((UPDATE_SECTOR_START + 1) * SPIF_SEC_SIZE + nSaved * 2048, pData, 2048);
 				nSaved += 1;
-				spif_Write(UPDATE_SECTOR_BOOT * SPIF_SEC_SIZE - 2 * nSaved, (uint8_t *)&nCRC, 2);
+				spif_Write(UPDATE_SECTOR_START * SPIF_SEC_SIZE - 2 * nSaved, (uint8_t *)&nCRC, 2);
 			}
 		}
 		pFrame->qty = nSaved;
@@ -168,7 +168,7 @@ int gd5100_Response0F(p_gd5100 p, buf b)
 			gd5100_TmsgSend(p, 0x0F, b, DLRCP_TMSG_RESPOND);
 			iap.magic = IAP_MAGIC_WORD;
 			iap.size = nQty * 2048;
-			spif_Write(UPDATE_SECTOR_BOOT * SPIF_SEC_SIZE, &iap, sizeof(struct iap_info));
+			spif_Write(UPDATE_SECTOR_START * SPIF_SEC_SIZE, &iap, sizeof(struct iap_info));
 			flash_Flush(0);
 			os_thd_Sleep(10000);
 			sys_Reset();

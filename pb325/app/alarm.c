@@ -602,7 +602,7 @@ void evt_Init()
 	if (sfs_Read(&evt_SfsDev, EVT_MAGIC_WORD, NULL) != SYS_R_OK)
 		nInit = 1;
 	nVer = icp_GetVersion();
-	if (nVer < 0x0089)
+	if (nVer < 0x0090)
 		nInit = 1;
 	if (nInit)
 		evt_Format();

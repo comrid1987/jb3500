@@ -249,7 +249,7 @@ void icp_Clear()
 
 void icp_Init()
 {
-	uint_t nVer = 0, nInit = 0;
+	uint_t nVer;
 	t_afn04_f85 xF85;
 
 #if ICP_LOCK_ENABLE
