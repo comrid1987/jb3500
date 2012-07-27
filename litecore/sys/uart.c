@@ -194,7 +194,7 @@ sys_res uart_Send(p_dev_uart p, const void *pData, uint_t nLen)
 #endif
 		swuart_TxStart(p->def->id);
 #else
-		swuart_Send(p->def->id, pData, nLen);
+		swuart_Send(p->parent->id, pData, nLen);
 #endif
 		break;
 #endif

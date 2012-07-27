@@ -39,8 +39,10 @@
 /***************************************************************
 功能:  模拟串口收发口定义
 ***************************************************************/
-#define SimuTXD   1<<28					//模拟串口发送口
-#define SimuRXD   1<<29					//模拟串口接收口
+#define IRTXD		(1<<24)					//模拟串口发送口
+#define IRRXD		(1<<27)					//模拟串口接收口
+#define SimuTXD		(1<<28)					//模拟串口发送口
+#define SimuRXD		(1<<29)					//模拟串口接收口
   
 static void IRQ_SimuUart(void *args);
 
@@ -444,7 +446,6 @@ static void SimuCapSendByte(uint8_t SChar)
 {
 	unsigned char temp,count;
 
-//	os_interrupt_Disable();
 	rt_hw_interrupt_mask(TIMER1_INT);
   	T0CCR=0;                           	//禁止接收捕获
  	T0TC=0;
@@ -474,7 +475,43 @@ static void SimuCapSendByte(uint8_t SChar)
   	T0TCR=0x00;                        	//停止定时器
   	T0CCR=0xc00;                        //允许接收捕获
   	T0TC=0;
-//	os_interrupt_Enable();
+	rt_hw_interrupt_umask(TIMER1_INT);
+	wdg_Reload(0);
+}
+
+static void IRCapSendByte(uint8_t SChar)
+{
+	unsigned char temp,count;
+
+	rt_hw_interrupt_mask(TIMER1_INT);
+  	T0CCR=0;                           	//禁止接收捕获
+ 	T0TC=0;
+  	T0TCR=0x03;                        	//启动定时器
+ 	T0TCR=0x01;                        	//启动定时器
+ 	IO0CLR |= IRTXD;             		//发送起始位
+  	T0EMR=0x0300;                       //设定MR2对应的外部匹配输出翻转                   
+  	T0MCR=0x80;                        	//设定MR2发生匹配时TC复位，不产生中断；
+  	temp=T0EMR&0x004;
+  	while (temp==(T0EMR&0x004));
+  	temp=T0EMR&0x004;
+  	for (count=0;count<9;count++)
+  	{
+    	if (count<8)
+   	 	{
+      		if ((SChar&0x01)!=0) 
+      			IO0SET |=IRTXD;
+      		else 
+      			IO0CLR |=IRTXD;
+      		SChar >>=1;
+    	}
+    	else 
+    		IO0SET |=IRTXD;           //发送停止位
+    	while (temp==(T0EMR&0x004));
+    	temp=T0EMR&0x004;
+  	}
+  	T0TCR=0x00;                        	//停止定时器
+  	T0CCR=0xc00;                        //允许接收捕获
+  	T0TC=0;
 	rt_hw_interrupt_umask(TIMER1_INT);
 	wdg_Reload(0);
 }
@@ -490,8 +527,16 @@ void swuart_Send(uint_t nId, const void *pBuf, uint_t nLen)
 {
 	uint8_t *pData = (uint8_t *)pBuf;
 
-	for (; nLen; nLen--)
-		SimuCapSendByte(*pData++);	
+	if (nId == 2) {
+		for (; nLen; nLen--) {
+			SimuCapSendByte(*pData++);
+		}
+	}
+	if (nId == 3) {
+		for (; nLen; nLen--) {
+			IRCapSendByte(*pData++);
+		}
+	}
 }
 
 /****************************************************************************
@@ -500,18 +545,10 @@ void swuart_Send(uint_t nId, const void *pBuf, uint_t nLen)
 * 入口参数： 
 * 出口参数： 
 ****************************************************************************/
-#if 1
 static void IRQ_SimuUart(void *args)
 {  
-	//static uint8_t count,temp;
 	uint8_t count,temp,data;
-	//t_swuart *pSW = (t_swuart *)args;
-	//p_dev_uart p = pSW->parent;
-	//p_uart_def pDef = p->def;
 
-	//SimuFlag = 1;
-
-//	os_interrupt_Disable();
 	rt_hw_interrupt_mask(TIMER1_INT);
    	if((T0IR&0x80)!=0)			//捕获到起始位
    	{             
@@ -551,103 +588,62 @@ static void IRQ_SimuUart(void *args)
 			}
 			dque_Push(dqueue, 2 | UART_DQUE_RX_CHL, &data, 1);
 		}
-    }
+		T0MCR=0x00; 						//禁止匹配
+		T0CCR=0xc00;						//重新捕捉起始位
+		T0TCR=0x02;
+		T0TC=0; 							//停止定时器	
+		PINSEL1 &= 0xf03cffff;
+		PINSEL1 |= 0x08000000;				//设定TXD引脚工作CPIO，RXD引脚工作在捕捉(3)模式
+	}
 
-	T0MCR=0x00;  						//禁止匹配
-	T0CCR=0xc00;  						//重新捕捉起始位
-	T0TCR=0x02;
-	T0TC=0;      						//停止定时器	
-	PINSEL1 &= 0xf0ffffff;
-	PINSEL1 |= 0x08000000;              //设定TXD引脚工作CPIO，RXD引脚工作在捕捉(3)模式
-//	os_interrupt_Enable();
-	rt_hw_interrupt_umask(TIMER1_INT);
-	wdg_Reload(0);
-/*	irq_TimerRegister(pDef->id, IRQ_SimuUart, pSW);
-	arch_TimerCapStart(pDef->id);
-
-	arch_ExtIrqRxConf(pDef->rxport, pDef->rxpin);
-*/	
-	//irq_TimerStop(0);
-   	//VICVectAddr = 0x00;              			// 中断处理结束
-} 
-#else
-static void IRQ_SimuUart(void *args)
-{  
-	static uint8_t count,temp;  
-	t_swuart *pSW = (t_swuart *)args;
-	p_dev_uart p = pSW->parent;
-	p_uart_def pDef = p->def;
-
-	//SimuFlag = 1;
-
-   	if((T0IR&0x80)!=0)			//捕获到起始位
+   	if((T0IR&0x20)!=0)			//捕获到起始位
    	{             
-	    T0IR |= 0x80;							//复位捕获中断	
+	    T0IR |= 0x20;							//复位捕获中断	
     	T0TC=0;									//计数值归零
 	    T0TCR = 0x03;                        	//复位定时器
     	T0CCR=0x00;                             //禁止捕获
-	    T0MCR=0x18;                             //MAT1匹配时产生中断方，并复位TC
-    	T0EMR=0;								//禁止外部匹配
+		T0TCR=0x01;                        	//启动定时器
+		
     	PINSEL1 &= 0xf0ffffff;					//设定TXD引脚和RXD引脚都工作在GPIO模式
-	    IO0DIR &= ~(SimuRXD);					//RXD引脚端口方向设为输入
-    	T0TCR = 0x01;                        	//启动定时器
-   	}
-   	else if ((T0IR&0x02)!=0) 	//起始位定时检测
-   	{        
-     	T0IR |= 0x02;							//复位匹配中断	
-     	if ((IO0PIN&(SimuRXD))==0)				//判断起始位是否有效	
-     	{   
-       		T0MCR=0xc0;                         //MAT2匹配时产生中断方，并复位TC
-       		//T0EMR=0;
-			
-       		count=0;
-       		temp=0;
-     	}
-     	else
-     	{
-      		T0MCR=0x00;  						//禁止匹配
-      		T0CCR=0xc00;  						//重新捕捉起始位
-      		T0TCR=0x02;
-      		T0TC=0;      						//停止定时器	
-     		PINSEL1 &= 0xf0ffffff;
-      		PINSEL1 |= 0x08000000;              //设定TXD引脚工作CPIO，RXD引脚工作在捕捉(3)模式
-			//irq_TimerRegister(pDef->id, IRQ_SimuUart, pSW);
-			//arch_TimerCapStart(pDef->id);
-			//arch_ExtIrqRxConf(pDef->rxport, pDef->rxpin);
-     	}     
-   	}
-   	else if ((T0IR&0x04)!=0) 	//数据位定时检测
-   	{        
-     	T0IR |=0x04;                            //复位捕获中断	
-     	if (count<8)
-     	{
-       		temp >>= 1;
-       		if ((IO0PIN&(SimuRXD))!=0)
-       		{   
-     	  		temp |=0x80;
-       		}     	
-       		count++;
-     	}
-     	else 
-     	{
-      		T0MCR=0x00;  						//禁止匹配
-     		T0CCR=0xc00;  						//重新捕捉起始位
-      		T0TCR=0x02;
-      		T0TC=0;      						//停止定时器	
-      		PINSEL1 &= 0xf0ffffff;
-      		PINSEL1 |= 0x08000000;              //设定TXD引脚工作CPIO，RXD引脚工作在捕捉(3)模式
+	    IO0DIR &= ~(IRRXD);					//RXD引脚端口方向设为输入
 
-			dque_Push(dqueue, 2 | UART_DQUE_RX_CHL, &temp, 1);
+		T0EMR=0x00C0;                       //设定MR1对应的外部匹配输出翻转 
+		T0MCR=0x10;                        	//设定MR1发生匹配时TC复位，不产生中断；
 
-			//irq_TimerRegister(pDef->id, IRQ_SimuUart, pSW);
-			//arch_TimerCapStart(pDef->id);
-			//arch_ExtIrqRxConf(pDef->rxport, pDef->rxpin);
-     	}
-    }
-	
-	//irq_TimerStop(0);
-   	VICVectAddr = 0x00;              			// 中断处理结束
-}               
-#endif
+		temp=T0EMR&0x002;
+		while (temp==(T0EMR&0x002));
+     	if ((IO0PIN&(IRRXD))==0)				//判断起始位是否有效
+		{
+			T0EMR=0x0300;                       //设定MR2对应的外部匹配输出翻转                   
+			T0MCR=0x80;                        	//设定MR2发生匹配时TC复位，不产生中断；
+			temp=T0EMR&0x004;
+			while (temp==(T0EMR&0x004));
+			temp=T0EMR&0x004;
+			data = 0;
+			for (count=0;count<8;count++)
+			{
+				data >>= 1;
+				if ((IO0PIN&(IRRXD))!=0)
+				{   
+					data |=0x80;
+				}
+				if(count == 7)
+					break;
+				while (temp==(T0EMR&0x004));
+				temp=T0EMR&0x004;
+			}
+			dque_Push(dqueue, 3 | UART_DQUE_RX_CHL, &data, 1);
+		}
+		T0MCR=0x00; 						//禁止匹配
+		T0CCR=0xc00;						//重新捕捉起始位
+		T0TCR=0x02;
+		T0TC=0; 							//停止定时器	
+		PINSEL1 &= 0xf03cffff;
+		PINSEL1 |= 0x00800000;				//设定TXD引脚工作CPIO，RXD引脚工作在捕捉(3)模式
+	}
+
+	rt_hw_interrupt_umask(TIMER1_INT);
+	wdg_Reload(0);
+} 
 
 #endif
