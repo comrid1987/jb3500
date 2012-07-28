@@ -135,7 +135,7 @@ int gd5100_Response0F(p_gd5100 p, buf b)
 			if(pFrame->num == nSaved) {
 				spif_Write((UPDATE_SECTOR_START + 1) * SPIF_SEC_SIZE + nSaved * 2048, pData, 2048);
 				nSaved += 1;
-				spif_Write(UPDATE_SECTOR_START * SPIF_SEC_SIZE - 2 * nSaved, (uint8_t *)&nCRC, 2);
+				spif_Write(UPDATE_SECTOR_BOOT * SPIF_SEC_SIZE - 2 * nSaved, (uint8_t *)&nCRC, 2);
 			}
 		}
 		pFrame->qty = nSaved;
