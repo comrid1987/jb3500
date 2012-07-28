@@ -131,8 +131,8 @@ int gd5100_Response0F(p_gd5100 p, buf b)
 		pFrame = (t_iap_frame *)pData;
 		pData += sizeof(t_iap_frame);
 		nCRC = crc16(pData, 2048);
-		if(nCRC == pFrame->crc) {		//CRC效验正确
-			if(pFrame->num == nSaved) {
+		if (nCRC == pFrame->crc) {		//CRC效验正确
+			if (pFrame->num == nSaved) {
 				spif_Write((UPDATE_SECTOR_START + 1) * SPIF_SEC_SIZE + nSaved * 2048, pData, 2048);
 				nSaved += 1;
 				spif_Write(UPDATE_SECTOR_BOOT * SPIF_SEC_SIZE - 2 * nSaved, (uint8_t *)&nCRC, 2);
@@ -156,7 +156,7 @@ int gd5100_Response0F(p_gd5100 p, buf b)
 		pData += 8;
 		nQty = (pData[1] << 8) | pData[0];
 		pData += 4;
-		for(i = 0; i < nQty; ++i) {
+		for (i = 0; i < nQty; ++i) {
 			spif_Read(UPDATE_SECTOR_BOOT * SPIF_SEC_SIZE - (i + 1) * 2, &nCRC, 2);
 			if (memcmp(&nCRC, pData + i * 2, 2))
 				break;
