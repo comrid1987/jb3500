@@ -344,7 +344,7 @@ void modem_Init()
 	t_modem_def *pDef = tbl_bspModem[MODEM_PPP_ID];
 	uint_t i;
 
-	bzero(p, sizeof(t_modem));
+	memset(p, 0, sizeof(t_modem));
 	for (i = 0; i < BSP_MODEM_QTY; i++, p++) {
 		sys_GpioConf(&pDef->act);
 #if MODEM_PWR_ENABLE
