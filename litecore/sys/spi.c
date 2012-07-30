@@ -1,7 +1,7 @@
 
 
-//In litecore.c
-extern t_dev_spi dev_Spi[BSP_SPI_QTY];
+//Private Variables
+static t_dev_spi dev_Spi[BSP_SPI_QTY];
 
 
 

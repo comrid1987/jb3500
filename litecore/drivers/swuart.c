@@ -398,21 +398,18 @@ sys_res swuart_Open(uint_t nId, p_uart_para pPara)
 	p_uart_def pDef = p->def;
 	int nIntId;
 
-	if (memcmp(&p->para, pPara, sizeof(p->para))) {
-		memcpy(&p->para, pPara, sizeof(p->para));
-		pSW->tick = arch_TimerClockGet() / pPara->baud;
+	pSW->tick = arch_TimerClockGet() / pPara->baud;
 #if SWUART_RX_MODE == SWUART_RX_M_EINT
-		irq_TimerRegister(nId, swuart_RxTx, pSW);
-		nIntId = irq_ExtRegister(pDef->rxport, pDef->rxpin, IRQ_TRIGGER_FALLING, swuart_RxStart, pSW, IRQ_MODE_NORMAL);
-		if (nIntId == -1)
-			return SYS_R_ERR;
-		pSW->rxint = nIntId;
-		irq_ExtEnable(nIntId);
+	irq_TimerRegister(nId, swuart_RxTx, pSW);
+	nIntId = irq_ExtRegister(pDef->rxport, pDef->rxpin, IRQ_TRIGGER_FALLING, swuart_RxStart, pSW, IRQ_MODE_NORMAL);
+	if (nIntId == -1)
+		return SYS_R_ERR;
+	pSW->rxint = nIntId;
+	irq_ExtEnable(nIntId);
 #else
-		irq_TimerRegister(nId, IRQ_SimuUart, pSW);
-		arch_TimerCapStart(nId, pSW->tick);
+	irq_TimerRegister(nId, IRQ_SimuUart, pSW);
+	arch_TimerCapStart(nId, pSW->tick);
 #endif
-	}
 	return SYS_R_OK;
 }
 

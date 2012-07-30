@@ -92,47 +92,45 @@ sys_res arch_UartOpen(uint_t nId, p_uart_para pPara)
 	p_dev_uart p;
 
 	p = lpc22xx_uart_dev[nId];
-	if (memcmp(&p->para, pPara, sizeof(p->para))) {
-		memcpy(&p->para, pPara, sizeof(p->para));
-		switch (pPara->stop) {
-		case UART_STOP_2D:
-			SETBIT(nMode, 2);
-			break;
-		default:
-			break;
-		}
-		switch (pPara->pari) {
-		case UART_PARI_EVEN:
-			nMode |= (BITMASK(3) | BITMASK(4));
-			break;
-		case UART_PARI_ODD:
-			nMode |= BITMASK(3);
-			break;
-		default:
-			break;
-		}
-		switch (pPara->data) {
-		case UART_DATA_7D:
-			nMode |= BITMASK(1);
-			break;
-		default:
-			nMode |= (BITMASK(0) | BITMASK(1));
-			break;
-		}
-		nDiv = (PERI_CLOCK / 16) / pPara->baud;	/*baud rate */
-		pUart->LCR = 0x80;		/* DLAB = 1*/
-		pUart->DLM = nDiv / 256;
-		pUart->DLL = nDiv % 256;
-		if (pPara->baud > 57600)
-			pUart->FDR = 0xF1;
-		pUart->LCR = nMode; 	/* DLAB = 0*/
-		pUart->FCR = 0x07;		/* Enable and reset TX and RX FIFO. */
-
-		while ((pUart->LSR & (LSR_THRE | LSR_TEMT)) != (LSR_THRE | LSR_TEMT));
-		pUart->IER = IER_RLS;	/* Enable UART interrupt */
-		if (p->def->rxmode == UART_MODE_IRQ)
-			pUart->IER |= IER_RBR;
+	switch (pPara->stop) {
+	case UART_STOP_2D:
+		SETBIT(nMode, 2);
+		break;
+	default:
+		break;
 	}
+	switch (pPara->pari) {
+	case UART_PARI_EVEN:
+		nMode |= (BITMASK(3) | BITMASK(4));
+		break;
+	case UART_PARI_ODD:
+		nMode |= BITMASK(3);
+		break;
+	default:
+		break;
+	}
+	switch (pPara->data) {
+	case UART_DATA_7D:
+		nMode |= BITMASK(1);
+		break;
+	default:
+		nMode |= (BITMASK(0) | BITMASK(1));
+		break;
+	}
+	nDiv = (PERI_CLOCK / 16) / pPara->baud;	/*baud rate */
+	pUart->LCR = 0x80;		/* DLAB = 1*/
+	pUart->DLM = nDiv / 256;
+	pUart->DLL = nDiv % 256;
+	if (pPara->baud > 57600)
+		pUart->FDR = 0xF1;
+	pUart->LCR = nMode; 	/* DLAB = 0*/
+	pUart->FCR = 0x07;		/* Enable and reset TX and RX FIFO. */
+
+	while ((pUart->LSR & (LSR_THRE | LSR_TEMT)) != (LSR_THRE | LSR_TEMT));
+	pUart->IER = IER_RLS;	/* Enable UART interrupt */
+	if (p->def->rxmode == UART_MODE_IRQ)
+		pUart->IER |= IER_RBR;
+
 	return SYS_R_OK;
 }
 

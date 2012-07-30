@@ -74,53 +74,51 @@ sys_res arch_UartOpen(p_dev_uart p, p_uart_para pPara)
 	UARTMode_TypeDef nMode;
 	UART_TypeDef *pUart = str7_tblUartId[p->def->id];
 
-	if (memcmp(&p->para, pPara, sizeof(p->para))) {
-		memcpy(&p->para, pPara, sizeof(p->para));
-		switch (pPara->stop) {
-		case UART_STOP_0_5D:
-			nStopbits = UART_0_5_StopBits;
-			break;
-		case UART_STOP_1_5D:
-			nStopbits = UART_1_5_StopBits;
-			break;
-		case UART_STOP_2D:
-			nStopbits = UART_2_StopBits;
-			break;
-		case UART_STOP_1D:
-		default:
-			nStopbits = UART_1_StopBits;
-			break;
-		}
-		switch (pPara->pari) {
-		case UART_PARI_EVEN:
-			nParity = UART_EVEN_PARITY;
-			break;
-		case UART_PARI_ODD:
-			nParity = UART_ODD_PARITY;
-			break;
-		case UART_PARI_NO:
-		default:
-			nParity = UART_NO_PARITY;
-			break;
-		}
-		switch (pPara->data) {
-		case UART_DATA_7D:
-			nMode = UARTM_7D_P;
-			break;
-		case UART_DATA_8D:
-		default:
-			if (pPara->pari == UART_PARI_NO)
-				nMode = UARTM_8D;
-			else
-				nMode = UARTM_8D_P;
-			break;
-		}
-		UART_Config(pUart, pPara->baud, nParity, nStopbits, nMode);
-		//Enable USART Receive interrupts
-		UART_ItConfig(pUart, UART_RxHalfFull | UART_TimeOutNotEmpty, ENABLE);
-		//Enable the USART
-		UART_OnOffConfig(pUart, ENABLE);
+	switch (pPara->stop) {
+	case UART_STOP_0_5D:
+		nStopbits = UART_0_5_StopBits;
+		break;
+	case UART_STOP_1_5D:
+		nStopbits = UART_1_5_StopBits;
+		break;
+	case UART_STOP_2D:
+		nStopbits = UART_2_StopBits;
+		break;
+	case UART_STOP_1D:
+	default:
+		nStopbits = UART_1_StopBits;
+		break;
 	}
+	switch (pPara->pari) {
+	case UART_PARI_EVEN:
+		nParity = UART_EVEN_PARITY;
+		break;
+	case UART_PARI_ODD:
+		nParity = UART_ODD_PARITY;
+		break;
+	case UART_PARI_NO:
+	default:
+		nParity = UART_NO_PARITY;
+		break;
+	}
+	switch (pPara->data) {
+	case UART_DATA_7D:
+		nMode = UARTM_7D_P;
+		break;
+	case UART_DATA_8D:
+	default:
+		if (pPara->pari == UART_PARI_NO)
+			nMode = UARTM_8D;
+		else
+			nMode = UARTM_8D_P;
+		break;
+	}
+	UART_Config(pUart, pPara->baud, nParity, nStopbits, nMode);
+	//Enable USART Receive interrupts
+	UART_ItConfig(pUart, UART_RxHalfFull | UART_TimeOutNotEmpty, ENABLE);
+	//Enable the USART
+	UART_OnOffConfig(pUart, ENABLE);
+
 	return SYS_R_OK;
 }
 

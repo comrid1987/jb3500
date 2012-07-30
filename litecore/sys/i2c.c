@@ -1,10 +1,17 @@
 
 
 //In litecore.c
-extern t_dev_i2c dev_I2c[BSP_I2C_QTY];
 #if IO_BUF_TYPE == BUF_T_DQUEUE
 extern dque dqueue;
 #endif
+
+
+//Private Variables
+static t_dev_i2c dev_I2c[BSP_I2C_QTY];
+
+
+
+
 
 
 //-------------------------------------------------------------------------

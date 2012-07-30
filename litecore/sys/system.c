@@ -16,10 +16,6 @@ void sys_IOHandle(void *args)
 {
 	static uint_t nCnt = 0;
 	uint_t i;
-#if UART_ENABLE
-	uint_t aUartCnt[BSP_UART_QTY] = {0};
-	p_dev_uart pUart;
-#endif
 
 	nCnt += 1;
 #if IRQ_HALF_ENABLE
@@ -52,18 +48,6 @@ void sys_IOHandle(void *args)
 #if UART_ENABLE
 	//´®¿ÚÎ¬»¤
 	if ((nCnt & 0x03) == 0) {
-		for (i = 0; i < BSP_UART_QTY; i++) {
-			pUart = &dev_Uart[i];
-			if (uart_IsTxBufNE(pUart) == SYS_R_OK)
-				uart_TxStart(pUart->def);
-			if (uart_IsRxBufNE(pUart) == SYS_R_OK) {
-				if (aUartCnt[i]++ > 100) {
-					aUartCnt[i] = 0;
-					uart_RxBufClear(pUart);
-				}
-			} else
-				aUartCnt[i] = 0;
-		}
 	}
 #endif
 #if USB_ENABLE
@@ -196,6 +180,10 @@ void sys_Maintain()
 			sys_Upgrade();
 #endif
 		}
+#if UART_ENABLE
+		if ((nCnt & 0x0FFF) == 0)
+			uart_Reopen();
+#endif
 	}
 }
 
@@ -396,10 +384,14 @@ void sys_Start()
 {
 	uint_t i;
 	p_gpio_def p;
-
-#if OS_TYPE
-	/* disable interrupt first */
-	rt_hw_interrupt_disable();
+#if I2C_ENABLE
+	p_dev_i2c pI2c;
+#endif
+#if SPI_ENABLE
+	p_dev_spi pSpi;
+#endif
+#if UART_ENABLE
+	p_dev_uart pUart;
 #endif
 	
 	arch_Init();
@@ -453,46 +445,46 @@ void sys_Start()
 #endif
 
 #if EPI_SOFTWARE
-	for (i = 0; i < tbl_bspEpiData.qty; i++)
-		sys_GpioConf(&tbl_bspEpiData.tbl[i]);
+	for (p = tbl_bspEpiData[0]; p < tbl_bspEpiData[1]; p++)
+		sys_GpioConf(p);
 #endif
 
 #if I2C_ENABLE
 	bzero(dev_I2c, sizeof(dev_I2c));
-	for (i = 0; i < BSP_I2C_QTY; i++) {
-		dev_I2c[i].parent->id = i;
-		dev_I2c[i].parent->type = DEV_T_I2C;
+	for (pI2c = dev_I2c, i = 0; pI2c < ARR_ENDADR(dev_I2c); pI2c++, i++) {
+		pI2c->parent->id = i;
+		pI2c->parent->type = DEV_T_I2C;
 #if I2C_SOFTWARE
-		i2cbus_Init(&dev_I2c[i]);
+		i2cbus_Init(pI2c);
 #else
-		dev_I2c[i].def = &tbl_bspI2cDef[i];
-		arch_I2cInit(&dev_I2c[i]);
+		pI2c->def = &tbl_bspI2cDef[i];
+		arch_I2cInit(pI2c);
 #endif
 	}
 #endif
 
 #if SPI_ENABLE
 	bzero(dev_Spi, sizeof(dev_Spi));
-	for (i = 0; i < BSP_SPI_QTY; i++) {
-		dev_Spi[i].csid = SPI_CSID_INVALID;
-		dev_Spi[i].parent->id = i;
-		dev_Spi[i].parent->type = DEV_T_SPI;
+	for (pSpi = dev_Spi, i = 0; pSpi < ARR_ENDADR(dev_Spi); pSpi++, i++) {
+		pSpi->parent->id = i;
+		pSpi->parent->type = DEV_T_SPI;
+		pSpi->csid = SPI_CSID_INVALID;
 #if SPI_SOFTWARE
-		spibus_Init(&dev_Spi[i]);
+		spibus_Init(pSpi);
 #else
-		dev_Spi[i].def = &tbl_bspSpiDef[i];
-		arch_SpiInit(&dev_Spi[i]);
+		pSpi->def = &tbl_bspSpiDef[i];
+		arch_SpiInit(pSpi);
 #endif
 	}
 #endif
 
 #if UART_ENABLE
 	bzero(dev_Uart, sizeof(dev_Uart));
-	for (i = 0; i < BSP_UART_QTY; i++) {
-		dev_Uart[i].parent->id = i;
-		dev_Uart[i].parent->type = DEV_T_UART;
-		dev_Uart[i].def = &tbl_bspUartDef[i];
-		uart_Init(&dev_Uart[i]);
+	for (pUart = dev_Uart, i = 0; pUart < ARR_ENDADR(dev_Uart); pUart++, i++) {
+		pUart->parent->id = i;
+		pUart->parent->type = DEV_T_UART;
+		pUart->def = &tbl_bspUartDef[i];
+		uart_Init(pUart);
 	}
 #endif
 

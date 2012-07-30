@@ -105,70 +105,68 @@ sys_res arch_UartOpen(uint_t nId, p_uart_para pPara)
 	p_dev_uart p;
 
 	p = m051_uart_dev[nId];
-	if (memcmp(&p->para, pPara, sizeof(p->para))) {
-		memcpy(&p->para, pPara, sizeof(p->para));
 
-		/* Reset IP */
-		if (nId) {
-			SYS->IPRSTC2.UART1_RST = 1;
-			SYS->IPRSTC2.UART1_RST = 0;
-		} else {
-			SYS->IPRSTC2.UART0_RST = 1;
-			SYS->IPRSTC2.UART0_RST = 0;
-		}
-
-		/* Disable RTS/CTS */
-		pUart->IER.AUTO_CTS_EN = 0;
-		pUart->IER.AUTO_RTS_EN = 0;
-
-		/* Tx FIFO Reset & Rx FIFO Reset & FIFO Mode Enable */
-		pUart->FCR.TFR = 1;
-		pUart->FCR.RFR = 1;
-
-		/* Set Rx Trigger Level */
-		pUart->FCR.RFITL = 0;
-
-		/* Set Parity & Data bits & Stop bits */
-		pUart->LCR.SPE = 0;
-		switch (pPara->pari) {
-		case UART_PARI_EVEN:
-			pUart->LCR.EPE = 1;
-			pUart->LCR.PBE = 1;
-			break;
-		case UART_PARI_ODD:
-			pUart->LCR.EPE = 0;
-			pUart->LCR.PBE = 1;
-			break;
-		default:
-			pUart->LCR.EPE = 0;
-			pUart->LCR.PBE = 0;
-			break;
-		}
-		switch (pPara->stop) {
-		case UART_STOP_2D:
-			pUart->LCR.NSB = 1;
-			break;
-		default:
-			pUart->LCR.NSB = 0;
-			break;
-		}
-		switch (pPara->data) {
-		case UART_DATA_7D:
-			pUart->LCR.WLS = 2;
-			break;
-		default:
-			pUart->LCR.WLS = 3;
-			break;
-		}
-			
-		/* Set BaudRate */
-		mo51_BaudRateCalculator(XTAL, pPara->baud, &pUart->BAUD);
-
-		/* Enable Interrupt */
-		pUart->IER.THRE_IEN = 1;
-		if (p->def->rxmode == UART_MODE_IRQ)
-			pUart->IER.RDA_IEN = 1;
+	/* Reset IP */
+	if (nId) {
+		SYS->IPRSTC2.UART1_RST = 1;
+		SYS->IPRSTC2.UART1_RST = 0;
+	} else {
+		SYS->IPRSTC2.UART0_RST = 1;
+		SYS->IPRSTC2.UART0_RST = 0;
 	}
+
+	/* Disable RTS/CTS */
+	pUart->IER.AUTO_CTS_EN = 0;
+	pUart->IER.AUTO_RTS_EN = 0;
+
+	/* Tx FIFO Reset & Rx FIFO Reset & FIFO Mode Enable */
+	pUart->FCR.TFR = 1;
+	pUart->FCR.RFR = 1;
+
+	/* Set Rx Trigger Level */
+	pUart->FCR.RFITL = 0;
+
+	/* Set Parity & Data bits & Stop bits */
+	pUart->LCR.SPE = 0;
+	switch (pPara->pari) {
+	case UART_PARI_EVEN:
+		pUart->LCR.EPE = 1;
+		pUart->LCR.PBE = 1;
+		break;
+	case UART_PARI_ODD:
+		pUart->LCR.EPE = 0;
+		pUart->LCR.PBE = 1;
+		break;
+	default:
+		pUart->LCR.EPE = 0;
+		pUart->LCR.PBE = 0;
+		break;
+	}
+	switch (pPara->stop) {
+	case UART_STOP_2D:
+		pUart->LCR.NSB = 1;
+		break;
+	default:
+		pUart->LCR.NSB = 0;
+		break;
+	}
+	switch (pPara->data) {
+	case UART_DATA_7D:
+		pUart->LCR.WLS = 2;
+		break;
+	default:
+		pUart->LCR.WLS = 3;
+		break;
+	}
+		
+	/* Set BaudRate */
+	mo51_BaudRateCalculator(XTAL, pPara->baud, &pUart->BAUD);
+
+	/* Enable Interrupt */
+	pUart->IER.THRE_IEN = 1;
+	if (p->def->rxmode == UART_MODE_IRQ)
+		pUart->IER.RDA_IEN = 1;
+
 	return SYS_R_OK;
 }
 

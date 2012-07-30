@@ -9,7 +9,7 @@ extern "C" {
 
 
 //Public Defines
-#define UART_TXLOCK_ENABLE			0
+
 
 
 //Public Typedefs
@@ -42,9 +42,6 @@ typedef struct {
 #if IO_BUF_TYPE == BUF_T_BUFFER
 	buf			buftx;
 	buf			bufrx;
-#endif
-#if UART_TXLOCK_ENABLE
-	os_sem		semtx;
 #endif
 }t_dev_uart, *p_dev_uart;
 
@@ -90,7 +87,7 @@ typedef struct {
 
 
 //External Functions
-p_dev_uart uart_Dev(uint_t nId);
+void uart_Init(p_dev_uart p);
 p_dev_uart uart_Get(uint_t nId, int nTmo);
 sys_res uart_Release(p_dev_uart p);
 sys_res uart_Config(p_dev_uart p, uint_t nBaud, uint_t nPari, uint_t nData, uint_t nStop);
@@ -99,8 +96,8 @@ sys_res uart_RecData(p_dev_uart p, buf b, int nTmo);
 sys_res uart_RecLength(p_dev_uart p, buf b, uint_t nLen, int nTmo);
 int uart_GetRxData(p_dev_uart p, buf b);
 int uart_GetRxChar(p_dev_uart p);
-void uart_TxStart(p_uart_def p);
 sys_res uart_ScReset(p_dev_uart p, uint_t nHL);
+void uart_Maintain(void);
 
 
 #ifdef __cplusplus

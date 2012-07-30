@@ -40,10 +40,6 @@
 #include <drivers/ht1621.c>
 #endif
 
-#if IR_ENABLE
-#include <drivers/ir.c>
-#endif
-
 #if KEY_ENABLE
 #include <hi/keypad/keypad.c>
 #endif
@@ -57,7 +53,6 @@
 #include <drivers/i2cbus.c>
 #endif
 #include <sys/i2c.c>
-t_dev_i2c dev_I2c[BSP_I2C_QTY];
 #endif
 
 #if SPI_ENABLE
@@ -65,7 +60,6 @@ t_dev_i2c dev_I2c[BSP_I2C_QTY];
 #include <drivers/spibus.c>
 #endif
 #include <sys/spi.c>
-t_dev_spi dev_Spi[BSP_SPI_QTY];
 #endif
 
 #if UART_ENABLE
@@ -73,7 +67,6 @@ t_dev_spi dev_Spi[BSP_SPI_QTY];
 #include <drivers/swuart.c>
 #endif
 #include <sys/uart.c>
-t_dev_uart dev_Uart[BSP_UART_QTY];
 #endif
 
 #if IO_BUF_TYPE == BUF_T_DQUEUE

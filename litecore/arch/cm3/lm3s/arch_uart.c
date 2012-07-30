@@ -133,41 +133,39 @@ sys_res arch_UartOpen(uint_t nId, p_uart_para pPara)
 
 	p = lm3s_uart_dev[nId];
 	nBase = lm3s_tblUartBase[p->def->id];
-	if (memcmp(&p->para, pPara, sizeof(p->para))) {
-		memcpy(&p->para, pPara, sizeof(p->para));
-		switch (pPara->stop) {
-		case UART_STOP_2D:
-			nMode |= UART_CONFIG_STOP_TWO;
-			break;
-		default:
-			nMode |= UART_CONFIG_STOP_ONE;
-			break;
-		}
-		switch (pPara->pari) {
-		case UART_PARI_EVEN:
-			nMode |= UART_CONFIG_PAR_EVEN;
-			break;
-		case UART_PARI_ODD:
-			nMode |= UART_CONFIG_PAR_ODD;
-			break;
-		default:
-			nMode |= UART_CONFIG_PAR_NONE;
-			break;
-		}
-		switch (pPara->data) {
-		case UART_DATA_7D:
-			nMode |= UART_CONFIG_WLEN_7;
-			break;
-		default:
-			nMode |= UART_CONFIG_WLEN_8;
-			break;
-		}
-		MAP_UARTConfigSetExpClk(nBase, MAP_SysCtlClockGet(), pPara->baud, nMode);
-		MAP_UARTFIFOLevelSet(nBase, UART_FIFO_TX2_8, UART_FIFO_RX6_8);
-		if (p->def->rxmode == UART_MODE_IRQ)
-			MAP_UARTIntEnable(nBase, UART_INT_RX | UART_INT_RT);
-		MAP_UARTEnable(nBase);
+	switch (pPara->stop) {
+	case UART_STOP_2D:
+		nMode |= UART_CONFIG_STOP_TWO;
+		break;
+	default:
+		nMode |= UART_CONFIG_STOP_ONE;
+		break;
 	}
+	switch (pPara->pari) {
+	case UART_PARI_EVEN:
+		nMode |= UART_CONFIG_PAR_EVEN;
+		break;
+	case UART_PARI_ODD:
+		nMode |= UART_CONFIG_PAR_ODD;
+		break;
+	default:
+		nMode |= UART_CONFIG_PAR_NONE;
+		break;
+	}
+	switch (pPara->data) {
+	case UART_DATA_7D:
+		nMode |= UART_CONFIG_WLEN_7;
+		break;
+	default:
+		nMode |= UART_CONFIG_WLEN_8;
+		break;
+	}
+	MAP_UARTConfigSetExpClk(nBase, MAP_SysCtlClockGet(), pPara->baud, nMode);
+	MAP_UARTFIFOLevelSet(nBase, UART_FIFO_TX2_8, UART_FIFO_RX6_8);
+	if (p->def->rxmode == UART_MODE_IRQ)
+		MAP_UARTIntEnable(nBase, UART_INT_RX | UART_INT_RT);
+	MAP_UARTEnable(nBase);
+
 	return SYS_R_OK;
 }
 

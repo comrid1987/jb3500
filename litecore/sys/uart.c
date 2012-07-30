@@ -1,7 +1,6 @@
 
 
 //In litecore.c
-extern t_dev_uart dev_Uart[BSP_UART_QTY];
 #if IO_BUF_TYPE == BUF_T_DQUEUE
 extern dque dqueue;
 #endif
@@ -10,36 +9,67 @@ extern dque dqueue;
 //Private Defines
 
 
+
+//Private Variables
+static t_dev_uart dev_Uart[BSP_UART_QTY];
+
+
+
 //-------------------------------------------------------------------------
 //Internal Functions
 //-------------------------------------------------------------------------
-#if UART_TXLOCK_ENABLE
-static __inline void uart_Lock(p_dev_uart p)
+//-------------------------------------------------------------------------
+//
+//-------------------------------------------------------------------------
+static sys_res uart_IsRxBufNE(p_dev_uart p)
 {
+#if IO_BUF_TYPE == BUF_T_BUFFER
 
-	rt_sem_take(&p->semtx, RT_WAITING_FOREVER);
-}
+	if (p->bufrx->len)
+		return SYS_R_OK;
+	return SYS_R_EMPTY;
+#elif IO_BUF_TYPE == BUF_T_DQUEUE
 
-static __inline void uart_Unlock(p_dev_uart p)
-{
-
-	rt_sem_release(&p->semtx);
-}
-#else
-#define uart_Lock(...)
-#define uart_Unlock(...)
+	if (dque_IsNotEmpty(dqueue, p->parent->id | UART_DQUE_RX_CHL))
+		return SYS_R_OK;
+	return SYS_R_EMPTY;
 #endif
-
+}
 
 
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-static void uart_Init(p_dev_uart p)
+static sys_res uart_IsTxBufNE(p_dev_uart p)
+{
+#if IO_BUF_TYPE == BUF_T_BUFFER
+	
+		if (p->buftx->len)
+			return SYS_R_OK;
+		return SYS_R_EMPTY;
+#elif IO_BUF_TYPE == BUF_T_DQUEUE
+	
+		if (dque_IsNotEmpty(dqueue, p->parent->id | UART_DQUE_TX_CHL))
+			return SYS_R_OK;
+		return SYS_R_EMPTY;
+#endif
+}
+
+
+
+
+//-------------------------------------------------------------------------
+//External Functions
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+//
+//-------------------------------------------------------------------------
+void uart_Init(p_dev_uart p)
 {
 
-#if UART_TXLOCK_ENABLE
-	rt_sem_init(&p->semtx, "uart_tx", 1, RT_IPC_FLAG_FIFO);
+#if IO_BUF_TYPE == BUF_T_BUFFER
+	bzero(p->bufrx, sizeof(buf));
+	bzero(p->buftx, sizeof(buf));
 #endif
 	switch (p->def->type) {
 #if SC16IS7X_ENABLE
@@ -59,30 +89,7 @@ static void uart_Init(p_dev_uart p)
 		arch_UartInit(p);
 		break;
 	}
-#if IO_BUF_TYPE == BUF_T_BUFFER
-	bzero(p->bufrx, sizeof(buf));
-	bzero(p->buftx, sizeof(buf));
-#endif
 }
-
-
-
-
-
-
-
-
-//-------------------------------------------------------------------------
-//External Functions
-//-------------------------------------------------------------------------
-p_dev_uart uart_Dev(uint_t nId)
-{
-
-	if (nId < BSP_UART_QTY)
-		return &dev_Uart[nId];
-	return NULL;
-}
-
 
 //-------------------------------------------------------------------------
 //Function Name  : 
@@ -96,8 +103,8 @@ p_dev_uart uart_Get(uint_t nId, int nTmo)
 {
 	p_dev_uart p;
 
-	p = uart_Dev(nId);
-	if (p != NULL) {
+	if (nId < BSP_UART_QTY) {
+		p = &dev_Uart[nId];
 		if (dev_Get(p->parent, nTmo) == SYS_R_OK)
 			return p;
 	}
@@ -131,33 +138,39 @@ sys_res uart_Config(p_dev_uart p, uint_t nBaud, uint_t nPari, uint_t nData, uint
 {
 	sys_res res;
 	t_uart_para xPara;
+	p_uart_def pDef;
 	
 	xPara.baud = nBaud;
 	xPara.pari = nPari;
 	xPara.data = nData;
 	xPara.stop = nStop;
 
-	switch (p->def->type) {
+	if (memcmp(&p->para, &xPara, sizeof(p->para))) {
+		memcpy(&p->para, &xPara, sizeof(p->para));
+		pDef = p->def;
+		switch (pDef->type) {
 #if SC16IS7X_ENABLE
-	case UART_T_SC16IS7X:
-		res = sc16is7x_UartConfig(p->def->id, &xPara);
-		break;
+		case UART_T_SC16IS7X:
+			res = sc16is7x_UartConfig(pDef->id, &p->para);
+			break;
 #endif
 #if VK321X_ENABLE
-	case UART_T_VK321X:
-		res = vk321x_UartConfig(p->def->id, &xPara);
-		break;
+		case UART_T_VK321X:
+			res = vk321x_UartConfig(pDef->id, &p->para);
+			break;
 #endif
 #if SWUART_ENABLE
-	case UART_T_TIMER:
-		res = swuart_Open(p->def->id, &xPara);
-		break;
+		case UART_T_TIMER:
+			res = swuart_Open(pDef->id, &p->para);
+			break;
 #endif
-	default:
-		res = arch_UartOpen(p->def->id, &xPara);
-		break;
+		default:
+			res = arch_UartOpen(pDef->id, &p->para);
+			break;
+		}
+		return res;
 	}
-	return res;
+	return SYS_R_ERR;
 }
 
 
@@ -172,7 +185,6 @@ sys_res uart_Config(p_dev_uart p, uint_t nBaud, uint_t nPari, uint_t nData, uint
 sys_res uart_Send(p_dev_uart p, const void *pData, uint_t nLen)
 {
 
-	uart_Lock(p);
 	switch (p->def->type) {
 #if SC16IS7X_ENABLE
 	case UART_T_SC16IS7X:
@@ -210,7 +222,6 @@ sys_res uart_Send(p_dev_uart p, const void *pData, uint_t nLen)
 			arch_UartSend(p->def->id, pData, nLen);
 		break;
 	}	
-	uart_Unlock(p);
 	return SYS_R_OK;
 }
 
@@ -310,92 +321,77 @@ int uart_GetRxChar(p_dev_uart p)
 #endif
 }
 
-
-//-------------------------------------------------------------------------
-//
-//-------------------------------------------------------------------------
-void uart_RxBufClear(p_dev_uart p)
-{
-#if IO_BUF_TYPE == BUF_T_BUFFER
-	
-		buf_Release(p->bufrx);
-#elif IO_BUF_TYPE == BUF_T_DQUEUE
-	
-		dque_Clear(dqueue, p->parent->id | UART_DQUE_RX_CHL);
-#endif
-}
-
-//-------------------------------------------------------------------------
-//
-//-------------------------------------------------------------------------
-sys_res uart_IsRxBufNE(p_dev_uart p)
-{
-#if IO_BUF_TYPE == BUF_T_BUFFER
-
-	if (p->bufrx->len)
-		return SYS_R_OK;
-	return SYS_R_EMPTY;
-#elif IO_BUF_TYPE == BUF_T_DQUEUE
-
-	if (dque_IsNotEmpty(dqueue, p->parent->id | UART_DQUE_RX_CHL))
-		return SYS_R_OK;
-	return SYS_R_EMPTY;
-#endif
-}
-
-
-//-------------------------------------------------------------------------
-//
-//-------------------------------------------------------------------------
-sys_res uart_IsTxBufNE(p_dev_uart p)
-{
-#if IO_BUF_TYPE == BUF_T_BUFFER
-	
-		if (p->buftx->len)
-			return SYS_R_OK;
-		return SYS_R_EMPTY;
-#elif IO_BUF_TYPE == BUF_T_DQUEUE
-	
-		if (dque_IsNotEmpty(dqueue, p->parent->id | UART_DQUE_TX_CHL))
-			return SYS_R_OK;
-		return SYS_R_EMPTY;
-#endif
-}
-
-
-//-------------------------------------------------------------------------
-//
-//-------------------------------------------------------------------------
-void uart_TxStart(p_uart_def p)
-{
-
-	if (p->txmode == UART_MODE_IRQ) {
-		switch (p->type) {
-#if SWUART_ENABLE
-		case UART_T_TIMER:
-			swuart_TxStart(p->id);
-			break;
-#endif
-		default:
-			arch_UartTxIEnable(p->id);
-			break;
-		}	
-	}
-}
-
-
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
 #if SMARTCARD_ENABLE
 sys_res uart_ScReset(p_dev_uart p, uint_t nHL)
 {
+	p_uart_def pDef;
 
-	if (p->def->fun != UART_FUN_SC)
+	pDef = p->def;
+	if (pDef->fun != UART_FUN_SC)
 		return SYS_R_ERR;
-	arch_GpioSet(p->def->fport, p->def->fpin, nHL);
+	arch_GpioSet(pDef->fport, pDef->fpin, nHL);
 	return SYS_R_OK;
 }
 #endif
+
+//-------------------------------------------------------------------------
+//
+//-------------------------------------------------------------------------
+void uart_Maintain()
+{
+	p_dev_uart p;
+	p_uart_def pDef;
+	
+	for (p = dev_Uart; p < ARR_ENDADR(dev_Uart); p++) {
+		if (uart_IsTxBufNE(p) == SYS_R_OK) {
+			pDef = p->def;
+			if (pDef->txmode == UART_MODE_IRQ) {
+				switch (pDef->type) {
+#if SWUART_ENABLE
+				case UART_T_TIMER:
+					swuart_TxStart(pDef->id);
+					break;
+#endif
+				default:
+					arch_UartTxIEnable(pDef->id);
+					break;
+				}
+			}
+		}
+		if (uart_IsRxBufNE(p) == SYS_R_OK) {
+			p->parent->cnt += 1;
+			if (p->parent->cnt > 100) {
+				p->parent->cnt = 0;
+#if IO_BUF_TYPE == BUF_T_BUFFER
+				buf_Release(p->bufrx);
+#elif IO_BUF_TYPE == BUF_T_DQUEUE
+				dque_Clear(dqueue, p->parent->id | UART_DQUE_RX_CHL);
+#endif
+			}
+		} else
+			p->parent->cnt = 0;
+	}
+}
+
+//-------------------------------------------------------------------------
+//
+//-------------------------------------------------------------------------
+void uart_Reopen()
+{
+	p_dev_uart p;
+	t_uart_para xPara;
+
+	
+	for (p = dev_Uart; p < ARR_ENDADR(dev_Uart); p++) {
+
+		uart_Config(p, xPara.baud, xPara.pari, xPara.data, xPara.stop);
+
+
+
+	}
+}
 
 

@@ -24,6 +24,7 @@ typedef struct {
 	uint8_t	ste;
 	uint8_t	type;
 	uint8_t	id;
+	uint8_t cnt;
 #if OS_TYPE
 	os_tid	tid;
 #endif

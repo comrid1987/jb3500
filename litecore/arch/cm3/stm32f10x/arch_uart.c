@@ -170,55 +170,53 @@ sys_res arch_UartOpen(uint_t nId, p_uart_para pPara)
 
 	p = stm32_uart_dev[nId];
 	pUart = stm32_tblUartId[nId];
-	if (memcmp(&p->para, pPara, sizeof(p->para))) {
-		memcpy(&p->para, pPara, sizeof(p->para));
-		switch (pPara->stop) {
-		case UART_STOP_0_5D:
-			xUartPara.USART_StopBits = USART_StopBits_0_5;
-			break;
-		case UART_STOP_1_5D:
-			xUartPara.USART_StopBits = USART_StopBits_1_5;
-			break;
-		case UART_STOP_2D:
-			xUartPara.USART_StopBits = USART_StopBits_2;
-			break;
-		case UART_STOP_1D:
-		default:
-			xUartPara.USART_StopBits = USART_StopBits_1;
-			break;
-		}
-		switch (pPara->pari) {
-		case UART_PARI_EVEN:
-			xUartPara.USART_Parity = USART_Parity_Even;
-			break;
-		case UART_PARI_ODD:
-			xUartPara.USART_Parity = USART_Parity_Odd;
-			break;
-		case UART_PARI_NO:
-		default:
-			xUartPara.USART_Parity = USART_Parity_No;
-			break;
-		}
-		switch (pPara->data) {
-		case UART_DATA_7D:
-			xUartPara.USART_WordLength = USART_WordLength_8b;
-			break;
-		case UART_DATA_8D:
-		default:
-			if (pPara->pari == UART_PARI_NO)
-				xUartPara.USART_WordLength = USART_WordLength_8b;
-			else
-				xUartPara.USART_WordLength = USART_WordLength_9b;
-			break;
-		}
-		xUartPara.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-		xUartPara.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;
-		xUartPara.USART_BaudRate = pPara->baud;
-		USART_Init(pUart, &xUartPara);
-		if (p->def->rxmode == UART_MODE_IRQ)
-			USART_ITConfig(pUart, USART_IT_RXNE, ENABLE);
-		USART_Cmd(pUart, ENABLE);
+	switch (pPara->stop) {
+	case UART_STOP_0_5D:
+		xUartPara.USART_StopBits = USART_StopBits_0_5;
+		break;
+	case UART_STOP_1_5D:
+		xUartPara.USART_StopBits = USART_StopBits_1_5;
+		break;
+	case UART_STOP_2D:
+		xUartPara.USART_StopBits = USART_StopBits_2;
+		break;
+	case UART_STOP_1D:
+	default:
+		xUartPara.USART_StopBits = USART_StopBits_1;
+		break;
 	}
+	switch (pPara->pari) {
+	case UART_PARI_EVEN:
+		xUartPara.USART_Parity = USART_Parity_Even;
+		break;
+	case UART_PARI_ODD:
+		xUartPara.USART_Parity = USART_Parity_Odd;
+		break;
+	case UART_PARI_NO:
+	default:
+		xUartPara.USART_Parity = USART_Parity_No;
+		break;
+	}
+	switch (pPara->data) {
+	case UART_DATA_7D:
+		xUartPara.USART_WordLength = USART_WordLength_8b;
+		break;
+	case UART_DATA_8D:
+	default:
+		if (pPara->pari == UART_PARI_NO)
+			xUartPara.USART_WordLength = USART_WordLength_8b;
+		else
+			xUartPara.USART_WordLength = USART_WordLength_9b;
+		break;
+	}
+	xUartPara.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+	xUartPara.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;
+	xUartPara.USART_BaudRate = pPara->baud;
+	USART_Init(pUart, &xUartPara);
+	if (p->def->rxmode == UART_MODE_IRQ)
+		USART_ITConfig(pUart, USART_IT_RXNE, ENABLE);
+	USART_Cmd(pUart, ENABLE);
+
 	return SYS_R_OK;
 }
 
