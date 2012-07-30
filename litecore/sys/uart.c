@@ -384,13 +384,10 @@ void uart_Reopen()
 	p_dev_uart p;
 	t_uart_para xPara;
 
-	
 	for (p = dev_Uart; p < ARR_ENDADR(dev_Uart); p++) {
-
+		memcpy(&xPara, &p->para, sizeof(t_uart_para));
+		memset(&p->para, 0, sizeof(t_uart_para));
 		uart_Config(p, xPara.baud, xPara.pari, xPara.data, xPara.stop);
-
-
-
 	}
 }
 
