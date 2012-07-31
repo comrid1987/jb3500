@@ -72,7 +72,7 @@ void day4timet(time_t tTime, int nDay, uint8_t *p, uint_t nIsBcd)
 {
 	uint8_t aTime[6];
 
-	timet2array(tTime + nDay * (60 * 60 * 24), aTime, nIsBcd);
+	timet2array(tTime + nDay * (24 * 3600), aTime, nIsBcd);
 	memcpy(p, &aTime[3], 3);
 }
 

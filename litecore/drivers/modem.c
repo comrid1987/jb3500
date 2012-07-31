@@ -316,18 +316,17 @@ static int modem_IsPowerOnEnable()
 {
 	p_modem p = &gsmModem[MODEM_PPP_ID];
 	int res = 1;
-	static uint8_t nHour;
 
 	if (p->retrytime) {
 		if (p->retryed >= p->retrytime) {
 			res = 0;
-			if (nHour != rtc_pTm()->tm_hour)
+			if (p->hour != rtc_pTm()->tm_hour)
 				p->retryed = 0;
 		} else
-			nHour = rtc_pTm()->tm_hour;
+			p->hour = rtc_pTm()->tm_hour;
 	}
 	if (res) {
-		if (p->cnt++ > p->span) {
+		if (p->cnt > p->span) {
 			p->cnt = 0;
 			p->retryed += 1;
 		} else
@@ -376,6 +375,7 @@ void modem_Run()
 	p_modem p = &gsmModem[MODEM_PPP_ID];
 	t_modem_def *pDef = tbl_bspModem[MODEM_PPP_ID];
 	sys_res res;
+	static int nBaud = 0;
 
 	p->cnt += 1;
 	switch (p->ste) {
@@ -427,7 +427,11 @@ void modem_Run()
 			modem_Act(pDef, 0);
 		if (p->cnt == 11) {
 			modem_Act(pDef, 1);
-			uart_Config(p->uart, pDef->baud, UART_PARI_NO, UART_DATA_8D, UART_STOP_1D); //打开串口，设置串口参数
+			if (nBaud == 115200)
+				nBaud = 57600;
+			else
+				nBaud = 115200;
+			uart_Config(p->uart, nBaud, UART_PARI_NO, UART_DATA_8D, UART_STOP_1D); //打开串口，设置串口参数
 		}
 		if (p->cnt > 16) {
 			p->ste = MODEM_S_INIT;

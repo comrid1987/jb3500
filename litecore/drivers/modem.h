@@ -30,6 +30,7 @@ typedef struct {
 	uint8_t		signal;
 	uint8_t		retrytime;
 	uint8_t		retryed;
+	uint8_t		hour;
 	char		apn[19];
 	uint16_t	cnt;
 	uint16_t	tmo;
@@ -42,7 +43,6 @@ typedef struct {
 
 typedef const struct {
 	uint8_t		uartid;
-	uint32_t	baud;
 	uint8_t		act_effect;
 	t_gpio_def	act;
 #if MODEM_PWR_ENABLE
