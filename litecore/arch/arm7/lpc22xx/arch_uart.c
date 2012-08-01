@@ -123,6 +123,8 @@ sys_res arch_UartOpen(uint_t nId, p_uart_para pPara)
 	pUart->DLL = nDiv % 256;
 	if (pPara->baud > 57600)
 		pUart->FDR = 0xF1;
+	else
+		pUart->FDR = 0x10;
 	pUart->LCR = nMode; 	/* DLAB = 0*/
 	pUart->FCR = 0x07;		/* Enable and reset TX and RX FIFO. */
 
@@ -168,7 +170,6 @@ void arch_UartSend(uint_t nId, const void *pData, uint_t nLen)
 		/* write data */
 		pUart->THR = *pBuf++;
 	}
-	while ((pUart->LSR & LSR_THRE) == 0);
 }
 
 //-------------------------------------------------------------------------

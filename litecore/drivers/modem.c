@@ -375,7 +375,9 @@ void modem_Run()
 	p_modem p = &gsmModem[MODEM_PPP_ID];
 	t_modem_def *pDef = tbl_bspModem[MODEM_PPP_ID];
 	sys_res res;
+#if MODEM_AUTOBAUD_ENABLE
 	static int nBaud = 0;
+#endif
 
 	p->cnt += 1;
 	switch (p->ste) {
@@ -427,11 +429,15 @@ void modem_Run()
 			modem_Act(pDef, 0);
 		if (p->cnt == 11) {
 			modem_Act(pDef, 1);
+#if MODEM_AUTOBAUD_ENABLE
 			if (nBaud == 115200)
 				nBaud = 57600;
 			else
 				nBaud = 115200;
-			uart_Config(p->uart, nBaud, UART_PARI_NO, UART_DATA_8D, UART_STOP_1D); //打开串口，设置串口参数
+			uart_Config(p->uart, nBaud, UART_PARI_NO, UART_DATA_8D, UART_STOP_1D);
+#else
+			uart_Config(p->uart, 115200, UART_PARI_NO, UART_DATA_8D, UART_STOP_1D);
+#endif
 		}
 		if (p->cnt > 16) {
 			p->ste = MODEM_S_INIT;

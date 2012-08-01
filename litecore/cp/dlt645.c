@@ -91,16 +91,19 @@ uint8_t *dlt645_PacketAnalyze(uint8_t *p, uint_t nLen)
 	return p;
 }
 
+static const uint8_t dlt645_aFE[] = {0xFE, 0xFE};
 sys_res dlt645_Transmit2Meter(chl c, buf bRx, const void *pAdr, const void *pBuf, uint_t nLen, uint_t nTmo)
 {
 	uint8_t *pH;
 
 #if DLT645_DIR_CTRL
 	gpio_Set(2, 0);
+	chl_Send(c, dlt645_aFE, 2);
 	chl_Send(c, pBuf, nLen);
-	os_thd_Sleep(20);
+	chl_Send(c, dlt645_aFE, 2);
 	gpio_Set(2, 1);
 #else
+	chl_Send(c, dlt645_aFE, 2);
 	chl_Send(c, pBuf, nLen);
 #endif
 

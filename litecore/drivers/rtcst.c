@@ -27,7 +27,7 @@
 sys_res rtc_i2c_Init(p_dev_i2c p)
 {
 
-	//24小时制使能
+	//使能
 	return i2c_WriteByte(p, RTCST_SLAVEADR, RTCST_REG_CR1, 0x00);
 }
 
@@ -57,7 +57,7 @@ sys_res rtc_i2c_SetTime(p_dev_i2c p, time_t tTime)
 	memmove(&aTime[6], &aTime[5], 3);
 	if (i2c_Write(p, RTCST_SLAVEADR, aTime, sizeof(aTime)) != SYS_R_OK)
 		return SYS_R_TMO;
-	return SYS_R_OK;
+	return rtc_i2c_Init(p);
 }
 
 
