@@ -48,7 +48,8 @@ void tsk_Upcom1(void *args)
 			tTime = rtc_GetTimet();
 			nCnt += 1;
 		}
-		gw3761_Handler(p);
+		if (gw3761_Handler(p) == SYS_R_OK)
+			SETBIT(g_sys_status, 1);
 	}
 }
 
@@ -120,9 +121,12 @@ void tsk_Upcom2(void *args)
 
 	for (; ; ) {
 		for (p = &rcp_aGw3761[1]; p <= pEnd; p++)
-			gw3761_Handler(p);
-		if (gd5100_Handler(&rcp_GD5100) == SYS_R_OK)
+		if (gw3761_Handler(p) == SYS_R_OK)
+			SETBIT(g_sys_status, 1);
+		if (gd5100_Handler(&rcp_GD5100) == SYS_R_OK) {
 			gd5100_Response(&rcp_GD5100);
+			SETBIT(g_sys_status, 1);
+		}
 	}
 }
 

@@ -11,7 +11,7 @@
 
 
 //Public Variables
-volatile uint_t g_sys_status = 3;
+volatile uint_t g_sys_status = 1;
 
 
 
@@ -55,6 +55,10 @@ void tsk_Daemon(void *args)
 				}
 			}
 		}
+		//看门狗
+#if WDG_ENABLE
+		wdg_Reload(1);
+#endif
 		//运行指示灯
 		if (g_sys_status & BITMASK(0))
 			nTemp = 3;
@@ -64,13 +68,14 @@ void tsk_Daemon(void *args)
 			LED_RUN(1);
 		if ((nCnt & nTemp) == 1)
 			LED_RUN(0);
-		//2小时不能登录复位终端
+		//2小时无通讯复位终端
 		if ((nCnt & 0xFF) == 0) {
-			if (rcp_IsLogin() == SYS_R_OK) {
+			if (g_sys_status & BITMASK(1)) {
+				CLRBIT(g_sys_status, 1);
 				nRstCnt = 0;
 			} else {
 				nRstCnt += 1;
-				if (nRstCnt > 150)
+				if (nRstCnt > 300)
 					sys_Reset();
 			}
 		}
