@@ -313,6 +313,7 @@
 	#define MODEM_ENABLE				1
 	#if MODEM_ENABLE
 		#define MODEM_DEBUG_ENABLE		0
+		#define MODEM_AUTOBAUD_ENABLE	0
 
 		#define BSP_MODEM_QTY			1
 		#define MODEM_PWR_ENABLE		1

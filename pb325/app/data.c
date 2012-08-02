@@ -137,7 +137,7 @@ int data_DayRead(const uint8_t *pTime, t_stat *ps)
 	icp_ParaRead(4, 26, TERMINAL, &xF26, sizeof(t_afn04_f26));
 	icp_ParaRead(4, 28, TERMINAL, &xF28, sizeof(t_afn04_f28));
 
-	memset(aTime, 0, 6);
+	memset(aTime, 0, 3);
 	memcpy(&aTime[3], pTime, 3);
 	tTime = array2timet(aTime, 1);
 	tEnd = tTime + (24 * 60 * 60);
