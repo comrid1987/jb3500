@@ -191,10 +191,7 @@ void sys_Maintain()
 struct rt_timer timer_daemon;
 void sys_Daemon(void *args)
 {
-	
-#if WDG_ENABLE
-	wdg_Reload(1);
-#endif
+
 #if RTC_ENABLE
 	rtc_OsTick();
 #endif

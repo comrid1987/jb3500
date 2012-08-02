@@ -97,7 +97,7 @@ void arch_TimerCapStart(uint_t nId, uint_t nValue)
   	T0TCR=0;
   	T0PR=0;
   	T0PC=0;                                 	//不分频
-  	T0CCR=0xc00;                            	//设定捕捉CAP3下降沿并中断
+  	T0CCR=0x0C30;                            	//设定捕捉CAP3下降沿并中断
   	T0MR1=nValue / 3;
   	T0MR2=nValue;
   	T0IR=0xff;

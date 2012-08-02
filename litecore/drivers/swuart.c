@@ -470,7 +470,7 @@ static void SimuCapSendByte(uint8_t SChar)
     	temp=T0EMR&0x004;
   	}
   	T0TCR=0x00;                        	//停止定时器
-  	T0CCR=0xc00;                        //允许接收捕获
+  	T0CCR=0x0C30;                        //允许接收捕获
   	T0TC=0;
 	rt_hw_interrupt_umask(TIMER1_INT);
 	wdg_Reload(0);
@@ -507,7 +507,7 @@ static void IRCapSendByte(uint8_t SChar)
     	temp=T0EMR&0x004;
   	}
   	T0TCR=0x00;                        	//停止定时器
-  	T0CCR=0xc00;                        //允许接收捕获
+  	T0CCR=0x0C30;                        //允许接收捕获
   	T0TC=0;
 	rt_hw_interrupt_umask(TIMER1_INT);
 	wdg_Reload(0);
@@ -586,7 +586,7 @@ static void IRQ_SimuUart(void *args)
 			dque_Push(dqueue, 2 | UART_DQUE_RX_CHL, &data, 1);
 		}
 		T0MCR=0x00; 						//禁止匹配
-		T0CCR=0xc00;						//重新捕捉起始位
+		T0CCR=0x0C30;						//重新捕捉起始位
 		T0TCR=0x02;
 		T0TC=0; 							//停止定时器	
 		PINSEL1 &= 0xf03cffff;
@@ -632,7 +632,7 @@ static void IRQ_SimuUart(void *args)
 			dque_Push(dqueue, 3 | UART_DQUE_RX_CHL, &data, 1);
 		}
 		T0MCR=0x00; 						//禁止匹配
-		T0CCR=0xc00;						//重新捕捉起始位
+		T0CCR=0x0C30;						//重新捕捉起始位
 		T0TCR=0x02;
 		T0TC=0; 							//停止定时器	
 		PINSEL1 &= 0xf03cffff;
