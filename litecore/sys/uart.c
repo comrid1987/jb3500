@@ -351,9 +351,11 @@ void uart_Maintain()
 			if (pDef->txmode == UART_MODE_IRQ) {
 				switch (pDef->type) {
 #if SWUART_ENABLE
+#if SWUART_RX_MODE == SWUART_RX_M_EINT
 				case UART_T_TIMER:
 					swuart_TxStart(pDef->id);
 					break;
+#endif
 #endif
 				default:
 					arch_UartTxIEnable(pDef->id);

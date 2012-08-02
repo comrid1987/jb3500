@@ -53,7 +53,7 @@ void TIMER0_IRQHandler(int vector)
 {
 
 	irq_TimerISR(0);
-	arch_TimerIntClear(1);
+	arch_TimerIntClear(0);
 }
 
 void TIMER1_IRQHandler(int vector)
@@ -78,29 +78,38 @@ void UART1_IRQHandler(int vector)
 void EINT0_IRQHandler(int vector)
 {
 
+#if IRQ_EXT_ENABLE
 	irq_ExtISR(0);
 	SETBIT(EXTINT, 0);
+#endif
 }
 
 void EINT1_IRQHandler(int vector)
 {
 
+#if IRQ_EXT_ENABLE
 	irq_ExtISR(1);
 	SETBIT(EXTINT, 1);
+#endif
 }
 
 void EINT2_IRQHandler(int vector)
 {
 
+#if IRQ_EXT_ENABLE
 	irq_ExtISR(2);
 	SETBIT(EXTINT, 2);
+#endif
 }
 
 void EINT3_IRQHandler(int vector)
 {
 
+#if IRQ_EXT_ENABLE
 	irq_ExtISR(3);
 	SETBIT(EXTINT, 3);
+#endif
 }
 
 #endif
+

@@ -47,8 +47,8 @@ void sys_IOHandle(void *args)
 #endif
 #if UART_ENABLE
 	//´®¿ÚÎ¬»¤
-	if ((nCnt & 0x03) == 0) {
-	}
+	if ((nCnt & 0x03) == 0)
+		uart_Maintain();
 #endif
 #if USB_ENABLE
 	usb_HostHandler();

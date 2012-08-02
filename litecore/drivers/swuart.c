@@ -36,15 +36,7 @@
 #define SWUART_WAIT_16			28
 
 
-/***************************************************************
-功能:  模拟串口收发口定义
-***************************************************************/
-#define IRTXD		(1<<24)					//模拟串口发送口
-#define IRRXD		(1<<27)					//模拟串口接收口
-#define SimuTXD		(1<<28)					//模拟串口发送口
-#define SimuRXD		(1<<29)					//模拟串口接收口
-  
-static void IRQ_SimuUart(void *args);
+ 
 
 
 //Private Typedef
@@ -67,6 +59,7 @@ static t_swuart swuart_aDev[SWUART_QTY];
 
 
 //Internal Functions
+#if SWUART_RX_MODE == SWUART_RX_M_EINT
 static void swuart_RxTx(void *args);
 
 static void swuart_RxStart(void *args)
@@ -314,6 +307,25 @@ static void swuart_RxTx(void *args)
 }
 
 
+//-------------------------------------------------------------------------
+//
+//-------------------------------------------------------------------------
+void swuart_TxStart(uint_t nId)
+{
+	t_swuart *p = &swuart_aDev[nId];
+
+	if (p->txste == SWUART_IDLE) {
+		p->txste = SWUART_START_BIT;
+		if (p->rxste == SWUART_IDLE) {
+			irq_ExtDisable(p->rxint);
+			irq_TimerStart(nId, p->tick);
+			swuart_RxTx(p);
+		}
+	}
+}
+
+#endif
+
 
 
 
@@ -388,51 +400,19 @@ void swuart_Init(p_dev_uart p)
 }
 
 
-//-------------------------------------------------------------------------
-//
-//-------------------------------------------------------------------------
-sys_res swuart_Open(uint_t nId, p_uart_para pPara)
-{
-	t_swuart *pSW = &swuart_aDev[nId];
-	p_dev_uart p = pSW->parent;
-	p_uart_def pDef = p->def;
-	int nIntId;
-
-	pSW->tick = arch_TimerClockGet() / pPara->baud;
-#if SWUART_RX_MODE == SWUART_RX_M_EINT
-	irq_TimerRegister(nId, swuart_RxTx, pSW);
-	nIntId = irq_ExtRegister(pDef->rxport, pDef->rxpin, IRQ_TRIGGER_FALLING, swuart_RxStart, pSW, IRQ_MODE_NORMAL);
-	if (nIntId == -1)
-		return SYS_R_ERR;
-	pSW->rxint = nIntId;
-	irq_ExtEnable(nIntId);
-#else
-	irq_TimerRegister(nId, IRQ_SimuUart, pSW);
-	arch_TimerCapStart(nId, pSW->tick);
-#endif
-	return SYS_R_OK;
-}
-
-
-//-------------------------------------------------------------------------
-//
-//-------------------------------------------------------------------------
-void swuart_TxStart(uint_t nId)
-{
-	t_swuart *p = &swuart_aDev[nId];
-
-	if (p->txste == SWUART_IDLE) {
-		p->txste = SWUART_START_BIT;
-		if (p->rxste == SWUART_IDLE) {
-			irq_ExtDisable(p->rxint);
-			irq_TimerStart(nId, p->tick);
-			swuart_RxTx(p);
-		}
-	}
-}
 
 
 #if SWUART_RX_MODE == SWUART_RX_M_CAP
+/***************************************************************
+功能:  模拟串口收发口定义
+***************************************************************/
+#define IRTXD		(1<<24)					//模拟串口发送口
+#define IRRXD		(1<<27)					//模拟串口接收口
+#define SimuTXD		(1<<28)					//模拟串口发送口
+#define SimuRXD		(1<<29)					//模拟串口接收口
+
+static void swuart_Rx(void *args);
+
 /****************************************************************************
 * 名   称： SimuSendByte
 * 功   能： 模拟串口发送字符
@@ -542,7 +522,7 @@ void swuart_Send(uint_t nId, const void *pBuf, uint_t nLen)
 * 入口参数： 
 * 出口参数： 
 ****************************************************************************/
-static void IRQ_SimuUart(void *args)
+static void swuart_Rx(void *args)
 {  
 	uint8_t count,temp,data;
 
@@ -555,9 +535,6 @@ static void IRQ_SimuUart(void *args)
     	T0CCR=0x00;                             //禁止捕获
 		T0TCR=0x01;                        	//启动定时器
 		
-    	PINSEL1 &= 0xf0ffffff;					//设定TXD引脚和RXD引脚都工作在GPIO模式
-	    IO0DIR &= ~(SimuRXD);					//RXD引脚端口方向设为输入
-
 		T0EMR=0x00C0;                       //设定MR1对应的外部匹配输出翻转 
 		T0MCR=0x10;                        	//设定MR1发生匹配时TC复位，不产生中断；
 
@@ -585,12 +562,6 @@ static void IRQ_SimuUart(void *args)
 			}
 			dque_Push(dqueue, 2 | UART_DQUE_RX_CHL, &data, 1);
 		}
-		T0MCR=0x00; 						//禁止匹配
-		T0CCR=0x0C30;						//重新捕捉起始位
-		T0TCR=0x02;
-		T0TC=0; 							//停止定时器	
-		PINSEL1 &= 0xf03cffff;
-		PINSEL1 |= 0x08000000;				//设定TXD引脚工作CPIO，RXD引脚工作在捕捉(3)模式
 	}
 
    	if((T0IR&0x20)!=0)			//捕获到起始位
@@ -600,9 +571,6 @@ static void IRQ_SimuUart(void *args)
 	    T0TCR = 0x03;                        	//复位定时器
     	T0CCR=0x00;                             //禁止捕获
 		T0TCR=0x01;                        	//启动定时器
-		
-    	PINSEL1 &= 0xf0ffffff;					//设定TXD引脚和RXD引脚都工作在GPIO模式
-	    IO0DIR &= ~(IRRXD);					//RXD引脚端口方向设为输入
 
 		T0EMR=0x00C0;                       //设定MR1对应的外部匹配输出翻转 
 		T0MCR=0x10;                        	//设定MR1发生匹配时TC复位，不产生中断；
@@ -631,16 +599,43 @@ static void IRQ_SimuUart(void *args)
 			}
 			dque_Push(dqueue, 3 | UART_DQUE_RX_CHL, &data, 1);
 		}
-		T0MCR=0x00; 						//禁止匹配
-		T0CCR=0x0C30;						//重新捕捉起始位
-		T0TCR=0x02;
-		T0TC=0; 							//停止定时器	
-		PINSEL1 &= 0xf03cffff;
-		PINSEL1 |= 0x00800000;				//设定TXD引脚工作CPIO，RXD引脚工作在捕捉(3)模式
 	}
+	T0MCR=0x00; 						//禁止匹配
+	T0CCR=0x0C30;						//重新捕捉起始位
+	T0TCR=0x02;
+	T0TC=0; 							//停止定时器	
 
 	rt_hw_interrupt_umask(TIMER1_INT);
 	wdg_Reload(0);
 } 
 
 #endif
+
+
+
+
+//-------------------------------------------------------------------------
+//
+//-------------------------------------------------------------------------
+sys_res swuart_Open(uint_t nId, p_uart_para pPara)
+{
+	t_swuart *pSW = &swuart_aDev[nId];
+	p_dev_uart p = pSW->parent;
+	p_uart_def pDef = p->def;
+	int nIntId;
+
+	pSW->tick = arch_TimerClockGet() / pPara->baud;
+#if SWUART_RX_MODE == SWUART_RX_M_EINT
+	irq_TimerRegister(nId, swuart_RxTx, pSW);
+	nIntId = irq_ExtRegister(pDef->rxport, pDef->rxpin, IRQ_TRIGGER_FALLING, swuart_RxStart, pSW, IRQ_MODE_NORMAL);
+	if (nIntId == -1)
+		return SYS_R_ERR;
+	pSW->rxint = nIntId;
+	irq_ExtEnable(nIntId);
+#else
+	irq_TimerRegister(nId, swuart_Rx, pSW);
+	arch_TimerCapStart(nId, pSW->tick);
+#endif
+	return SYS_R_OK;
+}
+
