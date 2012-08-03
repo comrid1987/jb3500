@@ -170,7 +170,7 @@ sys_res uart_Config(p_dev_uart p, uint_t nBaud, uint_t nPari, uint_t nData, uint
 		}
 		return res;
 	}
-	return SYS_R_ERR;
+	return SYS_R_OK;
 }
 
 
