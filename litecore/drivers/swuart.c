@@ -419,7 +419,7 @@ static void swuart_Rx(void *args);
 * 入口参数： 
 * 出口参数： 
 ****************************************************************************/
-static void swuart_CapSend(uint_t SChar, uint_t nPin)
+static void swuart_CapSendEven(uint_t SChar, uint_t nPin)
 {
 	uint_t temp,count, nPari = 0;
 
@@ -462,6 +462,44 @@ static void swuart_CapSend(uint_t SChar, uint_t nPin)
 	wdg_Reload(0);
 }
 
+static void swuart_CapSendNo(uint_t SChar, uint_t nPin)
+{
+	uint_t temp,count, nPari = 0;
+
+	rt_hw_interrupt_mask(TIMER1_INT);
+  	T0CCR=0;                           	//禁止接收捕获
+ 	T0TC=0;
+  	T0TCR=0x03;                        	//启动定时器
+ 	T0TCR=0x01;                        	//启动定时器
+ 	IO0CLR |= nPin;             		//发送起始位
+  	T0EMR=0x0300;                       //设定MR2对应的外部匹配输出翻转                   
+  	T0MCR=0x80;                        	//设定MR2发生匹配时TC复位，不产生中断；
+  	temp=T0EMR&0x004;
+  	while (temp==(T0EMR&0x004));
+  	temp=T0EMR&0x004;
+  	for (count=0;count<9;count++)
+  	{
+    	if (count<8)
+   	 	{
+      		if ((SChar&0x01)!=0) {
+      			IO0SET |= nPin;
+				nPari ^= 1;
+      		} else 
+      			IO0CLR |= nPin;
+      		SChar >>=1;
+    	}
+    	else
+    		IO0SET |= nPin;           //发送停止位
+    	while (temp==(T0EMR&0x004));
+    	temp=T0EMR&0x004;
+  	}
+  	T0TCR=0x00;                        	//停止定时器
+  	T0CCR=0x0C30;                        //允许接收捕获
+  	T0TC=0;
+	rt_hw_interrupt_umask(TIMER1_INT);
+	wdg_Reload(0);
+}
+
 /****************************************************************************
 * 名   称： SimuSendStr
 * 功   能： 模拟串口发送字符串
@@ -474,12 +512,12 @@ void swuart_Send(uint_t nId, const void *pBuf, uint_t nLen)
 
 	if (nId == 2) {
 		for (; nLen; nLen--) {
-			swuart_CapSend(*pData++, SimuTXD);
+			swuart_CapSendEven(*pData++, SimuTXD);
 		}
 	}
 	if (nId == 3) {
 		for (; nLen; nLen--) {
-			swuart_CapSend(*pData++, IRTXD);
+			swuart_CapSendNo(*pData++, IRTXD);
 		}
 	}
 }
