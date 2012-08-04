@@ -69,7 +69,7 @@ void arch_TimerCapStart(uint_t nId, uint_t nValue)
 	pTimer->PR = 0;
 	pTimer->PC = 0;
 	pTimer->CCR0 = 0x0C30;
-	pTimer->MR1 = nValue / 3;
+	pTimer->MR1 = nValue / 2;
 	pTimer->MR2 = nValue;
 	pTimer->TCR = BITMASK(0);
 }
@@ -84,7 +84,7 @@ void arch_TimerCapStart(uint_t nId, uint_t nValue)
   	T0PR=0;
   	T0PC=0;                                 	//不分频
   	T0CCR=0x0C30;                            	//设定捕捉CAP3下降沿并中断
-  	T0MR1=nValue / 3;
+  	T0MR1=nValue / 2;
   	T0MR2=nValue;
   	T0IR=0xff;
 

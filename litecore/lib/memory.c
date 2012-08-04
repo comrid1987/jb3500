@@ -14,8 +14,8 @@
 #define mem_Lock()				os_thd_Lock()
 #define mem_Unlock()			os_thd_Unlock()
 #else
-#define mem_Lock()
-#define mem_Unlock()
+#define mem_Lock(...)
+#define mem_Unlock(...)
 #endif
 
 

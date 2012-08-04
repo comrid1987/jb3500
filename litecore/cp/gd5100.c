@@ -5,10 +5,6 @@
 //最大数据域长度
 #define GD5100_DATA_SIZE				4096
 
-//传送方向定义
-#define GD5100_CDIR_RECV				0x00	//主站发出
-#define GD5100_CDIR_SEND				0x01	//终端发出
-
 //异常标志定义
 #define GD5100_CABN_NORMAL				0x00	//确认帧
 #define GD5100_CABN_ABNORMAL			0x01	//否定帧
@@ -43,39 +39,40 @@ typedef __packed struct {
 //-------------------------------------------------------------------------
 static sys_res gd5100_RmsgAnalyze(void *args)
 {
-	t_gd5100 *p = (t_gd5100 *)args;
+	p_gd5100 p = (t_gd5100 *)args;
+	p_dlrcp pRcp = &p->parent;
 	uint8_t *pTemp;
 	p_gd5100_header pH;
 
-	chl_RecData(p->parent.chl, p->parent.rbuf, OS_TICK_MS);
-	for (; ; buf_Remove(p->parent.rbuf, 1)) {
-		for (; ; buf_Remove(p->parent.rbuf, 1)) {
+	chl_RecData(pRcp->chl, pRcp->rbuf, OS_TICK_MS);
+	for (; ; buf_Remove(pRcp->rbuf, 1)) {
+		for (; ; buf_Remove(pRcp->rbuf, 1)) {
 			//不足报文头长度
-			if (p->parent.rbuf->len < sizeof(t_gd5100_header))
+			if (pRcp->rbuf->len < sizeof(t_gd5100_header))
 				return SYS_R_ERR;
-			pH = (p_gd5100_header)p->parent.rbuf->p;
+			pH = (p_gd5100_header)pRcp->rbuf->p;
 			if ((pH->sc1 == 0x68) && (pH->sc2 == 0x68)) {
 				if (pH->len > GD5100_DATA_SIZE)
 					continue;
 				//帧头尾循环错误
-				if ((p->parent.rbuf->p[2] == 1) && (p->parent.rbuf->p[3] == 0))
-					if (p->parent.rbuf->p[6] == 0x16)
+				if ((pRcp->rbuf->p[2] == 1) && (pRcp->rbuf->p[3] == 0))
+					if (pRcp->rbuf->p[6] == 0x16)
 						continue;
 				break;
 			}
 		}
 		//不足长度
-		if (p->parent.rbuf->len < (sizeof(t_gd5100_header) + pH->len + 2))
+		if (pRcp->rbuf->len < (sizeof(t_gd5100_header) + pH->len + 2))
 			return SYS_R_ERR;
-		pTemp = p->parent.rbuf->p + sizeof(t_gd5100_header) + pH->len;
+		pTemp = pRcp->rbuf->p + sizeof(t_gd5100_header) + pH->len;
 		//CS
-		if (cs8(p->parent.rbuf->p, sizeof(t_gd5100_header) + pH->len) != *pTemp++)
+		if (cs8(pRcp->rbuf->p, sizeof(t_gd5100_header) + pH->len) != *pTemp++)
 			continue;
 		//结束符
 		if (*pTemp != 0x16)
 			continue;
 		//接收到报文
-		p->parent.msta = pH->msta;
+		pRcp->msta = pH->msta;
 		p->rmsg->rtua = pH->rtua;
 		p->rmsg->terid = pH->terid;
 		p->rmsg->fseq = pH->fseq;
@@ -84,8 +81,8 @@ static sys_res gd5100_RmsgAnalyze(void *args)
 		p->rmsg->abn = pH->abn;
 		p->rmsg->dir = pH->dir;
 		buf_Release(p->rmsg->data);
-		buf_Push(p->rmsg->data, p->parent.rbuf->p + sizeof(t_gd5100_header), pH->len);
-		buf_Remove(p->parent.rbuf, sizeof(t_gd5100_header) + pH->len + 2);
+		buf_Push(p->rmsg->data, pRcp->rbuf->p + sizeof(t_gd5100_header), pH->len);
+		buf_Remove(pRcp->rbuf, sizeof(t_gd5100_header) + pH->len + 2);
 		return SYS_R_OK;
 	}
 }
@@ -144,8 +141,7 @@ static sys_res gd5100_TmsgLinkcheck (void *p, uint_t nCmd)
 void gd5100_Init(p_gd5100 p)
 {
 
-	memset(p, 0, sizeof(t_gw3761));
-	p->group = 0;
+	memset(p, 0, sizeof(t_gd5100));
 	p->parent.linkcheck = gd5100_TmsgLinkcheck;
 	p->parent.analyze = gd5100_RmsgAnalyze;
 }
@@ -159,17 +155,22 @@ sys_res gd5100_TmsgSend(p_gd5100 p, uint_t nCode, buf b, uint_t nType)
 	uint_t nCS;
 
 	gd5100_TmsgHeaderInit(p, &xH);
-	if (nType == DLRCP_TMSG_REPORT) {
+	switch (nType) {
+	case DLRCP_TMSG_CASCADE:
+		xH.dir = GD5100_CDIR_RECV;
+	case DLRCP_TMSG_REPORT:
 		xH.msta = 0;
 		xH.fseq = p->parent.pfc++;
-	} else {
+		break;
+	default:
 		xH.msta = p->parent.msta;
 		xH.fseq = p->rmsg->fseq;
+		break;
 	}
 	xH.code = nCode;
 	xH.abn = GD5100_CABN_NORMAL;
 	xH.len = b->len;
-	nCS = cs8(&xH, sizeof(t_gd5100_header));
+ 	nCS = cs8(&xH, sizeof(t_gd5100_header));
 	nCS = (nCS + cs8(b->p, b->len)) & 0xFF;
 	buf_PushData(b, 0x1600 | nCS, 2);
 	return dlrcp_TmsgSend(&p->parent, &xH, sizeof(t_gd5100_header), b->p, b->len);
@@ -182,7 +183,8 @@ sys_res gd5100_TmsgSend(p_gd5100 p, uint_t nCode, buf b, uint_t nType)
 sys_res gd5100_TmsgError(p_gd5100 p, uint_t nCode, uint_t nErr)
 {
 	t_gd5100_header xH;
-	uint8_t nCS, aBuf[3];
+	uint8_t aBuf[3];
+	uint_t nCS;
 
 	gd5100_TmsgHeaderInit(p, &xH);
 	xH.msta = p->parent.msta;
@@ -198,6 +200,50 @@ sys_res gd5100_TmsgError(p_gd5100 p, uint_t nCode, uint_t nErr)
 	return dlrcp_TmsgSend(&p->parent, &xH, sizeof(t_gd5100_header), aBuf, 3);
 }
 
+
+//-------------------------------------------------------------------------
+//
+//-------------------------------------------------------------------------
+sys_res gd5100_Transmit(p_gd5100 p, p_gd5100 pD)
+{
+	sys_res res;
+	t_gd5100_header xH;
+	uint_t nCS;
+	buf b = {0};
+
+	buf_Push(b, p->rmsg->data->p, p->rmsg->data->len);
+	xH.sc1 = 0x68;
+	xH.rtua = p->rmsg->rtua;
+	xH.terid = p->rmsg->terid;
+	xH.msta = p->parent.msta;
+	xH.fseq = p->rmsg->fseq;
+	xH.iseq = p->rmsg->iseq;
+	xH.sc2 = 0x68;
+	xH.code = p->rmsg->code;
+	xH.abn = p->rmsg->abn;
+	xH.dir = p->rmsg->dir;
+	xH.len = b->len;
+	nCS = cs8(&xH, sizeof(t_gd5100_header));
+	nCS = (nCS + cs8(b->p, b->len)) & 0xFF;
+	buf_PushData(b, 0x1600 | nCS, 2);
+	res = dlrcp_TmsgSend(&pD->parent, &xH, sizeof(t_gd5100_header), b->p, b->len);
+	buf_Release(b);
+	return res;
+}
+
+
+//-------------------------------------------------------------------------
+//
+//-------------------------------------------------------------------------
+int gd5100_RecvCheck(p_gd5100 p)
+{
+
+	if ((p->rmsg->rtua != 0xFFFF) || (p->rmsg->terid != 0xFFFF)) {
+		if ((p->rtua != p->rmsg->rtua) || (p->terid != p->rmsg->terid))
+			return 0;
+	}
+	return 1;
+}
 
 
 //-------------------------------------------------------------------------

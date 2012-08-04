@@ -171,7 +171,7 @@ EMC_SETUP       EQU     1
 ;//                                   <2=> 32-bit  <3=> Reserved
 ;//   </e>
 BCFG0_SETUP EQU         1
-BCFG0_Val   EQU         0x1000FFEF
+BCFG0_Val   EQU         0x10000C00
 
 ;//   <e> Bank Configuration 1 (BCFG1)
 ;//     <o1.0..3>   IDCY: Idle Cycles <0-15>
@@ -210,7 +210,7 @@ BCFG2_Val   EQU         0x1000FFEF
 ;//                                   <2=> 32-bit  <3=> Reserved
 ;//   </e>
 BCFG3_SETUP EQU         1
-BCFG3_Val   EQU         0x0000FFEF
+BCFG3_Val   EQU         0x00000C00
 
 ;// </e> End of EMC
 

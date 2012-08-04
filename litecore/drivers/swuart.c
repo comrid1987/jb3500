@@ -421,7 +421,7 @@ static void swuart_Rx(void *args);
 ****************************************************************************/
 static void swuart_CapSend(uint_t SChar, uint_t nPin)
 {
-	unsigned char temp,count;
+	uint_t temp,count, nPari = 0;
 
 	rt_hw_interrupt_mask(TIMER1_INT);
   	T0CCR=0;                           	//禁止接收捕获
@@ -434,17 +434,23 @@ static void swuart_CapSend(uint_t SChar, uint_t nPin)
   	temp=T0EMR&0x004;
   	while (temp==(T0EMR&0x004));
   	temp=T0EMR&0x004;
-  	for (count=0;count<9;count++)
+  	for (count=0;count<10;count++)
   	{
     	if (count<8)
    	 	{
-      		if ((SChar&0x01)!=0) 
+      		if ((SChar&0x01)!=0) {
       			IO0SET |= nPin;
-      		else 
+				nPari ^= 1;
+      		} else 
       			IO0CLR |= nPin;
       		SChar >>=1;
     	}
-    	else 
+    	else if (count == 8) {
+			if (nPari)
+				IO0SET |= nPin;
+			else
+				IO0CLR |= nPin;
+		} else
     		IO0SET |= nPin;           //发送停止位
     	while (temp==(T0EMR&0x004));
     	temp=T0EMR&0x004;
@@ -510,14 +516,16 @@ static void swuart_Rx(void *args)
 			while (temp==(T0EMR&0x004));
 			temp=T0EMR&0x004;
 			data = 0;
-			for (count=0;count<8;count++)
+			for (count=0;count<9;count++)
 			{
-				data >>= 1;
-				if ((IO0PIN&(SimuRXD))!=0)
-				{   
-					data |=0x80;
+				if (count < 8) {
+					data >>= 1;
+					if ((IO0PIN&(SimuRXD))!=0)
+					{   
+						data |=0x80;
+					}
 				}
-				if(count == 7)
+				if(count == 8)
 					break;
 				while (temp==(T0EMR&0x004));
 				temp=T0EMR&0x004;
@@ -547,14 +555,16 @@ static void swuart_Rx(void *args)
 			while (temp==(T0EMR&0x004));
 			temp=T0EMR&0x004;
 			data = 0;
-			for (count=0;count<8;count++)
+			for (count=0;count<9;count++)
 			{
-				data >>= 1;
-				if ((IO0PIN&(IRRXD))!=0)
-				{   
-					data |=0x80;
+				if (count < 8) {
+					data >>= 1;
+					if ((IO0PIN&(IRRXD))!=0)
+					{   
+						data |=0x80;
+					}
 				}
-				if(count == 7)
+				if(count == 8)
 					break;
 				while (temp==(T0EMR&0x004));
 				temp=T0EMR&0x004;

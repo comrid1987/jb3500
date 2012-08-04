@@ -18,7 +18,7 @@ extern "C" {
 #define DLRCP_TMSG_PULSEON				0
 #define DLRCP_TMSG_RESPOND				1
 #define DLRCP_TMSG_REPORT				2
-#define DLRCP_TMSG_NEED_ACK				BITMASK(7)
+#define DLRCP_TMSG_CASCADE				3
 
 
 
