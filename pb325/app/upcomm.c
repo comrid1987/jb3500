@@ -124,8 +124,8 @@ void tsk_Upcom2(void *args)
 		if (gw3761_Handler(p) == SYS_R_OK)
 			SETBIT(g_sys_status, 1);
 		if (gd5100_Handler(&rcp_GD5100) == SYS_R_OK) {
-			gd5100_Response(&rcp_GD5100);
 			SETBIT(g_sys_status, 1);
+			gd5100_Response(&rcp_GD5100);
 		}
 	}
 }
