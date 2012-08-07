@@ -501,28 +501,6 @@ static void swuart_CapSendNo(uint_t SChar, uint_t nPin)
 }
 
 /****************************************************************************
-* 名   称： SimuSendStr
-* 功   能： 模拟串口发送字符串
-* 入口参数： 
-* 出口参数： 
-****************************************************************************/
-void swuart_Send(uint_t nId, const void *pBuf, uint_t nLen)
-{
-	uint8_t *pData = (uint8_t *)pBuf;
-
-	if (nId == 2) {
-		for (; nLen; nLen--) {
-			swuart_CapSendEven(*pData++, SimuTXD);
-		}
-	}
-	if (nId == 3) {
-		for (; nLen; nLen--) {
-			swuart_CapSendNo(*pData++, IRTXD);
-		}
-	}
-}
-
-/****************************************************************************
 * 名   称： IRQ_SimuUart()
 * 功   能： 模拟串口接收中断服务函数
 * 入口参数： 
@@ -621,6 +599,28 @@ static void swuart_Rx(void *args)
 
 #endif
 
+
+/****************************************************************************
+* 名   称： SimuSendStr
+* 功   能： 模拟串口发送字符串
+* 入口参数： 
+* 出口参数： 
+****************************************************************************/
+void swuart_Send(uint_t nId, const void *pBuf, uint_t nLen)
+{
+	uint8_t *pData = (uint8_t *)pBuf;
+
+	if (nId == 2) {
+		for (; nLen; nLen--) {
+			swuart_CapSendEven(*pData++, SimuTXD);
+		}
+	}
+	if (nId == 3) {
+		for (; nLen; nLen--) {
+			swuart_CapSendNo(*pData++, IRTXD);
+		}
+	}
+}
 
 
 
