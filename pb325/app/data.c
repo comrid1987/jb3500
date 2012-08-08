@@ -177,7 +177,7 @@ int data_DayRead(const uint8_t *pTime, t_stat *ps)
 		}
 		//²»Æ½ºâ¶È
 		acm_Balance(&xRtd);
-		stat_Handler(ps, &xF26, &xF28, tTime);
+		stat_Handler(ps, &xRtd, &xF26, &xF28, tTime);
 	}
 	return ps->run;
 }

@@ -17,8 +17,8 @@ volatile uint_t g_sys_status = 1;
 
 
 //OS thread declares
-os_thd_declare(Upcom1, 1560);
-os_thd_declare(Upcom2, 1560);
+os_thd_declare(Upcom1, 1800);
+os_thd_declare(Upcom2, 1800);
 os_thd_declare(Daemon, 1024);
 os_thd_declare(Display, 1280);
 os_thd_declare(Meter, 1560);
