@@ -31,7 +31,7 @@ void gui_Editor_TimeCreate(char *pStr, time_t tTime);
 void gui_Editor_TimeSet(int y, char *pStr, int nIndex, int nSelect);
 time_t gui_Editor_TimeDone(char *pStr);
 
-void gui_Editor_DayCreate(char *pStr, time_t tTime);
+void gui_Editor_DayCreate(char *pStr, int nDay, time_t tTime);
 void gui_Editor_DaySet(int y, char *pStr, int nIndex, int nSelect);
 void gui_Editor_DayDone(char *pStr, uint8_t *pTime);
 

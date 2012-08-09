@@ -597,8 +597,6 @@ static void swuart_Rx(void *args)
 	wdg_Reload(0);
 } 
 
-#endif
-
 
 /****************************************************************************
 * Ãû   ³Æ£º SimuSendStr
@@ -621,7 +619,9 @@ void swuart_Send(uint_t nId, const void *pBuf, uint_t nLen)
 		}
 	}
 }
+#endif
 
+'
 
 
 //-------------------------------------------------------------------------

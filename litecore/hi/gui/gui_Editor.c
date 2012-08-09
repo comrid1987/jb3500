@@ -161,11 +161,11 @@ time_t gui_Editor_TimeDone(char *pStr)
 //-------------------------------------------------------------------------
 //日期设置
 //-------------------------------------------------------------------------
-void gui_Editor_DayCreate(char *pStr, time_t tTime)
+void gui_Editor_DayCreate(char *pStr, int nDay, time_t tTime)
 {
 	uint8_t aTime[3];
 
-	day4timet(tTime, -1, aTime, 0);
+	day4timet(tTime, nDay, aTime, 0);
 	//转换为规格字符串
 	sprintf(pStr, "%02d-%02d-%02d", aTime[2], aTime[1], aTime[0]);
 }
