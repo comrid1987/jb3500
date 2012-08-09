@@ -158,17 +158,17 @@ int data_DayRead(const uint8_t *pTime, t_stat *ps)
 			if (pTemp[2] & BITMASK(7))
 				xRtd.i[i] = 0.0f - xRtd.i[i];
 			pTemp = &xMin.data[ACM_MSAVE_PP + i * 3];
-			sprintf(str, ",%02X.%02X%02X", pTemp[2] & 0x7F, pTemp[1], pTemp[0]);
+			sprintf(str, "%02X.%02X%02X", pTemp[2] & 0x7F, pTemp[1], pTemp[0]);
 			xRtd.pp[i] = atof(str);
 			if (pTemp[2] & BITMASK(7))
 				xRtd.pp[i] = 0.0f - xRtd.pp[i];
 			pTemp = &xMin.data[ACM_MSAVE_PQ + i * 3];
-			sprintf(str, ",%02X.%02X%02X", pTemp[2] & 0x7F, pTemp[1], pTemp[0]);
+			sprintf(str, "%02X.%02X%02X", pTemp[2] & 0x7F, pTemp[1], pTemp[0]);
 			xRtd.pq[i] = atof(str);
 			if (pTemp[2] & BITMASK(7))
 				xRtd.pq[i] = 0.0f - xRtd.pq[i];
 			pTemp = &xMin.data[ACM_MSAVE_COS + i * 2];
-			sprintf(str, ",%1X.%1X%02X", (pTemp[1] >> 4) & 0x07, pTemp[1] & 0xF, pTemp[0]);
+			sprintf(str, "%1X.%1X%02X", (pTemp[1] >> 4) & 0x07, pTemp[1] & 0xF, pTemp[0]);
 			xRtd.cos[i] = atof(str);
 			if (pTemp[1] & BITMASK(7))
 				xRtd.cos[i] = 0.0f - xRtd.cos[i];
