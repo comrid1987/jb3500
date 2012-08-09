@@ -80,28 +80,17 @@ int gw3761_ResponseData2(p_gw3761 p)
 				case 25:
 					if (data_DayRead(pData, ps)) {
 						buf_Push(b, pData, 3);
-						gw3761_ConvertData_23(aBuf, FLOAT2FIX(ps->uimax[3]));
-						buf_Push(b, aBuf, 3);
-						gw3761_ConvertData_18(aBuf, ps->tuimax[3]);
-						buf_Push(b, aBuf, 3);
-						gw3761_Data2_Other(b, ps->tuimax[3]);
-						for (i = 0; i < 3; i++) {
+						for (i = 0; i < 4; i++) {
 							gw3761_ConvertData_23(aBuf, FLOAT2FIX(ps->uimax[i]));
 							buf_Push(b, aBuf, 3);
 							gw3761_ConvertData_18(aBuf, ps->tuimax[i]);
 							buf_Push(b, aBuf, 3);
 							gw3761_Data2_Other(b, ps->tuimax[i]);
 						}
-						buf_PushData(b, ps->p0[0], 2);
-						for (i = 1; i < 4; i++) {
+						for (i = 0; i < 4; i++) {
 							buf_PushData(b, ps->p0[i], 2);
 						}
-						gw3761_ConvertData_23(aBuf, FLOAT2FIX(ps->pmax[3]));
-						buf_Push(b, aBuf, 3);
-						gw3761_ConvertData_18(aBuf, ps->tpmax[3]);
-						buf_Push(b, aBuf, 3);
-						gw3761_Data2_Other(b, ps->tpmax[3]);
-						for (i = 0; i < 3; i++) {
+						for (i = 0; i < 4; i++) {
 							gw3761_ConvertData_23(aBuf, FLOAT2FIX(ps->pmax[i]));
 							buf_Push(b, aBuf, 3);
 							gw3761_ConvertData_18(aBuf, ps->tpmax[i]);

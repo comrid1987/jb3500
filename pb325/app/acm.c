@@ -80,15 +80,15 @@ void acm_Balance(t_acm_rtdata *pa)
 			fMax = pa->i[i];
 	}
 	pa->ib = (fMax - fTemp) / fTemp;
-	fMax = pa->ui[0];
-	fTemp = pa->ui[0];
-	for (i = 1; i < 3; i++) {
+	fMax = pa->ui[1];
+	fTemp = pa->ui[1];
+	for (i = 2; i < 4; i++) {
 		if (fMax < pa->ui[i])
 			fMax = pa->ui[i];
 		if (fTemp > pa->ui[i])
 			fTemp = pa->ui[i];
 	}
-	pa->uib = (fMax - fTemp) / pa->ui[3];
+	pa->uib = (fMax - fTemp) / pa->ui[0];
 }
 
 
