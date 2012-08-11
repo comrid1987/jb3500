@@ -53,7 +53,7 @@
 //System Return Defines
 typedef enum {
 	SYS_R_OK = 0,		/* 0 */
-	SYS_R_NOK,			/* 1 */
+	SYS_R_NO,			/* 1 */
 	SYS_R_ERR,			/* 2 */
 	SYS_R_TMO,			/* 3 */
 	SYS_R_FULL,			/* 4 */
