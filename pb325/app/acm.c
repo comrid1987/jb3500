@@ -1,4 +1,5 @@
 #include <math.h>
+#include <stdlib.h>
 #include <string.h>
 #include <litecore.h>
 #include <drivers/tdk6515.h>
@@ -60,6 +61,7 @@ void acm_Init()
 	p->ste = 1;
 }
 
+
 void acm_Balance(t_acm_rtdata *pa)
 {
 	float fTemp, fMax;
@@ -90,7 +92,6 @@ void acm_Balance(t_acm_rtdata *pa)
 	}
 	pa->uib = (fMax - fTemp) / pa->ui[0];
 }
-
 
 
 void acm_JLRead()
@@ -260,7 +261,48 @@ int acm_IsReady()
 }
 
 
-
+int acm_Rtd4timet(t_acm_rtdata *p, time_t tTime)
+{
+	uint8_t *pTemp, aTime[6];
+	char str[10];
+	uint_t i;
+	t_data_min xMin;
+	
+	timet2array(tTime, aTime, 1);
+	data_MinRead(&aTime[1], &xMin);
+	if (xMin.time == GW3761_DATA_INVALID)
+		return 0;
+	for (i = 0; i < 3; i++) {
+		pTemp = &xMin.data[ACM_MSAVE_VOL + i * 2];
+		sprintf(str, "%02X%1X.%1X", pTemp[1], pTemp[0] >> 4, pTemp[0] & 0x0F);
+		p->u[i] = atof(str);
+	}
+	for (i = 0; i < 4; i++) {
+		pTemp = &xMin.data[ACM_MSAVE_CUR + i * 3];
+		sprintf(str, "%02X%1X.%1X%02X", pTemp[2] & 0x7F, pTemp[1] >> 4, pTemp[1] & 0x0F, pTemp[0]);
+		p->i[i] = atof(str);
+		if (pTemp[2] & BITMASK(7))
+			p->i[i] = 0.0f - p->i[i];
+		pTemp = &xMin.data[ACM_MSAVE_PP + i * 3];
+		sprintf(str, "%02X.%02X%02X", pTemp[2] & 0x7F, pTemp[1], pTemp[0]);
+		p->pp[i] = atof(str);
+		if (pTemp[2] & BITMASK(7))
+			p->pp[i] = 0.0f - p->pp[i];
+		pTemp = &xMin.data[ACM_MSAVE_PQ + i * 3];
+		sprintf(str, "%02X.%02X%02X", pTemp[2] & 0x7F, pTemp[1], pTemp[0]);
+		p->pq[i] = atof(str);
+		if (pTemp[2] & BITMASK(7))
+			p->pq[i] = 0.0f - p->pq[i];
+		pTemp = &xMin.data[ACM_MSAVE_COS + i * 2];
+		sprintf(str, "%1X.%1X%02X", (pTemp[1] >> 4) & 0x07, pTemp[1] & 0xF, pTemp[0]);
+		p->cos[i] = atof(str);
+		if (pTemp[1] & BITMASK(7))
+			p->cos[i] = 0.0f - p->cos[i];
+		//计算视在功率
+		p->ui[i] = sqrtf(p->pp[i] * p->pp[i] + p->pq[i] * p->pq[i]);
+	}
+	return 1;
+}
 
   
 

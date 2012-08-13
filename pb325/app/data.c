@@ -1,5 +1,4 @@
 #include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <litecore.h>
@@ -124,11 +123,8 @@ void data_QuarterWrite(const uint8_t *pTime, t_data_quarter *pData)
 
 int data_DayRead(const uint8_t *pTime, t_stat *ps)
 {
-	uint8_t *pTemp, aTime[6];
-	char str[10];
-	uint_t i;
+	uint8_t aTime[6];
 	time_t tTime, tEnd;
-	t_data_min xMin;
 	t_acm_rtdata xRtd;
 	t_afn04_f26 xF26;
 	t_afn04_f28 xF28;
@@ -142,39 +138,6 @@ int data_DayRead(const uint8_t *pTime, t_stat *ps)
 	tTime = array2timet(aTime, 1);
 	tEnd = tTime + (24 * 60 * 60);
 	for (tTime += 60; tTime < tEnd; tTime += 60) {
-		timet2array(tTime, aTime, 1);
-		data_MinRead(&aTime[1], &xMin);
-		if (xMin.time == GW3761_DATA_INVALID)
-			continue;
-		for (i = 0; i < 3; i++) {
-			pTemp = &xMin.data[ACM_MSAVE_VOL + i * 2];
-			sprintf(str, "%02X%1X.%1X", pTemp[1], pTemp[0] >> 4, pTemp[0] & 0x0F);
-			xRtd.u[i] = atof(str);
-		}
-		for (i = 0; i < 4; i++) {
-			pTemp = &xMin.data[ACM_MSAVE_CUR + i * 3];
-			sprintf(str, "%02X%1X.%1X%02X", pTemp[2] & 0x7F, pTemp[1] >> 4, pTemp[1] & 0x0F, pTemp[0]);
-			xRtd.i[i] = atof(str);
-			if (pTemp[2] & BITMASK(7))
-				xRtd.i[i] = 0.0f - xRtd.i[i];
-			pTemp = &xMin.data[ACM_MSAVE_PP + i * 3];
-			sprintf(str, "%02X.%02X%02X", pTemp[2] & 0x7F, pTemp[1], pTemp[0]);
-			xRtd.pp[i] = atof(str);
-			if (pTemp[2] & BITMASK(7))
-				xRtd.pp[i] = 0.0f - xRtd.pp[i];
-			pTemp = &xMin.data[ACM_MSAVE_PQ + i * 3];
-			sprintf(str, "%02X.%02X%02X", pTemp[2] & 0x7F, pTemp[1], pTemp[0]);
-			xRtd.pq[i] = atof(str);
-			if (pTemp[2] & BITMASK(7))
-				xRtd.pq[i] = 0.0f - xRtd.pq[i];
-			pTemp = &xMin.data[ACM_MSAVE_COS + i * 2];
-			sprintf(str, "%1X.%1X%02X", (pTemp[1] >> 4) & 0x07, pTemp[1] & 0xF, pTemp[0]);
-			xRtd.cos[i] = atof(str);
-			if (pTemp[1] & BITMASK(7))
-				xRtd.cos[i] = 0.0f - xRtd.cos[i];
-			//计算视在功率
-			xRtd.ui[i] = sqrtf(xRtd.pp[i] * xRtd.pp[i] + xRtd.pq[i] * xRtd.pq[i]);
-		}
 		//不平衡度
 		acm_Balance(&xRtd);
 		stat_Handler(ps, &xRtd, &xF26, &xF28, tTime);
