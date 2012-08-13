@@ -31,7 +31,7 @@ sys_res sys_IsUsbFormat()
 
 	d = fs_opendir(FS_USBMSC_PATH);
 	if (d == NULL)
-		return SYS_R_NOK;
+		return SYS_R_ERR;
 	fs_closedir(d);
 	return SYS_R_OK;
 }
