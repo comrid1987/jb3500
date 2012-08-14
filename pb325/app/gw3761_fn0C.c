@@ -636,10 +636,6 @@ int gw3761_ResponseData1(p_gw3761 p)
 					net_GetIpPPP(&aBuf[0], &aBuf[4], &aBuf[8]);
 					buf_Push(b, aBuf, 4);
 					break;
-				case 15:
-					//配电扩展,100次遥信
-					data_YXRead(b);
-					break;
 				case 25:
 					//当前电压电流功率
 					gw3761_Afn0C_F25(b, nDa);

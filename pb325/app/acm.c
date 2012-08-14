@@ -301,6 +301,8 @@ int acm_Rtd4timet(t_acm_rtdata *p, time_t tTime)
 		//计算视在功率
 		p->ui[i] = sqrtf(p->pp[i] * p->pp[i] + p->pq[i] * p->pq[i]);
 	}
+	//不平衡度
+	acm_Balance(p);
 	return 1;
 }
 

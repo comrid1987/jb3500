@@ -17,17 +17,23 @@
 #define EVT_DATA_BASE			(196 * 0x1000)
 
 #define EVT_CNT_ADDR			0xFFFF0001	// 4
-#define EVT_FLAG_ADDR			0xFFFF0010	// 8
+#define EVT_OCCUR_ADDR			0xFFFF0010	// 8
+
+#define EVT_FLAG_ADDR			0xFFFF0020	// 4
+#define EVT_YX_ADDR				0xFFFF0021	// 4
 
 #define EVT_RUNTIME_ADDR		0xFFFF0102	// 4
 
-#define EVT_BALANCE_ADDR		0xFFFF0111	// 1
-#define EVT_UOVER_ADDR			0xFFFF0121	// 1
-#define EVT_UUNDER_ADDR			0xFFFF0122	// 1
-#define EVT_IOVER_ADDR			0xFFFF0131	// 1
-#define EVT_IUP_ADDR			0xFFFF0132	// 1
-#define EVT_UIOVER_ADDR			0xFFFF0141	// 1
-#define EVT_UIUP_ADDR			0xFFFF0142	// 1
+
+#define EVT_FLAG_UBALANCE		0
+#define EVT_FLAG_IBALANCE		1
+#define EVT_FLAG_UOVER			2
+#define EVT_FLAG_UUNDER			5
+#define EVT_FLAG_IOVER			8
+#define EVT_FLAG_IUP			11
+#define EVT_FLAG_UIOVER			14
+#define EVT_FLAG_UIUP			15
+
 
 
 //Private Variables
@@ -146,9 +152,11 @@ static void evt_Save(uint_t nERC, const void *pBuf, uint_t nLen, uint_t nAtt)
 		nCnt += EVT_QTY;
 	nCnt += 1;
 	sfs_Write(&evt_SfsDev, EVT_CNT_ADDR + nAtt, &nCnt, 2);
-	sfs_Read(&evt_SfsDev, EVT_FLAG_ADDR, &nFlag);
-	SETBIT(nFlag, nERC - 1);
-	sfs_Write(&evt_SfsDev, EVT_FLAG_ADDR, &nFlag, sizeof(uint64_t));
+	sfs_Read(&evt_SfsDev, EVT_OCCUR_ADDR, &nFlag);
+	if ((nFlag & BITMASK(nERC - 1)) == 0) {
+		SETBIT(nFlag, nERC - 1);
+		sfs_Write(&evt_SfsDev, EVT_OCCUR_ADDR, &nFlag, sizeof(uint64_t));
+	}
 	evt_Unlock();
 }
 
@@ -198,6 +206,27 @@ static void evt_ERC17(const void *pData)
 		gw3761_ConvertData_15(aBuf, rtc_GetTimet());
 		memcpy(&aBuf[5], pData, 22);
 		evt_Save(17, aBuf, sizeof(aBuf), nAtt);
+	}
+}
+
+//电容器投切事件
+static void evt_ERC18(uint_t nId, uint_t nIsOccur)
+{
+	uint8_t aBuf[10];
+	uint_t nAtt, nTn;
+
+	nAtt = evt_Attrib(18);
+	if (nAtt) {
+		gw3761_ConvertData_15(aBuf, rtc_GetTimet());
+		nTn = TERMINAL;
+		if (nIsOccur)
+			SETBIT(nTn, 15);
+		memcpy(&aBuf[5], &nTn, 2);
+		aBuf[7] = 0;
+		nTn = 0;
+		SETBIT(nTn, nId);
+		memcpy(&aBuf[8], &nTn, 2);
+		evt_Save(18, aBuf, sizeof(aBuf), nAtt);
 	}
 }
 
@@ -293,33 +322,34 @@ void evt_ERC35(uint_t nPort, const uint8_t *pAdr)
 
 void evt_Terminal(t_afn04_f26 *pF26)
 {
-	uint_t i, j, nFlagOld, nFlag, nValid, nTn;
+	uint_t i, j, nValid, nTn;
 	float fData, fUp;
 	t_acm_rtdata *pa = &acm_rtd;
 	uint8_t aBuf[22];
-	uint32_t nData;
+	uint32_t nFlagOld, nFlag, nData;
 
-	//不平衡越限
 	nFlagOld = 0;
-	sfs_Read(&evt_SfsDev, EVT_BALANCE_ADDR, &nFlagOld);
+	sfs_Read(&evt_SfsDev, EVT_FLAG_ADDR, &nFlagOld);
 	nFlag = nFlagOld;
 
+#if 0
+	//不平衡越限
 	fUp = (float)bcd2bin16(pF26->ubalance) / 1000.0f;
 	nValid = 0;
 	fData = pa->ub;
-	if (GETBIT(nFlagOld, 0)) {
+	if (GETBIT(nFlagOld, EVT_FLAG_UBALANCE)) {
 		//恢复
 		if (fData < fUp) {
 			nTn = TERMINAL;
 			nValid = 1;
-			CLRBIT(nFlag, 0);
+			CLRBIT(nFlag, EVT_FLAG_UBALANCE);
 		}
 	} else {
 		//发生
 		if (fData > fUp) {
 			nTn = TERMINAL | BITMASK(15);
 			nValid = 1;
-			SETBIT(nFlag, 0);
+			SETBIT(nFlag, EVT_FLAG_UBALANCE);
 		}
 	}
 	if (nValid) {
@@ -327,29 +357,31 @@ void evt_Terminal(t_afn04_f26 *pF26)
 		aBuf[2] = BITMASK(0);
 		gw3761_ConvertData_05_Percent(&aBuf[3], FLOAT2FIX(pa->ub), 0);
 		gw3761_ConvertData_05_Percent(&aBuf[5], FLOAT2FIX(pa->ib), 0);
-		for (j = 0; j < 3; j++)
+		for (j = 0; j < 3; j++) {
 			gw3761_ConvertData_07(&aBuf[7 + j * 2], FLOAT2FIX(pa->u[j]));
-		for (j = 0; j < 3; j++)
+		}
+		for (j = 0; j < 3; j++) {
 			gw3761_ConvertData_25(&aBuf[13 + j * 3], FLOAT2FIX(pa->i[j]), 1);
+		}
 		evt_ERC17(aBuf);
 	}
 
 	fUp = (float)bcd2bin16(pF26->ibalance) / 1000.0f;
 	nValid = 0;
 	fData = pa->ib;
-	if (GETBIT(nFlagOld, 1)) {
+	if (GETBIT(nFlagOld, EVT_FLAG_IBALANCE)) {
 		//恢复
 		if (fData < fUp) {
 			nTn = TERMINAL;
 			nValid = 1;
-			CLRBIT(nFlag, 1);
+			CLRBIT(nFlag, EVT_FLAG_IBALANCE);
 		}
 	} else {
 		//发生
 		if (fData > fUp) {
 			nTn = TERMINAL | BITMASK(15);
 			nValid = 1;
-			SETBIT(nFlag, 1);
+			SETBIT(nFlag, EVT_FLAG_IBALANCE);
 		}
 	}
 	if (nValid) {
@@ -357,179 +389,155 @@ void evt_Terminal(t_afn04_f26 *pF26)
 		aBuf[2] = BITMASK(1);
 		gw3761_ConvertData_05_Percent(&aBuf[3], FLOAT2FIX(pa->ub), 0);
 		gw3761_ConvertData_05_Percent(&aBuf[5], FLOAT2FIX(pa->ib), 0);
-		for (j = 0; j < 3; j++)
+		for (j = 0; j < 3; j++) {
 			gw3761_ConvertData_07(&aBuf[7 + j * 2], FLOAT2FIX(pa->u[j]));
-		for (j = 0; j < 3; j++)
+		}
+		for (j = 0; j < 3; j++) {
 			gw3761_ConvertData_25(&aBuf[13 + j * 3], FLOAT2FIX(pa->i[j]), 1);
+		}
 		evt_ERC17(aBuf);
 	}
-
-	if (nFlag != nFlagOld)
-		sfs_Write(&evt_SfsDev, EVT_BALANCE_ADDR, &nFlag, 1);
+#endif
 
 	//电压越上限
-	nFlagOld = 0;
-	sfs_Read(&evt_SfsDev, EVT_UOVER_ADDR, &nFlagOld);
-	nFlag = nFlagOld;
-
 	fUp = (float)bcd2bin16(pF26->uover) / 10.0f;
 	for (i = 0; i < 3; i++) {
 		nValid = 0;
 		fData = pa->u[i];
-		if (GETBIT(nFlagOld, i)) {
+		if (GETBIT(nFlagOld, EVT_FLAG_UOVER + i)) {
 			//恢复
 			if (fData < fUp) {
 				nTn = TERMINAL;
 				nValid = 1;
-				CLRBIT(nFlag, i);
+				CLRBIT(nFlag, EVT_FLAG_UOVER + i);
 			}
 		} else {
 			//发生
 			if (fData > fUp) {
 				nTn = TERMINAL | BITMASK(15);
 				nValid = 1;
-				SETBIT(nFlag, i);
+				SETBIT(nFlag, EVT_FLAG_UOVER + i);
 			}
 		}
 		if (nValid) {
 			memcpy(&aBuf[0], &nTn, 2);
 			aBuf[2] = BITMASK(6) | BITMASK(i);
-			for (j = 0; j < 3; j++)
+			for (j = 0; j < 3; j++) {
 				gw3761_ConvertData_07(&aBuf[3 + j * 2], FLOAT2FIX(pa->u[j]));
+			}
 			evt_ERC24(aBuf);
 		}
 	}
-	if (nFlag != nFlagOld)
-		sfs_Write(&evt_SfsDev, EVT_UOVER_ADDR, &nFlag, 1);	
 
 	//电压越下限
-	nFlagOld = 0;
-	sfs_Read(&evt_SfsDev, EVT_UUNDER_ADDR, &nFlagOld);
-	nFlag = nFlagOld;
-
 	fUp = (float)bcd2bin16(pF26->uunder) / 10.0f;
 	for (i = 0; i < 3; i++) {
 		nValid = 0;
 		fData = pa->u[i];
-		if (GETBIT(nFlagOld, i)) {
+		if (GETBIT(nFlagOld, EVT_FLAG_UUNDER + i)) {
 			//恢复
 			if (fData > fUp) {
 				nTn = TERMINAL;
 				nValid = 1;
-				CLRBIT(nFlag, i);
+				CLRBIT(nFlag, EVT_FLAG_UUNDER + i);
 			}
 		} else {
 			//发生
 			if (fData < fUp) {
 				nTn = TERMINAL | BITMASK(15);
 				nValid = 1;
-				SETBIT(nFlag, i);
+				SETBIT(nFlag, EVT_FLAG_UUNDER + i);
 			}
 		}
 		if (nValid) {
 			memcpy(&aBuf[0], &nTn, 2);
 			aBuf[2] = BITMASK(7) | BITMASK(i);
-			for (j = 0; j < 3; j++)
+			for (j = 0; j < 3; j++) {
 				gw3761_ConvertData_07(&aBuf[3 + j * 2], FLOAT2FIX(pa->u[j]));
+			}
 			evt_ERC24(aBuf);
 		}
 	}
-	if (nFlag != nFlagOld)
-		sfs_Write(&evt_SfsDev, EVT_UUNDER_ADDR, &nFlag, 1);	
 
 	//电流越限
-	nFlagOld = 0;
-	sfs_Read(&evt_SfsDev, EVT_IOVER_ADDR, &nFlagOld);
-	nFlag = nFlagOld;
-
 	memcpy(&nData, pF26->iover, 3);
 	fUp = (float)bcd2bin32(nData) / 1000.0f;
 	for (i = 0; i < 3; i++) {
 		nValid = 0;
 		fData = pa->i[i];
-		if (GETBIT(nFlagOld, i)) {
+		if (GETBIT(nFlagOld, EVT_FLAG_IOVER + i)) {
 			//恢复
 			if (fData < fUp) {
 				nTn = TERMINAL;
 				nValid = 1;
-				CLRBIT(nFlag, i);
+				CLRBIT(nFlag, EVT_FLAG_IOVER + i);
 			}
 		} else {
 			//发生
 			if (fData > fUp) {
 				nTn = TERMINAL | BITMASK(15);
 				nValid = 1;
-				SETBIT(nFlag, i);
+				SETBIT(nFlag, EVT_FLAG_IOVER + i);
 			}
 		}
 		if (nValid) {
 			memcpy(&aBuf[0], &nTn, 2);
 			aBuf[2] = BITMASK(6) | BITMASK(i);
-			for (j = 0; j < 3; j++)
+			for (j = 0; j < 3; j++) {
 				gw3761_ConvertData_25(&aBuf[3 + j * 3], FLOAT2FIX(pa->i[j]), 1);
+			}
 			evt_ERC25(aBuf);
 		}
 	}
-	if (nFlag != nFlagOld)
-		sfs_Write(&evt_SfsDev, EVT_IOVER_ADDR, &nFlag, 1);	
-
-	nFlagOld = 0;
-	sfs_Read(&evt_SfsDev, EVT_IUP_ADDR, &nFlagOld);
-	nFlag = nFlagOld;
 
 	memcpy(&nData, pF26->iup, 3);
 	fUp = (float)bcd2bin32(nData) / 1000.0f;
 	for (i = 0; i < 3; i++) {
 		nValid = 0;
 		fData = pa->i[i];
-		if (GETBIT(nFlagOld, i)) {
+		if (GETBIT(nFlagOld, EVT_FLAG_IUP + i)) {
 			//恢复
 			if (fData < fUp) {
 				nTn = TERMINAL;
 				nValid = 1;
-				CLRBIT(nFlag, i);
+				CLRBIT(nFlag, EVT_FLAG_IUP + i);
 			}
 		} else {
 			//发生
 			if (fData > fUp) {
 				nTn = TERMINAL | BITMASK(15);
 				nValid = 1;
-				SETBIT(nFlag, i);
+				SETBIT(nFlag, EVT_FLAG_IUP + i);
 			}
 		}
 		if (nValid) {
 			memcpy(&aBuf[0], &nTn, 2);
 			aBuf[2] = BITMASK(7) | BITMASK(i);
-			for (j = 0; j < 3; j++)
+			for (j = 0; j < 3; j++) {
 				gw3761_ConvertData_25(&aBuf[3 + j * 3], FLOAT2FIX(pa->i[j]), 1);
+			}
 			evt_ERC25(aBuf);
 		}
 	}
-	if (nFlag != nFlagOld)
-		sfs_Write(&evt_SfsDev, EVT_IUP_ADDR, &nFlag, 1);	
 
 	//视在功率越限
-	nFlagOld = 0;
-	sfs_Read(&evt_SfsDev, EVT_UIOVER_ADDR, &nFlagOld);
-	nFlag = nFlagOld;
-
 	memcpy(&nData, pF26->uiover, 3);
 	fUp = (float)bcd2bin32(nData) / 10000.0f;
 	nValid = 0;
 	fData = pa->ui[3];
-	if (GETBIT(nFlagOld, 0)) {
+	if (GETBIT(nFlagOld, EVT_FLAG_UIOVER)) {
 		//恢复
 		if (fData < fUp) {
 			nTn = TERMINAL;
 			nValid = 1;
-			CLRBIT(nFlag, 0);
+			CLRBIT(nFlag, EVT_FLAG_UIOVER);
 		}
 	} else {
 		//发生
 		if (fData > fUp) {
 			nTn = TERMINAL | BITMASK(15);
 			nValid = 1;
-			SETBIT(nFlag, 0);
+			SETBIT(nFlag, EVT_FLAG_UIOVER);
 		}
 	}
 	if (nValid) {
@@ -539,30 +547,24 @@ void evt_Terminal(t_afn04_f26 *pF26)
 		memcpy(&aBuf[6], pF26->uiup, 3);
 		evt_ERC26(aBuf);
 	}
-	if (nFlag != nFlagOld)
-		sfs_Write(&evt_SfsDev, EVT_UIOVER_ADDR, &nFlag, 1);	
-
-	nFlagOld = 0;
-	sfs_Read(&evt_SfsDev, EVT_UIUP_ADDR, &nFlagOld);
-	nFlag = nFlagOld;
 
 	memcpy(&nData, pF26->uiup, 3);
 	fUp = (float)bcd2bin32(nData) / 10000.0f;
 	nValid = 0;
 	fData = pa->ui[3];
-	if (GETBIT(nFlagOld, 0)) {
+	if (GETBIT(nFlagOld, EVT_FLAG_UIUP)) {
 		//恢复
 		if (fData < fUp) {
 			nTn = TERMINAL;
 			nValid = 1;
-			CLRBIT(nFlag, 0);
+			CLRBIT(nFlag, EVT_FLAG_UIUP);
 		}
 	} else {
 		//发生
 		if (fData > fUp) {
 			nTn = TERMINAL | BITMASK(15);
 			nValid = 1;
-			SETBIT(nFlag, 0);
+			SETBIT(nFlag, EVT_FLAG_UIUP);
 		}
 	}
 	if (nValid) {
@@ -572,10 +574,43 @@ void evt_Terminal(t_afn04_f26 *pF26)
 		memcpy(&aBuf[6], pF26->uiup, 3);
 		evt_ERC26(aBuf);
 	}
+
 	if (nFlag != nFlagOld)
-		sfs_Write(&evt_SfsDev, EVT_UIUP_ADDR, &nFlag, 1);	
+		sfs_Write(&evt_SfsDev, EVT_FLAG_ADDR, &nFlag, 4);
 }
 
+void evt_YXRead()
+{
+	uint_t i, nValid;
+	uint32_t nFlag, nRead;
+
+	nRead = 0;
+	for (i = 0; i < 3; i++) {
+		if (gpio_Read(4 + i))
+			SETBIT(nRead, i);
+	}
+	nFlag = 0;
+	nValid = 0;
+	if (sfs_Read(&evt_SfsDev, EVT_YX_ADDR, &nFlag) != SYS_R_OK)
+		nValid = 1;
+	for (i = 0; i < 3; i++) {
+		if (nFlag & BITMASK(i)) {
+			if (nRead == 0) {
+				evt_ERC18(i, 0);
+				nValid = 1;
+				CLRBIT(nFlag, i);
+			}
+		} else {
+			if (nRead) {
+				evt_ERC18(i, 1);
+				nValid = 1;
+				SETBIT(nFlag, i);
+			}
+		}
+	}
+	if (nValid)
+		sfs_Write(&evt_SfsDev, EVT_YX_ADDR, &nRead, 4);
+}
 
 //运行时间
 int evt_RunTimeRead(time_t *pTime)

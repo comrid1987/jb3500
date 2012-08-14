@@ -19,10 +19,6 @@
 #define ECL_DATA_MIN_MSIZE		sizeof(t_data_min)
 #define ECL_DATA_MIN_ALLSIZE	(ECL_DATA_MIN_HEADER + 1440 * ECL_DATA_MIN_MSIZE)
 
-#define ECL_DATA_YX_BASE		(324 * 0x1000)
-#define ECL_DATA_YX_HEADER		16
-#define ECL_DATA_YX_SIZE		7
-#define ECL_DATA_YX_QTY			100
 
 
 //Private Consts
@@ -45,7 +41,6 @@ void data_Clear()
 		nAdr = ECL_DATA_MIN_BASE + i * ECL_DATA_MIN_ALLSIZE;
 		spif_Write(nAdr, &nInValid, 3);
 	}
-	spif_Write(ECL_DATA_YX_BASE, &nInValid, 4);
 }
 
 
@@ -138,45 +133,10 @@ int data_DayRead(const uint8_t *pTime, t_stat *ps)
 	tTime = array2timet(aTime, 1);
 	tEnd = tTime + (24 * 60 * 60);
 	for (tTime += 60; tTime < tEnd; tTime += 60) {
-		//不平衡度
-		acm_Balance(&xRtd);
+		acm_Rtd4timet(&xRtd, tTime);
 		stat_Handler(ps, &xRtd, &xF26, &xF28, tTime);
 	}
 	return ps->run;
-}
-
-void data_YXRead(buf b)
-{
-	uint8_t *pBuf;
-
-	pBuf = mem_Malloc(ECL_DATA_YX_QTY * ECL_DATA_YX_SIZE);
-	if (pBuf != NULL) {
-		spif_Read(ECL_DATA_YX_BASE + ECL_DATA_YX_HEADER, pBuf, ECL_DATA_YX_QTY * ECL_DATA_YX_SIZE);
-		buf_Push(b, pBuf, ECL_DATA_YX_QTY * ECL_DATA_YX_SIZE);
-		mem_Free(pBuf);
-	}
-}
-
-void data_YXWrite(uint_t nId)
-{
-	uint32_t nMagic;
-	uint8_t *pBuf;
-
-	spif_Read(ECL_DATA_YX_BASE, &nMagic, 4);
-	if (nMagic != ECL_DATA_MAGIC_WORD) {
-		nMagic = ECL_DATA_MAGIC_WORD;
-		spif_Fill(ECL_DATA_YX_BASE, ECL_DATA_YX_BASE + ECL_DATA_YX_HEADER + ECL_DATA_YX_SIZE * ECL_DATA_YX_QTY, GW3761_DATA_INVALID);
-		spif_Write(ECL_DATA_YX_BASE, &nMagic, 4);
-	}
-	pBuf = mem_Malloc(ECL_DATA_YX_QTY * ECL_DATA_YX_SIZE);
-	if (pBuf != NULL) {
-		spif_Read(ECL_DATA_YX_BASE + ECL_DATA_YX_HEADER, pBuf, ECL_DATA_YX_QTY * ECL_DATA_YX_SIZE);
-		memmove(&pBuf[ECL_DATA_YX_SIZE], pBuf, (ECL_DATA_YX_QTY - 1) * ECL_DATA_YX_SIZE);
-		pBuf[0] = nId;
-        timet2array(rtc_GetTimet(), &pBuf[1], 1);
-		spif_Write(ECL_DATA_YX_BASE + ECL_DATA_YX_HEADER, pBuf, ECL_DATA_YX_QTY * ECL_DATA_YX_SIZE);
-		mem_Free(pBuf);
-	}
 }
 
 void data_Copy2Udisk()
@@ -190,7 +150,6 @@ void data_Copy2Udisk()
 	time_t tNow, tTime;
 	t_data_min xMin;
 	t_data_quarter xQuar;
-	buf b = {0};
 
 	icp_ParaRead(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
 	sprintf(sAddr, FS_USBMSC_PATH"%04X%04X/", xF85.area, xF85.addr);
@@ -298,21 +257,6 @@ void data_Copy2Udisk()
 		fs_write(fd1, str, sprintf(str, "20%02X-%02X-%02X %02X:%02X:00\r\n", aTime[5], aTime[4], aTime[3], aTime[2], aTime[1]));
 		fs_write(fd1, str, sprintf(str, "%d Min %d Sec Finshed.\r\n", (rtc_GetTimet() - tNow)/60, (rtc_GetTimet() - tNow)%60));
 		fs_close(fd1);
-	}
-	//遥信
-	sprintf(str, "%s%s", sAddr, "pb325_yx.txt");
-	fd1 = fs_open(str, O_WRONLY | O_CREAT | O_TRUNC, 0);
-	if (fd1 >= 0) {
-		data_YXRead(b);
-		for (i = 0; i < ECL_DATA_YX_QTY; i++) {
-			pTemp = &b->p[i * ECL_DATA_YX_SIZE];
-			if (memtest(pTemp, 0xEE, ECL_DATA_YX_SIZE))
-				fs_write(fd1, str, sprintf(str, "%03d=[%d]20%02X-%02X-%02X %02X:%02X:%02X\r\n", i + 1, pTemp[0], pTemp[6], pTemp[5], pTemp[4], pTemp[3], pTemp[2], pTemp[1]));
-			else
-				fs_write(fd1, str, sprintf(str, "%03d=\r\n", i + 1));
-		}		
-		fs_close(fd1);
-		buf_Release(b);
 	}
     BEEP(1);
     os_thd_Sleep(1000);

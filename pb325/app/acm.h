@@ -59,6 +59,7 @@ void acm_XBRead(void);
 void acm_MinSave(const uint8_t *pTime);
 void acm_QuarterSave(const uint8_t *pTime);
 int acm_IsReady(void);
+int acm_Rtd4timet(t_acm_rtdata *p, time_t tTime);
 
 void stat_Clear(void);
 void stat_Handler(p_stat ps, t_acm_rtdata *pa, t_afn04_f26 *pF26, t_afn04_f28 *pF28, time_t tTime);

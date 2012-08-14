@@ -10,6 +10,9 @@
 		GPIO_T_HC595,	GPIO_P1,	1,		GPIO_M_OUT_PP,		GPIO_INIT_NULL,		//Udisk LED
 		GPIO_T_HC595,	GPIO_P1,	6,		GPIO_M_OUT_PP,		GPIO_INIT_NULL,		//LCD_BL
 		GPIO_T_HC595,	GPIO_P1,	7,		GPIO_M_OUT_PP,		GPIO_INIT_NULL,		//BEEP
+		GPIO_T_HC165,	GPIO_P0,	7,		GPIO_M_IN_PU,		GPIO_INIT_NULL, 	// 0 pulse1
+		GPIO_T_HC165,	GPIO_P0,	6,		GPIO_M_IN_PU,		GPIO_INIT_NULL, 	// 1 pulse2
+		GPIO_T_HC165,	GPIO_P0,	5,		GPIO_M_IN_PU,		GPIO_INIT_NULL, 	// 2 pulse3 
 	};
 	tbl_gpio_def tbl_bspGpio[] = {_tbl_bspGpio, ARR_ENDADR(_tbl_bspGpio)};
 #endif

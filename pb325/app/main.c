@@ -36,25 +36,18 @@ sys_res sys_IsUsbFormat()
 	return SYS_R_OK;
 }
 
+
+
+
+
 void tsk_Daemon(void *args)
 {
-	uint_t i, nTemp, nCnt, nRstCnt = 0;
-	os_que que;
+	uint_t nTemp, nCnt, nRstCnt = 0;
 
     for (nCnt = 0; ; nCnt++) {
-		que = os_que_Wait(QUE_EVT_PULSE, NULL, 200);
-		if (que != NULL) {
-			nTemp = que->data->val;
-			os_que_Release(que);
-			for (i = 0; i < 3; i++) {
-				if (nTemp & BITMASK(i)){
-                    BEEP(1);
-                    data_YXWrite(i + 1);
-	                os_thd_Sleep(100);
-                    BEEP(0);
-				}
-			}
-		}
+		os_thd_Sleep(200);
+		//Ò£ÐÅ
+		evt_YXRead();
 		//¿´ÃÅ¹·
 #if WDG_ENABLE
 		wdg_Reload(1);

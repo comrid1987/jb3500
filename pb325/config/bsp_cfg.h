@@ -138,7 +138,7 @@
 #endif
 
 //Âö³å²É¼¯
-#define PULSE_COL_ENABLE				1
+#define PULSE_COL_ENABLE				0
 #if PULSE_COL_ENABLE
 	extern tbl_gpio_def tbl_bspPulse[];
 #endif
