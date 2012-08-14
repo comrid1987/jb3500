@@ -62,12 +62,93 @@ static void gw3762_DbgOut(uint_t nType, const void *pBuf, uint_t nLen)
 #define gw3762_DbgOut(...)
 #endif
 
+static sys_res gw3762_Transmit2Module(t_gw3762 *p, uint_t nAfn, uint_t nDT, const void *pData, uint_t nLen)
+{
+	buf bTx = {0};
+	t_gw3762_rdown xR = {0};
+	
+	xR.route = GW3762_RZONE_R_TRANS;
 
+	buf_PushData(bTx, 0x41000068, 4);
+	buf_Push(bTx, &xR, sizeof(xR));
+
+	buf_PushData(bTx, nAfn, 1);
+	buf_PushData(bTx, nDT, 2);
+	buf_Push(bTx, pData, nLen);
+	buf_PushData(bTx, cs8(&bTx->p[1 + GW3762_HEADER_L_SIZE], bTx->len - (1 + GW3762_HEADER_L_SIZE)) | 0x1600, 2);
+	memcpy(&bTx->p[1], &bTx->len, GW3762_HEADER_L_SIZE);
+
+	gw3762_DbgOut(1, bTx->p, bTx->len);
+
+	chl_Send(p->chl, bTx->p, bTx->len);
+	buf_Release(bTx);
+
+	return SYS_R_OK;
+}
+
+
+static sys_res gw3762_Transmit2Meter(t_gw3762 *p, uint_t nRoute, uint_t nAfn, uint_t nDT, const void *pAdr, uint_t nRelay, const void *pRtAdr, const void *pData, uint_t nLen)
+{
+	buf bTx = {0};
+	t_gw3762_rdown xR = {0};
+
+	if (nRoute == 0)
+		xR.route = GW3762_RZONE_R_TRANS;
+	xR.module = GW3762_RZONE_M_2METER;
+	xR.relay = nRelay;
+
+	buf_PushData(bTx, 0x41000068, 4);
+	buf_Push(bTx, &xR, sizeof(xR));
+	buf_Push(bTx, p->adr, sizeof(p->adr));
+	if (nRelay)
+		buf_Push(bTx, pRtAdr, nRelay * 6);
+	buf_Push(bTx, pAdr, 6);
+
+	buf_PushData(bTx, nAfn, 1);
+	buf_PushData(bTx, nDT, 2);
+	if (nAfn == GW3762_AFN_TRANSMIT_ROUTE)
+		buf_PushData(bTx, 0x0002, 2);
+	else
+		buf_PushData(bTx, 0x02, 1);
+	buf_PushData(bTx, nLen, 1);
+	buf_Push(bTx, pData, nLen);
+	buf_PushData(bTx, cs8(&bTx->p[1 + GW3762_HEADER_L_SIZE], bTx->len - (1 + GW3762_HEADER_L_SIZE)) | 0x1600, 2);
+	memcpy(&bTx->p[1], &bTx->len, GW3762_HEADER_L_SIZE);
+
+	gw3762_DbgOut(1, bTx->p, bTx->len);
+
+	chl_Send(p->chl, bTx->p, bTx->len);
+	buf_Release(bTx);
+	
+	return SYS_R_OK;
+}
+
+
+
+
+
+
+//External Functions
 void gw3762_Init(t_gw3762 *p)
 {
 
 	memset(p, 0, sizeof(t_gw3762));
 }
+
+int gw3762_IsNeedRt(t_gw3762 *p)
+{
+
+	switch (p->type) {
+	case GW3762_T_XIAOCHENG:
+	case GW3762_T_XC_N6:
+	case GW3762_T_EASTSOFT_38:
+		return 1;
+	default:
+		return 0;
+	}
+}
+
+
 
 //-------------------------------------------------------------------------
 //
@@ -123,91 +204,47 @@ sys_res gw3762_Analyze(t_gw3762 *p)
 	}
 }
 
-sys_res gw3762_Transmit2Module(t_gw3762 *p, uint_t nAfn, uint_t nDT, const void *pData, uint_t nLen)
+
+sys_res gw3762_Broadcast(t_gw3762 *p, const void *pData, uint_t nLen)
 {
-	buf bTx = {0};
-	t_gw3762_rdown xR = {0};
-	
-	xR.route = GW3762_RZONE_R_TRANS;
+	uint_t nAfn, nDT, nRoute;
+	uint8_t aBuf[6];
 
-	buf_PushData(bTx, 0x41000068, 4);
-	buf_Push(bTx, &xR, sizeof(xR));
-
-	buf_PushData(bTx, nAfn, 1);
-	buf_PushData(bTx, nDT, 2);
-	buf_Push(bTx, pData, nLen);
-	buf_PushData(bTx, cs8(&bTx->p[1 + GW3762_HEADER_L_SIZE], bTx->len - (1 + GW3762_HEADER_L_SIZE)) | 0x1600, 2);
-	memcpy(&bTx->p[1], &bTx->len, GW3762_HEADER_L_SIZE);
-
-	gw3762_DbgOut(1, bTx->p, bTx->len);
-
-	chl_Send(p->chl, bTx->p, bTx->len);
-	buf_Release(bTx);
-
-	return SYS_R_OK;
+	memset(aBuf, 0x99, 6);
+	nRoute = 1;
+	switch (p->type) {
+	case GW3762_T_XIAOCHENG:
+		nRoute = 0;
+	case GW3762_T_XC_RT:
+		nAfn = GW3762_AFN_TRANSMIT_ROUTE;
+		nDT = 0x0001;
+		break;
+	case GW3762_T_EASTSOFT_38:
+		nRoute = 0;
+	default:
+		nAfn = GW3762_AFN_DATA_SET;
+		nDT = 0x0004;
+		break;
+	}
+	return gw3762_Transmit2Meter(p, nRoute, nAfn, nDT, aBuf, 0, NULL, pData, nLen);;
 }
 
-sys_res gw3762_Transmit2Meter(t_gw3762 *p, uint_t nAfn, uint_t nDT, const void *pAdr, uint_t nRelay, const void *pRtAdr, const void *pData, uint_t nLen)
+sys_res gw3762_MeterRead(t_gw3762 *p, const void *pAdr, uint_t nRelay, const void *pRtAdr, const void *pData, uint_t nLen)
 {
-	buf bTx = {0};
-	t_gw3762_rdown xR = {0};
-
-	xR.route = GW3762_RZONE_R_TRANS;
-	xR.module = GW3762_RZONE_M_2METER;
-	xR.relay = nRelay;
-
-	buf_PushData(bTx, 0x41000068, 4);
-	buf_Push(bTx, &xR, sizeof(xR));
-	buf_Push(bTx, p->adr, sizeof(p->adr));
-	if (nRelay)
-		buf_Push(bTx, pRtAdr, nRelay * 6);
-	buf_Push(bTx, pAdr, 6);
-
-	buf_PushData(bTx, nAfn, 1);
-	buf_PushData(bTx, nDT, 2);
-	if (nAfn == GW3762_AFN_TRANSMIT_ROUTE)
-		buf_PushData(bTx, 0x0002, 2);
+	uint_t nAfn;
+	
+	if (p->type == GW3762_T_EASTSOFT_38)
+		nAfn = GW3762_AFN_TRANSMIT;
 	else
-		buf_PushData(bTx, 0x02, 1);
-	buf_PushData(bTx, nLen, 1);
-	buf_Push(bTx, pData, nLen);
-	buf_PushData(bTx, cs8(&bTx->p[1 + GW3762_HEADER_L_SIZE], bTx->len - (1 + GW3762_HEADER_L_SIZE)) | 0x1600, 2);
-	memcpy(&bTx->p[1], &bTx->len, GW3762_HEADER_L_SIZE);
+		nAfn = GW3762_AFN_TRANSMIT_ROUTE;
 
-	gw3762_DbgOut(1, bTx->p, bTx->len);
-
-	chl_Send(p->chl, bTx->p, bTx->len);
-	buf_Release(bTx);
-	
-	return SYS_R_OK;
+	return gw3762_Transmit2Meter(p, 0, nAfn, 0x0001, pAdr, nRelay, pRtAdr, pData, nLen);
 }
 
-sys_res gw3762_Transmit2MeterRT(t_gw3762 *p, const void *pAdr, const void *pData, uint_t nLen)
+sys_res gw3762_MeterRT(t_gw3762 *p, const void *pAdr, const void *pData, uint_t nLen)
 {
-	buf bTx = {0};
-	t_gw3762_rdown xR = {0};
 
-	xR.module = GW3762_RZONE_M_2METER;
-
-	buf_PushData(bTx, 0x41000068, 4);
-	buf_Push(bTx, &xR, sizeof(xR));
-	buf_Push(bTx, p->adr, sizeof(p->adr));
-	buf_Push(bTx, pAdr, 6);
-
-	buf_PushData(bTx, GW3762_AFN_TRANSMIT_ROUTE, 1);
-	buf_PushData(bTx, 0x0001, 2);
-	buf_PushData(bTx, 0x0002, 2);
-	buf_PushData(bTx, nLen, 1);
-	buf_Push(bTx, pData, nLen);
-	buf_PushData(bTx, cs8(&bTx->p[1 + GW3762_HEADER_L_SIZE], bTx->len - (1 + GW3762_HEADER_L_SIZE)) | 0x1600, 2);
-	memcpy(&bTx->p[1], &bTx->len, GW3762_HEADER_L_SIZE);
-
-	gw3762_DbgOut(1, bTx->p, bTx->len);
-
-	chl_Send(p->chl, bTx->p, bTx->len);
-	buf_Release(bTx);
-	
-	return SYS_R_OK;
+	return gw3762_Transmit2Meter(p, 1, GW3762_AFN_TRANSMIT_ROUTE, 0x0001, pAdr, 0, NULL, pData, nLen);
 }
 
 

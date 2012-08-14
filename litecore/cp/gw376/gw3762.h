@@ -21,6 +21,21 @@ extern "C" {
 #define GW3762_AFN_AUTOREPORT		0xF0
 
 
+//Modem Type Defines
+#define GW3762_T_XIAOCHENG			0
+#define GW3762_T_XC_RT				1
+#define GW3762_T_XC_N6				2
+#define GW3762_T_XC_N12				3
+
+
+#define GW3762_T_EASTSOFT_RT		4
+#define GW3762_T_EASTSOFT_38		5
+
+#define GW3762_T_TOPCOM				7
+#define GW3762_T_BOST				8
+#define GW3762_T_RISECOM			9
+#define GW3762_T_LEAGUERME			10
+#define GW3762_T_MIARTECH			11
 
 
 
@@ -106,10 +121,11 @@ typedef struct {
 
 //External Functions
 void gw3762_Init(t_gw3762 *p);
+int gw3762_IsNeedRt(t_gw3762 *p);
 sys_res gw3762_Analyze(t_gw3762 *p);
-sys_res gw3762_Transmit2Module(t_gw3762 *p, uint_t nAfn, uint_t nDT, const void *pData, uint_t nLen);
-sys_res gw3762_Transmit2Meter(t_gw3762 *p, uint_t nAfn, uint_t nDT, const void *pAdr, uint_t nRelay, const void *pRtAdr, const void *pData, uint_t nLen);
-sys_res gw3762_Transmit2MeterRT(t_gw3762 *p, const void *pAdr, const void *pData, uint_t nLen);
+sys_res gw3762_Broadcast(t_gw3762 *p, const void *pData, uint_t nLen);
+sys_res gw3762_MeterRead(t_gw3762 *p, const void *pAdr, uint_t nRelay, const void *pRtAdr, const void *pData, uint_t nLen);
+sys_res gw3762_MeterRT(t_gw3762 *p, const void *pAdr, const void *pData, uint_t nLen);
 
 sys_res gw3762_HwReset(t_gw3762 *p, uint_t nTmo);
 sys_res gw3762_ParaReset(t_gw3762 *p, uint_t nTmo);
