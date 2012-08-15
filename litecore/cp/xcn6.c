@@ -120,5 +120,10 @@ sys_res xcn6_Transmit2Meter(chl c, buf bRx, const void *pAdr, const void *pBuf, 
 	return SYS_R_TMO;
 }
 
+sys_res xcn6_MeterRead(t_gw3762 *p, const void *pAdr, const void *pBuf, uint_t nLen)
+{
+
+	
+}
 
 
