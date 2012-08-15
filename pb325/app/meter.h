@@ -21,11 +21,6 @@ extern "C" {
 #define ECL_PRTL_DLQ_QL				202
 
 
-//Modem Type Defines
-#define GW3762_T_XIAOCHENG			0
-#define GW3762_T_EASTSOFT_RT		1
-#define GW3762_T_EASTSOFT_38		2
-
 
 //Public Typedefs
 typedef const struct {

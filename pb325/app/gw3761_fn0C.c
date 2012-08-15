@@ -305,20 +305,24 @@ static int gw3761_Afn0C_F25(buf b, uint_t nDa)
 		buf_Push(b, aBuf, 5);
 		switch (xPM.prtl) {
 		case ECL_PRTL_DLT645_97:
-			for (pR97 = tbl_Di97_Afn0CF25; pR97 < ARR_ENDADR(tbl_Di97_Afn0CF25); pR97++)
+			for (pR97 = tbl_Di97_Afn0CF25; pR97 < ARR_ENDADR(tbl_Di97_Afn0CF25); pR97++) {
 				gw3761_Afn0C_97RealRead(b, &xPM, pR97, 1);
+			}
 			break;
 		case ECL_PRTL_DLQ_QL:
-			for (pR97 = tbl_DiQL_Afn0CF25; pR97 < ARR_ENDADR(tbl_DiQL_Afn0CF25); pR97++)
+			for (pR97 = tbl_DiQL_Afn0CF25; pR97 < ARR_ENDADR(tbl_DiQL_Afn0CF25); pR97++) {
 				gw3761_Afn0C_97RealRead(b, &xPM, pR97, 1);
+			}
 			break;
 		case ECL_PRTL_DLQ_SY:
-			for (pR07 = tbl_DiSY_Afn0CF25; pR07 < ARR_ENDADR(tbl_DiSY_Afn0CF25); pR07++)
+			for (pR07 = tbl_DiSY_Afn0CF25; pR07 < ARR_ENDADR(tbl_DiSY_Afn0CF25); pR07++) {
 				gw3761_Afn0C_07RealRead(b, &xPM, pR07, 1);
+			}
 			break;
 		default:
-			for (pR07 = tbl_Di07_Afn0CF25; pR07 < ARR_ENDADR(tbl_Di07_Afn0CF25); pR07++)
+			for (pR07 = tbl_Di07_Afn0CF25; pR07 < ARR_ENDADR(tbl_Di07_Afn0CF25); pR07++) {
 				gw3761_Afn0C_07RealRead(b, &xPM, pR07, 1);
+			}
 			break;
 		}
 		break;
@@ -417,14 +421,16 @@ static int gw3761_Afn0C_F35(buf b, uint_t nDa)
 		buf_PushData(b, ECL_RATE_QTY, 1);
 		switch (xPM.prtl) {
 		case ECL_PRTL_DLT645_97:
-			for (pR97 = tbl_Di97_Afn0CF35; pR97 < ARR_ENDADR(tbl_Di97_Afn0CF35); pR97++)
+			for (pR97 = tbl_Di97_Afn0CF35; pR97 < ARR_ENDADR(tbl_Di97_Afn0CF35); pR97++) {
 				gw3761_Afn0C_97RealRead(b, &xPM, pR97, nIs3P);
+			}
 			break;
 		case ECL_PRTL_DLQ_SY:
 			break;
 		default:
-			for (pR07 = tbl_Di07_Afn0CF35; pR07 < ARR_ENDADR(tbl_Di07_Afn0CF35); pR07++)
+			for (pR07 = tbl_Di07_Afn0CF35; pR07 < ARR_ENDADR(tbl_Di07_Afn0CF35); pR07++) {
 				gw3761_Afn0C_07RealRead(b, &xPM, pR07, nIs3P);
+			}
 			break;
 		}
 		break;
@@ -451,12 +457,14 @@ static int gw3761_Afn0C_F36(buf b, uint_t nDa)
 		buf_PushData(b, ECL_RATE_QTY, 1);
 		switch (xPM.prtl) {
 		case ECL_PRTL_DLT645_97:
-			for (pR97 = tbl_Di97_Afn0CF36; pR97 < ARR_ENDADR(tbl_Di97_Afn0CF36); pR97++)
+			for (pR97 = tbl_Di97_Afn0CF36; pR97 < ARR_ENDADR(tbl_Di97_Afn0CF36); pR97++) {
 				gw3761_Afn0C_97RealRead(b, &xPM, pR97, nIs3P);
+			}
 			break;
 		default:
-			for (pR07 = tbl_Di07_Afn0CF36; pR07 < ARR_ENDADR(tbl_Di07_Afn0CF36); pR07++)
+			for (pR07 = tbl_Di07_Afn0CF36; pR07 < ARR_ENDADR(tbl_Di07_Afn0CF36); pR07++) {
 				gw3761_Afn0C_07RealRead(b, &xPM, pR07, nIs3P);
+			}
 			break;
 		}
 		break;
