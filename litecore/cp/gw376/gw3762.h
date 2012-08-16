@@ -22,14 +22,14 @@ extern "C" {
 
 
 //Modem Type Defines
-#define GW3762_T_XIAOCHENG			0
+#define GW3762_T_XC_GW				0
 #define GW3762_T_XC_RT				1
-#define GW3762_T_XC_N6				2
+#define GW3762_T_XC_GD				2
 #define GW3762_T_XC_N12				3
 
 
-#define GW3762_T_EASTSOFT_RT		4
-#define GW3762_T_EASTSOFT_38		5
+#define GW3762_T_ES_RT				4
+#define GW3762_T_ES_38				5
 
 #define GW3762_T_TOPCOM				7
 #define GW3762_T_BOST				8

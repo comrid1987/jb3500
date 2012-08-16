@@ -139,9 +139,9 @@ int gw3762_IsNeedRt(t_gw3762 *p)
 {
 
 	switch (p->type) {
-	case GW3762_T_XIAOCHENG:
-	case GW3762_T_XC_N6:
-	case GW3762_T_EASTSOFT_38:
+	case GW3762_T_XC_GW:
+	case GW3762_T_XC_GD:
+	case GW3762_T_ES_38:
 		return 1;
 	default:
 		return 0;
@@ -213,13 +213,13 @@ sys_res gw3762_Broadcast(t_gw3762 *p, const void *pData, uint_t nLen)
 	memset(aBuf, 0x99, 6);
 	nRoute = 1;
 	switch (p->type) {
-	case GW3762_T_XIAOCHENG:
+	case GW3762_T_XC_GW:
 		nRoute = 0;
 	case GW3762_T_XC_RT:
 		nAfn = GW3762_AFN_TRANSMIT_ROUTE;
 		nDT = 0x0001;
 		break;
-	case GW3762_T_EASTSOFT_38:
+	case GW3762_T_ES_38:
 		nRoute = 0;
 	default:
 		nAfn = GW3762_AFN_DATA_SET;
@@ -233,7 +233,7 @@ sys_res gw3762_MeterRead(t_gw3762 *p, const void *pAdr, uint_t nRelay, const voi
 {
 	uint_t nAfn;
 	
-	if (p->type == GW3762_T_EASTSOFT_38)
+	if (p->type == GW3762_T_ES_38)
 		nAfn = GW3762_AFN_TRANSMIT;
 	else
 		nAfn = GW3762_AFN_TRANSMIT_ROUTE;

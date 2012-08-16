@@ -1,23 +1,25 @@
 
-//计算校验和
+//计算校验和8
 uint8_t cs8(const void *pData, uint_t nLen)
 {
 	uint_t nCS = 0;
 	uint8_t *p = (uint8_t *)pData;
 
-	for (; nLen; nLen--)
+	for (; nLen; nLen--) {
 		nCS += *p++;
+	}
 	return (uint8_t)nCS;
 }
 
-//计算校验和(双字节)
+//计算校验和16
 uint16_t cs16(const void *pData, uint_t nLen)
 {
-	uint16_t nCS = 0;
-	uint16_t *p = (uint16_t *)pData;
+	uint_t nCS = 0;
+	uint8_t *p = (uint8_t *)pData;
 
-	for (; nLen; nLen--)
+	for (; nLen; nLen--) {
 		nCS += *p++;
+	}
 	return (uint16_t)nCS;
 }
 

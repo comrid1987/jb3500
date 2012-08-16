@@ -197,11 +197,14 @@ dque	dqueue = {ARR_SIZE(__dqueue), __dqueue};
 //-------------------------------------------------------------------------
 //Communication Protocol Modules
 //-------------------------------------------------------------------------
+#if PULSE_COL_ENABLE
+#include <cp/pulse.c>
+#endif
 #if DLT645_ENABLE
 #include <cp/dlt645.c>
 #endif
-#if PULSE_COL_ENABLE
-#include <cp/pulse.c>
+#if XCN6_ENABLE
+#include <cp/xcn6.c>
 #endif
 #if GW3762_ENABLE
 #include <cp/gw376/gw3762.c>
