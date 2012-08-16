@@ -579,10 +579,9 @@ void evt_Terminal(t_afn04_f26 *pF26)
 		sfs_Write(&evt_SfsDev, EVT_FLAG_ADDR, &nFlag, 4);
 }
 
-void evt_YXRead()
+uint_t evt_YXRead()
 {
-	uint_t i, nValid;
-	uint32_t nFlag, nRead;
+	uint_t i, nValid, nFlag, nRead;
 
 	nRead = 0;
 	for (i = 0; i < 3; i++) {
@@ -609,7 +608,8 @@ void evt_YXRead()
 		}
 	}
 	if (nValid)
-		sfs_Write(&evt_SfsDev, EVT_YX_ADDR, &nRead, 4);
+		sfs_Write(&evt_SfsDev, EVT_YX_ADDR, &nRead, 2);
+	return nRead;
 }
 
 //运行时间

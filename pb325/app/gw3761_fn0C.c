@@ -676,6 +676,11 @@ int gw3761_ResponseData1(p_gw3761 p)
 					//当前电压电流谐波含有率
 					gw3761_Afn0C_F58(b, nDa);
 					break;
+				case 65:
+					//当前遥信状态
+					buf_PushData(b, 0, 1);
+					buf_PushData(b, evt_YXRead(), 2);
+					break;
 				case 129:
 					//当前正向有功电能示值
 					gw3761_Afn0C_F33(b, nDa, 0x01);
