@@ -203,7 +203,7 @@ dque	dqueue = {ARR_SIZE(__dqueue), __dqueue};
 #if DLT645_ENABLE
 #include <cp/dlt645.c>
 #endif
-#if XCN6_ENABLE
+#if XCN6N12_ENABLE
 #include <cp/xcn6.c>
 #endif
 #if GW3762_ENABLE

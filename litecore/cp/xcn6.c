@@ -11,8 +11,8 @@
 
 
 //Internal Functions
-#if XCN6_DEBUG_ENABLE
-static void xcn6_DbgOut(uint_t nType, const void *pBuf, uint_t nLen)
+#if XCN6N12_DEBUG_ENABLE
+static void xcn6n12_DbgOut(uint_t nType, const void *pBuf, uint_t nLen)
 {
 	const uint8_t *pData, *pEnd;
 	char str[198];
@@ -30,7 +30,7 @@ static void xcn6_DbgOut(uint_t nType, const void *pBuf, uint_t nLen)
 	dbg_trace(str);
 }
 #else
-#define xcn6_DbgOut(...)
+#define xcn6n12_DbgOut(...)
 #endif
 
 
@@ -66,15 +66,15 @@ static sys_res xcn6_Transmit2Meter(t_gw3762 *p, uint_t nCtrl, const void *pAdr, 
 	i = cs16(&bTx->p[XCN6_HEADER_TX_SIZE], 8 + nRelay * 3 + nLen);
 	buf_PushData(bTx, i, 3);
 
-	xcn6_DbgOut(1, bTx->p, bTx->len);
+	xcn6n12_DbgOut(1, bTx->p, bTx->len);
 
 	chl_Send(p->chl, bTx->p, bTx->len);
 	buf_Release(bTx);
-	
+
 	return SYS_R_OK;
 }
 
-sys_res xcn6_Analyze(t_gw3762 *p)
+static sys_res xcn6_Analyze(t_gw3762 *p)
 {
 	uint8_t *pData;
 	uint_t nLen, nTemp;
@@ -99,7 +99,7 @@ sys_res xcn6_Analyze(t_gw3762 *p)
 		if (memcmp(&pData[nLen + 2], &nTemp, 2))
 			continue;
 
-		xcn6_DbgOut(0, pData, nLen + (XCN6_HEADER_RX_SIZE + 1));
+		xcn6n12_DbgOut(0, pData, nLen + (XCN6_HEADER_RX_SIZE + 1));
 
 		buf_Release(p->rmsg.data);
 		pData += (XCN6_HEADER_RX_SIZE + 3);
@@ -115,15 +115,70 @@ sys_res xcn6_Analyze(t_gw3762 *p)
 	}
 }
 
+static sys_res xcn12_Transmit2Meter(t_gw3762 *p, uint_t nCtrl, const void *pAdr, uint_t nRelay, const uint8_t *pRtAdr, const uint8_t *pData, uint_t nLen)
+{
+	buf bTx = {0};
+
+	buf_PushData(bTx, 0xFCFC, 2);
+	buf_PushData(bTx, 0x68, 1);
+	buf_Push(bTx, pAdr, 6);
+	buf_PushData(bTx, 0x68, 1);
+	buf_PushData(bTx, (nRelay << 5) | nCtrl, 1);
+	buf_PushData(bTx, nRelay * 6 + nLen, 1);
+	buf_Push(bTx, pRtAdr, nRelay * 6);
+	buf_Push(bTx, pData, nLen);
+	byteadd(&bTx->p[12], 0x33, bTx->p[11]);
+	buf_PushData(bTx, 0x1600 | cs8(&bTx->p[2], bTx->len - 2), 2);
+
+	xcn6n12_DbgOut(1, bTx->p[2], bTx->len - 2);
+ 
+	chl_Send(p->chl, bTx->p, bTx->len);
+	buf_Release(bTx);
+
+	return SYS_R_OK;
+}
 
 
 //External Functions
+sys_res xcn12_Meter(t_gw3762 *p, buf b, uint_t nCode, const void *pAdr, uint_t nRelay, const void *pRtAdr, const void *pData, uint_t nLen)
+{
+	uint_t nTmo;
+	uint8_t *pH;
+
+	xcn12_Transmit2Meter(p, nCode, pAdr, nRelay, pRtAdr, pData, nLen);
+	for (nTmo = gw3762_GetWait(p, nRelay) * 1000 / OS_TICK_MS; nTmo; nTmo--) {
+		if (chl_RecData(p->chl, b, OS_TICK_MS) != SYS_R_OK)
+			continue;
+		pH = dlt645_PacketAnalyze(b->p, b->len);
+		if (pH == NULL)
+			continue;
+		buf_Remove(b, pH - b->p);
+
+		xcn6n12_DbgOut(0, b->p, b->p[9] + (DLT645_HEADER_SIZE + 2));
+
+		if (memcmp(&b->p[1], pAdr, 6)) {
+			buf_Remove(b, DLT645_HEADER_SIZE);
+			continue;
+		}
+		buf_Remove(b, DLT645_HEADER_SIZE - 2);
+		byteadd(&b->p[2], -0x33, b->p[1]);
+		return SYS_R_OK;
+	}
+	return SYS_R_TMO;
+}
+
+sys_res xcn12_Broadcast(t_gw3762 *p, const void *pAdr, const void *pData, uint_t nLen)
+{
+
+	return xcn12_Transmit2Meter(p, DLT645_CODE_BROADCAST, pAdr, 0, NULL, pData, nLen);
+}
+
 sys_res xcn6_MeterRead(t_gw3762 *p, buf b, const void *pAdr, uint_t nRelay, const void *pRtAdr, const void *pData, uint_t nLen)
 {
 	uint_t nTmo;
 
-	xcn6_Transmit2Meter(p, 1, pAdr, nRelay, pRtAdr, pData, nLen);
-	for (nTmo = (5000 / OS_TICK_MS); nTmo; nTmo--) {
+	xcn6_Transmit2Meter(p, 0x01, pAdr, nRelay, pRtAdr, pData, nLen);
+	for (nTmo = gw3762_GetWait(p, nRelay) * 1000 / OS_TICK_MS; nTmo; nTmo--) {
 		if (xcn6_Analyze(p) != SYS_R_OK)
 			continue;
 		if (memcmp(p->rmsg.madr, pAdr, 3))
@@ -138,8 +193,8 @@ sys_res xcn6_MeterWrite(t_gw3762 *p, buf b, const void *pAdr, uint_t nRelay, con
 {
 	uint_t nTmo;
 
-	xcn6_Transmit2Meter(p, 4, pAdr, nRelay, pRtAdr, pData, nLen);
-	for (nTmo = (5000 / OS_TICK_MS); nTmo; nTmo--) {
+	xcn6_Transmit2Meter(p, 0x04, pAdr, nRelay, pRtAdr, pData, nLen);
+	for (nTmo = gw3762_GetWait(p, nRelay) * 1000 / OS_TICK_MS; nTmo; nTmo--) {
 		if (xcn6_Analyze(p) != SYS_R_OK)
 			continue;
 		if (memcmp(p->rmsg.madr, pAdr, 3))
@@ -150,12 +205,10 @@ sys_res xcn6_MeterWrite(t_gw3762 *p, buf b, const void *pAdr, uint_t nRelay, con
 	return SYS_R_TMO;
 }
 
-sys_res xcn6_Broadcast(t_gw3762 *p, const void *pData, uint_t nLen)
+sys_res xcn6_Broadcast(t_gw3762 *p, const void *pAdr, const void *pData, uint_t nLen)
 {
-	uint8_t aBuf[3];
 
-	memset(aBuf, 0x99, 3);
-	return xcn6_Transmit2Meter(p, 8, aBuf, 0, NULL, pData, nLen);
+	return xcn6_Transmit2Meter(p, 0x08, pAdr, 0, NULL, pData, nLen);
 }
 
 

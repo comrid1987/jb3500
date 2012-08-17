@@ -148,6 +148,36 @@ int gw3762_IsNeedRt(t_gw3762 *p)
 	}
 }
 
+int gw3762_GetRetry(t_gw3762 *p)
+{
+
+	switch (p->type) {
+	case GW3762_T_XC_RT:
+	case GW3762_T_ES_38:
+	case GW3762_T_BOST:
+		return 2;
+	default:
+		return 1;
+	}
+}
+
+int gw3762_GetWait(t_gw3762 *p, uint_t nRelay)
+{
+
+	switch (p->type) {
+ 	case GW3762_T_ES_38:
+		return 12 + nRelay * 6;
+	case GW3762_T_XC_GW:
+		return 10 + nRelay * 4;
+	case GW3762_T_XC_GD:
+		return 6 + nRelay * 4;
+	case GW3762_T_XC_RT:
+		return 30;
+	default:
+		return 20;
+	}
+}
+
 
 
 //-------------------------------------------------------------------------
@@ -205,12 +235,10 @@ sys_res gw3762_Analyze(t_gw3762 *p)
 }
 
 
-sys_res gw3762_Broadcast(t_gw3762 *p, const void *pData, uint_t nLen)
+sys_res gw3762_Broadcast(t_gw3762 *p, const void *pAdr, const void *pData, uint_t nLen)
 {
 	uint_t nAfn, nDT, nRoute;
-	uint8_t aBuf[6];
 
-	memset(aBuf, 0x99, 6);
 	nRoute = 1;
 	switch (p->type) {
 	case GW3762_T_XC_GW:
@@ -226,18 +254,22 @@ sys_res gw3762_Broadcast(t_gw3762 *p, const void *pData, uint_t nLen)
 		nDT = 0x0004;
 		break;
 	}
-	return gw3762_Transmit2Meter(p, nRoute, nAfn, nDT, aBuf, 0, NULL, pData, nLen);;
+	return gw3762_Transmit2Meter(p, nRoute, nAfn, nDT, pAdr, 0, NULL, pData, nLen);;
 }
 
 sys_res gw3762_MeterRead(t_gw3762 *p, const void *pAdr, uint_t nRelay, const void *pRtAdr, const void *pData, uint_t nLen)
 {
 	uint_t nAfn;
-	
-	if (p->type == GW3762_T_ES_38)
-		nAfn = GW3762_AFN_TRANSMIT;
-	else
-		nAfn = GW3762_AFN_TRANSMIT_ROUTE;
 
+	switch (p->type) {
+	case GW3762_T_ES_38:
+	case GW3762_T_XC_GD:
+		nAfn = GW3762_AFN_TRANSMIT;
+		break;
+	default:
+		nAfn = GW3762_AFN_TRANSMIT_ROUTE;
+		break;
+	}
 	return gw3762_Transmit2Meter(p, 0, nAfn, 0x0001, pAdr, nRelay, pRtAdr, pData, nLen);
 }
 

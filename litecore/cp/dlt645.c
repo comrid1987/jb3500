@@ -2,7 +2,6 @@
 
 
 //Private Defines
-#define DLT645_HEADER_SIZE			10
 
 
 
@@ -92,7 +91,7 @@ uint8_t *dlt645_PacketAnalyze(uint8_t *p, uint_t nLen)
 }
 
 static const uint8_t dlt645_aFE[] = {0xFE, 0xFE};
-sys_res dlt645_Transmit2Meter(chl c, buf bRx, const void *pAdr, const void *pBuf, uint_t nLen, uint_t nTmo)
+sys_res dlt645_Meter(chl c, buf b, const void *pAdr, const void *pBuf, uint_t nLen, uint_t nTmo)
 {
 	uint8_t *pH;
 
@@ -109,22 +108,22 @@ sys_res dlt645_Transmit2Meter(chl c, buf bRx, const void *pAdr, const void *pBuf
 
 	dlt645_DbgOut(1, pBuf, nLen);
 
-	buf_Release(bRx);
 	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
-		if (chl_RecData(c, bRx, OS_TICK_MS) != SYS_R_OK)
+		if (chl_RecData(c, b, OS_TICK_MS) != SYS_R_OK)
 			continue;
-		pH = dlt645_PacketAnalyze(bRx->p, bRx->len);
+		pH = dlt645_PacketAnalyze(b->p, b->len);
 		if (pH == NULL)
 			continue;
-		buf_Remove(bRx, pH - bRx->p);
+		buf_Remove(b, pH - b->p);
 
-		dlt645_DbgOut(0, bRx->p, bRx->len);
+		dlt645_DbgOut(0, b->p, b->p[9] + (DLT645_HEADER_SIZE + 2));
 
-		if (memcmp(&bRx->p[1], pAdr, 6)) {
-			buf_Remove(bRx, DLT645_HEADER_SIZE);
+		if (memcmp(&b->p[1], pAdr, 6)) {
+			buf_Remove(b, DLT645_HEADER_SIZE);
 			continue;
 		}
-		byteadd(&bRx->p[10], -0x33, bRx->p[9]);
+		buf_Remove(b, DLT645_HEADER_SIZE - 2);
+		byteadd(&b->p[2], -0x33, b->p[1]);
 		return SYS_R_OK;
 	}
 	return SYS_R_TMO;

@@ -25,8 +25,7 @@ extern "C" {
 #define GW3762_T_XC_GW				0
 #define GW3762_T_XC_RT				1
 #define GW3762_T_XC_GD				2
-#define GW3762_T_XC_N12				3
-
+#define GW3762_T_XC_N6				3
 
 #define GW3762_T_ES_RT				4
 #define GW3762_T_ES_38				5
@@ -121,9 +120,14 @@ typedef struct {
 
 //External Functions
 void gw3762_Init(t_gw3762 *p);
+
 int gw3762_IsNeedRt(t_gw3762 *p);
+int gw3762_GetRetry(t_gw3762 *p);
+int gw3762_GetWait(t_gw3762 *p, uint_t nRelay);
+
 sys_res gw3762_Analyze(t_gw3762 *p);
-sys_res gw3762_Broadcast(t_gw3762 *p, const void *pData, uint_t nLen);
+
+sys_res gw3762_Broadcast(t_gw3762 *p, const void *pAdr, const void *pData, uint_t nLen);
 sys_res gw3762_MeterRead(t_gw3762 *p, const void *pAdr, uint_t nRelay, const void *pRtAdr, const void *pData, uint_t nLen);
 sys_res gw3762_MeterRT(t_gw3762 *p, const void *pAdr, const void *pData, uint_t nLen);
 
