@@ -210,8 +210,20 @@ static sys_res modem_InitCmd(p_modem p)
 	uint_t i, nTemp;
 	char *pTemp, str[64];
 
+	uart_Config(p->uart, 115200, UART_PARI_NO, UART_DATA_8D, UART_STOP_1D);
+#if MODEM_AUTOBAUD_ENABLE
+	if (modem_SendCmd(p, "ATZ0\r", "OK\r", 30) != SYS_R_OK) {
+		uart_Config(p->uart, 57600, UART_PARI_NO, UART_DATA_8D, UART_STOP_1D);
+		if (modem_SendCmd(p, "ATZ0\r", "OK\r", 10) != SYS_R_OK)
+			return SYS_R_TMO;
+		if (modem_SendCmd(p, "AT+IPR=115200\r", "OK\r", 5) != SYS_R_OK)
+			return SYS_R_TMO;
+		uart_Config(p->uart, 115200, UART_PARI_NO, UART_DATA_8D, UART_STOP_1D);
+	}
+#else
 	if (modem_SendCmd(p, "ATZ0\r", "OK\r", 30) != SYS_R_OK)
 		return SYS_R_TMO;
+#endif
 	if (modem_SendCmd(p, "ATE0\r", "OK\r", 4) != SYS_R_OK)
 		return SYS_R_TMO;
 	if (modem_SendCmd(p, "AT+CPIN?\r", "OK\r", 30) != SYS_R_OK)
@@ -257,10 +269,10 @@ static sys_res modem_InitCmd(p_modem p)
 
 	switch (p->type) {
 	case MODEM_TYPE_GPRS:
-		rt_snprintf(str, sizeof(str), "AT+CGDCONT=1,\"IP\",\"%s\"\r", p->apn);
+		sprintf(str, "AT+CGDCONT=1,\"IP\",\"%s\"\r", p->apn);
 		break;
 	case MODEM_TYPE_CDMA:
-		rt_snprintf(str, sizeof(str), "AT&D2\r");
+		sprintf(str, "AT&D2\r");
 		break;
 	default:
 		return SYS_R_ERR;
@@ -375,9 +387,6 @@ void modem_Run()
 	p_modem p = &gsmModem[MODEM_PPP_ID];
 	t_modem_def *pDef = tbl_bspModem[MODEM_PPP_ID];
 	sys_res res;
-#if MODEM_AUTOBAUD_ENABLE
-	static int nBaud = 0;
-#endif
 
 	p->cnt += 1;
 	switch (p->ste) {
@@ -427,18 +436,8 @@ void modem_Run()
 #endif
 		if (p->cnt == 9)
 			modem_Act(pDef, 0);
-		if (p->cnt == 11) {
+		if (p->cnt == 11)
 			modem_Act(pDef, 1);
-#if MODEM_AUTOBAUD_ENABLE
-			if (nBaud == 115200)
-				nBaud = 57600;
-			else
-				nBaud = 115200;
-			uart_Config(p->uart, nBaud, UART_PARI_NO, UART_DATA_8D, UART_STOP_1D);
-#else
-			uart_Config(p->uart, 115200, UART_PARI_NO, UART_DATA_8D, UART_STOP_1D);
-#endif
-		}
 		if (p->cnt > 16) {
 			p->ste = MODEM_S_INIT;
 			p->cnt = 0;
@@ -515,7 +514,7 @@ void modem_Config(char *pApn, uint_t nSpan, uint_t nRetry)
 {
 	p_modem p = &gsmModem[MODEM_PPP_ID];
 	
-	snprintf(p->apn, sizeof(p->apn), pApn);
+	sprintf(p->apn, pApn);
 	p->idle = nSpan * 3;
 	p->retrytime = nRetry;
 }
