@@ -101,16 +101,28 @@ static sys_res xcn6_Analyze(t_gw3762 *p)
 
 		xcn6n12_DbgOut(0, pData, nLen + (XCN6_HEADER_RX_SIZE + 1));
 
+		nTemp = pData[XCN6_HEADER_RX_SIZE + 3];
+		pData += (XCN6_HEADER_RX_SIZE + 5);
+
+		//方向
+		if ((nTemp & BITMASK(7)) == 0)
+			continue;
+
 		buf_Release(p->rmsg.data);
-		pData += (XCN6_HEADER_RX_SIZE + 3);
-		buf_Push(p->rmsg.data, pData, 4);
-		p->rmsg.data->p[1] = nLen - (XCN6_HEADER_RX_SIZE + 7);
-		pData += 4;
-		memcpy(p->rmsg.madr, pData, 3);
-		memset(&p->rmsg.madr[3], 0, 3);
-		pData += 4;
-		buf_Push(p->rmsg.data, pData, nLen - (XCN6_HEADER_RX_SIZE + 9));
-		buf_Remove(p->rbuf, nLen + 5);
+		buf_PushData(p->rmsg.data, nTemp, 1);
+		buf_PushData(p->rmsg.data, nLen - (XCN6_HEADER_RX_SIZE + 7), 1);
+		if (nTemp & BITMASK(0)) {
+			buf_Push(p->rmsg.data, pData, 2);
+			pData += 2;
+			memcpy(p->rmsg.madr, pData, 3);
+			memset(&p->rmsg.madr[3], 0, 3);
+			pData += 4;
+			buf_Push(p->rmsg.data, pData, nLen - (XCN6_HEADER_RX_SIZE + 9));
+		} else {
+			memcpy(p->rmsg.madr, pData, 3);
+			memset(&p->rmsg.madr[3], 0, 3);
+		}
+		buf_Remove(p->rbuf, nLen + (XCN6_HEADER_RX_SIZE + 1));
 		return SYS_R_OK;
 	}
 }
@@ -191,7 +203,7 @@ sys_res xcn6_MeterRead(t_gw3762 *p, buf b, const void *pAdr, uint_t nRelay, cons
 
 sys_res xcn6_MeterWrite(t_gw3762 *p, buf b, const void *pAdr, uint_t nRelay, const void *pRtAdr, const void *pData, uint_t nLen)
 {
-	uint_t nTmo;
+	uint_t nTmo, nData;
 
 	xcn6_Transmit2Meter(p, 0x04, pAdr, nRelay, pRtAdr, pData, nLen);
 	for (nTmo = gw3762_GetWait(p, nRelay) * 1000 / OS_TICK_MS; nTmo; nTmo--) {
@@ -200,6 +212,12 @@ sys_res xcn6_MeterWrite(t_gw3762 *p, buf b, const void *pAdr, uint_t nRelay, con
 		if (memcmp(p->rmsg.madr, pAdr, 3))
 			continue;
 		buf_Push(b, p->rmsg.data->p, p->rmsg.data->len);
+		//构造拉合闸回应
+		if (b->p[0] & BITMASK(6))
+			nData = BITMASK(2);
+		else
+			nData = 0;
+		buf_PushData(b, nData, 1);
 		return SYS_R_OK;
 	}
 	return SYS_R_TMO;
