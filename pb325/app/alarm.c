@@ -683,8 +683,6 @@ int evt_Read(buf b, uint_t nPm, uint_t nPn, uint_t nIsNormal)
 	uint8_t aBuf[EVT_SIZE];
 
 	evt_Lock();
-	nLen = b->len;
-	buf_PushData(b, 0, 2);
 	if (nPm > nPn)
 		nPn += 256;
 	sfs_Read(&evt_SfsDev, EVT_CNT_ADDR + nIsNormal, &nCnt);
@@ -702,14 +700,15 @@ int evt_Read(buf b, uint_t nPm, uint_t nPn, uint_t nIsNormal)
 		nStart = nCnt - 256;
 	}
 	i = nStart + nPm;
-	b->p[nLen] = i;
+	buf_PushData(b, i, 2);
+	nLen = b->len - 1;
 	nIsNormal = EVT_DATA_BASE + nIsNormal * (EVT_QTY * EVT_SIZE);
-	for (; (i < (nStart + nPn)) && (i < nCnt); i++) {
+	for (nLast = i; (i < (nStart + nPn)) && (i < nCnt); i++) {
 		spif_Read(nIsNormal + (i & (EVT_QTY - 1)) * EVT_SIZE, aBuf, sizeof(aBuf));
 		buf_Push(b, aBuf, aBuf[1] + 2);
 		nLast = i + 1;
 	}
-	b->p[nLen + 1] = nLast;
+	b->p[nLen] = nLast;
 	evt_Unlock();
 	return (i - (nStart + nPm));
 }

@@ -85,7 +85,7 @@ sys_res ecl_485_RealRead(buf b, uint_t nBaud, uint_t nTmo)
 	t_ecl_task *p = &ecl_Task485;
 	buf bTx = {0};
 
-	if ((g_sys_status & BITMASK(0)) == 0)
+	if ((g_sys_status & BITMASK(SYS_STATUS_UART)) == 0)
 		return SYS_R_ERR;
 	for (nTmo *= (1000 / OS_TICK_MS); nTmo; nTmo--) {
 		if (p->ste == ECL_TASK_S_IDLE) {
@@ -100,7 +100,7 @@ sys_res ecl_485_RealRead(buf b, uint_t nBaud, uint_t nTmo)
 	chl_rs232_Config(p->chl, nBaud, UART_PARI_EVEN, UART_DATA_8D, UART_STOP_1D);
 	buf_Push(bTx, b->p, b->len);
 	for (nTmo = (nTmo / (1000 / OS_TICK_MS)) + 1; nTmo; nTmo--) {
-		res = dlt645_Transmit2Meter(p->chl, b, &bTx->p[1], bTx->p, bTx->len, 1000);
+		res = dlt645_Meter(p->chl, b, &bTx->p[1], bTx->p, bTx->len, 1000);
 		if (res == SYS_R_OK)
 			break;
 	}
@@ -122,7 +122,7 @@ void tsk_Meter(void *args)
 	acm_Init();
 
 	memset(p, 0, sizeof(t_ecl_task));
-	if (g_sys_status & BITMASK(0)) {
+	if (g_sys_status & BITMASK(SYS_STATUS_UART)) {
 		p->chl = chlRS485;
 		chl_Init(chlRS485);
 		chl_Bind(chlRS485, CHL_T_RS232, 0, OS_TMO_FOREVER);
@@ -159,7 +159,7 @@ void tsk_Meter(void *args)
 }
 
 #if 0
-			if ((g_sys_status & BITMASK(0))) {
+			if ((g_sys_status & BITMASK(SYS_STATUS_UART))) {
 				switch (p->ste) {
 				case ECL_TASK_S_IDLE:
 					if ((rtc_GetTimet() - tTime) > 60) {

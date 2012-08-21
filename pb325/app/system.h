@@ -14,6 +14,10 @@ extern "C" {
 #define LCD_BL(x)       gpio_Set(2, (x) ^ 1)	//低电平有效
 #define BEEP(x)         gpio_Set(3, x)			//高电平有效
 
+//System Status Defines
+#define SYS_STATUS_UART		0
+#define SYS_STATUS_LOGIN	1
+
 
 //Public Variables
 extern volatile uint_t g_sys_status;

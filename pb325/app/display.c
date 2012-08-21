@@ -385,9 +385,10 @@ void tsk_Display(void *args)
 
     Display_Number(bcd2bin16(VER_SOFT), 8, 4);
 	que = os_que_Wait(QUE_EVT_KEYBOARD, NULL, 1000);
+	SETBIT(g_sys_status, SYS_STATUS_UART);
 	if (que != NULL) {
 		if (que->data->val == 1)
-			CLRBIT(g_sys_status, 0);
+			CLRBIT(g_sys_status, SYS_STATUS_UART);
 		os_que_Release(que);
 	}
     for (; ; ) {

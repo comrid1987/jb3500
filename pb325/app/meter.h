@@ -53,7 +53,7 @@ typedef struct {
 //External Functions
 void tsk_Meter(void *args);
 
-sys_res ecl_485_RealRead(buf b, uint_t nBaud, uint_t nTmo);
+//sys_res ecl_485_RealRead(buf b, uint_t nBaud, uint_t nTmo);
 
 
 

@@ -154,8 +154,8 @@ static int gw3761_Afn0C_07RealRead(buf b, t_afn04_f10 *pF10, t_ecl_rtdi07 *p, ui
 		nLen = gw3761_Afn0C_Type(p->type);
 		dlt645_Packet2Buf(bTx, pF10->madr, DLT645_CODE_READ07, &p->di07, 4);
 		res = ecl_485_RealRead(bTx, 2400, 2);
-		if ((res == SYS_R_OK) && (bTx->p[8] == (DLT645_CODE_READ07 | BITMASK(7)))) {
-			pTemp = &bTx->p[14];
+		if ((res == SYS_R_OK) && (bTx->p[0] == (DLT645_CODE_READ07 | BITMASK(7)))) {
+			pTemp = &bTx->p[6];
 			switch (p->type) {
 			case ECL_RTR_T_ENERGY_5:
 				for (i = 0; i <= ECL_RATE_QTY; i++, pTemp += 4) {
@@ -166,7 +166,7 @@ static int gw3761_Afn0C_07RealRead(buf b, t_afn04_f10 *pF10, t_ecl_rtdi07 *p, ui
 			case ECL_RTR_T_MAXPOWER07:
 				for (i = 0; i <= ECL_RATE_QTY; i++, pTemp += 8)
 					buf_Push(b, pTemp, 3);
-				pTemp = &bTx->p[17];
+				pTemp = &bTx->p[9];
 				for (i = 0; i <= ECL_RATE_QTY; i++, pTemp += 8)
 					buf_Push(b, pTemp, 4);
 				break;
@@ -207,8 +207,8 @@ static int gw3761_Afn0C_97RealRead(buf b, t_afn04_f10 *pF10, t_ecl_rtdi97 *p, ui
 		nLen = gw3761_Afn0C_Type(p->type);
 		dlt645_Packet2Buf(bTx, pF10->madr, DLT645_CODE_READ97, &p->di97, 2);
 		res = ecl_485_RealRead(bTx, 1200, 2);
-		if ((res == SYS_R_OK) && (bTx->p[8] == (DLT645_CODE_READ97 | BITMASK(7)))) {
-			pTemp = &bTx->p[12];
+		if ((res == SYS_R_OK) && (bTx->p[0] == (DLT645_CODE_READ97 | BITMASK(7)))) {
+			pTemp = &bTx->p[4];
 			switch (p->type) {
 			case ECL_RTR_T_ENERGY_5:
 				for (i = 0; i <= ECL_RATE_QTY; i++, pTemp += 4) {

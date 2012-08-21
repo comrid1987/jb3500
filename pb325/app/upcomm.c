@@ -49,7 +49,7 @@ void tsk_Upcom1(void *args)
 			nCnt += 1;
 		}
 		if (gw3761_Handler(p) == SYS_R_OK)
-			SETBIT(g_sys_status, 1);
+			SETBIT(g_sys_status, SYS_STATUS_LOGIN);
 	}
 }
 
@@ -59,7 +59,7 @@ void dbg_trace(const char *fmt, ...)
 	char str[200];
 	uint_t nRemote = 0, nRS232 = 1;
 
-	if (g_sys_status & BITMASK(0))
+	if (g_sys_status & BITMASK(SYS_STATUS_UART))
 		nRS232 = 0;
 	
 	if (rcp_aGw3761[1].parent.chl->ste == CHL_S_READY)
@@ -103,7 +103,7 @@ void tsk_Upcom2(void *args)
 	dlrcp_SetChl(&rcp_aGw3761[3].parent, CHL_T_RS232, 3, 1200, UART_PARI_EVEN, UART_DATA_8D, UART_STOP_1D);
 	//串口GW3761规约(开机按键启用)
 	os_thd_Sleep(1000);
-	if (g_sys_status & BITMASK(0)) {
+	if (g_sys_status & BITMASK(SYS_STATUS_UART)) {
 		pEnd = &rcp_aGw3761[3];
 	} else {
 		pEnd = &rcp_aGw3761[4];
@@ -122,9 +122,9 @@ void tsk_Upcom2(void *args)
 	for (; ; ) {
 		for (p = &rcp_aGw3761[1]; p <= pEnd; p++)
 		if (gw3761_Handler(p) == SYS_R_OK)
-			SETBIT(g_sys_status, 1);
+			SETBIT(g_sys_status, SYS_STATUS_LOGIN);
 		if (gd5100_Handler(&rcp_GD5100) == SYS_R_OK) {
-			SETBIT(g_sys_status, 1);
+			SETBIT(g_sys_status, SYS_STATUS_LOGIN);
 			gd5100_Response(&rcp_GD5100);
 		}
 	}

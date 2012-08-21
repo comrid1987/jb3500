@@ -11,7 +11,7 @@
 
 
 //Public Variables
-volatile uint_t g_sys_status = 1;
+volatile uint_t g_sys_status;
 
 
 
@@ -53,7 +53,7 @@ void tsk_Daemon(void *args)
 		wdg_Reload(1);
 #endif
 		//运行指示灯
-		if (g_sys_status & BITMASK(0))
+		if (g_sys_status & BITMASK(SYS_STATUS_UART))
 			nTemp = 3;
 		else
 			nTemp = 1;
@@ -63,8 +63,8 @@ void tsk_Daemon(void *args)
 			LED_RUN(0);
 		//2小时无通讯复位终端
 		if ((nCnt & 0xFF) == 0) {
-			if (g_sys_status & BITMASK(1)) {
-				CLRBIT(g_sys_status, 1);
+			if (g_sys_status & BITMASK(SYS_STATUS_LOGIN)) {
+				CLRBIT(g_sys_status, SYS_STATUS_LOGIN);
 				nRstCnt = 0;
 			} else {
 				nRstCnt += 1;
