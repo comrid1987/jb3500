@@ -136,9 +136,8 @@ void tsk_Meter(void *args)
 		if (tTime == rtc_GetTimet())
 			continue;
 		tTime = rtc_GetTimet();
-		if ((nCnt & 0x3F) == 0) {
+		if ((nCnt & 0x3F) == 0)
 			icp_ParaRead(4, 26, TERMINAL, &xF26, sizeof(t_afn04_f26));
-		}
  		if ((nCnt & 0x0F) == 0)
             acm_XBRead();
 		if ((nCnt & 0x1F) == 0) {

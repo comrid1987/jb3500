@@ -132,7 +132,7 @@ int data_DayRead(const uint8_t *pTime, t_stat *ps)
 	memcpy(&aTime[3], pTime, 3);
 	tTime = array2timet(aTime, 1);
 	tEnd = tTime + (24 * 60 * 60);
-	for (tTime += 60; tTime < tEnd; tTime += 60) {
+	for (; tTime < tEnd; tTime += 60) {
 		acm_Rtd4timet(&xRtd, tTime);
 		stat_Handler(ps, &xRtd, &xF26, &xF28, tTime);
 	}
