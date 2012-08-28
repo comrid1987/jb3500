@@ -114,6 +114,7 @@ static sys_res gd5100_TmsgLinkcheck (void *p, uint_t nCmd)
 	switch (nCmd) {
 	case DLRCP_LINKCHECK_LOGIN:
 		nCmd = GD5100_CCODE_LOGIN;
+		buf_Push(b, ((p_gd5100)p)->pwd, 3);
 		break;
 	case DLRCP_LINKCHECK_LOGOUT:
 		nCmd = GD5100_CCODE_LOGOUT;
@@ -122,7 +123,6 @@ static sys_res gd5100_TmsgLinkcheck (void *p, uint_t nCmd)
 		nCmd = GD5100_CCODE_KEEPALIVE;
 		break;
 	}
-	buf_Push(b, ((p_gd5100)p)->pwd, 3);
 	res = gd5100_TmsgSend(p, nCmd, b, DLRCP_TMSG_REPORT);
 	buf_Release(b);
 	return res;
@@ -170,9 +170,9 @@ sys_res gd5100_TmsgSend(p_gd5100 p, uint_t nCode, buf b, uint_t nType)
 	xH.code = nCode;
 	xH.abn = GD5100_CABN_NORMAL;
 	xH.len = b->len;
- 	nCS = cs8(&xH, sizeof(t_gd5100_header));
-	nCS = (nCS + cs8(b->p, b->len)) & 0xFF;
-	buf_PushData(b, 0x1600 | nCS, 2);
+	nCS = cs8(&xH, sizeof(t_gd5100_header));
+	nCS += cs8(b->p, b->len);
+	buf_PushData(b, 0x1600 | (nCS & 0xFF), 2);
 	return dlrcp_TmsgSend(&p->parent, &xH, sizeof(t_gd5100_header), b->p, b->len);
 }
 
@@ -184,7 +184,6 @@ sys_res gd5100_TmsgError(p_gd5100 p, uint_t nCode, uint_t nErr)
 {
 	t_gd5100_header xH;
 	uint8_t aBuf[3];
-	uint_t nCS;
 
 	gd5100_TmsgHeaderInit(p, &xH);
 	xH.msta = p->parent.msta;
@@ -192,10 +191,8 @@ sys_res gd5100_TmsgError(p_gd5100 p, uint_t nCode, uint_t nErr)
 	xH.code = nCode;
 	xH.abn = GD5100_CABN_ABNORMAL;
 	xH.len = 1;
-	nCS = cs8(&xH, sizeof(t_gd5100_header));
-	nCS += nErr;
 	aBuf[0] = nErr;
-	aBuf[1] = nCS;
+	aBuf[1] = cs8(&xH, sizeof(t_gd5100_header)) + nErr;
 	aBuf[2] = 0x16;
 	return dlrcp_TmsgSend(&p->parent, &xH, sizeof(t_gd5100_header), aBuf, 3);
 }
@@ -224,8 +221,8 @@ sys_res gd5100_Transmit(p_gd5100 p, p_gd5100 pD)
 	xH.dir = p->rmsg->dir;
 	xH.len = b->len;
 	nCS = cs8(&xH, sizeof(t_gd5100_header));
-	nCS = (nCS + cs8(b->p, b->len)) & 0xFF;
-	buf_PushData(b, 0x1600 | nCS, 2);
+	nCS += cs8(b->p, b->len);
+	buf_PushData(b, 0x1600 | (nCS & 0xFF), 2);
 	res = dlrcp_TmsgSend(&pD->parent, &xH, sizeof(t_gd5100_header), b->p, b->len);
 	buf_Release(b);
 	return res;
