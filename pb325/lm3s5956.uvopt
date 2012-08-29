@@ -320,8 +320,13 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
+<<<<<<< .mine
+      <TopLine>84</TopLine>
+      <CurrentLine>98</CurrentLine>
+=======
       <TopLine>68</TopLine>
       <CurrentLine>76</CurrentLine>
+>>>>>>> .r304
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\main.c</PathWithFileName>
       <FilenameWithoutPath>main.c</FilenameWithoutPath>
@@ -376,8 +381,13 @@
       <Focus>0</Focus>
       <ColumnNumber>14</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
+<<<<<<< .mine
+      <TopLine>27</TopLine>
+      <CurrentLine>42</CurrentLine>
+=======
       <TopLine>34</TopLine>
       <CurrentLine>51</CurrentLine>
+>>>>>>> .r304
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\gw3761_fn05.c</PathWithFileName>
       <FilenameWithoutPath>gw3761_fn05.c</FilenameWithoutPath>
@@ -404,7 +414,11 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
+<<<<<<< .mine
+      <TopLine>135</TopLine>
+=======
       <TopLine>148</TopLine>
+>>>>>>> .r304
       <CurrentLine>156</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\gw3761_fn0C.c</PathWithFileName>
@@ -512,11 +526,15 @@
       <GroupNumber>2</GroupNumber>
       <FileNumber>20</FileNumber>
       <FileType>1</FileType>
-      <tvExp>1</tvExp>
+      <tvExp>0</tvExp>
       <Focus>0</Focus>
       <ColumnNumber>24</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
+<<<<<<< .mine
+      <TopLine>79</TopLine>
+=======
       <TopLine>80</TopLine>
+>>>>>>> .r304
       <CurrentLine>82</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\meter.c</PathWithFileName>

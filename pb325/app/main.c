@@ -91,23 +91,16 @@ void tsk_Idle(void *args)
 
 void app_Entry()
 {
-	uint_t i = 1;
 
 	icp_Init();
 	evt_Init();
 
-	if (i)
-		os_thd_Create(Daemon, 160);
-	if (i)
-		os_thd_Create(Display, 140);
-	if (i)
-		os_thd_Create(Upcom1, 120);
-	if (i)
-		os_thd_Create(Upcom2, 100);
-	if (i)
-		os_thd_Create(Meter, 80);
-	if (i)
-		os_thd_Create(Idle, 20);
+	os_thd_Create(Daemon, 160);
+	os_thd_Create(Display, 140);
+	os_thd_Create(Upcom1, 120);
+	os_thd_Create(Upcom2, 100);
+	os_thd_Create(Meter, 80);
+	os_thd_Create(Idle, 20);
 }
 
 int main(void)
