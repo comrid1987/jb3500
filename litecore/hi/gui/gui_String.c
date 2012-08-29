@@ -110,10 +110,6 @@ void gui_DrawString_ASC6x16(int x, int y, const char *pStr, t_color nColor)
 //12*12点阵
 //x,y  输入起始坐标,pStr字符串
 //===============================================================
-#define GUI_GETFONT_STATIC_BUF			(1 && NANDFLASH_ENABLE)
-#if GUI_GETFONT_STATIC_BUF
-static uint8_t gui_aGetFontBuf[NAND_PAGE_DATA + NAND_PAGE_SPARE];
-#endif
 #if GUI_FONT_CARR_TYPE == GUI_FONT_CARR_T_DIRACCESS
 static void gui_GetFont(uint_t nOffset, void *pBuf, uint_t nLen)
 {
@@ -141,6 +137,10 @@ static void gui_GetFont(uint_t nOffset, void *pBuf, uint_t nLen)
 #endif
 
 #if GUI_FONT_CARR_TYPE == GUI_FONT_CARR_T_NAND
+#define GUI_GETFONT_STATIC_BUF			(1 && NANDFLASH_ENABLE)
+#if GUI_GETFONT_STATIC_BUF
+static uint8_t gui_aGetFontBuf[NAND_PAGE_DATA + NAND_PAGE_SPARE];
+#endif
 static void gui_GetFont(uint_t nOffset, void *pBuf, uint_t nLen)
 {
 	uint_t nTemp;
@@ -184,17 +184,17 @@ static void gui_GetFont(uint_t nOffset, void *pBuf, uint_t nLen)
 #endif
 
 
-#define     ASC12_OFFSET            0x00000
-#define     ASC16_OFFSET            0x00474
-#define     FNT12_OFFSET_A1         0x00A64
-#define     FNT12_OFFSET_A2         0x045E0
-#define     FNT16_OFFSET_A1         0x19058
-#define     FNT16_OFFSET_A2         0x1FA18
+#define ASC12_OFFSET			0x00000
+#define ASC16_OFFSET			0x00474
+#define FNT12_OFFSET_A1			0x00A64
+#define FNT12_OFFSET_A2			0x045E0
+#define FNT16_OFFSET_A1			0x19058
+#define FNT16_OFFSET_A2			0x1FA18
 
-void gui_DrawChar_HZ12(int x, int y, char *pStr, t_color nColor)
+void gui_DrawChar_HZ12(int x, int y, const char *pStr, t_color nColor)
 {
 	int x1, y1;
-	uint_t i = 0, nOffset;
+	uint_t i = 0, nOffset, nLow, nHigh;
 	uint8_t aData[HZ_SIZE];
 
 	if (pStr[0] >= 0xA0 + 16) {
@@ -202,12 +202,14 @@ void gui_DrawChar_HZ12(int x, int y, char *pStr, t_color nColor)
 	} else if (pStr[0] <= 0xA0 + 9) {
 	    //字库中没有 A1 区
 		if (pStr[0] > 0xA1)
-			pStr[0]--;
-		nOffset = FNT12_OFFSET_A1 + ((pStr[0] - 0xA0) * 94 + pStr[1] - 0xA1) * HZ_SIZE;
+			nLow = pStr[0] - 1;
+		else
+			nLow = pStr[0];
+		nOffset = FNT12_OFFSET_A1 + ((nLow - 0xA0) * 94 + pStr[1] - 0xA1) * HZ_SIZE;
     } else {
-		pStr[0]  = 0xa1;
-		pStr[1]  = 0xf5;
-		nOffset = FNT12_OFFSET_A1 + ((pStr[0] - 0xA0) * 94 + pStr[1] - 0xA1) * HZ_SIZE;
+		nLow  = 0xA1;
+		nHigh  = 0xF5;
+		nOffset = FNT12_OFFSET_A1 + ((nLow - 0xA0) * 94 + nHigh - 0xA1) * HZ_SIZE;
     }    
 	gui_GetFont(nOffset, aData, sizeof(aData));
 	for (y1 = y; y1 < (y + HZ_WIDTH); y1++) {
