@@ -57,9 +57,9 @@ void tsk_Daemon(void *args)
 #endif
 		//运行指示灯
 		if (g_sys_status & BITMASK(SYS_STATUS_UART))
-			nTemp = 3;
-		else
 			nTemp = 1;
+		else
+			nTemp = 3;
 		if ((nCnt & nTemp) == 0)
 			LED_RUN(1);
 		if ((nCnt & nTemp) == 1)
@@ -94,7 +94,7 @@ void tsk_Idle(void *args)
 
 void app_Entry()
 {
-
+	
 	icp_Init();
 	evt_Init();
 

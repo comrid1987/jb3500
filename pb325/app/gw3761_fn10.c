@@ -24,7 +24,8 @@ int gw3761_ResponseTransmit(p_gw3761 p, buf b, u_word2 *pDu, uint8_t **ppData)
 			*ppData += nLen;
 			break;
 		case 9:
-			*ppData += 2;
+			*ppData += 1;
+			nRelay = *(*ppData)++;
 			if (nRelay == 0xFF)
 				nRelay = -1;
 			else

@@ -12,13 +12,13 @@
       <ToolsetName>ARM-ADS</ToolsetName>
       <TargetOption>
         <TargetCommonOption>
-          <Device>LM3S5956</Device>
-          <Vendor>Luminary Micro</Vendor>
-          <Cpu>IRAM(0x20000000-0x2000FFFF) IROM(0-0x3FFFF) CLOCK(80000000) CPUTYPE("Cortex-M3")</Cpu>
+          <Device>LM3S5951</Device>
+          <Vendor>Texas Instruments</Vendor>
+          <Cpu>IRAM(0x20000000-0x2000FFFF) IROM(0-0x3FFFF) CLOCK(16000000) CPUTYPE("Cortex-M3")</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile>"STARTUP\Luminary\Startup.s" ("Luminary Startup Code")</StartupFile>
-          <FlashDriverDll></FlashDriverDll>
-          <DeviceId>5046</DeviceId>
+          <FlashDriverDll>UL2CM3(-O14 -S1 -C0 -FO7 -FD20000000 -FC800 -FN1 -FF0LM3S_256 -FS00 -FL040000)</FlashDriverDll>
+          <DeviceId>5045</DeviceId>
           <RegisterFile>LM3Sxxxx.H</RegisterFile>
           <MemoryEnv></MemoryEnv>
           <Cmp></Cmp>
@@ -29,7 +29,7 @@
           <SLE66CMisc></SLE66CMisc>
           <SLE66AMisc></SLE66AMisc>
           <SLE66LinkerMisc></SLE66LinkerMisc>
-          <SFDFile></SFDFile>
+          <SFDFile>SFD\Luminary\LM3S5951.SFR</SFDFile>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
           <IncludePath></IncludePath>
@@ -102,11 +102,11 @@
           <SimDllName>SARMCM3.DLL</SimDllName>
           <SimDllArguments></SimDllArguments>
           <SimDlgDll>DLM.DLL</SimDlgDll>
-          <SimDlgDllArguments>-pLM3S5956</SimDlgDllArguments>
+          <SimDlgDllArguments>-pLM3S5951</SimDlgDllArguments>
           <TargetDllName>SARMCM3.DLL</TargetDllName>
           <TargetDllArguments></TargetDllArguments>
-          <TargetDlgDll>DLM.DLL</TargetDlgDll>
-          <TargetDlgDllArguments>-pLM3S5956</TargetDlgDllArguments>
+          <TargetDlgDll>TLM.DLL</TargetDlgDll>
+          <TargetDlgDllArguments>-pLM3S5951</TargetDlgDllArguments>
         </DllOption>
         <DebugOption>
           <OPTHX>
@@ -165,7 +165,7 @@
             <DriverSelection>4099</DriverSelection>
           </Flash1>
           <Flash2>Segger\JL2CM3.dll</Flash2>
-          <Flash3>"" ()</Flash3>
+          <Flash3></Flash3>
           <Flash4></Flash4>
         </Utilities>
         <TargetArmAds>

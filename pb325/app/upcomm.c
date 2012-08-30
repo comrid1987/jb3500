@@ -57,13 +57,17 @@ void dbg_trace(const char *fmt, ...)
 {
 	va_list args;
 	char str[200];
-	uint_t nRemote = 0, nRS232 = 1;
+	uint_t nRemote, nRS232;
 
 	if (g_sys_status & BITMASK(SYS_STATUS_UART))
+		nRS232 = 1;
+	else
 		nRS232 = 0;
 	
 	if (rcp_aGw3761[1].parent.chl->ste == CHL_S_READY)
 		nRemote = 1;
+	else
+		nRemote = 0;
 
 	if (nRS232 || nRemote) {
 		str[0] = '\r';
@@ -104,11 +108,10 @@ void tsk_Upcom2(void *args)
 	//串口GW3761规约(开机按键启用)
 	os_thd_Sleep(1000);
 	if (g_sys_status & BITMASK(SYS_STATUS_UART)) {
-		pEnd = &rcp_aGw3761[3];
-	} else {
 		pEnd = &rcp_aGw3761[4];
 		dlrcp_SetChl(&pEnd->parent, CHL_T_RS232, 0, 9600, UART_PARI_EVEN, UART_DATA_8D, UART_STOP_1D);
-	}
+	} else
+		pEnd = &rcp_aGw3761[3];
 
 	gd5100_Init(&rcp_GD5100);
 	rcp_GD5100.rtua = xF85.area;

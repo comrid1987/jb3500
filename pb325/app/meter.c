@@ -81,11 +81,11 @@ void ecl_DataHandler(uint_t nTn, const uint8_t *pAdr, const uint8_t *pTime, uint
 
 sys_res ecl_485_RealRead(buf b, uint_t nBaud, uint_t nTmo)
 {
-	sys_res res;
+	sys_res res = SYS_R_ERR;
 	t_ecl_task *p = &ecl_Task485;
 	buf bTx = {0};
 
-	if ((g_sys_status & BITMASK(SYS_STATUS_UART)) == 0)
+	if (g_sys_status & BITMASK(SYS_STATUS_UART))
 		return SYS_R_ERR;
 	for (nTmo *= (1000 / OS_TICK_MS); nTmo; nTmo--) {
 		if (p->ste == ECL_TASK_S_IDLE) {
@@ -113,20 +113,15 @@ void tsk_Meter(void *args)
 {
 	chl chlRS485;
 	time_t tTime;
-	int nMin= -1;
 	uint_t nCnt;
-	uint8_t aBuf[6];
 	t_ecl_task *p = &ecl_Task485;
-	t_afn04_f26 xF26;
 	
 	memset(p, 0, sizeof(t_ecl_task));
-	if (g_sys_status & BITMASK(SYS_STATUS_UART)) {
+	if ((g_sys_status & BITMASK(SYS_STATUS_UART)) == 0) {
 		p->chl = chlRS485;
 		chl_Init(chlRS485);
 		chl_Bind(chlRS485, CHL_T_RS232, 0, OS_TMO_FOREVER);
 	}
-
-	nMin = rtc_pTm()->tm_min;
 
 	for (nCnt = 0; ; os_thd_Slp1Tick()) {
 		//√Îcount
