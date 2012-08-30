@@ -7,6 +7,8 @@
 #include "upcomm.h"
 #include "meter.h"
 #include "alarm.h"
+#include "acm.h"
+
 
 
 
@@ -22,6 +24,7 @@ os_thd_declare(Upcom2, 1800);
 os_thd_declare(Daemon, 1024);
 os_thd_declare(Display, 1280);
 os_thd_declare(Meter, 1560);
+os_thd_declare(Acm, 1560);
 os_thd_declare(Idle, 1280);
 
 
@@ -97,9 +100,10 @@ void app_Entry()
 
 	os_thd_Create(Daemon, 160);
 	os_thd_Create(Display, 140);
-	os_thd_Create(Upcom1, 120);
-	os_thd_Create(Upcom2, 100);
-	os_thd_Create(Meter, 80);
+	os_thd_Create(Acm, 120);
+	os_thd_Create(Upcom1, 100);
+	os_thd_Create(Upcom2, 80);
+	os_thd_Create(Meter, 60);
 	os_thd_Create(Idle, 20);
 }
 

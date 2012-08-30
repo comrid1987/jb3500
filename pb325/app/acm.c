@@ -444,11 +444,41 @@ void stat_Handler(p_stat ps, t_acm_rtdata *pa, t_afn04_f26 *pF26, t_afn04_f28 *p
 }
 
 
-
-
-
-
-
+void tsk_Acm(void *args)
+{
+	time_t tTime;
+	int nMin= -1;
+	uint_t nCnt;
+	uint8_t aBuf[6];
+	t_afn04_f26 xF26;
+	
+	acm_Init();
+	nMin = rtc_pTm()->tm_min;
+	for (nCnt = 0; ; os_thd_Slp1Tick()) {
+		//Ãëcount
+		if (tTime == rtc_GetTimet())
+			continue;
+		tTime = rtc_GetTimet();
+		if ((nCnt & 0x3F) == 0)
+			icp_ParaRead(4, 26, TERMINAL, &xF26, sizeof(t_afn04_f26));
+ 		if ((nCnt & 0x0F) == 0)
+            acm_XBRead();
+		if ((nCnt & 0x1F) == 0) {
+            acm_JLRead();
+			evt_Terminal(&xF26);
+		}
+		nCnt += 1;
+		//·ÖÖÓ
+		if (nMin != rtc_pTm()->tm_min) {
+			nMin = rtc_pTm()->tm_min;
+			evt_RunTimeWrite(tTime);
+			timet2array(tTime, aBuf, 1);
+			acm_MinSave(aBuf);
+			if ((nMin % 15) == 0)
+				acm_QuarterSave(aBuf);
+		}
+	}
+}
 
 
 

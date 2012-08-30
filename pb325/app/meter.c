@@ -113,14 +113,12 @@ void tsk_Meter(void *args)
 {
 	chl chlRS485;
 	time_t tTime;
-	int nMin= -1, nDay = -1;
+	int nMin= -1;
 	uint_t nCnt;
 	uint8_t aBuf[6];
 	t_ecl_task *p = &ecl_Task485;
 	t_afn04_f26 xF26;
 	
-	acm_Init();
-
 	memset(p, 0, sizeof(t_ecl_task));
 	if (g_sys_status & BITMASK(SYS_STATUS_UART)) {
 		p->chl = chlRS485;
@@ -129,31 +127,12 @@ void tsk_Meter(void *args)
 	}
 
 	nMin = rtc_pTm()->tm_min;
-	nDay = rtc_pTm()->tm_mday;
-	
+
 	for (nCnt = 0; ; os_thd_Slp1Tick()) {
 		//Ãëcount
 		if (tTime == rtc_GetTimet())
 			continue;
 		tTime = rtc_GetTimet();
-		if ((nCnt & 0x3F) == 0)
-			icp_ParaRead(4, 26, TERMINAL, &xF26, sizeof(t_afn04_f26));
- 		if ((nCnt & 0x0F) == 0)
-            acm_XBRead();
-		if ((nCnt & 0x1F) == 0) {
-            acm_JLRead();
-			evt_Terminal(&xF26);
-		}
-		nCnt += 1;
-		//·ÖÖÓ
-		if (nMin != rtc_pTm()->tm_min) {
-			nMin = rtc_pTm()->tm_min;
-			evt_RunTimeWrite(tTime);
-			timet2array(tTime, aBuf, 1);
-			acm_MinSave(aBuf);
-			if ((nMin % 15) == 0)
-				acm_QuarterSave(aBuf);
-		}
 	}
 }
 

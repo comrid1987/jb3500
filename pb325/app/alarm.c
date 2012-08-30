@@ -696,9 +696,8 @@ int evt_Read(buf b, uint_t nPm, uint_t nPn, uint_t nIsNormal)
 			nStart = nCnt - 256;
 		} else
 			nStart = 0;
-	} else {
+	} else
 		nStart = nCnt - 256;
-	}
 	i = nStart + nPm;
 	buf_PushData(b, i, 2);
 	nLen = b->len - 1;
