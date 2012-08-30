@@ -693,11 +693,11 @@ int evt_Read(buf b, uint_t nPm, uint_t nPn, uint_t nIsNormal)
 	if (nCnt < 256) {
 		if (nCycle) {
 			nCnt += EVT_QTY;
-			nStart = nCnt - 256;
+			nStart = nCnt & (~0xFF);
 		} else
 			nStart = 0;
 	} else
-		nStart = nCnt - 256;
+		nStart = nCnt & (~0xFF);
 	i = nStart + nPm;
 	buf_PushData(b, nPm, 2);
 	nLen = b->len - 1;
