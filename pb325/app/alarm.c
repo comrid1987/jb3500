@@ -699,7 +699,7 @@ int evt_Read(buf b, uint_t nPm, uint_t nPn, uint_t nIsNormal)
 	} else
 		nStart = nCnt - 256;
 	i = nStart + nPm;
-	buf_PushData(b, i, 2);
+	buf_PushData(b, nPm, 2);
 	nLen = b->len - 1;
 	nIsNormal = EVT_DATA_BASE + nIsNormal * (EVT_QTY * EVT_SIZE);
 	for (nLast = i; (i < (nStart + nPn)) && (i < nCnt); i++) {
@@ -707,7 +707,7 @@ int evt_Read(buf b, uint_t nPm, uint_t nPn, uint_t nIsNormal)
 		buf_Push(b, aBuf, aBuf[1] + 2);
 		nLast = i + 1;
 	}
-	b->p[nLen] = nLast;
+	b->p[nLen] = nLast - nStart;
 	evt_Unlock();
 	return (i - (nStart + nPm));
 }
