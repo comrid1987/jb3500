@@ -19,6 +19,7 @@
 #define ECL_RTR_T_MAXPOWER07		9
 
 #define ECL_RTR_T_DLQ_RT			16
+#define ECL_RTR_T_DLQ_STATE			17
 
 
 //Private Typedefs
@@ -44,18 +45,6 @@ static t_ecl_rtdi97 tbl_Di97_Afn0CF25[] = {
 	1,	ECL_RTR_T_CUR,			0xB62F,	//电流
 	0,	ECL_RTR_T_CUR0,			0xB620,	//零序电流
 	0,	ECL_RTR_T_NONE,			12,	//视在功率,97表无
-};
-
-static t_ecl_rtdi07 tbl_DiSY_Afn0CF25[] = {
-	0,	ECL_RTR_T_NONE,			32,		//
-	0,	ECL_RTR_T_DLQ_RT,		0x02FF0000, //电压电流
-	0,	ECL_RTR_T_NONE, 		11, 	//
-};
-
-static t_ecl_rtdi97 tbl_DiQL_Afn0CF25[] = {
-	0,	ECL_RTR_T_NONE,			32,		//
-	0,	ECL_RTR_T_DLQ_RT,		0xB66F,	//电压电流
-	0,	ECL_RTR_T_NONE,			11,		//
 };
 
 static t_ecl_rtdi07 tbl_Di07_Afn0CF33[] = {
@@ -108,6 +97,16 @@ static t_ecl_rtdi97 tbl_Di97_Afn0CF36[] = {
 static t_ecl_rtdi07 tbl_Di07_Afn0CF36[] = {
 	0,	ECL_RTR_T_MAXPOWER07,	0x0102FF00,
 	0,	ECL_RTR_T_MAXPOWER07,	0x0104FF00,
+};
+
+static t_ecl_rtdi07 tbl_DiSY_Afn0CF64[] = {
+	0,	ECL_RTR_T_DLQ_RT,		0x02FF0000, //电压电流
+	0,	ECL_RTR_T_DLQ_STATE, 	0x02FF0000, //状态
+};
+
+static t_ecl_rtdi97 tbl_DiQL_Afn0CF64[] = {
+	0,	ECL_RTR_T_DLQ_RT,		0xB66F,	//电压电流
+	0,	ECL_RTR_T_DLQ_STATE,	0xC04F,	//状态
 };
 
 
@@ -307,16 +306,6 @@ static int gw3761_Afn0C_F25(buf b, uint_t nDa)
 		case ECL_PRTL_DLT645_97:
 			for (pR97 = tbl_Di97_Afn0CF25; pR97 < ARR_ENDADR(tbl_Di97_Afn0CF25); pR97++) {
 				gw3761_Afn0C_97RealRead(b, &xPM, pR97, 1);
-			}
-			break;
-		case ECL_PRTL_DLQ_QL:
-			for (pR97 = tbl_DiQL_Afn0CF25; pR97 < ARR_ENDADR(tbl_DiQL_Afn0CF25); pR97++) {
-				gw3761_Afn0C_97RealRead(b, &xPM, pR97, 1);
-			}
-			break;
-		case ECL_PRTL_DLQ_SY:
-			for (pR07 = tbl_DiSY_Afn0CF25; pR07 < ARR_ENDADR(tbl_DiSY_Afn0CF25); pR07++) {
-				gw3761_Afn0C_07RealRead(b, &xPM, pR07, 1);
 			}
 			break;
 		default:
@@ -578,6 +567,31 @@ static int gw3761_Afn0C_F58(buf b, uint_t nDa)
 	return 1;
 }
 
+static int gw3761_Afn0C_F64(buf b, uint_t nDa)
+{
+	t_afn04_f10 xPM;
+	uint8_t aBuf[5];
+	t_ecl_rtdi97 *pR97;
+	t_ecl_rtdi07 *pR07;
+
+	if (icp_Meter4Tn(nDa, &xPM) == 0)
+		return 0;
+	if (xPM.port != ECL_PORT_RS485)
+		return 0;
+	gw3761_ConvertData_15(aBuf, rtc_GetTimet());
+	buf_Push(b, aBuf, 5);
+	if (xPM.prtl == ECL_PRTL_DLQ_QL) {
+		for (pR97 = tbl_DiQL_Afn0CF64; pR97 < ARR_ENDADR(tbl_DiQL_Afn0CF64); pR97++) {
+			gw3761_Afn0C_97RealRead(b, &xPM, pR97, 1);
+		}
+	} else {
+		for (pR07 = tbl_DiSY_Afn0CF64; pR07 < ARR_ENDADR(tbl_DiSY_Afn0CF64); pR07++) {
+			gw3761_Afn0C_07RealRead(b, &xPM, pR07, 1);
+		}
+	}
+	return 1;
+}
+
 
 //External Functions
 int gw3761_ResponseData1(p_gw3761 p)
@@ -675,6 +689,10 @@ int gw3761_ResponseData1(p_gw3761 p)
 				case 58:
 					//当前电压电流谐波含有率
 					gw3761_Afn0C_F58(b, nDa);
+					break;
+				case 64:
+					//断路器实时数据
+					gw3761_Afn0C_F64(b, nDa);
 					break;
 				case 65:
 					//当前遥信状态
