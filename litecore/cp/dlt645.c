@@ -91,7 +91,6 @@ uint8_t *dlt645_PacketAnalyze(uint8_t *p, uint_t nLen)
 }
 
 static const uint8_t dlt645_aFE[] = {0xFE, 0xFE};
-#if 0
 sys_res dlt645_Meter(chl c, buf b, const void *pAdr, const void *pBuf, uint_t nLen, uint_t nTmo)
 {
 	uint8_t *pH;
@@ -124,48 +123,11 @@ sys_res dlt645_Meter(chl c, buf b, const void *pAdr, const void *pBuf, uint_t nL
 			continue;
 		}
 		buf_Remove(b, DLT645_HEADER_SIZE - 2);
+		if ((b->p[0] & BITMASK(7)) == 0)
+			continue;
 		byteadd(&b->p[2], -0x33, b->p[1]);
 		return SYS_R_OK;
 	}
 	return SYS_R_TMO;
 }
-#else
-sys_res dlt645_Meter(chl c, buf b, const void *pAdr, const void *pBuf, uint_t nLen, uint_t nTmo)
-{
-	uint8_t *pH;
-
-#if DLT645_DIR_CTRL
-	gpio_Set(2, 0);
-	chl_Send(c, dlt645_aFE, 2);
-	chl_Send(c, pBuf, nLen);
-	chl_Send(c, dlt645_aFE, 2);
-	gpio_Set(2, 1);
-#else
-	chl_Send(c, dlt645_aFE, 2);
-	chl_Send(c, pBuf, nLen);
-#endif
-
-	dlt645_DbgOut(1, pBuf, nLen);
-
-	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
-		if (chl_RecData(c, b, OS_TICK_MS) != SYS_R_OK)
-			continue;
-		pH = dlt645_PacketAnalyze(b->p, b->len);
-		if (pH == NULL)
-			continue;
-		buf_Remove(b, pH - b->p);
-
-		dlt645_DbgOut(0, b->p, b->p[9] + (DLT645_HEADER_SIZE + 2));
-
-		if (memcmp(&b->p[1], pAdr, 6)) {
-			buf_Remove(b, DLT645_HEADER_SIZE);
-			continue;
-		}
-		buf_Remove(b, DLT645_HEADER_SIZE - 2);
-		byteadd(&b->p[2], -0x33, b->p[1]);
-		return SYS_R_OK;
-	}
-	return SYS_R_TMO;
-}
-#endif
 
