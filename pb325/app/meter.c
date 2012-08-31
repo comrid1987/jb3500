@@ -81,9 +81,7 @@ void ecl_DataHandler(uint_t nTn, const uint8_t *pAdr, const uint8_t *pTime, uint
 
 sys_res ecl_485_RealRead(buf b, uint_t nBaud, uint_t nTmo)
 {
-	sys_res res = SYS_R_ERR;
 	t_ecl_task *p = &ecl_Task485;
-	buf bTx = {0};
 
 	if (g_sys_status & BITMASK(SYS_STATUS_UART))
 		return SYS_R_ERR;
@@ -98,16 +96,14 @@ sys_res ecl_485_RealRead(buf b, uint_t nBaud, uint_t nTmo)
 		return SYS_R_TMO;
 
 	chl_rs232_Config(p->chl, nBaud, UART_PARI_EVEN, UART_DATA_8D, UART_STOP_1D);
-	buf_Push(bTx, b->p, b->len);
-	buf_Release(b);
 	for (nTmo = (nTmo / (1000 / OS_TICK_MS)) + 1; nTmo; nTmo--) {
-		res = dlt645_Meter(p->chl, b, &bTx->p[1], bTx->p, bTx->len, 1000);
-		if (res == SYS_R_OK)
+		if (dlt645_Meter(p->chl, b, 1000) == SYS_R_OK)
 			break;
 	}
-	buf_Release(bTx);
 	p->ste = ECL_TASK_S_IDLE;
-	return res;
+	if (nTmo == 0)
+		return SYS_R_TMO;
+	return SYS_R_OK;
 }
 
 void tsk_Meter(void *args)
