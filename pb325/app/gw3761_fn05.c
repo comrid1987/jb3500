@@ -34,7 +34,7 @@ int gw3761_ResponseCtrlCmd(p_gw3761 p, u_word2 *pDu, uint8_t **ppData)
 			case 1:	//Ò£¿ØÌøÕ¢
 				*ppData += 1;
 			case 2:	//Ò£¿ØºÏÕ¢
-				if (icp_MeterRead(nDa, &xPM) < 0)
+				if (icp_MeterRead(nDa, &xPM) <= 0)
 					break;
 				if (xPM.prtl != ECL_PRTL_DLQ_QL)
 					break;

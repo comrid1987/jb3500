@@ -124,7 +124,7 @@ void tsk_Meter(void *args)
 				continue;
 			tTime = rtc_GetTimet();
 			for (p->sn = 1; p->sn < ECL_SN_MAX; p->sn++) {
-				if (icp_MeterRead(p->sn, &p->f10) < 0)
+				if (icp_MeterRead(p->sn, &p->f10) <= 0)
 					continue;
 
 
@@ -148,7 +148,7 @@ void tsk_Meter(void *args)
 					monthprev(tTime, p->time, 1);
 					for (p->sn = 1; p->sn < ECL_SN_MAX; p->sn++) {
 						//下一个有效电表
-						if (icp_MeterRead(p->sn, &p->f10) == 0)
+						if (icp_MeterRead(p->sn, &p->f10) <= 0)
 							continue;
 						if (p->f10.port != ECL_PORT_RS485)
 							continue;

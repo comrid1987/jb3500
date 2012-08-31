@@ -18,7 +18,7 @@
 #define ECL_RTR_T_PF				8
 #define ECL_RTR_T_MAXPOWER07		9
 
-#define ECL_RTR_T_DLQ_RT			16
+#define ECL_RTR_T_DLQ_RTDATA		16
 #define ECL_RTR_T_DLQ_STATE			17
 
 
@@ -100,12 +100,12 @@ static t_ecl_rtdi07 tbl_Di07_Afn0CF36[] = {
 };
 
 static t_ecl_rtdi07 tbl_DiSY_Afn0CF64[] = {
-	0,	ECL_RTR_T_DLQ_RT,		0x02FF0000, //电压电流
+	0,	ECL_RTR_T_DLQ_RTDATA,		0x02FF0000, //电压电流
 	0,	ECL_RTR_T_DLQ_STATE, 	0x02FF0000, //状态
 };
 
 static t_ecl_rtdi97 tbl_DiQL_Afn0CF64[] = {
-	0,	ECL_RTR_T_DLQ_RT,		0xB66F,	//电压电流
+	0,	ECL_RTR_T_DLQ_RTDATA,		0xB66F,	//电压电流
 	0,	ECL_RTR_T_DLQ_STATE,	0xC04F,	//状态
 };
 
@@ -132,7 +132,7 @@ static int gw3761_Afn0C_Type(int nType)
 		return 8;
 	case ECL_RTR_T_MAXPOWER07:
 		return 40;
-	case ECL_RTR_T_DLQ_RT:
+	case ECL_RTR_T_DLQ_RTDATA:
 		return 19;
 	case ECL_RTR_T_DLQ_STATE:
 		return 11;
@@ -165,16 +165,19 @@ static int gw3761_Afn0C_07RealRead(buf b, t_afn04_f10 *pF10, t_ecl_rtdi07 *p, ui
 				}
 				break;
 			case ECL_RTR_T_MAXPOWER07:
-				for (i = 0; i <= ECL_RATE_QTY; i++, pTemp += 8)
+				for (i = 0; i <= ECL_RATE_QTY; i++, pTemp += 8) {
 					buf_Push(b, pTemp, 3);
+				}
 				pTemp = &bTx->p[9];
-				for (i = 0; i <= ECL_RATE_QTY; i++, pTemp += 8)
+				for (i = 0; i <= ECL_RATE_QTY; i++, pTemp += 8) {
 					buf_Push(b, pTemp, 4);
+				}
 				break;
-			case ECL_RTR_T_DLQ_RT:
+			case ECL_RTR_T_DLQ_RTDATA:
 				pTemp += 16;
-				for (i = 0; i < 3; i++, pTemp -= 2)
+				for (i = 0; i < 3; i++, pTemp -= 2) {
 					buf_Push(b, pTemp, 2);
+				}
 				for (i = 0; i < 4; i++, pTemp -= 2) {
 					buf_PushData(b, 0x00, 1);
 					buf_Push(b, pTemp, 2);
@@ -217,15 +220,18 @@ static int gw3761_Afn0C_97RealRead(buf b, t_afn04_f10 *pF10, t_ecl_rtdi97 *p, ui
 					buf_Push(b, pTemp, 4);
 				}
 				break;
-			case ECL_RTR_T_DLQ_RT:
-				nData = *pTemp++;
-				for (i = 0; i < 3; i++, pTemp += 2)
-					buf_Push(b, pTemp, 2);
+			case ECL_RTR_T_DLQ_RTDATA:
+				nLen = *pTemp++;
+				for (i = 0; i < 3; i++, pTemp += 2) {
+					memcpy(&nData, pTemp, 2);
+					nData <<= 4;
+					buf_PushData(b, nData, 2);
+				}
 				for (i = 0; i < 4; i++, pTemp += 2) {
 					buf_PushData(b, 0x00, 1);
 					buf_Push(b, pTemp, 2);
 				}
-				buf_PushData(b, nData, 1);
+				buf_PushData(b, nLen, 1);
 				break;
 			default:
 				buf_Push(b, pTemp, nLen);

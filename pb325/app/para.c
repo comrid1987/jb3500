@@ -200,11 +200,11 @@ int icp_Meter4Tn(uint_t nTn, t_afn04_f10 *p)
 		p->port = ECL_PORT_ACM;
 		return 1;
 	}
-	if (icp_MeterRead(nTn, p))
+	if (icp_MeterRead(nTn, p) > 0)
 		if (p->tn == nTn)
 			return nTn;
 	for (i = 1; i < ECL_SN_MAX; i++) {
-		if (icp_MeterRead(i, p))
+		if (icp_MeterRead(i, p) > 0)
 			if (p->tn == nTn)
 				break;
 	}

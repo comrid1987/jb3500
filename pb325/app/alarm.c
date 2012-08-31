@@ -594,13 +594,13 @@ uint_t evt_YXRead()
 		nValid = 1;
 	for (i = 0; i < 3; i++) {
 		if (nFlag & BITMASK(i)) {
-			if (nRead == 0) {
+			if ((nRead & BITMASK(i)) == 0) {
 				evt_ERC18(i, 0);
 				nValid = 1;
 				CLRBIT(nFlag, i);
 			}
 		} else {
-			if (nRead) {
+			if (nRead & BITMASK(i)) {
 				evt_ERC18(i, 1);
 				nValid = 1;
 				SETBIT(nFlag, i);
