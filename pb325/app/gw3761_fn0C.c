@@ -134,6 +134,8 @@ static int gw3761_Afn0C_Type(int nType)
 		return 40;
 	case ECL_RTR_T_DLQ_RT:
 		return 19;
+	case ECL_RTR_T_DLQ_STATE:
+		return 11;
 	default:
 		return (ECL_RATE_QTY + 1) * 4;
 	}

@@ -37,13 +37,7 @@ typedef const struct {
 
 typedef struct {
 	uint8_t			ste;
-	uint8_t			tmo;
-	uint8_t			retry;
-	uint8_t			rtid;
-	uint8_t			cycle;
-	uint8_t			time[3];
-	uint16_t		sn;
-	uint32_t		di;
+	uint8_t			sn;
 	void *			chl;
 	t_afn04_f10 	f10;
 }t_ecl_task;
@@ -53,7 +47,7 @@ typedef struct {
 //External Functions
 void tsk_Meter(void *args);
 
-//sys_res ecl_485_RealRead(buf b, uint_t nBaud, uint_t nTmo);
+sys_res ecl_485_RealRead(buf b, uint_t nBaud, uint_t nTmo);
 
 
 

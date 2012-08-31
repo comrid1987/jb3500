@@ -99,6 +99,7 @@ sys_res ecl_485_RealRead(buf b, uint_t nBaud, uint_t nTmo)
 
 	chl_rs232_Config(p->chl, nBaud, UART_PARI_EVEN, UART_DATA_8D, UART_STOP_1D);
 	buf_Push(bTx, b->p, b->len);
+	buf_Release(b);
 	for (nTmo = (nTmo / (1000 / OS_TICK_MS)) + 1; nTmo; nTmo--) {
 		res = dlt645_Meter(p->chl, b, &bTx->p[1], bTx->p, bTx->len, 1000);
 		if (res == SYS_R_OK)
@@ -118,16 +119,21 @@ void tsk_Meter(void *args)
 	
 	memset(p, 0, sizeof(t_ecl_task));
 	if ((g_sys_status & BITMASK(SYS_STATUS_UART)) == 0) {
-		p->chl = chlRS485;
 		chl_Init(chlRS485);
 		chl_Bind(chlRS485, CHL_T_RS232, 0, OS_TMO_FOREVER);
-	}
+		p->chl = chlRS485;
+		for (nCnt = 0; ; os_thd_Slp1Tick()) {
+			//Ãëcount
+			if (tTime == rtc_GetTimet())
+				continue;
+			tTime = rtc_GetTimet();
+			for (p->sn = 1; p->sn < ECL_SN_MAX; p->sn++) {
+				if (icp_MeterRead(p->sn, &p->f10) < 0)
+					continue;
 
-	for (nCnt = 0; ; os_thd_Slp1Tick()) {
-		//Ãëcount
-		if (tTime == rtc_GetTimet())
-			continue;
-		tTime = rtc_GetTimet();
+
+			}
+		}
 	}
 }
 
