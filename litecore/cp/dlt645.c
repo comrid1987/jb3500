@@ -91,23 +91,25 @@ uint8_t *dlt645_PacketAnalyze(uint8_t *p, uint_t nLen)
 }
 
 static const uint8_t dlt645_aFE[] = {0xFE, 0xFE};
-sys_res dlt645_Meter(chl c, buf b, const void *pAdr, const void *pBuf, uint_t nLen, uint_t nTmo)
+sys_res dlt645_Meter(chl c, buf b, uint_t nTmo)
 {
-	uint8_t *pH;
+	uint8_t *pH, aAdr[6];
 
 #if DLT645_DIR_CTRL
 	gpio_Set(2, 0);
 	chl_Send(c, dlt645_aFE, 2);
-	chl_Send(c, pBuf, nLen);
+	chl_Send(c, b->p, b->len);
 	chl_Send(c, dlt645_aFE, 2);
 	gpio_Set(2, 1);
 #else
 	chl_Send(c, dlt645_aFE, 2);
-	chl_Send(c, pBuf, nLen);
+	chl_Send(c, b->p, b->len);
 #endif
 
-	dlt645_DbgOut(1, pBuf, nLen);
+	dlt645_DbgOut(1, b->p, b->len);
 
+	memcpy(aAdr, &b->p[1], 6);
+	buf_Release(b);
 	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
 		if (chl_RecData(c, b, OS_TICK_MS) != SYS_R_OK)
 			continue;
@@ -118,15 +120,15 @@ sys_res dlt645_Meter(chl c, buf b, const void *pAdr, const void *pBuf, uint_t nL
 
 		dlt645_DbgOut(0, b->p, b->p[9] + (DLT645_HEADER_SIZE + 2));
 
-		if (memcmp(&b->p[1], pAdr, 6)) {
+		if (memcmp(&b->p[1], aAdr, 6)) {
 			buf_Remove(b, DLT645_HEADER_SIZE);
 			continue;
 		}
 		buf_Remove(b, DLT645_HEADER_SIZE - 2);
-		if ((b->p[0] & BITMASK(7)) == 0)
-			continue;
-		byteadd(&b->p[2], -0x33, b->p[1]);
-		return SYS_R_OK;
+		if (b->p[0] & BITMASK(7)) {
+			byteadd(&b->p[2], -0x33, b->p[1]);
+			return SYS_R_OK;
+		}
 	}
 	return SYS_R_TMO;
 }
