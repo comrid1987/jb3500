@@ -167,12 +167,12 @@ uint8_t receive_35lt_data(p_dev_uart rs485_3_dev, pStructMWRxData psrRxData)
                     if((psrRxData->buf->p[1] == MW_DLE) && (psrRxData->buf->p[2] == MW_DLE))
                     {
                         buf_Cut(psrRxData->buf,1,1);
-                    }                    
+                    }
                     psrRxData->cLength = psrRxData->buf->p[2];
                     if((psrRxData->buf->p[2] == MW_DLE) && (psrRxData->buf->p[3] == MW_DLE))
                     {
                         buf_Cut(psrRxData->buf,2,1);
-                    }                    
+                    }
                     rx_bcc = psrRxData->buf->p[0] ^ psrRxData->buf->p[1] ^ psrRxData->buf->p[2];
                     buf_Remove(psrRxData->buf, 3);
                     rx_status = 1;

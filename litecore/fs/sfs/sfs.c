@@ -228,9 +228,9 @@ static sys_res _sfs_Write(sfs_dev pDev, uint32_t nRecord, const void *pData, uin
 	xIdx.ste = SFS_S_VALID;
 	xIdx.id = nRecord;
 	xIdx.len = nLen;
- 	if ((res = _sfs_Program(pDev, nIdx, (uint8_t *)&xIdx, sizeof(t_sfs_idx)))!= SYS_R_OK)
+	if ((res = _sfs_Program(pDev, nIdx, (uint8_t *)&xIdx, sizeof(t_sfs_idx)))!= SYS_R_OK)
 		return res;
- 	if ((res = _sfs_Program(pDev, nIdx + sizeof(t_sfs_idx), (uint8_t *)pData, nLen))!= SYS_R_OK)
+	if ((res = _sfs_Program(pDev, nIdx + sizeof(t_sfs_idx), (uint8_t *)pData, nLen))!= SYS_R_OK)
 		return res;
 	//É¾³ýÔ­¼ÇÂ¼
 	if (nAdrOld) {
