@@ -94,7 +94,7 @@ void tsk_Idle(void *args)
 
 void app_Entry()
 {
-	
+
 	icp_Init();
 	evt_Init();
 

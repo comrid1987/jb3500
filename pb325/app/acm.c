@@ -4,6 +4,7 @@
 #include <litecore.h>
 #include <drivers/tdk6515.h>
 #include "acm.h"
+#include "alarm.h"
 
 
 //Private Defines
@@ -479,6 +480,5 @@ void tsk_Acm(void *args)
 		}
 	}
 }
-
 
 
