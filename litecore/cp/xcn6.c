@@ -133,11 +133,17 @@ static sys_res xcn12_Transmit2Meter(t_gw3762 *p, uint_t nCtrl, const void *pAdr,
 
 	buf_PushData(bTx, 0xFCFC, 2);
 	buf_PushData(bTx, 0x68, 1);
-	buf_Push(bTx, pAdr, 6);
+	if (nRelay)
+		buf_Push(bTx, pRtAdr, 6);
+	else
+		buf_Push(bTx, pAdr, 6);
 	buf_PushData(bTx, 0x68, 1);
 	buf_PushData(bTx, (nRelay << 5) | nCtrl, 1);
 	buf_PushData(bTx, nRelay * 6 + nLen, 1);
-	buf_Push(bTx, pRtAdr, nRelay * 6);
+	if (nRelay) {
+		buf_Push(bTx, &pRtAdr[6], (nRelay - 1) * 6);
+		buf_Push(bTx, pAdr, 6);
+	}
 	buf_Push(bTx, pData, nLen);
 	byteadd(&bTx->p[12], 0x33, bTx->p[11]);
 	buf_PushData(bTx, 0x1600 | cs8(&bTx->p[2], bTx->len - 2), 2);
@@ -168,10 +174,10 @@ sys_res xcn12_Meter(t_gw3762 *p, buf b, uint_t nCode, const void *pAdr, uint_t n
 
 		xcn6n12_DbgOut(0, b->p, b->p[9] + (DLT645_HEADER_SIZE + 2));
 
-		if (memcmp(&b->p[1], pAdr, 6)) {
-			buf_Remove(b, DLT645_HEADER_SIZE);
-			continue;
-		}
+//		if (memcmp(&b->p[1], pAdr, 6)) {
+//			buf_Remove(b, DLT645_HEADER_SIZE);
+//			continue;
+//		}
 		buf_Remove(b, DLT645_HEADER_SIZE - 2);
 		byteadd(&b->p[2], -0x33, b->p[1]);
 		return SYS_R_OK;
