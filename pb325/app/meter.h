@@ -36,10 +36,9 @@ typedef const struct {
 }t_ecl_rtdi97;
 
 typedef struct {
-	uint8_t			ste;
-	uint8_t			sn;
-	void *			chl;
-	t_afn04_f10 	f10;
+	uint8_t	ste;
+	uint8_t	sn;
+	void *	chl;
 }t_ecl_task;
 
 

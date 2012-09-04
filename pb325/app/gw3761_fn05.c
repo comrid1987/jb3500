@@ -21,7 +21,7 @@ int gw3761_ResponseCtrlCmd(p_gw3761 p, u_word2 *pDu, uint8_t **ppData)
 	int res = 0;
 	uint_t i, j, nFn, nDa, nDaQty;
 	t_afn04_f10 xPM;
-	buf bTx = {0};
+	buf b = {0};
 	
 	nDaQty = gw3761_ConvertDa2Map(pDu->word[0], aDa);
 	for (i = 0; i < nDaQty; i++) {
@@ -38,10 +38,10 @@ int gw3761_ResponseCtrlCmd(p_gw3761 p, u_word2 *pDu, uint8_t **ppData)
 					break;
 				if (xPM.prtl != ECL_PRTL_DLQ_QL)
 					break;
-				dlt645_Packet2Buf(bTx, xPM.madr, 0x04, ecl_DlqQlCmd[nFn - 1], 3);
-				if (ecl_485_RealRead(bTx, 1200, 2) == SYS_R_OK)
+				dlt645_Packet2Buf(b, xPM.madr, DLT645_CODE_WRITE97, ecl_DlqQlCmd[nFn - 1], 3);
+				if (ecl_485_RealRead(b, 1200, 2) == SYS_R_OK)
 					res += 1;
-				buf_Release(bTx);
+				buf_Release(b);
 				break;
 			case 31:
 				//¶ÔÊ±ÃüÁî

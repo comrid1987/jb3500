@@ -17,7 +17,8 @@ extern "C" {
 
 //External Functions
 void evt_ERC3(uint_t nMSA, u_word2 *pDu);
-void evt_ERC8(uint_t nTn, uint_t nFlag);
+void evt_ERC5(uint_t nTn, const void *pOld, const void *pNew);
+void evt_ERC8(uint_t nTn, const void *pOld, const void *pNew);
 void evt_ERC35(uint_t nPort, const uint8_t *pAdr);
 void evt_Terminal(t_afn04_f26 *pF26);
 uint_t evt_YXRead(void);
@@ -29,6 +30,10 @@ uint_t evt_GetCount(void);
 void evt_GetFlag(void *pBuf);
 int evt_Read(buf b, uint_t nPm, uint_t nPn, uint_t nIsNormal);
 
+sys_res evt_DlqQlStateGet(uint_t nSn, void *pBuf);
+void evt_DlqQlStateSet(uint_t nSn, const void *pBuf);
+sys_res evt_DlqQlParaGet(uint_t nSn, void *pBuf);
+void evt_DlqQlParaSet(uint_t nSn, const void *pBuf);
 
 
 

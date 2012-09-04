@@ -24,6 +24,9 @@
 
 #define EVT_RUNTIME_ADDR		0xFFFF0102	// 4
 
+#define EVT_DLQ_QL_STE			0xFFFF7100
+#define EVT_DLQ_QL_PARA			0xFFFF7200
+
 
 #define EVT_FLAG_UBALANCE		0
 #define EVT_FLAG_IBALANCE		1
@@ -178,7 +181,6 @@ static void evt_ERC1(uint_t nVer)
 	}
 }
 
-
 //终端停上电事件
 static void evt_ERC14()
 {
@@ -287,17 +289,34 @@ void evt_ERC3(uint_t nMSA, u_word2 *pDu)
 	}
 }
 
-//电能表参数变更事件
-void evt_ERC8(uint_t nTn, uint_t nFlag)
+//总保跳闸事件
+void evt_ERC5(uint_t nTn, const void *pOld, const void *pNew)
 {
-	uint8_t aBuf[8];
+	uint8_t aBuf[21];
+	uint_t nAtt;
+
+	nAtt = evt_Attrib(5);
+	if (nAtt) {
+		gw3761_ConvertData_15(aBuf, rtc_GetTimet());
+		memcpy(&aBuf[5], &nTn, 2);
+		memcpy(&aBuf[7], pOld, 7);
+		memcpy(&aBuf[14], pNew, 7);
+		evt_Save(5, aBuf, sizeof(aBuf), nAtt);
+	}
+}
+
+//总保参数变更事件
+void evt_ERC8(uint_t nTn, const void *pOld, const void *pNew)
+{
+	uint8_t aBuf[23];
 	uint_t nAtt;
 
 	nAtt = evt_Attrib(8);
 	if (nAtt) {
 		gw3761_ConvertData_15(aBuf, rtc_GetTimet());
 		memcpy(&aBuf[5], &nTn, 2);
-		aBuf[7] = nFlag;
+		memcpy(&aBuf[7], pOld, 8);
+		memcpy(&aBuf[15], pNew, 8);
 		evt_Save(8, aBuf, sizeof(aBuf), nAtt);
 	}
 }
@@ -328,6 +347,8 @@ void evt_Terminal(t_afn04_f26 *pF26)
 	uint8_t aBuf[22];
 	uint32_t nFlagOld, nFlag, nData;
 
+	evt_Lock();
+	
 	nFlagOld = 0;
 	sfs_Read(&evt_SfsDev, EVT_FLAG_ADDR, &nFlagOld);
 	nFlag = nFlagOld;
@@ -577,12 +598,15 @@ void evt_Terminal(t_afn04_f26 *pF26)
 
 	if (nFlag != nFlagOld)
 		sfs_Write(&evt_SfsDev, EVT_FLAG_ADDR, &nFlag, 4);
+
+	evt_Unlock();
 }
 
 uint_t evt_YXRead()
 {
 	uint_t i, nValid, nFlag, nRead;
 
+	evt_Lock();
 	nRead = 0;
 	for (i = 0; i < 3; i++) {
 		if (gpio_Read(4 + i))
@@ -609,6 +633,7 @@ uint_t evt_YXRead()
 	}
 	if (nValid)
 		sfs_Write(&evt_SfsDev, EVT_YX_ADDR, &nRead, 2);
+	evt_Unlock();
 	return nRead;
 }
 
@@ -624,7 +649,9 @@ int evt_RunTimeRead(time_t *pTime)
 void evt_RunTimeWrite(time_t tTime)
 {
 
+	evt_Lock();
 	sfs_Write(&evt_SfsDev, EVT_RUNTIME_ADDR, &tTime, sizeof(time_t));
+	evt_Unlock();
 }
 
 void evt_Init()
@@ -711,5 +738,34 @@ int evt_Read(buf b, uint_t nPm, uint_t nPn, uint_t nIsNormal)
 	evt_Unlock();
 	return (i - (nStart + nPm));
 }
+
+sys_res evt_DlqQlStateGet(uint_t nSn, void *pBuf)
+{
+
+	return sfs_Read(&evt_SfsDev, EVT_DLQ_QL_STE | nSn, pBuf);
+}
+
+void evt_DlqQlStateSet(uint_t nSn, const void *pBuf)
+{
+
+	evt_Lock();
+	sfs_Write(&evt_SfsDev, EVT_DLQ_QL_STE | nSn, pBuf, 7);
+	evt_Unlock();
+}
+
+sys_res evt_DlqQlParaGet(uint_t nSn, void *pBuf)
+{
+
+	return sfs_Read(&evt_SfsDev, EVT_DLQ_QL_PARA | nSn, pBuf);
+}
+
+void evt_DlqQlParaSet(uint_t nSn, const void *pBuf)
+{
+
+	evt_Lock();
+	sfs_Write(&evt_SfsDev, EVT_DLQ_QL_PARA | nSn, pBuf, 8);
+	evt_Unlock();
+}
+
 
 
