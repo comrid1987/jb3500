@@ -93,8 +93,7 @@ sys_res ecl_485_RealRead(buf b, uint_t nBaud, uint_t nTmo)
 void tsk_Meter(void *args)
 {
 	chl chlRS485;
-	time_t tTime;
-	uint_t nTemp, nCnt;
+	uint_t nTemp;
 	uint8_t aBuf[12];
 	t_afn04_f10 xPM;
 	t_ecl_task *p = &ecl_Task485;
@@ -109,8 +108,8 @@ void tsk_Meter(void *args)
 	chl_Init(chlRS485);
 	chl_Bind(chlRS485, CHL_T_RS232, 0, OS_TMO_FOREVER);
 	p->chl = chlRS485;
-	for (nCnt = 0; ; os_thd_Sleep(10000)) {
-			for (p->sn = 1; p->sn < ECL_SN_MAX; p->sn++) {
+	for (; ; os_thd_Sleep(10000)) {
+		for (p->sn = 1; p->sn < ECL_SN_MAX; p->sn++) {
 			if (icp_MeterRead(p->sn, &xPM) <= 0)
 				continue;
 			if (xPM.prtl != ECL_PRTL_DLQ_QL)

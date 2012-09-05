@@ -6,8 +6,30 @@
 #include "acm.h"
 
 
+//Internal Functions
+static int gw3761_DayRead(const uint8_t *pTime, t_stat *ps)
+{
+	uint8_t aTime[6];
+	time_t tTime, tEnd;
+	t_acm_rtdata xRtd;
+	t_afn04_f26 xF26;
+	t_afn04_f28 xF28;
 
-//External Functions
+	memset(ps, 0, sizeof(t_stat));
+	icp_ParaRead(4, 26, TERMINAL, &xF26, sizeof(t_afn04_f26));
+	icp_ParaRead(4, 28, TERMINAL, &xF28, sizeof(t_afn04_f28));
+
+	memset(aTime, 0, 3);
+	memcpy(&aTime[3], pTime, 3);
+	tTime = array2timet(aTime, 1);
+	tEnd = tTime + (24 * 60 * 60);
+	for (; tTime < tEnd; tTime += 60) {
+		if (acm_Rtd4timet(&xRtd, tTime))
+			stat_Handler(ps, &xRtd, &xF26, &xF28, tTime);
+	}
+	return ps->run;
+}
+
 static void gw3761_Datat2_UI(uint8_t *pUI, const void *pP, const void *pQ)
 {
 	uint32_t nP, nQ;
@@ -44,6 +66,8 @@ static void gw3761_Data2_Other(buf b, time_t tTime)
 		buf_Fill(b, GW3761_DATA_INVALID, 62);
 }
 
+
+//External Functions
 int gw3761_ResponseData2(p_gw3761 p)
 {
 #if GW3761_TYPE == GW3761_T_GWJC2009
@@ -61,7 +85,7 @@ int gw3761_ResponseData2(p_gw3761 p)
 	p_stat ps = &xStat;
 	u_word2 uDu;
 	buf b = {0};
-	
+
 	pData = p->rmsg.data->p;
 	pEnd = pData + p->rmsg.data->len;
 	for (; (pData + 4) <= pEnd; ) {
@@ -78,7 +102,7 @@ int gw3761_ResponseData2(p_gw3761 p)
 				nFn = gw3761_ConvertDt2Fn((uDu.word[1] & 0xFF00) | BITMASK(j));
 				switch (nFn) {
 				case 25:
-					if (data_DayRead(pData, ps)) {
+					if (gw3761_DayRead(pData, ps)) {
 						buf_Push(b, pData, 3);
 						for (i = 0; i < 4; i++) {
 							gw3761_ConvertData_23(aBuf, FLOAT2FIX(ps->uimax[i]));
@@ -112,7 +136,7 @@ int gw3761_ResponseData2(p_gw3761 p)
 					pData += 3;
 					break;
 				case 27:
-					if (data_DayRead(pData, ps)) {
+					if (gw3761_DayRead(pData, ps)) {
 						buf_Push(b, pData, 3);
 						for (i = 0; i < 3; i++) {
 							buf_PushData(b, ps->uover[i], 2);
@@ -143,7 +167,7 @@ int gw3761_ResponseData2(p_gw3761 p)
 					pData += 3;
 					break;
 				case 28:
-					if (data_DayRead(pData, ps)) {
+					if (gw3761_DayRead(pData, ps)) {
 						buf_Push(b, pData, 3);
 						buf_PushData(b, ps->ibalance, 2);
 						buf_PushData(b, ps->ubalance, 2);
@@ -162,7 +186,7 @@ int gw3761_ResponseData2(p_gw3761 p)
 					pData += 3;
 					break;
 				case 29:
-					if (data_DayRead(pData, ps)) {
+					if (gw3761_DayRead(pData, ps)) {
 						buf_Push(b, pData, 3);
 						for (i = 0; i < 3; i++) {
 							buf_PushData(b, ps->iover[i], 2);
@@ -181,7 +205,7 @@ int gw3761_ResponseData2(p_gw3761 p)
 					pData += 3;
 					break;
 				case 30:
-					if (data_DayRead(pData, ps)) {
+					if (gw3761_DayRead(pData, ps)) {
 						buf_Push(b, pData, 3);
 						buf_PushData(b, ps->uiover, 2);
 						buf_PushData(b, ps->uiup, 2);
@@ -190,17 +214,15 @@ int gw3761_ResponseData2(p_gw3761 p)
 					pData += 3;
 					break;
 				case 43:
-					if (data_DayRead(pData, ps)) {
+					if (gw3761_DayRead(pData, ps)) {
 						buf_Push(b, pData, 3);
 						for (i = 0; i < 3; i++) {
 							buf_PushData(b, ps->cos[i], 2);
 						}
-						gw3761_ConvertData_05_Percent(aBuf, FLOAT2FIX((float)ps->cossum[3] / (float)ps->run), 0);
-						buf_Push(b, aBuf, 2);
-						for (i = 0; i < 3; i++) {
+						for (i = 0; i < 4; i++) {
 							gw3761_ConvertData_05_Percent(aBuf, FLOAT2FIX((float)ps->cossum[i] / (float)ps->run), 0);
 							buf_Push(b, aBuf, 2);
-						}						
+						}
 						nSucc = 1;
 					}
 					pData += 3;

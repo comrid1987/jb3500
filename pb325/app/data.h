@@ -75,7 +75,6 @@ void data_MinRead(const uint8_t *pTime, t_data_min *pData);
 void data_MinWrite(const uint8_t *pTime, t_data_min *pData);
 void data_QuarterRead(const uint8_t *pTime, t_data_quarter *pData);
 void data_QuarterWrite(const uint8_t *pTime, t_data_quarter *pData);
-int data_DayRead(const uint8_t *pTime, t_stat *ps);
 void data_Copy2Udisk(void);
 
 

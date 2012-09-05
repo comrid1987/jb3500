@@ -289,6 +289,29 @@ static void evt_ERC26(const void *pData)
 	}
 }
 
+static void evt_IupMax(uint8_t *pData, time_t tTime, time_t tEnd)
+{
+	uint_t i;
+	float fData, fMax[4] = {0};
+	t_acm_rtdata xRtd;
+
+	tTime /= 60;
+	tTime *= 60;
+	for (; tTime < tEnd; tTime += 60) {
+		if (acm_Rtd4timet(&xRtd, tTime) == 0)
+			continue;
+		for (i = 0; i < 4; i++) {
+			fData = xRtd.i[i];
+			if (fData >= fMax[i])
+				fMax[i] = fData;
+		}
+	}
+	gw3761_ConvertData_25(&pData[0], FLOAT2FIX(fMax[3]), 1);
+	for (i = 0; i < 3; i++) {
+		gw3761_ConvertData_25(&pData[3 + i * 3], FLOAT2FIX(fMax[i]), 1);
+	}		
+}
+
 
 
 //External Functions
@@ -616,7 +639,10 @@ void evt_Terminal(t_afn04_f26 *pF26)
 				gw3761_ConvertData_25(&aBuf[3 + j * 3], FLOAT2FIX(pa->i[j]), 1);
 			}
 			memcpy(&aBuf[12], &nData, 4);
-			memset(&aBuf[16], 0, 12);
+			if (nTn &  BITMASK(15))
+				memset(&aBuf[16], 0, 12);
+			else
+				evt_IupMax(&aBuf[16], tTime, rtc_GetTimet());
 			evt_ERC25(aBuf);
 		}
 	}
@@ -746,8 +772,12 @@ void evt_Init()
 	if (sfs_Read(&evt_SfsDev, EVT_MAGIC_WORD, NULL) != SYS_R_OK)
 		nInit = 1;
 	nVer = icp_GetVersion();
-	if (nVer < 0x0090)
+	if (nVer < 0x0090) {
 		nInit = 1;
+	} else {
+		if (nVer < 0x0095)
+			icp_ParaWrite(0x04, 1, TERMINAL, "\x14\x02\x1E\x30\x00\x05", 6);
+	}
 	if (nInit)
 		evt_Format();
 	if (nVer != VER_SOFT) {

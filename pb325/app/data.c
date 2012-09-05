@@ -116,29 +116,6 @@ void data_QuarterWrite(const uint8_t *pTime, t_data_quarter *pData)
 	flash_Flush(0);
 }
 
-int data_DayRead(const uint8_t *pTime, t_stat *ps)
-{
-	uint8_t aTime[6];
-	time_t tTime, tEnd;
-	t_acm_rtdata xRtd;
-	t_afn04_f26 xF26;
-	t_afn04_f28 xF28;
-
-	memset(ps, 0, sizeof(t_stat));
-	icp_ParaRead(4, 26, TERMINAL, &xF26, sizeof(t_afn04_f26));
-	icp_ParaRead(4, 28, TERMINAL, &xF28, sizeof(t_afn04_f28));
-
-	memset(aTime, 0, 3);
-	memcpy(&aTime[3], pTime, 3);
-	tTime = array2timet(aTime, 1);
-	tEnd = tTime + (24 * 60 * 60);
-	for (; tTime < tEnd; tTime += 60) {
-		acm_Rtd4timet(&xRtd, tTime);
-		stat_Handler(ps, &xRtd, &xF26, &xF28, tTime);
-	}
-	return ps->run;
-}
-
 void data_Copy2Udisk()
 {
 	DIR_POSIX *d;

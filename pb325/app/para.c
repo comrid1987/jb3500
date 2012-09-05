@@ -66,7 +66,7 @@ static int icp_Default(uint_t nAfn, uint_t nFn, uint_t nPn, uint8_t *pBuf, uint_
 	memset(pBuf, 0, nLen);
 	switch (nFn) {
 	case 1:
-		memcpy(pBuf, "\x14\x02\x1E\x30\x00\x0A", nLen);
+		memcpy(pBuf, "\x14\x02\x1E\x30\x00\x05", nLen);
 		break;
 	case 3:
 		pF3 = (t_afn04_f3 *)pBuf;
