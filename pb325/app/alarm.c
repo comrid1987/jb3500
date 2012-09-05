@@ -389,8 +389,6 @@ void evt_Terminal(t_afn04_f26 *pF26)
 	uint32_t nFlagOld, nFlag, nData;
 	time_t tTime;
 
-	evt_Lock();
-	
 	nFlagOld = 0;
 	sfs_Read(&evt_SfsDev, EVT_FLAG_ADDR, &nFlagOld);
 	nFlag = nFlagOld;
@@ -706,8 +704,6 @@ void evt_Terminal(t_afn04_f26 *pF26)
 
 	if (nFlag != nFlagOld)
 		sfs_Write(&evt_SfsDev, EVT_FLAG_ADDR, &nFlag, 4);
-
-	evt_Unlock();
 }
 
 uint_t evt_YXRead()
