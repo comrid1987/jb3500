@@ -25,11 +25,6 @@ typedef struct {
 	uint8_t		data[156];
 }t_data_quarter;
 
-typedef struct {
-	time_t		time;
-	uint32_t	data;
-	uint32_t	rate[ECL_RATE_QTY];
-}t_ecl_energy;
 
 //Í³¼Æ
 typedef struct {
