@@ -568,19 +568,16 @@ void evt_Terminal(t_afn04_f26 *pF26)
 					nData = 0;
 				nValid = 1;
 				CLRBIT(nFlag, EVT_FLAG_UABNORMAL + i);
-				tTime = 0;
-				sfs_Write(&evt_SfsDev, EVT_UABNORMAL_TIME + i, &tTime, 4);
+				sfs_Delete(&evt_SfsDev, EVT_UABNORMAL_TIME + i);
 			}
 		} else {
 			//发生
 			if (fData < fTemp) {
 				if (sfs_Read(&evt_SfsDev, EVT_UABNORMAL_TIME + i, &tTime) == SYS_R_OK) {
-					if (tTime) {
-						nTn = TERMINAL | BITMASK(15);
-						nData = 0;
-						nValid = 1;
-						SETBIT(nFlag, EVT_FLAG_UABNORMAL + i);
-					}
+					nTn = TERMINAL | BITMASK(15);
+					nData = 0;
+					nValid = 1;
+					SETBIT(nFlag, EVT_FLAG_UABNORMAL + i);
 				} else {
 					tTime = rtc_GetTimet();
 					sfs_Write(&evt_SfsDev, EVT_UABNORMAL_TIME + i, &tTime, 4);
@@ -602,6 +599,7 @@ void evt_Terminal(t_afn04_f26 *pF26)
 	}
 
 	//电流越限
+	nData = 0;
 	memcpy(&nData, pF26->iup, 3);
 	fTemp = (float)bcd2bin32(nData) / 1000.0f;
 	for (i = 0; i < 3; i++) {
