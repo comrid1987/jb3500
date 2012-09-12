@@ -275,8 +275,13 @@ sys_res gw3762_MeterRead(t_gw3762 *p, const void *pAdr, uint_t nRelay, const voi
 
 sys_res gw3762_MeterRT(t_gw3762 *p, const void *pAdr, const void *pData, uint_t nLen)
 {
+	uint_t nAfn;
 
-	return gw3762_Transmit2Meter(p, 1, GW3762_AFN_TRANSMIT_ROUTE, 0x0001, pAdr, 0, NULL, pData, nLen);
+	if (p->type == GW3762_T_RISECOM)
+		nAfn = GW3762_AFN_TRANSMIT;
+	else
+		nAfn = GW3762_AFN_TRANSMIT_ROUTE;
+	return gw3762_Transmit2Meter(p, 1, nAfn, 0x0001, pAdr, 0, NULL, pData, nLen);
 }
 
 
