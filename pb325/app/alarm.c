@@ -349,15 +349,15 @@ void evt_ERC5(uint_t nTn, const void *pOld, const void *pNew)
 //总保参数变更事件
 void evt_ERC8(uint_t nTn, const void *pOld, const void *pNew)
 {
-	uint8_t aBuf[31];
+	uint8_t aBuf[29];
 	uint_t nAtt;
 
 	nAtt = evt_Attrib(8);
 	if (nAtt) {
 		gw3761_ConvertData_15(aBuf, rtc_GetTimet());
 		memcpy(&aBuf[5], &nTn, 2);
-		memcpy(&aBuf[7], pNew, 12);
-		memcpy(&aBuf[19], pOld, 12);
+		memcpy(&aBuf[7], pNew, 11);
+		memcpy(&aBuf[18], pOld, 11);
 		evt_Save(8, aBuf, sizeof(aBuf), nAtt);
 	}
 }
@@ -867,7 +867,7 @@ void evt_DlqQlParaSet(uint_t nSn, const void *pBuf)
 {
 
 	evt_Lock();
-	sfs_Write(&evt_SfsDev, EVT_DLQ_QL_PARA | nSn, pBuf, 12);
+	sfs_Write(&evt_SfsDev, EVT_DLQ_QL_PARA | nSn, pBuf, 11);
 	evt_Unlock();
 }
 

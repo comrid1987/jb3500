@@ -133,13 +133,13 @@ void tsk_Meter(void *args)
 			if (ecl_485_RealRead(b, 1200, 2) == SYS_R_OK) {
 				nTemp = 1;
 				if (evt_DlqQlParaGet(p->sn, aBuf) == SYS_R_OK) {
-					if (memcmp(aBuf, &b->p[4], 12))
-						evt_ERC8(p->sn, aBuf, &b->p[4]);
+					if (memcmp(aBuf, &b->p[5], 11))
+						evt_ERC8(p->sn, aBuf, &b->p[5]);
 					else
 						nTemp = 0;
 				}
 				if (nTemp)
-					evt_DlqQlParaSet(p->sn, &b->p[4]);
+					evt_DlqQlParaSet(p->sn, &b->p[5]);
 			}
 			buf_Release(b);
 		}
