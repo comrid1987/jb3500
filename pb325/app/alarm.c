@@ -766,11 +766,9 @@ void evt_Init()
 	if (sfs_Read(&evt_SfsDev, EVT_MAGIC_WORD, NULL) != SYS_R_OK)
 		nInit = 1;
 	nVer = icp_GetVersion();
-	if (nVer < 0x0090) {
+	if (nVer < 0x0095) {
 		nInit = 1;
-	} else {
-		if (nVer < 0x0095)
-			icp_ParaWrite(0x04, 1, TERMINAL, "\x14\x02\x1E\x30\x00\x05", 6);
+		icp_ParaWrite(0x04, 1, TERMINAL, "\x14\x02\x1E\x30\x00\x05", 6);
 	}
 	if (nInit)
 		evt_Format();
