@@ -122,6 +122,7 @@ typedef struct {
 void gw3762_Init(t_gw3762 *p);
 
 int gw3762_IsNeedRt(t_gw3762 *p);
+int gw3762_IsNotSync(t_gw3762 *p);
 int gw3762_GetRetry(t_gw3762 *p);
 int gw3762_GetWait(t_gw3762 *p, uint_t nRelay);
 

@@ -148,6 +148,20 @@ int gw3762_IsNeedRt(t_gw3762 *p)
 	}
 }
 
+int gw3762_IsNotSync(t_gw3762 *p)
+{
+
+	switch (p->type) {
+	case GW3762_T_XC_GW:
+	case GW3762_T_XC_GD:
+	case GW3762_T_ES_38:
+	case GW3762_T_RISECOM:
+		return 1;
+	default:
+		return 0;
+	}
+}
+
 int gw3762_GetRetry(t_gw3762 *p)
 {
 
