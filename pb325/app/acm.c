@@ -307,7 +307,7 @@ int acm_Rtd4timet(t_acm_rtdata *p, time_t tTime)
 	return 1;
 }
 
-  
+
 
 void stat_Handler(p_stat ps, t_acm_rtdata *pa, t_afn04_f26 *pF26, t_afn04_f28 *pF28, time_t tTime)
 {
