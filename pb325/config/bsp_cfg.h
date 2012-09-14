@@ -7,7 +7,7 @@
 //硬件版本
 #define VER_HARD						0x0010
 //软件版本
-#define VER_SOFT						0x0099
+#define VER_SOFT						0x0100
 
 
 //Main Control Unit Select
@@ -461,7 +461,7 @@
 //通讯规约使能
 #define DLT645_ENABLE					1
 #if DLT645_ENABLE
-	#define DLT645_DEBUG_ENABLE			0
+	#define DLT645_DEBUG_ENABLE			1
 #endif
 
 #define GW3762_ENABLE					0

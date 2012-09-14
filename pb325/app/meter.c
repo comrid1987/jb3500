@@ -38,15 +38,23 @@
 
 
 //Private Typedefs
-
+#define METER_DEBUG_ENABLE			1
 
 //Private Consts
 
 
+//Private Macors
+#if METER_DEBUG_ENABLE
+#define meter_DbgOut				dbg_trace
+#else
+#define meter_DbgOut(...)
+#endif
 
 
 //Private Variables
 static t_ecl_task ecl_Task485;
+
+
 
 
 //Internal Functions
@@ -117,9 +125,11 @@ void tsk_Meter(void *args)
 			nTemp = 0xC040;
 			dlt645_Packet2Buf(b, xPM.madr, DLT645_CODE_READ97, &nTemp, 2);
 			if (ecl_485_RealRead(b, 1200, 2) == SYS_R_OK) {
+				meter_DbgOut("<Meter%d> Read %X", p->sn, b->p[4]);
 				nTemp = 1;
 				if (evt_DlqQlStateGet(p->sn, aBuf) == SYS_R_OK) {
-					if (memcmp(aBuf, &b->p[4], 1))
+					meter_DbgOut("<Meter%d> State %X", p->sn, aBuf[0]);
+					if (aBuf[0] != b->p[4])
 						evt_ERC5(p->sn, aBuf, &b->p[4]);
 					else
 						nTemp = 0;

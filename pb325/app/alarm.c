@@ -10,6 +10,7 @@
 
 //Private Defines
 #define EVT_LOCK_ENABLE			1
+#define EVT_DEBUG_ENABLE		1
 #define EVT_MAGIC_WORD			0x67527920
 
 #define EVT_SIZE				128
@@ -58,6 +59,11 @@ static os_sem evt_sem;
 #define evt_Unlock()
 #endif
 
+#if EVT_DEBUG_ENABLE
+#define evt_DbgOut				dbg_trace
+#else
+#define evt_DbgOut(...)
+#endif
 
 //Private Consts
 t_flash_blk _tbl_evt_SfsDev[] = {
@@ -337,6 +343,7 @@ void evt_ERC5(uint_t nTn, const void *pOld, const void *pNew)
 	uint_t nAtt;
 
 	nAtt = evt_Attrib(5);
+	evt_DbgOut("<ERC5> Attrib %d", nAtt);
 	if (nAtt) {
 		gw3761_ConvertData_15(aBuf, rtc_GetTimet());
 		memcpy(&aBuf[5], &nTn, 2);
