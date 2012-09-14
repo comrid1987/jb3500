@@ -138,8 +138,10 @@ void tsk_Meter(void *args)
 					else
 						nTemp = 0;
 				}
-				if (nTemp)
-					evt_DlqQlParaSet(p->sn, &b->p[5]);
+				if (nTemp) {
+					memcpy(aBuf, &b->p[5], 11);
+					evt_DlqQlParaSet(p->sn, aBuf);
+				}
 			}
 			buf_Release(b);
 		}

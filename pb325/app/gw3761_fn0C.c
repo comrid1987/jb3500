@@ -100,12 +100,12 @@ static t_ecl_rtdi07 tbl_Di07_Afn0CF36[] = {
 };
 
 static t_ecl_rtdi07 tbl_DiSY_Afn0CF64[] = {
-	0,	ECL_RTR_T_DLQ_RTDATA,		0x02FF0000, //电压电流
+	0,	ECL_RTR_T_DLQ_RTDATA,	0x02FF0000, //电压电流
 	0,	ECL_RTR_T_DLQ_STATE, 	0x02FF0000, //状态
 };
 
 static t_ecl_rtdi97 tbl_DiQL_Afn0CF64[] = {
-	0,	ECL_RTR_T_DLQ_RTDATA,		0xB66F,	//电压电流
+	0,	ECL_RTR_T_DLQ_RTDATA,	0xB66F,	//电压电流
 	0,	ECL_RTR_T_DLQ_STATE,	0xC04F,	//状态
 };
 
@@ -232,6 +232,9 @@ static int gw3761_Afn0C_97RealRead(buf b, t_afn04_f10 *pF10, t_ecl_rtdi97 *p, ui
 					buf_Push(b, pTemp, 2);
 				}
 				buf_PushData(b, nLen, 1);
+				break;
+			case ECL_RTR_T_DLQ_STATE:
+				buf_Push(b, &pTemp[1], nLen);
 				break;
 			default:
 				buf_Push(b, pTemp, nLen);
