@@ -448,18 +448,19 @@ void stat_Handler(p_stat ps, t_acm_rtdata *pa, t_afn04_f26 *pF26, t_afn04_f28 *p
 void tsk_Acm(void *args)
 {
 	time_t tTime;
-	int nMin= -1;
-	uint_t nCnt;
-	uint8_t aBuf[6];
+	uint_t nCnt, nTemp;
+	uint8_t nMin, aTime[6];
 	t_afn04_f26 xF26;
+	t_data_min xMin;
 	
 	acm_Init();
-	nMin = rtc_pTm()->tm_min;
+	nMin = 0xFF;
 	for (nCnt = 0; ; os_thd_Slp1Tick()) {
 		//Ãëcount
 		if (tTime == rtc_GetTimet())
 			continue;
 		tTime = rtc_GetTimet();
+		timet2array(tTime, aTime, 1);
 		if ((nCnt & 0x3F) == 0)
 			icp_ParaRead(4, 26, TERMINAL, &xF26, sizeof(t_afn04_f26));
  		if ((nCnt & 0x0F) == 0)
@@ -470,13 +471,24 @@ void tsk_Acm(void *args)
 		}
 		nCnt += 1;
 		//·ÖÖÓ
-		if (nMin != rtc_pTm()->tm_min) {
-			nMin = rtc_pTm()->tm_min;
+		if (nMin != aTime[1]) {
+			nMin = aTime[1];
 			evt_RunTimeWrite(tTime);
-			timet2array(tTime, aBuf, 1);
-			acm_MinSave(aBuf);
-			if ((nMin % 15) == 0)
-				acm_QuarterSave(aBuf);
+			acm_MinSave(aTime);
+			nTemp = bcd2bin8(aTime[1]);
+			if ((nTemp % 15) == 0)
+				acm_QuarterSave(aTime);
+#if 1
+			//²¹¶³½á
+			timet2array(tTime - 60, aTime, 1);
+			data_MinRead(aTime, &xMin);
+			if (xMin.time == GW3761_DATA_INVALID) {
+				acm_MinSave(aTime);
+				nTemp = bcd2bin8(aTime[1]);
+				if ((nTemp % 15) == 0)
+					acm_QuarterSave(aTime);
+			}
+#endif
 		}
 	}
 }
