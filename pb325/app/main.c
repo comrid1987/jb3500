@@ -95,15 +95,16 @@ void tsk_Idle(void *args)
 void app_Entry()
 {
 
+	os_thd_Create(Daemon, 200);
+
 	icp_Init();
 	evt_Init();
 
-	os_thd_Create(Daemon, 160);
-	os_thd_Create(Display, 140);
-	os_thd_Create(Acm, 120);
-	os_thd_Create(Upcom1, 100);
-	os_thd_Create(Upcom2, 80);
-	os_thd_Create(Meter, 60);
+	os_thd_Create(Display, 180);
+	os_thd_Create(Acm, 160);
+	os_thd_Create(Upcom1, 140);
+	os_thd_Create(Upcom2, 120);
+	os_thd_Create(Meter, 100);
 	os_thd_Create(Idle, 20);
 }
 
