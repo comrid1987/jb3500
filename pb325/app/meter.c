@@ -119,7 +119,7 @@ void tsk_Meter(void *args)
 			if (ecl_485_RealRead(b, 1200, 2) == SYS_R_OK) {
 				nTemp = 1;
 				if (evt_DlqQlStateGet(p->sn, aBuf) == SYS_R_OK) {
-					if (memcmp(aBuf, &b->p[4], 3))
+					if (memcmp(aBuf, &b->p[4], 1))
 						evt_ERC5(p->sn, aBuf, &b->p[4]);
 					else
 						nTemp = 0;
