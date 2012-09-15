@@ -95,7 +95,7 @@ void tsk_Idle(void *args)
 void app_Entry()
 {
 
-	os_thd_Create(Daemon, 200);
+	os_thd_Create(Daemon, 220);
 
 	icp_Init();
 	evt_Init();
