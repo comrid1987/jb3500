@@ -10,7 +10,7 @@
 
 //Private Defines
 #define EVT_LOCK_ENABLE			1
-#define EVT_DEBUG_ENABLE		1
+#define EVT_DEBUG_ENABLE		0
 #define EVT_MAGIC_WORD			0x67527920
 
 #define EVT_SIZE				128

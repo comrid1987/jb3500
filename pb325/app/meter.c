@@ -8,6 +8,8 @@
 #include "acm.h"
 
 //Private Defines
+#define METER_DEBUG_ENABLE			0
+
 #define DLT645_ITEM_T_OTHER			0
 
 #define DLT645_ITEM_T_SDEC_2		1
@@ -38,7 +40,6 @@
 
 
 //Private Typedefs
-#define METER_DEBUG_ENABLE			1
 
 //Private Consts
 

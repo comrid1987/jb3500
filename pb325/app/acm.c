@@ -470,6 +470,8 @@ void tsk_Acm(void *args)
 			evt_Terminal(&xF26);
 		}
 		nCnt += 1;
+		//“£–≈
+		evt_YXRead();
 		//∑÷÷”
 		if (nMin != aTime[1]) {
 			nMin = aTime[1];
