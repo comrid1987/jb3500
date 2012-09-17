@@ -8,7 +8,7 @@
 
 //In application
 extern void app_Entry(void);
-
+extern void app_Daemon(uint_t nCnt);
 
 
 
@@ -188,16 +188,27 @@ void sys_Maintain()
 }
 
 
-struct rt_timer timer_daemon;
+static struct rt_timer timer_daemon;
 void sys_Daemon(void *args)
 {
+	static uint_t nCnt = 0;
 
+#if WDG_ENABLE
+	if ((nCnt & 0x07) == 0)
+		wdg_Reload(1);
+#endif
+	if ((nCnt % 10) == 0) {
 #if RTC_ENABLE
-	rtc_OsTick();
+		rtc_OsTick();
 #endif
 #if BATTERY_ENABLE
-	bat_Maintain();
+		bat_Maintain();
 #endif
+	}
+
+	app_Daemon(nCnt);
+
+	nCnt += 1;
 }
 #endif
 
@@ -207,7 +218,7 @@ void sys_Init()
 
 	//创建系统守护定时(1S)
 #if OS_TYPE
-	rt_timer_init(&timer_daemon, "daemon", sys_Daemon, NULL, 1000 / OS_TICK_MS, RT_TIMER_FLAG_PERIODIC);
+	rt_timer_init(&timer_daemon, "daemon", sys_Daemon, NULL, 100 / OS_TICK_MS, RT_TIMER_FLAG_PERIODIC);
 	rt_timer_start(&timer_daemon);
 #endif
 
