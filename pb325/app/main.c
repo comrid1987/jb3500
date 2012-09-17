@@ -10,7 +10,6 @@
 #include "acm.h"
 
 //Private Defines
-#define APP_DAEMON_TIMER			1
 
 
 //Public Variables
@@ -41,22 +40,29 @@ sys_res sys_IsUsbFormat()
 
 
 
-#if APP_DAEMON_TIMER
-static struct rt_timer timer_app_daemon;
-void timer_Daemon(void *args)
+void tsk_Idle(void *args)
+{
+	os_que que;
+
+	for (; ; ) {
+		que = os_que_Wait(QUE_EVT_USER_EVT, NULL, 1000);
+		if (que != NULL) {
+			os_que_Release(que);
+			data_Copy2Udisk();
+		}
+	}
+}
+
+void app_Daemon(uint_t nCnt)
 {
 	uint_t nTemp;
-	static uint_t nCnt = 0, nRstCnt = 0;
+	static uint_t nRstCnt = 0;
 
-	//看门狗
-#if WDG_ENABLE
-	wdg_Reload(1);
-#endif
 	//运行指示灯
 	if (g_sys_status & BITMASK(SYS_STATUS_UART))
 		nTemp = 1;
 	else
-		nTemp = 3;
+		nTemp = 7;
 	if ((nCnt & nTemp) == 0)
 		LED_RUN(1);
 	if ((nCnt & nTemp) == 1)
@@ -72,67 +78,11 @@ void timer_Daemon(void *args)
 				sys_Reset();
 		}
 	}
-	nCnt += 1;
-}
-#else
-os_thd_declare(Daemon, 512);
-void tsk_Daemon(void *args)
-{
-	uint_t nTemp, nCnt, nRstCnt = 0;
-
-    for (nCnt = 0; ; nCnt++) {
-		os_thd_Sleep(200);
-		//看门狗
-#if WDG_ENABLE
-		wdg_Reload(1);
-#endif
-		//运行指示灯
-		if (g_sys_status & BITMASK(SYS_STATUS_UART))
-			nTemp = 1;
-		else
-			nTemp = 3;
-		if ((nCnt & nTemp) == 0)
-			LED_RUN(1);
-		if ((nCnt & nTemp) == 1)
-			LED_RUN(0);
-		//2小时无通讯复位终端
-		if ((nCnt & 0xFF) == 0) {
-			if (g_sys_status & BITMASK(SYS_STATUS_LOGIN)) {
-				CLRBIT(g_sys_status, SYS_STATUS_LOGIN);
-				nRstCnt = 0;
-			} else {
-				nRstCnt += 1;
-				if (nRstCnt > 300)
-					sys_Reset();
-			}
-		}
-	}
-}
-#endif
-
-void tsk_Idle(void *args)
-{
-	os_que que;
-
-	for (; ; ) {
-		que = os_que_Wait(QUE_EVT_USER_EVT, NULL, 1000);
-		if (que != NULL) {
-			os_que_Release(que);
-			data_Copy2Udisk();
-		}
-	}
 }
 
 
 void app_Entry()
 {
-
-#if APP_DAEMON_TIMER
-	rt_timer_init(&timer_app_daemon, "aDaemon", timer_Daemon, NULL, 200 / OS_TICK_MS, RT_TIMER_FLAG_PERIODIC);
-	rt_timer_start(&timer_app_daemon);
-#else
-	os_thd_Create(Daemon, 220);
-#endif
 
 	icp_Init();
 	evt_Init();
