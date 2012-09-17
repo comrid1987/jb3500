@@ -46,7 +46,7 @@ static struct rt_timer timer_app_daemon;
 void timer_Daemon(void *args)
 {
 	uint_t nTemp;
-	static uint_t nCnt, nRstCnt = 0;
+	static uint_t nCnt = 0, nRstCnt = 0;
 
 	//ø¥√≈π∑
 #if WDG_ENABLE
@@ -72,6 +72,7 @@ void timer_Daemon(void *args)
 				sys_Reset();
 		}
 	}
+	nCnt += 1;
 }
 #else
 os_thd_declare(Daemon, 512);
