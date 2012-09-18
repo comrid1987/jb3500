@@ -34,9 +34,13 @@ void tsk_Upcom1(void *args)
 			icp_ParaRead(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
 			p->rtua = xF85.area;
 			p->terid = xF85.addr;
+#if 0
 			icp_ParaRead(4, 1, TERMINAL, &xF1, sizeof(t_afn04_f1));
 			if (xF1.span < 1)
 				xF1.span = 1;
+#else
+			xF1.span = 2;
+#endif
 			p->parent.tmo = 5;
 			p->parent.retry = 3;
 			p->parent.refresh = xF1.span * 60;
