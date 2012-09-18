@@ -123,10 +123,12 @@ t_flash_dev evt_SfsDev = {
 
 static void evt_Format()
 {
+	time_t tTime;
 
 	sfs_Init(&evt_SfsDev);
 	sfs_Write(&evt_SfsDev, EVT_MAGIC_WORD, NULL, 0);
-	evt_RunTimeWrite(rtc_GetTimet());
+	tTime = rtc_GetTimet();
+	sfs_Write(&evt_SfsDev, EVT_RUNTIME_ADDR, &tTime, sizeof(time_t));
 }
 
 static int evt_Attrib(uint_t nERC)
@@ -149,8 +151,8 @@ static void evt_Save(uint_t nERC, const void *pBuf, uint_t nLen, uint_t nAtt)
 	uint8_t aBuf[EVT_SIZE];
 	uint64_t nFlag = 0;
 
-	nAtt -= 1;
 	evt_Lock();
+	nAtt -= 1;
 	sfs_Read(&evt_SfsDev, EVT_CNT_ADDR + nAtt, &nCnt);
 	if (nCnt >= EVT_QTY) {
 		nCnt &= (EVT_QTY - 1);
@@ -172,7 +174,6 @@ static void evt_Save(uint_t nERC, const void *pBuf, uint_t nLen, uint_t nAtt)
 	}
 	evt_Unlock();
 }
-
 
 
 //版本变更事件
@@ -715,7 +716,6 @@ uint_t evt_YXRead()
 {
 	uint_t i, nValid, nFlag, nRead;
 
-	evt_Lock();
 	nRead = 0;
 	for (i = 0; i < 3; i++) {
 		if (gpio_Read(4 + i))
@@ -742,7 +742,6 @@ uint_t evt_YXRead()
 	}
 	if (nValid)
 		sfs_Write(&evt_SfsDev, EVT_YX_ADDR, &nRead, 2);
-	evt_Unlock();
 	return nRead;
 }
 
@@ -820,7 +819,6 @@ int evt_Read(buf b, uint_t nPm, uint_t nPn, uint_t nIsNormal)
 	uint_t i, nCnt = 0, nCycle = 0, nStart, nLast, nLen;
 	uint8_t aBuf[EVT_SIZE];
 
-	evt_Lock();
 	if (nPm > nPn)
 		nPn += 256;
 	sfs_Read(&evt_SfsDev, EVT_CNT_ADDR + nIsNormal, &nCnt);
@@ -846,7 +844,6 @@ int evt_Read(buf b, uint_t nPm, uint_t nPn, uint_t nIsNormal)
 		nLast = i + 1;
 	}
 	b->p[nLen] = nLast - nStart;
-	evt_Unlock();
 	return (i - (nStart + nPm));
 }
 

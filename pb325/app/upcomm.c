@@ -123,9 +123,10 @@ void tsk_Upcom2(void *args)
 	dlrcp_SetChl(&rcp_GD5100.parent, CHL_T_SOC_TS, 777, 0, 0, 0, 0);
 
 	for (; ; ) {
-		for (p = &rcp_aGw3761[1]; p <= pEnd; p++)
-		if (gw3761_Handler(p) == SYS_R_OK)
-			SETBIT(g_sys_status, SYS_STATUS_LOGIN);
+		for (p = &rcp_aGw3761[1]; p <= pEnd; p++) {
+			if (gw3761_Handler(p) == SYS_R_OK)
+				SETBIT(g_sys_status, SYS_STATUS_LOGIN);
+		}
 		if (gd5100_Handler(&rcp_GD5100) == SYS_R_OK) {
 			SETBIT(g_sys_status, SYS_STATUS_LOGIN);
 			gd5100_Response(&rcp_GD5100);
