@@ -232,25 +232,25 @@ static void disp_Handle(uint_t nSel)
 	//ht1621_Write(iConUnit,Usb);		//wei£ºUsbÏÔÊ¾
 	switch (nSel) {
     case Dis_Va:		//Vrms_A
-    	ht1621_Write(iConPhase, Icon_A);	
+    	ht1621_Write(iConPhase, Icon_A);
 		nTemp = pD->u[0] * 1000;
-		Display_Vrms(nTemp);			
+		Display_Vrms(nTemp);
 		break;
 	case Dis_Vb:		//Vrms_B
-		ht1621_Write(iConPhase, Icon_B);	
+		ht1621_Write(iConPhase, Icon_B);
 		nTemp = pD->u[1] * 1000;
 		Display_Vrms(nTemp);
 		break;
 	case Dis_Vc:		//Vrms_C
-		ht1621_Write(iConPhase, Icon_C);	
+		ht1621_Write(iConPhase, Icon_C);
 		nTemp = pD->u[2] * 1000;
 		Display_Vrms(nTemp);
 		break;
 	case Dis_In:		//	Irms_ABC
 		ht1621_Write(iConPhase, Icon_Sum);
 		nTemp = pD->i[3] * 1000;
-		Display_Irms(nTemp);	
-		break;						 
+		Display_Irms(nTemp);
+		break;
 	case Dis_Ia:		// Irms_A
 		ht1621_Write(iConPhase, Icon_A);
 		nTemp = pD->i[0] * 1000;
@@ -259,17 +259,17 @@ static void disp_Handle(uint_t nSel)
 	case Dis_Ib:		// Irms_B
 		ht1621_Write(iConPhase, Icon_B);
 		nTemp = pD->i[1] * 1000;
-		Display_Irms(nTemp);		
+		Display_Irms(nTemp);
 		break;
 	case Dis_Ic:		//	Irms_C
-		ht1621_Write(iConPhase, Icon_C);	
+		ht1621_Write(iConPhase, Icon_C);
 		nTemp = pD->i[2] * 1000;
-		Display_Irms(nTemp);		
+		Display_Irms(nTemp);
 		break;
 	case Dis_Pa:		//P_A
         ht1621_Write(iConPhase, Icon_A);
 		nTemp = pD->pp[1] * 1000;
-		Display_Power_P(nTemp);		
+		Display_Power_P(nTemp);
         break;
 	case Dis_Pb:		//P_B
         ht1621_Write(iConPhase, Icon_B);
@@ -277,12 +277,12 @@ static void disp_Handle(uint_t nSel)
 		Display_Power_P(nTemp);
         break;
     case Dis_Pc:		//P_C
-        ht1621_Write (iConPhase, Icon_C);		   
+        ht1621_Write (iConPhase, Icon_C);
 		nTemp = pD->pp[3] * 1000;
 		Display_Power_P(nTemp); 
         break;
     case Dis_Pn:		//P_ABC
-        ht1621_Write(iConPhase, Icon_Sum);		   
+        ht1621_Write(iConPhase, Icon_Sum);
 		nTemp = pD->pp[0] * 1000;
 		Display_Power_P(nTemp); 
         break;
@@ -292,49 +292,49 @@ static void disp_Handle(uint_t nSel)
 		Display_Power_Q(nTemp); 	
         break;
     case Dis_Qb:		//Q_B
-        ht1621_Write(iConPhase, Icon_B);	
+        ht1621_Write(iConPhase, Icon_B);
 		nTemp = pD->pq[2] * 1000;
 		Display_Power_Q(nTemp);
         break;
     case Dis_Qc:		//Q_C
-        ht1621_Write(iConPhase, Icon_C);	
+        ht1621_Write(iConPhase, Icon_C);
 		nTemp = pD->pq[3] * 1000;
 		Display_Power_Q(nTemp);
         break;
 	 case Dis_Qn:		//Q_ABC
 		ht1621_Write(iConPhase, Icon_Sum);
 		nTemp = pD->pq[0] * 1000;
-		Display_Power_Q(nTemp); 	
+		Display_Power_Q(nTemp); 
         break;
 	case Dis_PQa:		//PQ_A
 	    ht1621_Write(iConUnit, BLANK);
-		ht1621_Write(iDPS, DP_4);			
+		ht1621_Write(iDPS, DP_4);
 		nTemp = pD->cos[1] * 1000;
 		ht1621_Write(iConList, PPF);
-        ht1621_Write(iConPhase, Icon_A);						
+        ht1621_Write(iConPhase, Icon_A);
 		Display_Number(nTemp, 4, 4);  // Display upto six digits.
 	    break;
 	case Dis_PQb:		//PQ_B
-		ht1621_Write(iDPS, DP_4);			
+		ht1621_Write(iDPS, DP_4);
 		nTemp = pD->cos[2] * 1000;
 		ht1621_Write(iConList, PPF);
-        ht1621_Write(iConPhase, Icon_B);						
+        ht1621_Write(iConPhase, Icon_B);
 		Display_Number(nTemp, 4, 4);  // Display upto six digits.
 	    break;
 	case Dis_PQc:		//PQ_C
-		ht1621_Write(iDPS, DP_4);			
+		ht1621_Write(iDPS, DP_4);
 		nTemp = pD->cos[3] * 1000;
 		ht1621_Write(iConList, PPF);
-        ht1621_Write(iConPhase, Icon_C);						
-		Display_Number(nTemp, 4, 4);  // Display upto six digits.			
+        ht1621_Write(iConPhase, Icon_C);
+		Display_Number(nTemp, 4, 4);  // Display upto six digits.
 		break;		
 	case Dis_PQn:		//PQ_ABC
-		ht1621_Write(iDPS, DP_4);			
+		ht1621_Write(iDPS, DP_4);
 		nTemp = pD->cos[0] * 1000;
 		ht1621_Write(iConList, PPF);
 		ht1621_Write(iConCheck, BLANK);
-        ht1621_Write(iConPhase, Icon_Sum);						
-		Display_Number(nTemp, 4, 4);  // Display upto six digits.			
+        ht1621_Write(iConPhase, Icon_Sum);
+		Display_Number(nTemp, 4, 4);  // Display upto six digits.
 		break;
 	case Dis_Addr1:
 		ht1621_Write(iConPhase, BLANK);
@@ -352,13 +352,13 @@ static void disp_Handle(uint_t nSel)
 		ht1621_Write(iDPS, BLANK);
 		ht1621_Write(iDIGIT5, BLANK);
 		ht1621_Write(iDIGIT6, BLANK);
-		ht1621_Write(iConCheck, IconAddr);	
+		ht1621_Write(iConCheck, IconAddr);
 		icp_ParaRead(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
         Display_BCD_Addr(xF85.addr);
 		break;
 	case Dis_Time:		//Time
 		ht1621_Write(iConPhase, BLANK);
-		ht1621_Write(iConList, BLANK);			
+		ht1621_Write(iConList, BLANK);
 		ht1621_Write(iConCheck, IconTime);
 		ht1621_Write(iDPS, DP_1 | DP_3 | DP_5 | DP_6);
 		Display_Time(rtc_pTm());
