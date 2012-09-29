@@ -405,7 +405,6 @@ static int gw3761_Afn0C_F34(buf b, uint_t nDa, uint_t nMask)
 static int gw3761_Afn0C_F35(buf b, uint_t nDa)
 {
 	t_afn04_f10 xPM;
-	uint_t nIs3P;
 	uint8_t aBuf[5];
 	t_ecl_rtdi97 *pR97;
 	t_ecl_rtdi07 *pR07;
@@ -422,14 +421,14 @@ static int gw3761_Afn0C_F35(buf b, uint_t nDa)
 		switch (xPM.prtl) {
 		case ECL_PRTL_DLT645_97:
 			for (pR97 = tbl_Di97_Afn0CF35; pR97 < ARR_ENDADR(tbl_Di97_Afn0CF35); pR97++) {
-				gw3761_Afn0C_97RealRead(b, &xPM, pR97, nIs3P);
+				gw3761_Afn0C_97RealRead(b, &xPM, pR97, 1);
 			}
 			break;
 		case ECL_PRTL_DLQ_SY:
 			break;
 		default:
 			for (pR07 = tbl_Di07_Afn0CF35; pR07 < ARR_ENDADR(tbl_Di07_Afn0CF35); pR07++) {
-				gw3761_Afn0C_07RealRead(b, &xPM, pR07, nIs3P);
+				gw3761_Afn0C_07RealRead(b, &xPM, pR07, 1);
 			}
 			break;
 		}
@@ -441,7 +440,6 @@ static int gw3761_Afn0C_F35(buf b, uint_t nDa)
 static int gw3761_Afn0C_F36(buf b, uint_t nDa)
 {
 	t_afn04_f10 xPM;
-	uint_t nIs3P;
 	uint8_t aBuf[5];
 	t_ecl_rtdi97 *pR97;
 	t_ecl_rtdi07 *pR07;
@@ -458,12 +456,12 @@ static int gw3761_Afn0C_F36(buf b, uint_t nDa)
 		switch (xPM.prtl) {
 		case ECL_PRTL_DLT645_97:
 			for (pR97 = tbl_Di97_Afn0CF36; pR97 < ARR_ENDADR(tbl_Di97_Afn0CF36); pR97++) {
-				gw3761_Afn0C_97RealRead(b, &xPM, pR97, nIs3P);
+				gw3761_Afn0C_97RealRead(b, &xPM, pR97, 1);
 			}
 			break;
 		default:
 			for (pR07 = tbl_Di07_Afn0CF36; pR07 < ARR_ENDADR(tbl_Di07_Afn0CF36); pR07++) {
-				gw3761_Afn0C_07RealRead(b, &xPM, pR07, nIs3P);
+				gw3761_Afn0C_07RealRead(b, &xPM, pR07, 1);
 			}
 			break;
 		}
