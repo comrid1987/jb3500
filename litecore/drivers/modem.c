@@ -241,8 +241,6 @@ static sys_res modem_InitCmd(p_modem p)
 	}
 	if (i >= 20)
 		return SYS_R_TMO;
-	if (modem_SendCmd(p, "AT+CREG?\r", "OK\r", 20) != SYS_R_OK)
-		return SYS_R_TMO;
 	//获得信号强度
 	for (i = 0; i < 20; i++) {
 		p->signal = 0;
