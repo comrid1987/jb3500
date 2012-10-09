@@ -412,7 +412,7 @@ int gw3761_ResponseSetParam(p_gw3761 p)
 		}
 	}
 	if (res) {
-		evt_ERC3(p->parent.msta, &uDu);
+		evt_ERC3(p->msa, &uDu);
 		gw3761_TmsgConfirm(p);
 	} else
 		gw3761_TmsgReject(p);

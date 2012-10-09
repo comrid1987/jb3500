@@ -130,6 +130,7 @@
         <tRmem>1</tRmem>
         <tRfunc>0</tRfunc>
         <tRbox>1</tRbox>
+        <tRtrace>0</tRtrace>
         <sRunDeb>0</sRunDeb>
         <sLrtime>0</sLrtime>
         <nTsel>7</nTsel>
@@ -169,15 +170,32 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>JL2CM3</Key>
-          <Name>-U11111117 -O105 -S0 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST0 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -TB1 -TFE0 -FO11 -FD20000000 -FC800 -FN1 -FF0LM3S_256 -FS00 -FL040000</Name>
+          <Name>-U11111117 -O105 -S0 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST0 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8004 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -TB1 -TFE0 -FO11 -FD20000000 -FC800 -FN1 -FF0LM3S_256 -FS00 -FL040000</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
-      <Breakpoint/>
+      <Breakpoint>
+        <Bp>
+          <Number>0</Number>
+          <Type>0</Type>
+          <LineNumber>282</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>90822</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>D:\Workspace\litecore\drivers\modem.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\pb325\../litecore/drivers/modem.c\282</Expression>
+        </Bp>
+      </Breakpoint>
       <MemoryWindow1>
         <Mm>
           <WinNumber>1</WinNumber>
-          <SubType>0</SubType>
-          <ItemText>0x20009288</ItemText>
+          <SubType>8</SubType>
+          <ItemText>0x20008E50</ItemText>
         </Mm>
       </MemoryWindow1>
       <MemoryWindow2>
@@ -220,6 +238,9 @@
         <newCpu>0</newCpu>
         <uProt>0</uProt>
       </DebugFlag>
+      <Tracepoint>
+        <THDelay>0</THDelay>
+      </Tracepoint>
       <LintExecutable></LintExecutable>
       <LintConfigFile></LintConfigFile>
     </TargetOption>
@@ -230,6 +251,7 @@
     <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
+    <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>1</GroupNumber>
       <FileNumber>1</FileNumber>
@@ -243,6 +265,8 @@
       <bDave2>0</bDave2>
       <PathWithFileName>..\litecore\litecore.c</PathWithFileName>
       <FilenameWithoutPath>litecore.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>1</GroupNumber>
@@ -257,6 +281,8 @@
       <bDave2>0</bDave2>
       <PathWithFileName>..\litecore\arch\cm3\lm3s\start_rvds.S</PathWithFileName>
       <FilenameWithoutPath>start_rvds.S</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>1</GroupNumber>
@@ -271,6 +297,8 @@
       <bDave2>0</bDave2>
       <PathWithFileName>..\litecore\arch\cm3\context_rvds.S</PathWithFileName>
       <FilenameWithoutPath>context_rvds.S</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>1</GroupNumber>
@@ -285,6 +313,8 @@
       <bDave2>0</bDave2>
       <PathWithFileName>..\litecore\arch\cm3\lm3s\driverlib\rvmdk\driverlib-cm3.lib</PathWithFileName>
       <FilenameWithoutPath>driverlib-cm3.lib</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>1</GroupNumber>
@@ -299,6 +329,8 @@
       <bDave2>0</bDave2>
       <PathWithFileName>.\config\TCP_CM3.lib</PathWithFileName>
       <FilenameWithoutPath>TCP_CM3.lib</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
     </File>
   </Group>
 
@@ -307,6 +339,7 @@
     <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
+    <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>2</GroupNumber>
       <FileNumber>6</FileNumber>
@@ -315,11 +348,13 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>81</TopLine>
+      <TopLine>82</TopLine>
       <CurrentLine>99</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\main.c</PathWithFileName>
       <FilenameWithoutPath>main.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
@@ -334,6 +369,8 @@
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\gd5100_code.c</PathWithFileName>
       <FilenameWithoutPath>gd5100_code.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
@@ -348,6 +385,8 @@
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\gw3761_fn01.c</PathWithFileName>
       <FilenameWithoutPath>gw3761_fn01.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
@@ -355,13 +394,15 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>23</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>405</TopLine>
+      <CurrentLine>415</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\gw3761_fn040A.c</PathWithFileName>
       <FilenameWithoutPath>gw3761_fn040A.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
@@ -376,6 +417,8 @@
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\gw3761_fn05.c</PathWithFileName>
       <FilenameWithoutPath>gw3761_fn05.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
@@ -390,6 +433,8 @@
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\gw3761_fn09.c</PathWithFileName>
       <FilenameWithoutPath>gw3761_fn09.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
@@ -397,13 +442,15 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>56</ColumnNumber>
+      <ColumnNumber>4</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>449</TopLine>
-      <CurrentLine>464</CurrentLine>
+      <TopLine>458</TopLine>
+      <CurrentLine>468</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\gw3761_fn0C.c</PathWithFileName>
       <FilenameWithoutPath>gw3761_fn0C.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
@@ -418,6 +465,8 @@
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\gw3761_fn0D.c</PathWithFileName>
       <FilenameWithoutPath>gw3761_fn0D.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
@@ -432,6 +481,8 @@
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\gw3761_fn0E.c</PathWithFileName>
       <FilenameWithoutPath>gw3761_fn0E.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
@@ -446,6 +497,8 @@
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\gw3761_fn0F.c</PathWithFileName>
       <FilenameWithoutPath>gw3761_fn0F.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
@@ -460,6 +513,8 @@
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\gw3761_fn10.c</PathWithFileName>
       <FilenameWithoutPath>gw3761_fn10.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
@@ -467,13 +522,15 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>21</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>2</TopLine>
-      <CurrentLine>7</CurrentLine>
+      <TopLine>77</TopLine>
+      <CurrentLine>99</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\upcomm.c</PathWithFileName>
       <FilenameWithoutPath>upcomm.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
@@ -488,6 +545,8 @@
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\alarm.c</PathWithFileName>
       <FilenameWithoutPath>alarm.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
@@ -502,6 +561,8 @@
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\acm.c</PathWithFileName>
       <FilenameWithoutPath>acm.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
@@ -516,6 +577,8 @@
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\meter.c</PathWithFileName>
       <FilenameWithoutPath>meter.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
@@ -530,6 +593,8 @@
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\para.c</PathWithFileName>
       <FilenameWithoutPath>para.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
@@ -544,6 +609,8 @@
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\data.c</PathWithFileName>
       <FilenameWithoutPath>data.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
@@ -553,11 +620,13 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>377</TopLine>
+      <TopLine>380</TopLine>
       <CurrentLine>384</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\display.c</PathWithFileName>
       <FilenameWithoutPath>display.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
     </File>
   </Group>
 

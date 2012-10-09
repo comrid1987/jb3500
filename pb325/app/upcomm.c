@@ -28,7 +28,7 @@ void tsk_Upcom1(void *args)
 	t_afn04_f85 xF85;
 
 	p = &rcp_aGw3761[0];
-	gw3761_Init(p, 1);
+	gw3761_Init(p);
 	for (nCnt = 0; ; ) {
 		if ((nCnt & 0x3F) == 0) {
 			icp_ParaRead(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
@@ -96,7 +96,7 @@ void tsk_Upcom2(void *args)
 
 	icp_ParaRead(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
 	for (p = &rcp_aGw3761[1]; p < ARR_ENDADR(rcp_aGw3761); p++) {
-		gw3761_Init(p, 1);
+		gw3761_Init(p);
 		p->rtua = xF85.area;
 		p->terid = xF85.addr;
 		p->parent.tmo = 5;
