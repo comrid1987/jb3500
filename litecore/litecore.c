@@ -216,11 +216,14 @@ dque	dqueue = {ARR_SIZE(__dqueue), __dqueue};
 #if GD5100_ENABLE
 #include <cp/gd5100.c>
 #endif
-#if GW3761_ENABLE
-#include <cp/gw376/gw3761.c>
+#if GDVMS_ENABLE
+#include <cp/gdvms.c>
 #endif
 #if GDFTS_ENABLE
 #include <cp/gdfts.c>
+#endif
+#if GW3761_ENABLE
+#include <cp/gw376/gw3761.c>
 #endif
 
 #if RTP_ENABLE

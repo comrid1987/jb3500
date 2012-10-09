@@ -72,8 +72,9 @@ uint_t bits1(uint_t i)
 {
 	uint_t j;
 	
-	for (j = 0; i; i &= (i - 1))
+	for (j = 0; i; i &= (i - 1)) {
 		j += 1;
+	}
 	return j;
 }
 
