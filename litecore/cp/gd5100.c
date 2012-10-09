@@ -17,20 +17,6 @@
 
 
 //Private Typedef
-#if GD_RCP_DIANYA
-typedef __packed struct {
-	uint8_t		sc1;			//0x68
-	uint16_t	rtua;			//地市区县码
-	uint8_t		terid[4];		//终端地址
-	uint8_t		fseq;			//帧序号
-	uint8_t		iseq;			//帧内序号
-	uint8_t		sc2;			//0x68
-	uint8_t		code : 6,		//控制码
-				abn : 1,		//异常标志
-				dir : 1;		//传送方向
-	uint16_t	len;			//数据长度
-}t_gd5100_header, *p_gd5100_header;
-#else
 typedef __packed struct {
 	uint8_t		sc1;			//0x68
 	uint16_t	rtua;			//地市区县码
@@ -44,7 +30,6 @@ typedef __packed struct {
 				dir : 1;		//传送方向
 	uint16_t	len;			//数据长度
 }t_gd5100_header, *p_gd5100_header;
-#endif
 
 
 //Internal Functions

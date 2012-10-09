@@ -16,6 +16,7 @@ extern "C" {
 #include <cp/dlrcp.h>
 
 #include <cp/gd5100.h>
+#include <cp/gdvms.h>
 #include <cp/gw376/gw3761.h>
 #include <cp/gw376/gw3762.h>
 
