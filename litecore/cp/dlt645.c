@@ -57,8 +57,9 @@ void dlt645_Packet2Buf(buf b, const void *pAdr, uint_t nC, const void *pData, ui
 	buf_PushData(b, nC, 1);
 	buf_PushData(b, nLen, 1);
 	//数据0x33处理
-	for (i = nLen; i; i--, pBuf++)
+	for (i = nLen; i; i--, pBuf++) {
 		buf_PushData(b, *pBuf + 0x33, 1);
+	}
 	buf_PushData(b, 0x1600 | cs8(b->p, b->len), 2);
 }
 

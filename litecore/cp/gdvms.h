@@ -1,5 +1,5 @@
-#ifndef __GD5100_H__
-#define __GD5100_H__
+#ifndef __GDVMS_H__
+#define __GDVMS_H__
 
 
 //Public Defines
@@ -30,14 +30,15 @@
 typedef struct {
  	uint16_t	rtua;			//地市区县码
  	uint16_t	terid;			//终端地址
- 	uint16_t	msta : 6,		//主站地址
+ 	uint16_t	ste : 6,		//状态
  				fseq : 7,		//帧序号
  				iseq : 3;		//帧内序号
  	uint8_t		code : 6,		//控制码
  				abn : 1,		//异常标志
  				dir : 1;		//传送方向
  	buf			data;			//接收数据
-}gd5100_rmsg[1];
+}gdvms_rmsg[1];
+
 
 
 //规约结构
@@ -48,7 +49,7 @@ typedef struct {
  	uint16_t	rtua;
  	uint16_t	terid;
 	gd5100_rmsg	rmsg;
-}t_gd5100, *p_gd5100;
+}t_gdvms, *p_gdvms;
 
 
 

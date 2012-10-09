@@ -176,7 +176,7 @@ typedef struct {
 //GDW3761规约结构
 typedef struct {
 	t_dlrcp		parent;
-	uint16_t	group;
+	uint8_t		msa;
  	uint16_t	rtua;
  	uint16_t	terid;
 	t_gw3761_rmsg rmsg;
@@ -203,7 +203,7 @@ typedef const struct {
 
 
 //External Functions
-void gw3761_Init(p_gw3761 p, uint_t group);
+void gw3761_Init(p_gw3761 p);
 sys_res gw3761_Handler(p_gw3761 p);
 
 sys_res gw3761_TmsgSend(p_gw3761 p, uint_t nFun, uint_t nAfn, buf b, uint_t nType);

@@ -17,7 +17,6 @@
 
 
 //Private Typedef
-#if GD_RCP_DIANYA
 typedef __packed struct {
 	uint8_t		sc1;			//0x68
 	uint16_t	rtua;			//地市区县码
@@ -29,29 +28,14 @@ typedef __packed struct {
 				abn : 1,		//异常标志
 				dir : 1;		//传送方向
 	uint16_t	len;			//数据长度
-}t_gd5100_header, *p_gd5100_header;
-#else
-typedef __packed struct {
-	uint8_t		sc1;			//0x68
-	uint16_t	rtua;			//地市区县码
-	uint16_t	terid;			//终端地址
-	uint16_t	msta : 6,		//主站编号
-				fseq : 7,		//帧序号
-				iseq : 3;		//帧内序号
-	uint8_t		sc2;			//0x68
-	uint8_t		code : 6,		//控制码
-				abn : 1,		//异常标志
-				dir : 1;		//传送方向
-	uint16_t	len;			//数据长度
-}t_gd5100_header, *p_gd5100_header;
-#endif
+}t_gdvms_header, *p_gdvms_header;
 
 
 //Internal Functions
 //-------------------------------------------------------------------------
 //分析报文
 //-------------------------------------------------------------------------
-static sys_res gd5100_RmsgAnalyze(void *args)
+static sys_res gdvms_RmsgAnalyze(void *args)
 {
 	p_gd5100 p = (t_gd5100 *)args;
 	p_dlrcp pRcp = &p->parent;
@@ -86,7 +70,7 @@ static sys_res gd5100_RmsgAnalyze(void *args)
 		if (*pTemp != 0x16)
 			continue;
 		//接收到报文
-		p->rmsg->msta = pH->msta;
+		pRcp->msta = pH->msta;
 		p->rmsg->rtua = pH->rtua;
 		p->rmsg->terid = pH->terid;
 		p->rmsg->fseq = pH->fseq;
@@ -177,7 +161,7 @@ sys_res gd5100_TmsgSend(p_gd5100 p, uint_t nCode, buf b, uint_t nType)
 		xH.fseq = p->parent.pfc++;
 		break;
 	default:
-		xH.msta = p->rmsg->msta;
+		xH.msta = p->parent.msta;
 		xH.fseq = p->rmsg->fseq;
 		break;
 	}
@@ -200,7 +184,7 @@ sys_res gd5100_TmsgError(p_gd5100 p, uint_t nCode, uint_t nErr)
 	uint8_t aBuf[3];
 
 	gd5100_TmsgHeaderInit(p, &xH);
-	xH.msta = p->rmsg->msta;
+	xH.msta = p->parent.msta;
 	xH.fseq = p->rmsg->fseq;
 	xH.code = nCode;
 	xH.abn = GD5100_CABN_ABNORMAL;
@@ -226,7 +210,7 @@ sys_res gd5100_Transmit(p_gd5100 p, p_gd5100 pD)
 	xH.sc1 = 0x68;
 	xH.rtua = p->rmsg->rtua;
 	xH.terid = p->rmsg->terid;
-	xH.msta = p->rmsg->msta;
+	xH.msta = p->parent.msta;
 	xH.fseq = p->rmsg->fseq;
 	xH.iseq = p->rmsg->iseq;
 	xH.sc2 = 0x68;
@@ -275,4 +259,5 @@ sys_res gd5100_Handler(p_gd5100 p)
 
 
 #endif
+
 

@@ -34,7 +34,6 @@ typedef struct {
 	uint8_t		time;
 	uint8_t		retry;
 	uint8_t		tmo;
-	uint8_t		msta;
 	uint8_t		pfc;
 	uint16_t	refresh;
 	uint16_t	cnt;

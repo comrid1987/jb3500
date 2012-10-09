@@ -129,7 +129,7 @@ static sys_res gw3761_RmsgAnalyze(void *args)
 			continue;
 		//接收到报文
 		//----Unfinished ----判断地址转级联
-		p->parent.msta = pH->msa;
+		p->msa = pH->msa;
 		p->rmsg.c = pH->c;
 		p->rmsg.afn = pH->afn;
 		p->rmsg.seq = pH->seq;
@@ -202,7 +202,7 @@ sys_res gw3761_TmsgSend(p_gw3761 p, uint_t nFun, uint_t nAfn, buf b, uint_t nTyp
 		xH.seq.con = 1;
 		break;
 	default:
-		xH.msa = p->parent.msta;
+		xH.msa = p->msa;
 		xH.seq.seq = p->rmsg.seq.seq;
 		break;
 	}
@@ -290,11 +290,10 @@ sys_res gw3761_TmsgLinkcheck(void *p, uint_t nCmd)
 
 
 
-void gw3761_Init(p_gw3761 p, uint_t group)
+void gw3761_Init(p_gw3761 p)
 {
 
 	memset(p, 0, sizeof(t_gw3761));
-	p->group = group;
 	p->parent.linkcheck = gw3761_TmsgLinkcheck;
 	p->parent.analyze = gw3761_RmsgAnalyze;
 }
