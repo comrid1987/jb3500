@@ -54,10 +54,10 @@ typedef struct
 } LPC_GPIO_TypeDef;
 
  
-#define LPC_GPIO0             ((LPC_GPIO_TypeDef      *) 0xE0028000    )
-#define LPC_GPIO1             ((LPC_GPIO_TypeDef      *) 0xE0028010    )
-#define LPC_GPIO2             ((LPC_GPIO_TypeDef      *) 0xE0028020    )
-#define LPC_GPIO3             ((LPC_GPIO_TypeDef      *) 0xE0028030    )
+#define LPC_GPIO0             ((LPC_GPIO_TypeDef      *) 0xE0028000     )
+#define LPC_GPIO1             ((LPC_GPIO_TypeDef      *) 0xE0028010     )
+#define LPC_GPIO2             ((LPC_GPIO_TypeDef      *) 0xE0028020     )
+#define LPC_GPIO3             ((LPC_GPIO_TypeDef      *) 0xE0028030     )
 
 
 
@@ -124,8 +124,26 @@ typedef struct
 } LPC_UART_TypeDef;
 
 
-#define LPC_UART0             ((LPC_UART_TypeDef     *) 0xE000C000    )
-#define LPC_UART1             ((LPC_UART_TypeDef     *) 0xE0010000    )
+#define LPC_UART0             ((LPC_UART_TypeDef     *) 0xE000C000     )
+#define LPC_UART1             ((LPC_UART_TypeDef     *) 0xE0010000     )
+
+
+/*------------- Watchdog Timer (WDT) -----------------------------------------*/
+typedef struct
+{
+  __IO uint8_t  WDMOD;
+       uint8_t  RESERVED0[3];
+  __IO uint32_t WDTC;
+  __O  uint8_t  WDFEED;
+       uint8_t  RESERVED1[3];
+  __I  uint32_t WDTV;
+} LPC_WDT_TypeDef;
+
+
+#define LPC_WDT               ((LPC_WDT_TypeDef      *) 0xE0000000     )
+
+
+
 
 #if defined ( __CC_ARM   )
 #pragma no_anon_unions
