@@ -127,6 +127,7 @@
 #include <arch/arm7/lpc22xx/arch.c>
 #include <arch/arm7/lpc22xx/arch_flash.c>
 #include <arch/arm7/lpc22xx/arch_gpio.c>
+#include <arch/arm7/lpc22xx/arch_iwdg.c>
 #include <arch/arm7/lpc22xx/arch_it.c>
 #include <arch/arm7/lpc22xx/arch_timer.c>
 #include <arch/arm7/lpc22xx/arch_uart.c>

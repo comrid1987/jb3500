@@ -11,7 +11,6 @@
 #ifndef __LPC22xx_H
 #define __LPC22xx_H
 
-#if 0
 /* External Memory Controller (EMC) */
 #define BCFG0          (*((volatile unsigned long *) 0xFFE00000))
 #define BCFG1          (*((volatile unsigned long *) 0xFFE00004))
@@ -429,6 +428,7 @@
 #define C4TDA3         (*((volatile unsigned long *) 0xE0050058))
 #define C4TDB3         (*((volatile unsigned long *) 0xE005005C))
 
+#if 0
 /* Watchdog */
 #define WDMOD          (*((volatile unsigned char *) 0xE0000000))
 #define WDTC           (*((volatile unsigned long *) 0xE0000004))

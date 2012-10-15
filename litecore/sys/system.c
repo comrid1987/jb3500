@@ -194,8 +194,7 @@ void sys_Daemon(void *args)
 	static uint_t nCnt = 0;
 
 #if WDG_ENABLE
-	if ((nCnt & 0x07) == 0)
-		wdg_Reload(1);
+	wdg_Reload(1);
 #endif
 	if ((nCnt % 10) == 0) {
 #if RTC_ENABLE

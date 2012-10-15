@@ -192,7 +192,7 @@ void lcd_SetPM(uint8_t nPm)
 
 
 #if EPI_ENABLE
-static void lcd_Reset()
+static void lcd_SetPara()
 {
 	uint_t i;
 
@@ -216,6 +216,10 @@ void lcd_Init()
 	//Control GPIO Initialize
 	for (p = tbl_bspLcdCtrl[0]; p < tbl_bspLcdCtrl[1]; p++)
 		sys_GpioConf(p);
+}
+
+void lcd_Reset()
+{
 	//Reset
 	lcd_Rst(0);//rst low
 	sys_Delay(1000);
@@ -224,7 +228,6 @@ void lcd_Init()
 	lcd_WriteCmd(UC1698_SetRST);		//reset by command
 	os_thd_Sleep(150);
 }
-
 
 //±³¹â¿ØÖÆ
 void lcd_Bgl(int nOnOff)
@@ -273,7 +276,7 @@ void lcd_Redraw()
 	__packed uint32_t *pData, *pEnd;
 	uint32_t nData;
 
-	lcd_Reset();
+	lcd_SetPara();
 	pData = (__packed uint32_t *)&gui_aBuf[0][0];
 	pEnd = (__packed uint32_t *)ARR_ENDADR(gui_aBuf);
 	for (; pData < pEnd; pData = (__packed uint32_t *)((uint8_t *)pData + 3)) {

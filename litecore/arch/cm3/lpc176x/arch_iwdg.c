@@ -13,12 +13,16 @@
 void arch_WdgReload(uint_t nIntEnable)
 {
 
+#if OS_TYPE
 	if (nIntEnable)
 		os_interrupt_Disable();
+#endif
 	LPC_WDT->WDFEED = 0xAA;
 	LPC_WDT->WDFEED = 0x55;
+#if OS_TYPE
 	if (nIntEnable)
 		os_interrupt_Enable();
+#endif
 }
 
 void arch_WdgInit()

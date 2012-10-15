@@ -7,9 +7,13 @@
 
 void gui_Init()
 {
+
 	//Lcd Initialize
 	lcd_Init();
+#if GUI_LCD_RESET_EN
+	lcd_Reset();
 	lcd_ClearAll(COLOR_WHITE);
+#endif
 }
 
 
