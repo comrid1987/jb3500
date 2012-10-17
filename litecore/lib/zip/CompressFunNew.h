@@ -17,52 +17,12 @@
 
 
 
-#include "CrypFun.h"
+#include <lib/zip/CrypFun.h>
 
-	int Expand(DATA * buffer);
-	int Compress(DATA * buffer);
-	
-/*
-	DATA inbuffer, outbuffer;
-	unsigned long int  textsize, codesize, printcount;
-	
-	int Encode();
-	int Decode();
-	void InitVar();
-	unsigned char text_buf[N + F - 1];
-	int match_position, match_length, lson[N + 1], rson[N + 257], dad[N + 1];
-	unsigned freq[T + 1]; //frequency table 
 
-	int prnt[T + N_CHAR]; // pointers to parent nodes, except for the 
-            // elements [T..T + N_CHAR - 1] which are used to get 
-            //the positions of leaves corresponding to the codes. 
 
-	int son[T];   // pointers to child nodes (son[], son[] + 1) 
+int Expand(DATA * buffer);
+int Compress(DATA * buffer);
 
-	unsigned getbuf;
-	unsigned char getlen;
-	unsigned long incount, outcount;
-	unsigned putbuf;
-	unsigned char putlen;
-	unsigned code, len;
-
-	void Error(char *message);
-	void freememory();
-	void InitTree();
-	void InsertNode(int r);
-	void DeleteNode(int p);
-	int GetBit();
-	int GetByte();
-	void Putcode(int l, unsigned c);
-	void StartHuff();
-	void reconst();
-	void update(int c);
-	void EncodeChar(unsigned c);
-	void EncodePosition(unsigned c);
-	void EncodeEnd();
-	int DecodeChar();
-	int DecodePosition();
-	
-*/
 
 #endif

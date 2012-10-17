@@ -212,17 +212,14 @@ dque	dqueue = {ARR_SIZE(__dqueue), __dqueue};
 
 #if DLRCP_ENABLE
 #include <cp/dlrcp.c>
-#endif
-#if GD5100_ENABLE
-#include <cp/gd5100.c>
-#if GD5100_ZIP_ENABLE
+#if DLRCP_ZIP_ENABLE
 #include <lib/zip/cceman.c>
 #include <lib/zip/compressfun.c>
 #include <lib/zip/compressfunnew.c>
-
-
-
 #endif
+#endif
+#if GD5100_ENABLE
+#include <cp/gd5100.c>
 #endif
 #if GDVMS_ENABLE
 #include <cp/gdvms.c>

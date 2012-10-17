@@ -9,7 +9,7 @@
 #pragma arm section rwdata = "SRAM", zidata = "SRAM"		//Unfinished
 unsigned char SendBuf[MAXSBUFLEN];
 unsigned char RecvBuf[MAXSBUFLEN];
-unsigned char zip_EnBuf[MAXSBUFLEN] = {0};
+unsigned char zip_EnBuf[MAXSBUFLEN];
 #pragma arm section
 
 #if ZIP_ENCRYPT_ENABLE

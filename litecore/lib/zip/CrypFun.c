@@ -1,14 +1,10 @@
 
 
 #include <stdlib.h>
-#include "CrypFun.h"
-#include "RD.h"
+#include <lib/zip/CrypFun.h>
+#include <lib/zip/RD.h>
 
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
+
 
 void Substitution(word8 a[4][MAXBC], word8 box[256], word8 BC) 
 {

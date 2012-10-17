@@ -41,6 +41,8 @@ static sys_res gd5100_RmsgAnalyze(void *args)
 	p_gd5100 p = (t_gd5100 *)args;
 	p_dlrcp pRcp = &p->parent;
 	uint8_t *pTemp;
+	uint_t nLen;
+	int nDelen;
 	p_gd5100_header pH;
 
 	chl_RecData(pRcp->chl, pRcp->rbuf, OS_TICK_MS);
@@ -49,6 +51,23 @@ static sys_res gd5100_RmsgAnalyze(void *args)
 			//不足报文头长度
 			if (pRcp->rbuf->len < sizeof(t_gd5100_header))
 				return SYS_R_ERR;
+#if DLRCP_ZIP_ENABLE
+			if (pRcp->zip) {
+				pTemp = pRcp->rbuf->p;
+				if ((pTemp[0] == 0x88) && (pTemp[4] == 0xFF)) {
+					nLen = (pTemp[2] << 8) | pTemp[3];
+					if (pRcp->rbuf->len < (nLen + 5))
+						return SYS_R_ERR;
+					if (pTemp[nLen + 4] == 0x77) {
+						nDelen = DeData(pTemp, nLen + 5);
+						if (nDelen > 0) {
+							buf_Remove(pRcp->rbuf, nLen + 5);
+							buf_Push(pRcp->rbuf, RecvBuf, nDelen);
+						}
+					}
+				}
+			}
+#endif
 			pH = (p_gd5100_header)pRcp->rbuf->p;
 			if ((pH->sc1 == 0x68) && (pH->sc2 == 0x68)) {
 				if (pH->len > GD5100_DATA_SIZE)

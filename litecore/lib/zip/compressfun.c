@@ -102,17 +102,17 @@ int PeriodCompression(DATA *buffer)
 	{
 		tail_length = buffer->length - period * period_number - head_length;
 		
-		if ((MaxMinColumn = (word8 *)malloc(period * 2)) == NULL)
+		if ((MaxMinColumn = (word8 *)rt_malloc(period * 2)) == NULL)
 			exit(0);
 		
 		record.length = (period+7) / 8;
 		
-		if ((record.x = (word8 *)malloc(record.length)) == NULL)
+		if ((record.x = (word8 *)rt_malloc(record.length)) == NULL)
 			exit(0);
 		
 		memset(record.x, 0, record.length);
 		
-		if ((zip.x = (word8 *)malloc(buffer->length * 2)) == NULL)
+		if ((zip.x = (word8 *)rt_malloc(buffer->length * 2)) == NULL)
 			exit(0);
 		//分配结束
 		
@@ -141,7 +141,7 @@ int PeriodCompression(DATA *buffer)
 		
 		zero.length = (same_column_number+7) / 8;
 		
-		if ((zero.x = (word8 *)malloc(zero.length)) == NULL)
+		if ((zero.x = (word8 *)rt_malloc(zero.length)) == NULL)
 			exit(0);
 		
 		memset(zero.x, 0, zero.length);
@@ -203,16 +203,16 @@ int PeriodCompression(DATA *buffer)
 		}
 		
 		//释放指针
-		free(zip.x);
+		rt_free(zip.x);
 		zip.x = NULL;
 		
-		free(record.x);
+		rt_free(record.x);
 		record.x = NULL;
 		
-		free(zero.x);
+		rt_free(zero.x);
 		zero.x = NULL;
 		
-		free(MaxMinColumn);
+		rt_free(MaxMinColumn);
 		MaxMinColumn = NULL;
 		
 		return 0;
@@ -258,18 +258,18 @@ int RAYCompression(DATA *buffer)
 	for (i=0; i<(3*256); i++)
 		rule[i] = 0x00;
 	
-	if ((stat = (unsigned int *)malloc((buffer->length)*8)) == NULL)
+	if ((stat = (unsigned int *)rt_malloc((buffer->length)*8)) == NULL)
 	     	return -2;
-	if ((zip.x = (BYTE *)malloc((buffer->length )*2)) == NULL)
+	if ((zip.x = (BYTE *)rt_malloc((buffer->length )*2)) == NULL)
 	{
-		free(stat);// add by tanxin 2006.9.7
+		rt_free(stat);// add by tanxin 2006.9.7
 		stat = NULL;
 		return -2;
 	}
-	if ((buffer_copy.x = (BYTE *)malloc(buffer->length)) == NULL)
+	if ((buffer_copy.x = (BYTE *)rt_malloc(buffer->length)) == NULL)
 	{
-		free(stat);
-	        free(zip.x); // add by tanxin 2006.9.7
+		rt_free(stat);
+	        rt_free(zip.x); // add by tanxin 2006.9.7
 		stat = NULL;
 		zip.x = NULL;
 		return -2;
@@ -417,11 +417,11 @@ int RAYCompression(DATA *buffer)
 		buffer->length = buffer_copy.length;
 	}
 	
-	free(buffer_copy.x);
+	rt_free(buffer_copy.x);
 	buffer_copy.x = NULL;
-	free(stat);
+	rt_free(stat);
 	stat = NULL;
-	free(zip.x );
+	rt_free(zip.x );
 	zip.x = NULL;
 	
 	return 0;
@@ -446,7 +446,7 @@ int SHA_64(DATA * buffer)
 	
 	l=buffer->length;
 	
-	if ((c = (word8 *)malloc(l+128)) == NULL)
+	if ((c = (word8 *)rt_malloc(l+128)) == NULL)
 		exit(0);
 	memset(c,0,(l+128));
 	
@@ -492,7 +492,7 @@ int SHA_64(DATA * buffer)
 		SHA_CZJ(H0,A0);
 		SHA_CZJ(H1,A1);	
 	}
-	free(c);
+	rt_free(c);
 	memcpy(&buffer->x[l],H0,sizeof(H0));
 	memcpy(&buffer->x[l+4],H1,sizeof(H1));
 	//	for(i=0;i<4;i++) MD-[i]=H0[i];
@@ -542,10 +542,10 @@ int ExpendPeriod(DATA *buffer)
 		
 		record.length = (period+7) / 8;
 		
-		if ((record.x = (word8 *)malloc(record.length)) == NULL)
+		if ((record.x = (word8 *)rt_malloc(record.length)) == NULL)
 			exit(0);
 		
-		if ((recover.x = (word8 *)malloc(data_length)) == NULL)
+		if ((recover.x = (word8 *)rt_malloc(data_length)) == NULL)
 			exit(0);
 		//分配结束
 		
@@ -567,7 +567,7 @@ int ExpendPeriod(DATA *buffer)
 		
 		zero.length = (same_column_number+7) / 8;
 		
-		if ((zero.x = (word8 *)malloc(zero.length)) == NULL)
+		if ((zero.x = (word8 *)rt_malloc(zero.length)) == NULL)
 			exit(0);
 		
 		//提取zero
@@ -633,13 +633,13 @@ int ExpendPeriod(DATA *buffer)
 		buffer->length = recover.length;
 		
 		//
-		free(recover.x);
+		rt_free(recover.x);
 		recover.x = NULL;
 		
-		free(record.x);
+		rt_free(record.x);
 		record.x = NULL;
 		
-		free(zero.x);
+		rt_free(zero.x);
 		zero.x = NULL;
 	}
 	
@@ -675,7 +675,7 @@ int ExpendRAY(DATA *buffer)
 	}
 	else
 	{
-		if ((recover.x = (BYTE *)malloc(data_length*2)) == NULL)
+		if ((recover.x = (BYTE *)rt_malloc(data_length*2)) == NULL)
 			return -2;
 		recover.length = 0;
 		
@@ -711,7 +711,7 @@ int ExpendRAY(DATA *buffer)
 		}
 		
 		//释放内存
-		free(recover.x);
+		rt_free(recover.x);
 		recover.x = NULL;
 		
 		return 0;
@@ -839,7 +839,7 @@ int SHA_1(DATA *buffer)
 	
 	l=buffer->length;
 	
-	if ((c = (BYTE *)malloc(l+1024)) == NULL)
+	if ((c = (BYTE *)rt_malloc(l+1024)) == NULL)
 		return -2;
 	memset(c,0,(l+1024));
 	
@@ -889,7 +889,7 @@ int SHA_1(DATA *buffer)
 		  H[3]+=D;
 		  H[4]+=E; 
 	  }
-	  free(c);
+	  rt_free(c);
 	  
 	  for(i=0;i<5;i++) 
 	  {

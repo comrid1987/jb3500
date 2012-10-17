@@ -1,5 +1,5 @@
 #if DLRCP_ENABLE
-
+#include <lib/zip/cceman.h>
 
 //Private Defines
 #if DLRCP_DEBUG_ENABLE
@@ -125,6 +125,15 @@ sys_res dlrcp_TmsgSend(p_dlrcp p, void *pHeader, uint_t nHeaderLen, void *pData,
 	if ((pMsg = dlrcp_TmsgNew(p)) != NULL) {
 		buf_Push(pMsg->data, pHeader, nHeaderLen);
 		buf_Push(pMsg->data, pData, nDataLen);
+#if DLRCP_ZIP_ENABLE
+		if (p->zip) {
+			int nLen;
+			nLen = EnData(pMsg->data->p, pMsg->data->len, EXE_COMPRESS_NEW);
+			buf_Release(pMsg->data);
+			if (nLen > 0)
+				buf_Push(pMsg->data, SendBuf, nLen);
+		}
+#endif
 		pMsg->tmo = 0;
 		//Unfinished
 		//if (DLRCP_TMSG_NEED_ACK) {

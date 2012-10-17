@@ -31,6 +31,7 @@ extern "C" {
 
 typedef struct {
 	uint8_t		ste;
+	uint8_t		zip;
 	uint8_t		time;
 	uint8_t		retry;
 	uint8_t		tmo;

@@ -11,9 +11,14 @@
 #define EXE_SHA			0x02//完整性验证 
 #define EXE_ENCRYPT		0x04//加密
 
-#include "CrypFun.h"
-#include "CompressFun.h"
-#include "CompressFunNew.h"
+#include <lib/zip/CrypFun.h>
+#include <lib/zip/CompressFun.h>
+#include <lib/zip/CompressFunNew.h>
+
+
+extern unsigned char SendBuf[MAXSBUFLEN];
+extern unsigned char RecvBuf[MAXSBUFLEN];
+
 
 
 void CCEManInit(void);
@@ -24,12 +29,6 @@ int DeData(BYTE * DataBuf, int DataLen);
 
 
 
-/*
-int FormFrame(unsigned char Oper, unsigned char * buf,int buflen);
-int CheckFrame(unsigned char * buf,int buflen);
-int Expand(DATA * temp);
-int Compress(DATA * temp);
-*/
 
 
 

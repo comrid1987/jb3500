@@ -124,9 +124,9 @@ unsigned char d_len[256] = {
 
 void freememory()//release memory buffer.
 {
-//	free(inbuffer.x);
+//	rt_free(inbuffer.x);
 	inbuffer.x = NULL;
-	free(outbuffer.x);
+	rt_free(outbuffer.x);
 	outbuffer.x = NULL;
 }
 
@@ -484,7 +484,7 @@ int Encode()  /* compression */
 
 	textsize = inbuffer.length;
 
-	if ((outbuffer.x = (unsigned char *)malloc( inbuffer.length * 2 )) == NULL)
+	if ((outbuffer.x = (unsigned char *)rt_malloc( inbuffer.length * 2 )) == NULL)
 		return -1;
 
 	outbuffer.x[outcount++] = 0xFF;// Flag of compressed file
@@ -563,7 +563,7 @@ int Decode()  /* recover */
 	if (inbuffer.x[0] != 0xFF)//If the source data is not compressed,
 	{                         //return the source data.
 		outbuffer.length = inbuffer.length;
-		if ((outbuffer.x = (unsigned char *)malloc( outbuffer.length )) == NULL)
+		if ((outbuffer.x = (unsigned char *)rt_malloc( outbuffer.length )) == NULL)
 			return -1;
 		memcpy(outbuffer.x, inbuffer.x, inbuffer.length);
 		
@@ -576,7 +576,7 @@ int Decode()  /* recover */
 	textsize = outbuffer.length;
 	incount = 3;
 
-	if ((outbuffer.x = (unsigned char *)malloc( outbuffer.length )) == NULL)
+	if ((outbuffer.x = (unsigned char *)rt_malloc( outbuffer.length )) == NULL)
 		return -1;
 
     if (textsize == 0)
