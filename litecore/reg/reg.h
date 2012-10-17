@@ -64,8 +64,6 @@ typedef const struct {
 
 //信息点号定义
 #define REG_DA_ALL					0xFFFF
-#define TERMINAL		 			0
-#define SAMPLE						0
 
 //AFN定义
 #define GW3761_AFN_CONFIRM			0x00
