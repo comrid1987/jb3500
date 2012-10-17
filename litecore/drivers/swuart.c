@@ -459,7 +459,9 @@ static void swuart_CapSendEven(uint_t SChar, uint_t nPin)
   	T0CCR=0x0C30;                        //允许接收捕获
   	T0TC=0;
 	rt_hw_interrupt_umask(TIMER1_INT);
+#if WDG_ENABLE
 	wdg_Reload(0);
+#endif
 }
 
 static void swuart_CapSendNo(uint_t SChar, uint_t nPin)
@@ -497,7 +499,9 @@ static void swuart_CapSendNo(uint_t SChar, uint_t nPin)
   	T0CCR=0x0C30;                        //允许接收捕获
   	T0TC=0;
 	rt_hw_interrupt_umask(TIMER1_INT);
+#if WDG_ENABLE
 	wdg_Reload(0);
+#endif
 }
 
 /****************************************************************************
@@ -594,7 +598,9 @@ static void swuart_Rx(void *args)
 	T0TC=0; 							//停止定时器	
 
 	rt_hw_interrupt_umask(TIMER1_INT);
+#if WDG_ENABLE
 	wdg_Reload(0);
+#endif
 } 
 
 

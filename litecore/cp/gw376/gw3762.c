@@ -62,6 +62,29 @@ static void gw3762_DbgOut(uint_t nType, const void *pBuf, uint_t nLen)
 #define gw3762_DbgOut(...)
 #endif
 
+static sys_res gw3762_Transmit2ES(t_gw3762 *p, uint_t nAfn, uint_t nDT, const void *pData, uint_t nLen)
+{
+	buf bTx = {0};
+	t_gw3762_rdown xR = {0};
+	
+	buf_PushData(bTx, 0x47000068, 4);
+	buf_Push(bTx, &xR, sizeof(xR));
+
+	buf_PushData(bTx, nAfn, 1);
+	buf_PushData(bTx, nDT, 2);
+	buf_Push(bTx, pData, nLen);
+	buf_PushData(bTx, cs8(&bTx->p[1 + GW3762_HEADER_L_SIZE], bTx->len - (1 + GW3762_HEADER_L_SIZE)) | 0x1600, 2);
+	memcpy(&bTx->p[1], &bTx->len, GW3762_HEADER_L_SIZE);
+
+	gw3762_DbgOut(1, bTx->p, bTx->len);
+
+	chl_Send(p->chl, bTx->p, bTx->len);
+	buf_Release(bTx);
+
+	return SYS_R_OK;
+}
+
+
 static sys_res gw3762_Transmit2Module(t_gw3762 *p, uint_t nAfn, uint_t nDT, const void *pData, uint_t nLen)
 {
 	buf bTx = {0};
@@ -451,6 +474,7 @@ sys_res gw3762_StateGet(t_gw3762 *p, uint_t nTmo)
 	return SYS_R_OK;
 }
 
+
 //-------------------------------------------------------------------------------------
 // 添加从节点
 //-------------------------------------------------------------------------------------
@@ -501,7 +525,7 @@ sys_res gw3762_SubAdrDelete(t_gw3762 *p, const void *pAdr, uint_t nTmo)
 }
 
 //-------------------------------------------------------------------------------------
-// 删除从节点
+// 模式设置
 //-------------------------------------------------------------------------------------
 sys_res gw3762_ModeSet(t_gw3762 *p, uint_t nMode, uint_t nTmo)
 {
@@ -543,6 +567,46 @@ sys_res gw3762_RtCtrl(t_gw3762 *p, uint_t nDT, uint_t nTmo)
 	return SYS_R_OK;
 }
 
+//-------------------------------------------------------------------------------------
+// 东软扩展-读取路由运行模式
+//-------------------------------------------------------------------------------------
+sys_res gw3762_Es_ModeGet(t_gw3762 *p, uint_t *pMode, uint_t nTmo)
+{
+
+	gw3762_Transmit2ES(p, GW3762_AFN_TRANSMIT, 0x0010, NULL, 0);
+	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
+		if (gw3762_Analyze(p) == SYS_R_OK)
+			break;
+	}
+	if (nTmo == 0)
+		return SYS_R_TMO;
+	if (p->rmsg.afn != GW3762_AFN_TRANSMIT)
+		return SYS_R_ERR;
+	if (p->rmsg.fn != 0x0010)
+		return SYS_R_ERR;
+	*pMode = p->rmsg.data->p[0];
+	return SYS_R_OK;
+}
+
+//-------------------------------------------------------------------------------------
+// 东软扩展-设置路由运行模式
+//-------------------------------------------------------------------------------------
+sys_res gw3762_Es_ModeSet(t_gw3762 *p, uint_t nMode, uint_t nTmo)
+{
+
+	gw3762_Transmit2ES(p, GW3762_AFN_RESET, 0x0040, &nMode, 1);
+	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
+		if (gw3762_Analyze(p) == SYS_R_OK)
+			break;
+	}
+	if (nTmo == 0)
+		return SYS_R_TMO;
+	if (p->rmsg.afn != GW3762_AFN_CONFIRM)
+		return SYS_R_ERR;
+	if (p->rmsg.fn != 0x0001)
+		return SYS_R_ERR;
+	return SYS_R_OK;
+}
 
 
 

@@ -144,6 +144,8 @@ sys_res gw3762_SubAdrDelete(t_gw3762 *p, const void *pAdr, uint_t nTmo);
 sys_res gw3762_ModeSet(t_gw3762 *p, uint_t nMode, uint_t nTmo);
 sys_res gw3762_RtCtrl(t_gw3762 *p, uint_t nDT, uint_t nTmo);
 
+sys_res gw3762_Es_ModeGet(t_gw3762 *p, uint_t *pMode, uint_t nTmo);
+sys_res gw3762_Es_ModeSet(t_gw3762 *p, uint_t nMode, uint_t nTmo);
 
 
 #ifdef __cplusplus
