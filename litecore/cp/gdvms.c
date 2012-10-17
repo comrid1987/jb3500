@@ -146,9 +146,13 @@ sys_res gdvms_TmsgSend(p_gdvms p, uint_t nCode, buf b, uint_t nType)
 	uint_t nCS;
 
 	gdvms_TmsgHeaderInit(p, &xH);
-	if (nType == DLRCP_TMSG_REPORT)
-		xH.fseq = p->parent.pfc++;
-	else
+	if (nType == DLRCP_TMSG_REPORT) {
+		if (p->parent.pfc == 0)
+			p->parent.pfc = 1;
+		else
+			p->parent.pfc += 1;
+		xH.fseq = p->parent.pfc;
+	} else
 		xH.fseq = p->fseq;
 	xH.code = nCode;
 	xH.abn = GDVMS_CABN_NORMAL;
