@@ -139,7 +139,7 @@ static sys_res gd5100_TmsgLinkcheck (void *p, uint_t nCmd)
 	case DLRCP_LINKCHECK_LOGOUT:
 		nCmd = GD5100_CCODE_LOGOUT;
 		break;
-	case DLRCP_LINKCHECK_KEEPALIVE:
+	default:
 		nCmd = GD5100_CCODE_KEEPALIVE;
 		break;
 	}

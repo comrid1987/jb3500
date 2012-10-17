@@ -103,6 +103,7 @@ static void gdvms_TmsgHeaderInit(p_gdvms p, p_gdvms_header pH)
 static sys_res gdvms_TmsgLinkcheck (void *p, uint_t nCmd)
 {
 	sys_res res;
+	buf b = {0};
 
 	switch (nCmd) {
 	case DLRCP_LINKCHECK_LOGIN:
@@ -111,11 +112,12 @@ static sys_res gdvms_TmsgLinkcheck (void *p, uint_t nCmd)
 	case DLRCP_LINKCHECK_LOGOUT:
 		nCmd = GDVMS_CCODE_LOGOUT;
 		break;
-	case DLRCP_LINKCHECK_KEEPALIVE:
+	default:
 		nCmd = GDVMS_CCODE_KEEPALIVE;
 		break;
 	}
-	res = gdvms_TmsgSend(p, nCmd, NULL, DLRCP_TMSG_REPORT);
+	res = gdvms_TmsgSend(p, nCmd, b, DLRCP_TMSG_REPORT);
+	buf_Release(b);
 	return res;
 }
 
