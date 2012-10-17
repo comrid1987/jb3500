@@ -30,7 +30,6 @@
 typedef struct {
 	t_dlrcp		parent;
 	uint8_t		ste;
-	uint8_t		pwd[3];
 	uint8_t		adr[GDVMS_ADR_SIZE];
 	uint8_t		fseq;			//Ö¡ĞòºÅ
 	uint8_t		code : 6,		//¿ØÖÆÂë

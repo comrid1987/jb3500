@@ -41,8 +41,10 @@ static sys_res gd5100_RmsgAnalyze(void *args)
 	p_gd5100 p = (t_gd5100 *)args;
 	p_dlrcp pRcp = &p->parent;
 	uint8_t *pTemp;
+#if DLRCP_ZIP_ENABLE
 	uint_t nLen;
 	int nDelen;
+#endif
 	p_gd5100_header pH;
 
 	chl_RecData(pRcp->chl, pRcp->rbuf, OS_TICK_MS);
