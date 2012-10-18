@@ -774,6 +774,9 @@ void evt_Init()
 	nVer = icp_GetVersion();
 	if (nVer < 0x0095) {
 		nInit = 1;
+#if VER_SOFT == 0x0103
+		icp_Format();
+#endif
 		icp_ParaWrite(0x04, 1, TERMINAL, "\x14\x02\x1E\x30\x00\x05", 6);
 	}
 	if (nInit)

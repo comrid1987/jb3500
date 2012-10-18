@@ -139,10 +139,12 @@ static void icp_Format()
 {
 	uint_t nVer = VER_SOFT;
 
+	icp_ParaRead(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
 	icp_Lock();
 	sfs_Init(&icp_SfsDev);
 	sfs_Write(&icp_SfsDev, ICP_MAGIC_WORD, &nVer, 2);
 	icp_Unlock();
+	icp_ParaWrite(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
 }
 
 
@@ -255,11 +257,8 @@ void icp_Init()
 #if ICP_LOCK_ENABLE
 	rt_sem_init(&icp_sem, "sem_icp", 1, RT_IPC_FLAG_FIFO);
 #endif
-	if (sfs_Read(&icp_SfsDev, ICP_MAGIC_WORD, &nVer) != SYS_R_OK) {
-		icp_ParaRead(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
+	if (sfs_Read(&icp_SfsDev, ICP_MAGIC_WORD, &nVer) != SYS_R_OK)
 		icp_Format();
-		icp_ParaWrite(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
-	}
 }
 
 void icp_UdiskLoad(void)

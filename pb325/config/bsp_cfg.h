@@ -7,7 +7,7 @@
 //硬件版本
 #define VER_HARD						0x0010
 //软件版本
-#define VER_SOFT						0x0102
+#define VER_SOFT						0x0103
 
 
 //Main Control Unit Select
@@ -519,6 +519,8 @@
 
 	#define GD5100_ENABLE				1
 
+	#define GDVMS_ENABLE				0
+
 	#define GW3761_ENABLE				1
 	#define GW3761_TYPE					GW3761_T_GWJC2009
 	#define GW3761_IDCHECK_ENABLE		0
@@ -544,6 +546,9 @@
 #if GUI_ENABLE
 	//LCD型号选择
 	#define GUI_LCD_TYPE				GUI_LCD_T_160_UC1698
+	#define GUI_LCD_RESET_EN			0
+	#define GUI_LCD_COMID				0
+	#define GUI_LCD_CSID				7
 	#define GUI_COLOR_SIZE				2
 	//操作地址
 	#define GUI_LCD_BASE_ADR			0x6C000000
