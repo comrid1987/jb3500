@@ -71,7 +71,7 @@ extern rt_thread_t rt_current_thread;
  */
 void rt_hw_hard_fault_exception(struct stack_context* contex)
 {
-
+	
 	rt_kprintf("psr: 0x%08x\n", contex->psr);
 	rt_kprintf(" pc: 0x%08x\n", contex->pc);
 	rt_kprintf(" lr: 0x%08x\n", contex->lr);

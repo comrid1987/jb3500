@@ -100,8 +100,10 @@ void arch_EmacInit()
 	/* Enable PLL3 */
 	RCC_PLL3Cmd(ENABLE);
 	/* Wait till PLL3 is ready */
-	while (RCC_GetFlagStatus(RCC_FLAG_PLL3RDY) == RESET)
-	{}
+	for (tout = 0; tout < 0x10000; tout++) {
+		if (RCC_GetFlagStatus(RCC_FLAG_PLL3RDY) != RESET)
+			break;
+	}
 
 	/* Get clock PLL3 clock on PA8 pin */
 	RCC_MCOConfig(RCC_MCO_PLL3CLK);
@@ -211,7 +213,7 @@ void arch_EmacInit()
 	write_PHY(PHY_REG_BMCR, 0x8000);
 
 	/* Wait for hardware reset to end. */
-	for (tout = 0; tout < 0x10000; tout++) {
+	for (tout = 0; tout < 0x1000; tout++) {
 		regv = read_PHY(PHY_REG_BMCR);
 		if (!(regv & 0x8800)) {
 			/* Reset complete, device not Power Down. */
