@@ -30,26 +30,26 @@ void tsk_Upcom1(void *args)
 	p = &rcp_aGw3761[0];
 	gw3761_Init(p);
 	for (nCnt = 0; ; ) {
-		if ((nCnt & 0x3F) == 0) {
-			icp_ParaRead(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
-			p->rtua = xF85.area;
-			p->terid = xF85.addr;
-#if 0
-			icp_ParaRead(4, 1, TERMINAL, &xF1, sizeof(t_afn04_f1));
-			if (xF1.span < 1)
-				xF1.span = 1;
-#else
-			xF1.span = 2;
-#endif
-			p->parent.tmo = 5;
-			p->parent.retry = 3;
-			p->parent.refresh = xF1.span * 60;
-			icp_ParaRead(4, 3, TERMINAL, &xF3, sizeof(t_afn04_f3));
-			modem_Config(xF3.apn, xF1.span * 60, 5);
-			dlrcp_SetChl(&p->parent, CHL_T_SOC_TC, xF3.port1, xF3.ip1[0], xF3.ip1[1], xF3.ip1[2], xF3.ip1[3]);
-		}
 		if (tTime != rtc_GetTimet()) {
 			tTime = rtc_GetTimet();
+			if ((nCnt & 0x3F) == 0) {
+				icp_ParaRead(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
+				p->rtua = xF85.area;
+				p->terid = xF85.addr;
+#if 0
+				icp_ParaRead(4, 1, TERMINAL, &xF1, sizeof(t_afn04_f1));
+				if (xF1.span < 1)
+					xF1.span = 1;
+#else
+				xF1.span = 2;
+#endif
+				p->parent.tmo = 5;
+				p->parent.retry = 3;
+				p->parent.refresh = xF1.span * 60;
+				icp_ParaRead(4, 3, TERMINAL, &xF3, sizeof(t_afn04_f3));
+				modem_Config(xF3.apn, xF1.span * 60, 5);
+				dlrcp_SetChl(&p->parent, CHL_T_SOC_TC, xF3.port1, xF3.ip1[0], xF3.ip1[1], xF3.ip1[2], xF3.ip1[3]);
+			}
 			nCnt += 1;
 		}
 		if (gw3761_Handler(p) == SYS_R_OK)

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <litecore.h>
 #include "iap.h"
+#include "para.h"
 
 //Private Typedefs
 typedef __packed struct {

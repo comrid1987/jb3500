@@ -121,15 +121,6 @@ t_flash_dev evt_SfsDev = {
 };
 
 
-static void evt_Format()
-{
-	time_t tTime;
-
-	sfs_Init(&evt_SfsDev);
-	sfs_Write(&evt_SfsDev, EVT_MAGIC_WORD, NULL, 0);
-	tTime = rtc_GetTimet();
-	sfs_Write(&evt_SfsDev, EVT_RUNTIME_ADDR, &tTime, sizeof(time_t));
-}
 
 static int evt_Attrib(uint_t nERC)
 {
@@ -780,7 +771,7 @@ void evt_Init()
 		icp_ParaWrite(0x04, 1, TERMINAL, "\x14\x02\x1E\x30\x00\x05", 6);
 	}
 	if (nInit)
-		evt_Format();
+		evt_Clear();
 	if (nVer != VER_SOFT) {
 		//版本变更事件
 		evt_ERC1(nVer);
@@ -792,9 +783,13 @@ void evt_Init()
 
 void evt_Clear()
 {
+	time_t tTime;
 
 	evt_Lock();
-	evt_Format();
+	sfs_Init(&evt_SfsDev);
+	sfs_Write(&evt_SfsDev, EVT_MAGIC_WORD, NULL, 0);
+	tTime = rtc_GetTimet();
+	sfs_Write(&evt_SfsDev, EVT_RUNTIME_ADDR, &tTime, sizeof(time_t));
 	evt_Unlock();
 }
 

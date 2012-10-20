@@ -135,17 +135,6 @@ static int icp_Default(uint_t nAfn, uint_t nFn, uint_t nPn, uint8_t *pBuf, uint_
 	return icp_ParaWrite(nAfn, nFn, nPn, pBuf, nLen);
 }
 
-static void icp_Format()
-{
-	uint_t nVer = VER_SOFT;
-
-	icp_ParaRead(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
-	icp_Lock();
-	sfs_Init(&icp_SfsDev);
-	sfs_Write(&icp_SfsDev, ICP_MAGIC_WORD, &nVer, 2);
-	icp_Unlock();
-	icp_ParaWrite(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
-}
 
 
 
@@ -234,25 +223,34 @@ void icp_SetVersion()
 	icp_Unlock();
 }
 
+void icp_Format()
+{
+	uint_t nVer = VER_SOFT;
+	t_afn04_f85 xF85;
+
+	icp_ParaRead(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
+	icp_Lock();
+	sfs_Init(&icp_SfsDev);
+	sfs_Write(&icp_SfsDev, ICP_MAGIC_WORD, &nVer, 2);
+	icp_Unlock();
+	icp_ParaWrite(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
+}
+
 void icp_Clear()
 {
 	t_afn04_f1 xF1;
 	t_afn04_f3 xF3;
-	t_afn04_f85 xF85;
 
 	icp_ParaRead(4, 1, TERMINAL, &xF1, sizeof(t_afn04_f1));
 	icp_ParaRead(4, 3, TERMINAL, &xF3, sizeof(t_afn04_f3));
-	icp_ParaRead(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
 	icp_Format();
 	icp_ParaWrite(4, 1, TERMINAL, &xF1, sizeof(t_afn04_f1));
 	icp_ParaWrite(4, 3, TERMINAL, &xF3, sizeof(t_afn04_f3));
-	icp_ParaWrite(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
 }
 
 void icp_Init()
 {
 	uint_t nVer;
-	t_afn04_f85 xF85;
 
 #if ICP_LOCK_ENABLE
 	rt_sem_init(&icp_sem, "sem_icp", 1, RT_IPC_FLAG_FIFO);

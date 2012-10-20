@@ -8,6 +8,8 @@ extern "C" {
 
 
 //Public Defines
+#define TERMINAL					0
+
 #define ECL_SN_MAX					4
 #define ECL_TN_MAX					ECL_SN_MAX
 
