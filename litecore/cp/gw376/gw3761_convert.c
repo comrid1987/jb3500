@@ -61,7 +61,7 @@ uint_t gw3761_ConvertDa2Map(uint_t nDA, void *pData)
 
 	nDa = nDA >> 8;
 	if (nDa == 0) {
-		*p = TERMINAL;
+		*p = 0;
 		return 1;
 	}
 	nDa -= 1;
