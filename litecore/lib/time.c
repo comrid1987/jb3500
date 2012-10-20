@@ -68,15 +68,6 @@ int timet2array(time_t tTime, uint8_t *p, uint_t nIsBcd)
 	return 1;
 }
 
-void minPrev(time_t tTime, int nMin, uint8_t *p, uint_t nIsBcd)
-{
-	uint8_t aTime[6];
-
-	timet2array(tTime + nMin * 60, aTime, nIsBcd);
-	memcpy(p, &aTime, 6);
-	
-}
-
 void day4timet(time_t tTime, int nDay, uint8_t *p, uint_t nIsBcd)
 {
 	uint8_t aTime[6];
