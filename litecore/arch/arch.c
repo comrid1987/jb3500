@@ -3,7 +3,7 @@
 
 #if (ARCH_TYPE == ARCH_T_STM32F10X_HD) || (ARCH_TYPE == ARCH_T_STM32F10X_CL) || \
 	(ARCH_TYPE == ARCH_T_LM3S5X) || (ARCH_TYPE == ARCH_T_LM3S9X) || \
-	(ARCH_TYPE == ARCH_T_LPC176X)
+	(ARCH_TYPE == ARCH_T_LPC176X) || (ARCH_TYPE == ARCH_T_STM32F20X)
 
 #if OS_TYPE
 #include <arch/cm3/cpuport.c>
@@ -45,6 +45,31 @@
 #include <arch/cm3/stm32f10x/arch_timer.c>
 #include <arch/cm3/stm32f10x/arch_uart.c>
 #include <arch/cm3/stm32f10x/arch_retarget.c>
+
+#elif ARCH_TYPE == ARCH_T_STM32F20X
+#include <arch/cm3/stm32f20x/stm32f2xx_rcc.c>
+#ifdef RT_USING_CONSOLE
+#include <arch/cm3/stm32f20x/serial.c>
+#endif
+#include <arch/cm3/stm32f20x/system_stm32f2xx.c>
+#include <arch/cm3/stm32f20x/arch.c>
+#include <arch/cm3/stm32f20x/arch_adc.c>
+//#include <arch/cm3/stm32f20x/arch_bkp.c>
+#include <arch/cm3/stm32f20x/arch_emac.c>
+#include <arch/cm3/stm32f20x/arch_flash.c>
+#include <arch/cm3/stm32f20x/arch_fsmc.c>
+#include <arch/cm3/stm32f20x/arch_gpio.c>
+#include <arch/cm3/stm32f20x/arch_i2c.c>
+#include <arch/cm3/stm32f20x/arch_it.c>
+#include <arch/cm3/stm32f20x/arch_iwdg.c>
+#include <arch/cm3/stm32f20x/arch_nand.c>
+//#include <arch/cm3/stm32f20x/arch_rtc.c>
+#include <arch/cm3/stm32f20x/arch_serial.c>
+#include <arch/cm3/stm32f20x/arch_spi.c>
+#include <arch/cm3/stm32f20x/arch_timer.c>
+#include <arch/cm3/stm32f20x/arch_uart.c>
+#include <arch/cm3/stm32f20x/arch_retarget.c>
+
 
 #elif ARCH_TYPE == ARCH_T_LPC176X
 #ifdef RT_USING_CONSOLE

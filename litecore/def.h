@@ -14,6 +14,8 @@
 
 #define ARCH_T_STR71X		8
 #define ARCH_T_LPC22XX		9
+#define ARCH_T_STM32F20X		10
+
 
 
 //System Speed Defines
