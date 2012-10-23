@@ -186,7 +186,7 @@ void arch_Init()
 	//中断初始化
 	stm32_IrqInit();
 	//GPIO初始化
-	stm32_GpioIdleInit();
+	//stm32_GpioIdleInit();
 #if EPI_ENABLE && !EPI_SOFTWARE
 	stm32_FsmcInit();
 #endif
