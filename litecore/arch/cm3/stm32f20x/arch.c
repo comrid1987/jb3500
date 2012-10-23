@@ -2,6 +2,9 @@
 
 
 
+
+
+
 //Internal Functions
 static void stm32_OsTickInit()
 {
@@ -17,78 +20,6 @@ static void stm32_OsTickInit()
 	SysTick_CLKSourceConfig(SysTick_CLKSource_HCLK);
 #endif
 }
-
-
-#if ARCH_TYPE == ARCH_T_STM32F10X_HD
-void SystemInit()
-{
-
-	//初始化系统时钟
-	RCC_DeInit();
-#if MCU_HSI_ENABLE
-	//启用内部高速时钟
-	RCC_HSICmd(ENABLE);
-#else
-	//启用外部高速晶振
-	RCC_HSEConfig(RCC_HSE_ON);
-#endif
-
-#if MCU_HSI_ENABLE == 0
-	if (RCC_WaitForHSEStartUp() == SUCCESS) {
-#endif
-		/* HCLK = 72M Max */
-		RCC_HCLKConfig(RCC_SYSCLK_Div1); 
-		/* PCLK2 72M Max */
-		RCC_PCLK2Config(RCC_HCLK_Div1); 
-		/* PCLK1 36M Max */
-#if MCU_FREQUENCY == MCU_SPEED_HALF
-		RCC_PCLK1Config(RCC_HCLK_Div1);
-#else
-		RCC_PCLK1Config(RCC_HCLK_Div2);
-#endif
-		/* ADCCLK = PCLK2/6 */
-		RCC_ADCCLKConfig(RCC_PCLK2_Div6);
-		/* Enable Prefetch Buffer */
-		FLASH_PrefetchBufferCmd(FLASH_PrefetchBuffer_Enable);
-		/* Flash wait state */
-#if MCU_FREQUENCY == MCU_SPEED_LOW
-		FLASH_SetLatency(FLASH_Latency_0);
-#elif MCU_FREQUENCY == MCU_SPEED_HALF
-		FLASH_SetLatency(FLASH_Latency_1);
-#else
-		FLASH_SetLatency(FLASH_Latency_2);
-#endif
-		/* PLLCLK */
-#if MCU_HSI_ENABLE
-#if MCU_FREQUENCY == MCU_SPEED_LOW
-		RCC_PLLConfig(RCC_PLLSource_HSI_Div2, RCC_PLLMul_2);
-#elif MCU_FREQUENCY == MCU_SPEED_HALF
-		RCC_PLLConfig(RCC_PLLSource_HSI_Div2, RCC_PLLMul_9);
-#else
-		RCC_PLLConfig(RCC_PLLSource_HSI_Div2, RCC_PLLMul_16);
-#endif
-#else
-#if MCU_FREQUENCY == MCU_SPEED_LOW
-		RCC_PLLConfig(RCC_PLLSource_HSE_Div2, RCC_PLLMul_2);
-#elif MCU_FREQUENCY == MCU_SPEED_HALF
-		RCC_PLLConfig(RCC_PLLSource_HSE_Div2, RCC_PLLMul_9);
-#else
-		RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_9);
-#endif
-#endif
-		/* Enable PLL */ 
-		RCC_PLLCmd(ENABLE);
-		/* Wait till PLL is ready */
-		while (RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET);
-		/* Select PLL as system clock source */
-		RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
-		/* Wait till PLL is used as system clock source */
-		while (RCC_GetSYSCLKSource() != 0x08);
-#if MCU_HSI_ENABLE == 0
-	}	
-#endif
-}
-#endif
 
 static void stm32_RccInit()
 {
@@ -141,8 +72,7 @@ static void stm32_GpioIdleInit()
 	RCC_AHB1PeriphClockCmd(	RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB |
 						   	RCC_AHB1Periph_GPIOC | RCC_AHB1Periph_GPIOD |
 							RCC_AHB1Periph_GPIOE | RCC_AHB1Periph_GPIOF |
-							RCC_AHB1Periph_GPIOG | RCC_AHB1Periph_GPIOH |
-							RCC_AHB1Periph_GPIOI, ENABLE);
+							RCC_AHB1Periph_GPIOG, ENABLE);
 	xGpio.GPIO_Pin = GPIO_Pin_All;
 	xGpio.GPIO_Mode = GPIO_Mode_AIN;
 	xGpio.GPIO_PuPd = GPIO_PuPd_NOPULL;
@@ -153,13 +83,10 @@ static void stm32_GpioIdleInit()
 	GPIO_Init(GPIOE, &xGpio);
 	GPIO_Init(GPIOF, &xGpio);
 	GPIO_Init(GPIOG, &xGpio);
-	GPIO_Init(GPIOH, &xGpio);
-	GPIO_Init(GPIOI, &xGpio);
 	RCC_AHB1PeriphClockCmd(	RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB |
 						   	RCC_AHB1Periph_GPIOC | RCC_AHB1Periph_GPIOD |
 							RCC_AHB1Periph_GPIOE | RCC_AHB1Periph_GPIOF |
-							RCC_AHB1Periph_GPIOG | RCC_AHB1Periph_GPIOH |
-							RCC_AHB1Periph_GPIOI, DISABLE);
+							RCC_AHB1Periph_GPIOG, DISABLE);
 }
 
 

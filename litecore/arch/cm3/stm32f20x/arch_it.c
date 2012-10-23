@@ -30,40 +30,7 @@
 int arch_ExtIrqRegister(uint_t nPort, uint_t nPin, uint_t nTriggerMode)
 {
 	EXTI_InitTypeDef xEXTI;
-	GPIO_TypeDef * nPortSource;
 
-	switch (nPort) {
-	case GPIO_P0:
-		nPortSource = GPIOA;
-		break;
-	case GPIO_P1:
-		nPortSource = GPIOB;
-		break;
-	case GPIO_P2:
-		nPortSource = GPIOC;
-		break;
-	case GPIO_P3:
-		nPortSource = GPIOD;
-		break;
-	case GPIO_P4:
-		nPortSource = GPIOE;
-		break;
-	case GPIO_P5:
-		nPortSource = GPIOF;
-		break;
-	case GPIO_P6:
-		nPortSource = GPIOG;
-		break;	
-	case GPIO_P7:
-		nPortSource = GPIOH;
-		break;	
-	case GPIO_P8:
-		nPortSource = GPIOI;
-		break;	
-	default:
-		return -1;
-	}
-	GPIO_EXTILineConfig(nPortSource, nPin);
 	xEXTI.EXTI_Line = BITMASK(nPin);
 	xEXTI.EXTI_Mode = EXTI_Mode_Interrupt;
 	switch (nTriggerMode) {

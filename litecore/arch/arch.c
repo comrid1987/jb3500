@@ -47,7 +47,11 @@
 #include <arch/cm3/stm32f10x/arch_retarget.c>
 
 #elif ARCH_TYPE == ARCH_T_STM32F20X
+#include <arch/cm3/stm32f20x/misc.c>
+#include <arch/cm3/stm32f20x/stm32f2xx_exti.c>
 #include <arch/cm3/stm32f20x/stm32f2xx_rcc.c>
+#include <arch/cm3/stm32f20x/stm32f2xx_gpio.c>
+#include <arch/cm3/stm32f20x/stm32f2xx_iwdg.c>
 #ifdef RT_USING_CONSOLE
 #include <arch/cm3/stm32f20x/serial.c>
 #endif

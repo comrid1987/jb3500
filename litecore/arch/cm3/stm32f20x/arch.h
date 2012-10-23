@@ -7,11 +7,8 @@ extern "C" {
 
 
 //Header Files
-#if ARCH_TYPE == ARCH_T_STM32F10X_HD
-#define STM32F10X_HD
-#endif
-#if ARCH_TYPE == ARCH_T_STM32F10X_CL
-#define STM32F10X_CL
+#if ARCH_TYPE == ARCH_T_STM32F20X
+#define STM32F2XX
 #define USE_USB_OTG_FS
 #endif
 
@@ -40,11 +37,11 @@ extern "C" {
 
 
 #if MCU_FREQUENCY == MCU_SPEED_LOW
-#define MCU_CLOCK			8000000
+#define MCU_CLOCK			25000000
 #elif MCU_FREQUENCY == MCU_SPEED_HALF
-#define MCU_CLOCK			36000000
+#define MCU_CLOCK			50000000
 #else
-#define MCU_CLOCK			72000000
+#define MCU_CLOCK			100000000
 #endif
 
 
