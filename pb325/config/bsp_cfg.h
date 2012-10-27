@@ -7,7 +7,7 @@
 //硬件版本
 #define VER_HARD						0x0010
 //软件版本
-#define VER_SOFT						0x0103
+#define VER_SOFT						0x0104
 
 
 //Main Control Unit Select

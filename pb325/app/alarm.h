@@ -30,8 +30,8 @@ uint_t evt_GetCount(void);
 void evt_GetFlag(void *pBuf);
 int evt_Read(buf b, uint_t nPm, uint_t nPn, uint_t nIsNormal);
 
-sys_res evt_DlqQlStateGet(uint_t nSn, void *pBuf);
-void evt_DlqQlStateSet(uint_t nSn, const void *pBuf);
+sys_res evt_DlqStateGet(uint_t nSn, void *pBuf);
+void evt_DlqStateSet(uint_t nSn, const void *pBuf);
 sys_res evt_DlqQlParaGet(uint_t nSn, void *pBuf);
 void evt_DlqQlParaSet(uint_t nSn, const void *pBuf);
 

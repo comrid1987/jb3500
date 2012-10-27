@@ -11,6 +11,10 @@ const uint8_t ecl_DlqQlCmd[2][3] = {
 	{0x36, 0xC0, 0x50},
 	{0x36, 0xC0, 0x5F},
 };
+const uint8_t ecl_DlqSyCmd[2][4] = {
+	{0x01, 0x00, 0x00, 0x1A},
+	{0x01, 0x00, 0x00, 0x1B},
+};
 int gw3761_ResponseCtrlCmd(p_gw3761 p, u_word2 *pDu, uint8_t **ppData)
 {
 #if GW3761_TYPE == GW3761_T_GWJC2009
@@ -36,12 +40,18 @@ int gw3761_ResponseCtrlCmd(p_gw3761 p, u_word2 *pDu, uint8_t **ppData)
 			case 2:	//Ò£¿ØºÏÕ¢
 				if (icp_MeterRead(nDa, &xPM) <= 0)
 					break;
-				if (xPM.prtl != ECL_PRTL_DLQ_QL)
-					break;
-				dlt645_Packet2Buf(b, xPM.madr, DLT645_CODE_WRITE97, ecl_DlqQlCmd[nFn - 1], 3);
-				if (ecl_485_RealRead(b, 1200, 2) == SYS_R_OK)
-					res += 1;
-				buf_Release(b);
+				if (xPM.prtl == ECL_PRTL_DLQ_QL) {
+					dlt645_Packet2Buf(b, xPM.madr, DLT645_CODE_WRITE97, ecl_DlqQlCmd[nFn - 1], 3);
+					if (ecl_485_RealRead(b, 1200, 2) == SYS_R_OK)
+						res += 1;
+					buf_Release(b);
+				}
+				if (xPM.prtl == ECL_PRTL_DLQ_SY) {
+					dlt645_Packet2Buf(b, xPM.madr, DLT645_CODE_CTRL07, ecl_DlqSyCmd[nFn - 1], 4);
+					if (ecl_485_RealRead(b, 2400, 2) == SYS_R_OK)
+						res += 1;
+					buf_Release(b);
+				}
 				break;
 			case 31:
 				//¶ÔÊ±ÃüÁî

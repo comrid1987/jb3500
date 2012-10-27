@@ -28,7 +28,8 @@
 #define EVT_UABNORMAL_TIME		0xFFFF4100
 #define EVT_IUP_TIME			0xFFFF4200
 
-#define EVT_DLQ_QL_STE			0xFFFF7100
+#define EVT_DLQ_STE				0xFFFF7100
+
 #define EVT_DLQ_QL_PARA			0xFFFF7200
 
 
@@ -845,17 +846,17 @@ int evt_Read(buf b, uint_t nPm, uint_t nPn, uint_t nIsNormal)
 	return (i - (nStart + nPm));
 }
 
-sys_res evt_DlqQlStateGet(uint_t nSn, void *pBuf)
+sys_res evt_DlqStateGet(uint_t nSn, void *pBuf)
 {
 
-	return sfs_Read(&evt_SfsDev, EVT_DLQ_QL_STE | nSn, pBuf);
+	return sfs_Read(&evt_SfsDev, EVT_DLQ_STE | nSn, pBuf);
 }
 
-void evt_DlqQlStateSet(uint_t nSn, const void *pBuf)
+void evt_DlqStateSet(uint_t nSn, const void *pBuf)
 {
 
 	evt_Lock();
-	sfs_Write(&evt_SfsDev, EVT_DLQ_QL_STE | nSn, pBuf, 3);
+	sfs_Write(&evt_SfsDev, EVT_DLQ_STE | nSn, pBuf, 3);
 	evt_Unlock();
 }
 
