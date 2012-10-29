@@ -95,13 +95,20 @@ static const uint8_t dlt645_aFE[] = {0xFE, 0xFE, 0xFE, 0xFE};
 sys_res dlt645_Meter(chl c, buf b, uint_t nTmo)
 {
 	uint8_t *pH, aAdr[6];
+#if DLT645_DIR_CTRL
+	p_dev_uart pUart;
+#endif
 
 #if DLT645_DIR_CTRL
 	gpio_Set(2, 0);
 	//ÎÈ¶¨×ÜÏß
 	chl_Send(c, dlt645_aFE, 4);
 	chl_Send(c, b->p, b->len);
-	chl_Send(c, dlt645_aFE, 2);
+	pUart = (p_dev_uart)(c->pIf);
+	if (pUart->para.baud < 2400)
+		sys_Delay(200000);
+	else
+		sys_Delay(100000);
 	gpio_Set(2, 1);
 #else
 	chl_Send(c, dlt645_aFE, 4);
