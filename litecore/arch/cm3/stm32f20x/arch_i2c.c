@@ -29,12 +29,14 @@ static sys_res stm32_I2cUnlock(p_dev_i2c p)
 
 	xGpio.GPIO_Speed = GPIO_Speed_2MHz;
 	//SCL ==> output
-	xGpio.GPIO_Mode = GPIO_Mode_Out_OD;
+	xGpio.GPIO_Mode = GPIO_Mode_OUT;
+	xGpio.GPIO_OType = GPIO_OType_OD;
 	xGpio.GPIO_Pin = BITMASK(p->def->sclpin);
 	stm32_GpioClockEnable(p->def->sclport);
 	GPIO_Init(arch_GpioPortBase(p->def->sclport), &xGpio);
 	//SDA ==> input
-	xGpio.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	xGpio.GPIO_Mode = GPIO_Mode_IN;
+	xGpio.GPIO_PuPd =GPIO_PuPd_NOPULL;
 	xGpio.GPIO_Pin = BITMASK(p->def->sdapin);
 	stm32_GpioClockEnable(p->def->sdaport);
 	GPIO_Init(arch_GpioPortBase(p->def->sdaport), &xGpio);
@@ -76,9 +78,9 @@ sys_res arch_I2cInit(p_dev_i2c p)
 #endif
 	//Enable I2C Clock
 	stm32_I2cApbClockCmd(pI2c, ENABLE);
-
 	xGpio.GPIO_Speed = GPIO_Speed_2MHz;
-	xGpio.GPIO_Mode = GPIO_Mode_AF_OD;
+	xGpio.GPIO_Mode = GPIO_Mode_AF;
+	xGpio.GPIO_OType = GPIO_OType_OD;
 	//SCL
 	xGpio.GPIO_Pin = BITMASK(p->def->sclpin);
 	stm32_GpioClockEnable(p->def->sclport);
@@ -90,6 +92,9 @@ sys_res arch_I2cInit(p_dev_i2c p)
 	GPIO_SetBits(arch_GpioPortBase(p->def->sdaport), BITMASK(p->def->sdapin));
 	GPIO_Init(arch_GpioPortBase(p->def->sdaport), &xGpio);
 
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource6 , GPIO_AF_I2C1);
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource7 , GPIO_AF_I2C1);
+	
 	xI2C.I2C_Mode = I2C_Mode_I2C;
 	xI2C.I2C_DutyCycle = I2C_DutyCycle_2;
 	xI2C.I2C_Ack = I2C_Ack_Disable;
@@ -229,7 +234,7 @@ void arch_I2cErrorHandler(p_dev_i2c p)
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-sys_res arch_I2cWrite(p_dev_i2c p, uint_t nDev, uint8_t *pData, uint_t nLen)
+sys_res arch_I2cWrite(p_dev_i2c p, uint_t nDev, const uint8_t  *pData, uint_t nLen)
 {
 	I2C_TypeDef *pI2c = stm32_tblI2cId[p->parent->id];
 
@@ -250,7 +255,7 @@ sys_res arch_I2cWrite(p_dev_i2c p, uint_t nDev, uint8_t *pData, uint_t nLen)
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-sys_res arch_I2cRead(p_dev_i2c p, uint_t nDev, uint_t nAdr, uint8_t *pBuf, uint_t nLen)
+sys_res arch_I2cRead(p_dev_i2c p, uint_t nDev, uint8_t *pBuf, uint_t nLen)
 {
 	I2C_TypeDef *pI2c = stm32_tblI2cId[p->parent->id];
 
@@ -259,7 +264,7 @@ sys_res arch_I2cRead(p_dev_i2c p, uint_t nDev, uint_t nAdr, uint8_t *pBuf, uint_
 	while(!I2C_CheckEvent(pI2c, I2C_EVENT_MASTER_MODE_SELECT));
 	pI2c->DR = nDev & BITANTI(0);
 	while(!I2C_CheckEvent(pI2c, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED));
-	pI2c->DR = nAdr;
+	pI2c->DR = nDev;
 	while(!I2C_CheckEvent(pI2c, I2C_EVENT_MASTER_BYTE_TRANSMITTED));
 	I2C_GenerateSTART(pI2c, ENABLE);
 	while(!I2C_CheckEvent(pI2c, I2C_EVENT_MASTER_MODE_SELECT));
@@ -293,7 +298,8 @@ void arch_I2cReset(p_dev_i2c p)
 
 		xGPIO.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7; 
 		xGPIO.GPIO_Speed = GPIO_Speed_50MHz; 
-		xGPIO.GPIO_Mode = GPIO_Mode_Out_PP; 
+		xGPIO.GPIO_Mode = GPIO_Mode_OUT; 
+		xGPIO.GPIO_OType = GPIO_OType_PP;
 		GPIO_Init(GPIOB, &xGPIO); 
 
 		//generate manual STOP condition 
@@ -305,7 +311,8 @@ void arch_I2cReset(p_dev_i2c p)
 		GPIO_SetBits(GPIOB, GPIO_Pin_7); 
 		sys_Delay(400); 
 
-		xGPIO.GPIO_Mode = GPIO_Mode_AF_OD; 
+		xGPIO.GPIO_Mode = GPIO_Mode_AF; 
+		xGPIO.GPIO_OType = GPIO_OType_OD;
 		GPIO_Init(GPIOB, &xGPIO); 
 
 		I2C_Cmd(pI2c, ENABLE); 

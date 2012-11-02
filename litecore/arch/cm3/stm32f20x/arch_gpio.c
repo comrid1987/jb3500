@@ -116,6 +116,12 @@ GPIO_TypeDef *arch_GpioPortBase(uint_t nPort)
 	}
 }
 
+void arch_GpioSel(uint_t nPort, uint_t nPin, uint_t nSel)
+{
+	
+	GPIO_PinAFConfig(arch_GpioPortBase(nPort),  nPin, nSel);
+}
+
 void arch_GpioConf(uint_t nPort, uint_t nPin, uint_t nMode, uint_t nInit)
 {
 	GPIO_InitTypeDef xGpio;

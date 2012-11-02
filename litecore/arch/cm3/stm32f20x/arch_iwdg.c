@@ -23,7 +23,6 @@ void arch_WdgReload(uint_t nIntEnable)
 *******************************************************************************/
 void arch_WdgInit()
 {
-
 	IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable);
 	/* IWDG counter clock: 30-60KHz(LSI) / 64 = 469-937.5Hz */
 	IWDG_SetPrescaler(IWDG_Prescaler_64);

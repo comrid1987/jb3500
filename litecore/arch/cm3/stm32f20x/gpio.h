@@ -22,7 +22,6 @@ int arch_GpioRead(uint_t nPort, uint_t nPin);
 
 
 
-
 #ifdef __cplusplus
 }
 #endif
