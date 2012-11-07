@@ -341,6 +341,7 @@ void swuart_Init(p_dev_uart p)
 	swuart_aDev[pDef->id].parent = p;
 
 	if (pDef->pinmode == DEV_PIN_PP) {
+#include <stm32f2xx.h>
 		nRxMode = GPIO_M_IN_PU;
 		nTxMode = GPIO_M_OUT_PP;
 	} else {

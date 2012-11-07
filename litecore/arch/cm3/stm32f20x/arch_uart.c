@@ -31,6 +31,18 @@ void arch_UartInit(p_dev_uart p)
 
 	pUart = stm32_tblUartId[pDef->id];
 	switch (pDef->id) {
+	case 0:
+		/* Enalbe the GPIO Clock */
+		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
+		/* Enalbe the USART1  Clock*/
+		RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
+		/* Enable the USART1 Interrupt */
+		xNVIC.NVIC_IRQChannel = USART1_IRQn;
+		GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_USART1);
+		GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_USART1);
+		break;
+	case 1:
+		break;
 	case 2:
 		/* Enalbe the GPIO Clock */
 		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
@@ -42,6 +54,38 @@ void arch_UartInit(p_dev_uart p)
 			GPIO_PinAFConfig(GPIOB, GPIO_PinSource10, GPIO_AF_USART3);
 			GPIO_PinAFConfig(GPIOB, GPIO_PinSource11, GPIO_AF_USART3);
 		}
+		break;
+	case 3:
+		/* Enalbe the GPIO Clock */
+		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
+		/* Enalbe the USART4  Clock*/
+		RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4, ENABLE);
+		/* Enable the USART4 Interrupt */
+		xNVIC.NVIC_IRQChannel = UART4_IRQn;
+		GPIO_PinAFConfig(GPIOC, GPIO_PinSource10, GPIO_AF_UART4);
+		GPIO_PinAFConfig(GPIOC, GPIO_PinSource11, GPIO_AF_UART4);
+		break;
+	case 4:
+		/* Enalbe the GPIO Clock */
+		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC | RCC_AHB1Periph_GPIOD, ENABLE);
+		/* Enalbe the USART5  Clock*/
+		RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART5, ENABLE);
+		/* Enable the USART5 Interrupt */
+		xNVIC.NVIC_IRQChannel = UART5_IRQn;
+		GPIO_PinAFConfig(GPIOC, GPIO_PinSource12, GPIO_AF_UART5);
+		GPIO_PinAFConfig(GPIOD, GPIO_PinSource2,  GPIO_AF_UART5);
+		break;
+	case 5:
+		/* Enalbe the GPIO Clock */
+		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
+		/* Enalbe the USART5  Clock*/
+		RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART6, ENABLE);
+		/* Enable the USART5 Interrupt */
+		xNVIC.NVIC_IRQChannel = USART6_IRQn;
+		GPIO_PinAFConfig(GPIOC, GPIO_PinSource6, GPIO_AF_USART6);
+		GPIO_PinAFConfig(GPIOC, GPIO_PinSource7,  GPIO_AF_USART6);
+		break;
+	case 6:
 		break;
 	default:
 		break;
@@ -57,18 +101,20 @@ void arch_UartInit(p_dev_uart p)
 #if SMARTCARD_ENABLE
 	if (pDef->fun == UART_FUN_SC) {
 		xGpio.GPIO_Mode = GPIO_Mode_AF;
+		xGpio.GPIO_PuPd = GPIO_PuPd_UP;
 		xGpio.GPIO_OType = GPIO_OType_OD;
 	} else {
 #endif
 		if (pDef->pinmode == DEV_PIN_OD){
 			xGpio.GPIO_Mode = GPIO_Mode_AF;
+			xGpio.GPIO_PuPd = GPIO_PuPd_UP;
 			xGpio.GPIO_OType = GPIO_OType_OD;
 		}
 		else{
 			xGpio.GPIO_Mode = GPIO_Mode_AF;
+			xGpio.GPIO_PuPd = GPIO_PuPd_UP;
 			xGpio.GPIO_OType = GPIO_OType_PP;
 		}
-		
 #if SMARTCARD_ENABLE
 	}
 #endif
@@ -79,22 +125,24 @@ void arch_UartInit(p_dev_uart p)
 #if SMARTCARD_ENABLE
 	if (pDef->fun == UART_FUN_SC) {
 		if (pDef->pinmode == DEV_PIN_OD){
-			xGpio.GPIO_Mode = GPIO_Mode_OUT;
+			xGpio.GPIO_Mode = GPIO_Mode_IN;
 			xGpio.GPIO_OType = GPIO_OType_OD;
 		}
 		else{
-			xGpio.GPIO_Mode = GPIO_Mode_OUT;
+			xGpio.GPIO_Mode = GPIO_Mode_IN;
 			xGpio.GPIO_OType = GPIO_OType_PP;
 		}
 	} else {
 #endif
 		if (pDef->pinmode == DEV_PIN_OD){
-			xGpio.GPIO_Mode = GPIO_Mode_IN;
-			xGpio.GPIO_PuPd =GPIO_PuPd_NOPULL;
+			xGpio.GPIO_Mode = GPIO_Mode_AF;
+			xGpio.GPIO_PuPd = GPIO_PuPd_UP;
+			xGpio.GPIO_OType = GPIO_OType_PP;
 		}
 		else{
-			xGpio.GPIO_Mode = GPIO_Mode_IN;
-			xGpio.GPIO_PuPd =GPIO_PuPd_NOPULL;
+			xGpio.GPIO_Mode = GPIO_Mode_AF;
+			xGpio.GPIO_PuPd = GPIO_PuPd_UP;
+			xGpio.GPIO_OType = GPIO_OType_PP;
 		}
 #if SMARTCARD_ENABLE
 	}
@@ -231,9 +279,8 @@ void arch_UartSend(uint_t nId, const void *pData, uint_t nLen)
 	uint8_t *pBuf = (uint8_t *)pData;
 
 	for (; nLen; nLen--) {
-		USART_SendData(pUart, *pBuf++);
-		//while ((pUart->SR & USART_FLAG_TXE) == 0);
-		//pUart->DR = *pBuf++;
+		while ((pUart->SR & USART_FLAG_TXE) == 0);
+		pUart->DR = *pBuf++;
 	}
 }
 

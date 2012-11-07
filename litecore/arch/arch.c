@@ -54,7 +54,6 @@
 #include <arch/cm3/stm32f20x/stm32f2xx_fsmc.c>
 //#include <arch/cm3/stm32f20x/stm32f2xx_i2c.c>
 #include <arch/cm3/stm32f20x/stm32f2xx_usart.c>
-#include <arch/cm3/stm32f20x/STM32F2_FSMC_NOR.c>
 
 
 #ifdef RT_USING_CONSOLE
