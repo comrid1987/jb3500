@@ -27,7 +27,7 @@ extern "C" {
 #include <arch/cm3/stm32f20x/nand.h>
 #include <arch/cm3/stm32f20x/rtc.h>
 #include <arch/cm3/stm32f20x/spi.h>
-
+#include <arch/cm3/stm32f20x/timer.h>
 #if OS_TYPE
 #include <arch/cm3/stm32f20x/uart.h>
 #endif

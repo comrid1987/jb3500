@@ -1,36 +1,54 @@
-/******************** (C) COPYRIGHT 2008 STMicroelectronics ********************
-* File Name          : stm32f10x_it.c
-* Author             : MCD Application Team
-* Version            : V2.0.1
-* Date               : 06/13/2008
-* Description        : Main Interrupt Service Routines.
-*                      This file provides template for all exceptions handler
-*                      and peripherals interrupt service routine.
-********************************************************************************
-* THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
-* WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE TIME.
-* AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY DIRECT,
-* INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING FROM THE
-* CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE CODING
-* INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
-*******************************************************************************/
-
-/* Includes ------------------------------------------------------------------*/
 
 
-/* Private typedef -----------------------------------------------------------*/
-/* Private define ------------------------------------------------------------*/
-/* Private macro -------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
-/* Private function prototypes -----------------------------------------------*/
-/* Private functions ---------------------------------------------------------*/
-
-
+static uint8_t stm32_EXTI_IRQn(uint_t nPin)
+{
+	switch(nPin){
+		case GPIO_PinSource0:
+			return EXTI0_IRQn;
+		case GPIO_PinSource1:
+			return EXTI1_IRQn;	
+		case GPIO_PinSource2:
+			return EXTI2_IRQn;
+		case GPIO_PinSource3:
+			return EXTI3_IRQn;
+		case GPIO_PinSource4:
+			return EXTI4_IRQn;
+	}
+	return 0;
+}
 
 int arch_ExtIrqRegister(uint_t nPort, uint_t nPin, uint_t nTriggerMode)
 {
-	EXTI_InitTypeDef xEXTI;
+	EXTI_InitTypeDef	xEXTI;
+	NVIC_InitTypeDef	xNVIC;
+	uint_t nPortSource;
 
+	switch (nPort) {
+	case GPIO_P0:
+		nPortSource = EXTI_PortSourceGPIOA;
+		break;
+	case GPIO_P1:
+		nPortSource = EXTI_PortSourceGPIOB;
+		break;
+	case GPIO_P2:
+		nPortSource = EXTI_PortSourceGPIOC;
+		break;
+	case GPIO_P3:
+		nPortSource = EXTI_PortSourceGPIOD;
+		break;
+	case GPIO_P4:
+		nPortSource = EXTI_PortSourceGPIOE;
+		break;
+	case GPIO_P5:
+		nPortSource = EXTI_PortSourceGPIOF;
+		break;
+	case GPIO_P6:
+		nPortSource = EXTI_PortSourceGPIOG;
+		break;	
+	default:
+		return -1;
+	}
+	SYSCFG_EXTILineConfig(nPortSource, nPin);
 	xEXTI.EXTI_Line = BITMASK(nPin);
 	xEXTI.EXTI_Mode = EXTI_Mode_Interrupt;
 	switch (nTriggerMode) {
@@ -45,18 +63,66 @@ int arch_ExtIrqRegister(uint_t nPort, uint_t nPin, uint_t nTriggerMode)
 	}
 	xEXTI.EXTI_LineCmd = ENABLE;
 	EXTI_Init(&xEXTI);
+	xNVIC.NVIC_IRQChannel = stm32_EXTI_IRQn(nPin);
+	xNVIC.NVIC_IRQChannelPreemptionPriority = 0x0F;
+	xNVIC.NVIC_IRQChannelSubPriority = 0x0F;
+	xNVIC.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&xNVIC);
 	return nPin;
 }
 
 
-void arch_ExtIrqEnable(uint_t nPort, uint_t nPin, uint_t nMode)
+void arch_ExtIrqRxConf(uint_t nPort, uint_t nPin)
 {
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+	switch(nPort){
+		case 0:
+			SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, nPin );
+			break;
+		case 1:
+			SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, nPin );			
+			break;
+	}
+}
 
+void arch_ExtIrqEnable(uint_t nPort, uint_t nPin, uint_t nMode)
+{ 
+	EXTI_InitTypeDef   xEXTI;
+	NVIC_InitTypeDef   xNVIC;
+	xEXTI.EXTI_Line = BITMASK(nPin);
+	xEXTI.EXTI_Mode = EXTI_Mode_Interrupt;
+	switch (nMode) {
+	case IRQ_TRIGGER_FALLING:
+		xEXTI.EXTI_Trigger = EXTI_Trigger_Falling;
+		break;
+	case IRQ_TRIGGER_RISING:
+		xEXTI.EXTI_Trigger = EXTI_Trigger_Rising;
+		break;
+	default:
+		xEXTI.EXTI_Trigger = EXTI_Trigger_Falling;
+		break;
+	} 
+	xEXTI.EXTI_LineCmd = ENABLE;
+	EXTI_Init(&xEXTI);
+	
+	xNVIC.NVIC_IRQChannel = stm32_EXTI_IRQn(nPin);
+	xNVIC.NVIC_IRQChannelPreemptionPriority = 0x0F;
+	xNVIC.NVIC_IRQChannelSubPriority = 0x0F;
+	xNVIC.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&xNVIC);
 }
 
 void arch_ExtIrqDisable(uint_t nPort, uint_t nPin, uint_t nMode)
 {
+	EXTI_InitTypeDef   xEXTI;
+	NVIC_InitTypeDef   xNVIC;
 
+	xEXTI.EXTI_Line = BITMASK(nPin);
+	xEXTI.EXTI_LineCmd = DISABLE;
+	EXTI_Init(&xEXTI);
+	xNVIC.NVIC_IRQChannel = stm32_EXTI_IRQn(nPin);
+	xNVIC.NVIC_IRQChannelCmd = DISABLE;
+	NVIC_Init(&xNVIC);
 }
 
 /*******************************************************************************
@@ -560,7 +626,8 @@ void TIM2_IRQHandler(void)
 #if IRQ_TIMER_ENABLE
 	os_irq_Enter();
 
-	acm_Tim2Isr();
+	irq_TimerISR(0);
+	arch_TimerIntClear(0);
 
 	os_irq_Leave();
 #endif
@@ -575,6 +642,15 @@ void TIM2_IRQHandler(void)
 *******************************************************************************/
 void TIM3_IRQHandler(void)
 {
+
+#if IRQ_TIMER_ENABLE
+	os_irq_Enter();
+
+	irq_TimerISR(1);
+	arch_TimerIntClear(1);
+
+	os_irq_Leave();
+#endif
 }
 
 /*******************************************************************************
@@ -586,6 +662,15 @@ void TIM3_IRQHandler(void)
 *******************************************************************************/
 void TIM4_IRQHandler(void)
 {
+
+#if IRQ_TIMER_ENABLE
+	os_irq_Enter();
+
+	irq_TimerISR(2);
+	arch_TimerIntClear(2);
+
+	os_irq_Leave();
+#endif
 }
 
 /*******************************************************************************
@@ -892,6 +977,15 @@ void SDIO_IRQHandler(void)
 *******************************************************************************/
 void TIM5_IRQHandler(void)
 {
+
+#if IRQ_TIMER_ENABLE
+	os_irq_Enter();
+
+	irq_TimerISR(3);
+	arch_TimerIntClear(3);
+
+	os_irq_Leave();
+#endif
 }
 
 /*******************************************************************************
@@ -952,6 +1046,15 @@ void UART5_IRQHandler(void)
 *******************************************************************************/
 void TIM6_IRQHandler(void)
 {
+
+#if IRQ_TIMER_ENABLE
+	os_irq_Enter();
+
+	irq_TimerISR(4);
+	arch_TimerIntClear(4);
+
+	os_irq_Leave();
+#endif
 }
 
 /*******************************************************************************
@@ -963,6 +1066,15 @@ void TIM6_IRQHandler(void)
 *******************************************************************************/
 void TIM7_IRQHandler(void)
 {
+
+#if IRQ_TIMER_ENABLE
+	os_irq_Enter();
+
+	irq_TimerISR(5);
+	arch_TimerIntClear(5);
+
+	os_irq_Leave();
+#endif
 }
 
 /*******************************************************************************
