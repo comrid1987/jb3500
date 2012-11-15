@@ -422,7 +422,7 @@ sys_res swuart_Open(uint_t nId, p_uart_para pPara)
 	pSW->rxint = nIntId;
 	irq_ExtEnable(nIntId);
 #else
-	irq_TimerRegister(nId, swuart_Rx, pSW);
+	irq_TimerRegister(nId, swuart_RxTx, pSW);
 	arch_TimerCapStart(nId, pSW->tick);
 #endif
 	return SYS_R_OK;
