@@ -21,6 +21,7 @@ extern "C" {
 
 //External Functions
 void arch_IntfInit(void);
+sys_res arch_ErasseRegion(adr_t nStarAdr,adr_t nEndAdr);	
 sys_res arch_IntfErase(adr_t adr);
 sys_res arch_IntfProgram(adr_t adr, const void *pData, uint_t nLen);
 

@@ -1,6 +1,7 @@
 
-#if ARCH_TYPE == ARCH_T_STM32F10X_CL
+#if ARCH_TYPE == ARCH_T_STM32F10X_CL || ARCH_TYPE == ARCH_T_STM32F20X
 
+#if ARCH_TYPE == ARCH_T_STM32F10X_CL
 #include <arch/cm3/stm32f10x/usblib/usb_core.c>
 #include <arch/cm3/stm32f10x/usblib/usb_bsp.c>
 #include <arch/cm3/stm32f10x/usblib/usb_hcd.c>
@@ -25,9 +26,40 @@
 #include <arch/cm3/stm32f10x/usblib/usbh_hid_mouse.c>
 #endif
 
+#endif
 
-USB_OTG_CORE_HANDLE		USB_OTG_Core;
-USBH_HOST				USB_Host;
+#if ARCH_TYPE == ARCH_T_STM32F20X
+
+#include <arch/cm3/stm32f20x/usblib/usb_core.c>
+#include <arch/cm3/stm32f20x/usblib/usb_bsp.c>
+#include <arch/cm3/stm32f20x/usblib/usb_hcd.c>
+#include <arch/cm3/stm32f20x/usblib/usb_hcd_int.c>
+
+#include <arch/cm3/stm32f20x/usblib/usbh_core.c>
+#include <arch/cm3/stm32f20x/usblib/usbh_hcs.c>
+#include <arch/cm3/stm32f20x/usblib/usbh_ioreq.c>
+#include <arch/cm3/stm32f20x/usblib/usbh_stdreq.c>
+
+#include <arch/cm3/stm32f20x/usblib/usbh_usr.c>
+
+#if USBH_MSC_ENABLE
+#include <arch/cm3/stm32f20x/usblib/usbh_msc_core.c>
+#include <arch/cm3/stm32f20x/usblib/usbh_msc_bot.c>
+#include <arch/cm3/stm32f20x/usblib/usbh_msc_scsi.c>
+#endif
+
+#if USBH_HID_ENABLE
+#include <arch/cm3/stm32f20x/usblib/usbh_hid_core.c>
+#include <arch/cm3/stm32f20x/usblib/usbh_hid_keybd.c>
+#include <arch/cm3/stm32f20x/usblib/usbh_hid_mouse.c>
+#endif
+
+#endif
+ 
+ USB_OTG_CORE_HANDLE		USB_OTG_Core;
+ USBH_HOST				    USB_Host;
+
+
 
 void usb_Init()
 {

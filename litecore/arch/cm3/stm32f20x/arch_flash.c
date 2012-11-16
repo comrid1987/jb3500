@@ -14,6 +14,60 @@
 #define stm32_intf_Lock()
 #define stm32_intf_Unlock()
 #endif
+uint32_t GetSector(uint32_t Address)
+{
+  uint32_t sector = 0;
+  
+  if((Address < ADDR_FLASH_SECTOR_1) && (Address >= ADDR_FLASH_SECTOR_0))
+  {
+    sector = FLASH_Sector_0;  
+  }
+  else if((Address < ADDR_FLASH_SECTOR_2) && (Address >= ADDR_FLASH_SECTOR_1))
+  {
+    sector = FLASH_Sector_1;  
+  }
+  else if((Address < ADDR_FLASH_SECTOR_3) && (Address >= ADDR_FLASH_SECTOR_2))
+  {
+    sector = FLASH_Sector_2;  
+  }
+  else if((Address < ADDR_FLASH_SECTOR_4) && (Address >= ADDR_FLASH_SECTOR_3))
+  {
+    sector = FLASH_Sector_3;  
+  }
+  else if((Address < ADDR_FLASH_SECTOR_5) && (Address >= ADDR_FLASH_SECTOR_4))
+  {
+    sector = FLASH_Sector_4;  
+  }
+  else if((Address < ADDR_FLASH_SECTOR_6) && (Address >= ADDR_FLASH_SECTOR_5))
+  {
+    sector = FLASH_Sector_5;  
+  }
+  else if((Address < ADDR_FLASH_SECTOR_7) && (Address >= ADDR_FLASH_SECTOR_6))
+  {
+    sector = FLASH_Sector_6;  
+  }
+  else if((Address < ADDR_FLASH_SECTOR_8) && (Address >= ADDR_FLASH_SECTOR_7))
+  {
+    sector = FLASH_Sector_7;  
+  }
+  else if((Address < ADDR_FLASH_SECTOR_9) && (Address >= ADDR_FLASH_SECTOR_8))
+  {
+    sector = FLASH_Sector_8;  
+  }
+  else if((Address < ADDR_FLASH_SECTOR_10) && (Address >= ADDR_FLASH_SECTOR_9))
+  {
+    sector = FLASH_Sector_9;  
+  }
+  else if((Address < ADDR_FLASH_SECTOR_11) && (Address >= ADDR_FLASH_SECTOR_10))
+  {
+    sector = FLASH_Sector_10;  
+  }
+  else/*(Address < FLASH_END_ADDR) && (Address >= ADDR_FLASH_SECTOR_11))*/
+  {
+    sector = FLASH_Sector_11;  
+  }
+    return sector;
+}
 
 
 
@@ -21,23 +75,50 @@ void arch_IntfInit()
 {
 
 	FLASH_Unlock();
-	FLASH_ClearFlag(FLASH_FLAG_EOP | FLASH_FLAG_OPTERR | FLASH_FLAG_WRPRTERR | FLASH_FLAG_PGERR | FLASH_FLAG_BSY);
+    FLASH_ClearFlag(FLASH_FLAG_EOP | FLASH_FLAG_OPERR | FLASH_FLAG_WRPERR | 
+                  FLASH_FLAG_PGAERR | FLASH_FLAG_PGPERR|FLASH_FLAG_PGSERR);
 }
 
-sys_res arch_IntfErase(adr_t nAdr)
+sys_res arch_ErasseRegion(adr_t nStarAdr,adr_t nEndAdr)
 {
+	uint_t StartSector = 0, EndSector = 0,SectorCounter = 0;	//Address = 0,
 	FLASH_Status res = FLASH_COMPLETE;
-	adr_t nCur, nEndAdr;
+	stm32_intf_Lock();	
+	FLASH_Unlock();
+	FLASH_ClearFlag(FLASH_FLAG_EOP | FLASH_FLAG_OPERR | FLASH_FLAG_WRPERR | 
+                  FLASH_FLAG_PGAERR | FLASH_FLAG_PGPERR|FLASH_FLAG_PGSERR); 
+	StartSector = GetSector(nStarAdr);
+	EndSector = GetSector(nEndAdr);
+ 	for (SectorCounter = StartSector; SectorCounter < EndSector; SectorCounter += 8){
+        if (FLASH_EraseSector(SectorCounter, VoltageRange_3) != FLASH_COMPLETE) { 
+             while (1){
+ 		}
+ 		}
+   }		 		
+   FLASH_Lock(); 
+   stm32_intf_Unlock();
+	if (res == FLASH_COMPLETE)
+		return SYS_R_OK;
+	return SYS_R_TMO;
+}
 
-	stm32_intf_Lock();
+sys_res arch_IntfErase(adr_t nAdr)//
+{  uint32_t StartSector = 0;
+	FLASH_Status res = FLASH_COMPLETE;
+	adr_t nCur;//, nEndAdr
+	stm32_intf_Lock();	
 	nCur = nAdr;
-	nEndAdr = nAdr + INTFLASH_BLK_SIZE;
-	for (; nCur < nEndAdr; nCur += 4) {
-		if (*(volatile uint32_t *)nCur != 0xFFFFFFFF)
-			break;
-	}
-	if (nCur < nEndAdr)
-		res = FLASH_ErasePage(nAdr);
+	FLASH_Unlock();   
+    StartSector = GetSector(nCur);
+    if (FLASH_EraseSector(StartSector, VoltageRange_3) != FLASH_COMPLETE)
+    { 
+      /* Error occurred while sector erase. 
+         User can add here some code to deal with this error  */
+      while (1)
+      {
+      }
+    }
+// 	 //FLASH_Lock(); 
 	stm32_intf_Unlock();
 	if (res == FLASH_COMPLETE)
 		return SYS_R_OK;
@@ -51,6 +132,7 @@ sys_res arch_IntfProgram(adr_t adr, const void *pData, uint_t nLen)
 	__packed uint16_t *p = (__packed uint16_t *)pData;
 	
 	stm32_intf_Lock();
+	FLASH_Unlock();  
 	nEndAdr = adr + nLen;
 	for (; adr < nEndAdr; adr += 2) {
 		nData = *p++;
@@ -58,6 +140,7 @@ sys_res arch_IntfProgram(adr_t adr, const void *pData, uint_t nLen)
 			if (FLASH_ProgramHalfWord(adr, nData) != FLASH_COMPLETE)
 				break;
 	}
+	
 	stm32_intf_Unlock();
 	if (adr < nEndAdr)
 		return SYS_R_TMO;
