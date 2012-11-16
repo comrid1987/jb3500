@@ -59,7 +59,9 @@ static t_swuart swuart_aDev[SWUART_QTY];
 
 
 //Internal Functions
-#if SWUART_RX_MODE == SWUART_RX_M_EINT
+#if SWUART_RX_MODE == SWUART_RX_M_CAP
+extern void swuart_Rx(void *args);
+#else
 static void swuart_RxTx(void *args);
 
 static void swuart_RxStart(void *args)
@@ -323,7 +325,6 @@ void swuart_TxStart(uint_t nId)
 		}
 	}
 }
-
 #endif
 
 
@@ -409,9 +410,11 @@ void swuart_Init(p_dev_uart p)
 sys_res swuart_Open(uint_t nId, p_uart_para pPara)
 {
 	t_swuart *pSW = &swuart_aDev[nId];
+#if SWUART_RX_MODE == SWUART_RX_M_EINT
 	p_dev_uart p = pSW->parent;
 	p_uart_def pDef = p->def;
 	int nIntId;
+#endif
 
 	pSW->tick = arch_TimerClockGet() / pPara->baud;
 #if SWUART_RX_MODE == SWUART_RX_M_EINT
@@ -422,7 +425,7 @@ sys_res swuart_Open(uint_t nId, p_uart_para pPara)
 	pSW->rxint = nIntId;
 	irq_ExtEnable(nIntId);
 #else
-	irq_TimerRegister(nId, swuart_RxTx, pSW);
+	irq_TimerRegister(nId, swuart_Rx, pSW);
 	arch_TimerCapStart(nId, pSW->tick);
 #endif
 	return SYS_R_OK;
