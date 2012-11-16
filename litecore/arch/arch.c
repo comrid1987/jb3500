@@ -48,13 +48,13 @@
 #elif ARCH_TYPE == ARCH_T_STM32F20X
 #include <arch/cm3/stm32f20x/misc.c>
 #include <arch/cm3/stm32f20x/stm32f2xx_exti.c>
-#include <arch/cm3/stm32f20x/stm32f2xx_rcc.c>
+#include <arch/cm3/stm32f20x/stm32f2xx_fsmc.c>
+#include <arch/cm3/stm32f20x/stm32f2xx_flash.c>
 #include <arch/cm3/stm32f20x/stm32f2xx_gpio.c>
 #include <arch/cm3/stm32f20x/stm32f2xx_iwdg.c>
-#include <arch/cm3/stm32f20x/stm32f2xx_fsmc.c>
-//#include <arch/cm3/stm32f20x/stm32f2xx_i2c.c>
-#include <arch/cm3/stm32f20x/stm32f2xx_tim.c>
+#include <arch/cm3/stm32f20x/stm32f2xx_rcc.c>
 #include <arch/cm3/stm32f20x/stm32f2xx_syscfg.c>
+#include <arch/cm3/stm32f20x/stm32f2xx_tim.c>
 #include <arch/cm3/stm32f20x/stm32f2xx_usart.c>
 
 

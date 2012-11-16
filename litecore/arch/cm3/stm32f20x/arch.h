@@ -15,7 +15,6 @@ extern "C" {
 #define USE_STDPERIPH_DRIVER
 #include "stm32f2xx.h"
 
-
 #include <arch/cm3/stm32f20x/adc.h>
 #include <arch/cm3/stm32f20x/bkp.h>
 #include <arch/cm3/stm32f20x/emac.h>
