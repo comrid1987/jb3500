@@ -56,8 +56,11 @@
 
 #endif
  
- USB_OTG_CORE_HANDLE		USB_OTG_Core;
- USBH_HOST				    USB_Host;
+
+//Private Variables
+USB_OTG_CORE_HANDLE		USB_OTG_Core;
+USBH_HOST				    USB_Host;
+
 
 
 

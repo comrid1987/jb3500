@@ -24,11 +24,7 @@
 #define __USB_CONF__H__
 
 /* Includes ------------------------------------------------------------------*/
-#if ARCH_TYPE == ARCH_T_STM32F10X_CL 
-#include "stm32f10x.h"
-#endif
-
-
+#include "stm32f2xx.h"
 
 /** @addtogroup USB_OTG_DRIVER
   * @{

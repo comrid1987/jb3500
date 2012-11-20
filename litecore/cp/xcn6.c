@@ -237,8 +237,27 @@ sys_res xcn6_MeterWrite(t_gw3762 *p, buf b, const void *pAdr, uint_t nRelay, con
 
 sys_res xcn6_Broadcast(t_gw3762 *p, const void *pAdr, const void *pData, uint_t nLen)
 {
+	uint_t i;
+	buf bTx = {0};
 
-	return xcn6_Transmit2Meter(p, 0x08, pAdr, 0, NULL, pData, nLen);
+	buf_Push(bTx, "SND", 3);
+	buf_PushData(bTx, XCN6_HEADER_TX_SIZE + 6 + nLen, 1);
+	buf_Fill(bTx, 0xFF, 6);
+	buf_PushData(bTx, 0xAF09, 2);
+	buf_Push(bTx, pAdr, 3);
+	buf_PushData(bTx, 0x08, 1);
+	buf_PushData(bTx, 3 + nLen, 1);
+	buf_Fill(bTx, 0xBB, 3);
+	buf_Push(bTx, pData, nLen);
+	i = cs16(&bTx->p[XCN6_HEADER_TX_SIZE], 8 + nLen);
+	buf_PushData(bTx, i, 3);
+
+	xcn6n12_DbgOut(1, bTx->p, bTx->len);
+
+	chl_Send(p->chl, bTx->p, bTx->len);
+	buf_Release(bTx);
+
+	return SYS_R_OK;
 }
 
 
