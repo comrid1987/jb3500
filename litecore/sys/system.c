@@ -159,7 +159,7 @@ void sys_Maintain()
 		modem_Run();
 #endif
 		if ((nCnt & 0x03) == 0) {
-#if MEMORY_DEBUG_ENABLE
+#if DEBUG_MEMORY_ENABLE
 			list_memdebug(0, 0);
 #endif
 #if DM9000_INT_ENABLE
@@ -193,9 +193,7 @@ void sys_Daemon(void *args)
 {
 	static uint_t nCnt = 0;
 
-#if WDG_ENABLE
 	wdg_Reload(1);
-#endif
 	if ((nCnt % 10) == 0) {
 #if RTC_ENABLE
 		rtc_OsTick();

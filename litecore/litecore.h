@@ -42,6 +42,9 @@ extern "C" {
 
 
 //Warning
+#if DEBUG_ENABLE
+#warning "DebugMode is enabled........................."
+#endif
 #if WDG_ENABLE == 0
 #warning "WatchDog is disabled........................."
 #endif

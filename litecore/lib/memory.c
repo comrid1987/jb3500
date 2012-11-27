@@ -19,7 +19,7 @@
 #endif
 
 
-#if MEMORY_DEBUG_ENABLE
+#if DEBUG_MEMORY_ENABLE
 extern void list_memdebug(int nStart, int nEnd);
 
 typedef struct {
@@ -104,7 +104,7 @@ static void mem_DebugRealloc(void *p, void *pOld, const char *fn, const int line
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-#if MEMORY_DEBUG_ENABLE
+#if DEBUG_MEMORY_ENABLE
 void *_mem_Malloc(uint_t nSize, const char *fn, const int line)
 #else
 void *mem_Malloc(uint_t nSize)
@@ -113,13 +113,13 @@ void *mem_Malloc(uint_t nSize)
 	void *p;
 
 	mem_Lock();
-#if MEMORY_DEBUG_ENABLE
+#if DEBUG_MEMORY_ENABLE
 	p = _rt_malloc(nSize);
 #else
 	p = rt_malloc(nSize);
 #endif
 	mem_Unlock();
-#if MEMORY_DEBUG_ENABLE
+#if DEBUG_MEMORY_ENABLE
 	mem_DebugMalloc(p, nSize, fn, line);
 #endif
 	return p;
@@ -128,7 +128,7 @@ void *mem_Malloc(uint_t nSize)
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-#if MEMORY_DEBUG_ENABLE
+#if DEBUG_MEMORY_ENABLE
 void *_mem_Realloc(void *pOld, uint_t nSize, const char *fn, const int line)
 #else
 void *mem_Realloc(void *pOld, uint_t nSize)
@@ -137,13 +137,13 @@ void *mem_Realloc(void *pOld, uint_t nSize)
 	void *p;
 
 	if (pOld == NULL)
-#if MEMORY_DEBUG_ENABLE
+#if DEBUG_MEMORY_ENABLE
 		return _mem_Malloc(nSize, fn, line);
 #else
 		return mem_Malloc(nSize);
 #endif
 	if (nSize == 0) {
-#if MEMORY_DEBUG_ENABLE
+#if DEBUG_MEMORY_ENABLE
 		_mem_Free(pOld, fn, line);
 #else
 		mem_Free(pOld);
@@ -151,13 +151,13 @@ void *mem_Realloc(void *pOld, uint_t nSize)
 		return NULL;
 	}
 	mem_Lock();
-#if MEMORY_DEBUG_ENABLE
+#if DEBUG_MEMORY_ENABLE
 	p = _rt_realloc(pOld, nSize);
 #else
 	p = rt_realloc(pOld, nSize);
 #endif
 	mem_Unlock();
-#if MEMORY_DEBUG_ENABLE
+#if DEBUG_MEMORY_ENABLE
 	mem_DebugRealloc(p, pOld, fn, line);
 #endif
 	return p;
@@ -167,7 +167,7 @@ void *mem_Realloc(void *pOld, uint_t nSize)
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-#if MEMORY_DEBUG_ENABLE
+#if DEBUG_MEMORY_ENABLE
 void _mem_Free(void *p, const char *fn, const int line)
 #else
 void mem_Free(void *p)
@@ -175,19 +175,19 @@ void mem_Free(void *p)
 {
 
 	mem_Lock();
-#if MEMORY_DEBUG_ENABLE
+#if DEBUG_MEMORY_ENABLE
 	_rt_free(p);
 #else
 	rt_free(p);
 #endif
 	mem_Unlock();
-#if MEMORY_DEBUG_ENABLE
+#if DEBUG_MEMORY_ENABLE
 	mem_DebugFree(p, fn, line);
 #endif
 }
 
 
-#if MEMORY_DEBUG_ENABLE
+#if DEBUG_MEMORY_ENABLE
 void list_memdebug(int nStart, int nEnd)
 {
 #ifdef RT_USING_FINSH

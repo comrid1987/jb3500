@@ -17,7 +17,7 @@ extern "C" {
 //-------------------------------------------------------------------------
 //Memory Management
 //-------------------------------------------------------------------------
-#if MEMORY_DEBUG_ENABLE
+#if DEBUG_MEMORY_ENABLE
 void *_mem_Malloc(uint_t nSize, const char *fn, const int line);
 void *_mem_Realloc(void *pOld, uint_t nSize, const char *fn, const int line);
 void _mem_Free(void *p, const char *fn, const int line);

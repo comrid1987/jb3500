@@ -16,7 +16,6 @@
 
 //External Functions
 void arch_Init(void);
-void arch_DbgInit(void);
 void arch_IdleEntry(void);
 void arch_Reset(void);
 

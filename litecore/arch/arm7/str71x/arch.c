@@ -25,12 +25,21 @@ static void str7_IrqInit()
 	
 }
 
+#if DEBUG_ENABLE
+void str7_DbgInit()
+{
+
+}
+#endif
 
 void arch_Init()
 {
 
 	//时钟系统初始化
 	str7_RccInit();
+#if DEBUG_ENABLE
+	str7_DbgInit();
+#endif
 	//中断初始化
 	str7_IrqInit();
 	//GPIO初始化
@@ -42,12 +51,6 @@ void arch_Init()
 
 
 
-#if DEBUG_ENABLE
-void arch_DbgInit()
-{
-
-}
-#endif
 
 
 #if IDLE_ENABLE

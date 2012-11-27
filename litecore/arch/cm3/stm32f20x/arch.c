@@ -94,13 +94,7 @@ static void stm32_GpioIdleInit()
 static void stm32_DbgInit()
 {
 
-	DBGMCU_Config(0x00000127, ENABLE);
-	*(vu32 *)0xE0000FB0 = 0xC5ACCE55;
-	*(vu32 *)0xE0000E80 = 0x00010017;
-	*(vu32 *)0xE0000E40 = 0x00000081;
-	*(vu32 *)0xE0000E00 = 0x80000001;
-	*(vu32 *)0xE00400F0 = 0x00000002;
-	*(vu32 *)0xE0040304 = 0x00000102;
+	*(vu32 *)0xE0042008 = 0x00001000;
 }
 #endif
 

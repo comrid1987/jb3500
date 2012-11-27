@@ -160,14 +160,12 @@ uint32_t USBH_OTG_ISR_Handler (USB_OTG_CORE_HANDLE *pdev)
     if (gintsts.b.disconnect)
     {
       retval |= USB_OTG_USBH_handle_Disconnect_ISR (pdev);  
-      
     }
     
-     if (gintsts.b.incomplisoout)
-      {
-         retval |= USB_OTG_USBH_handle_IncompletePeriodicXfer_ISR (pdev);
-      }
-      
+    if (gintsts.b.incomplisoout)
+    {
+      retval |= USB_OTG_USBH_handle_IncompletePeriodicXfer_ISR (pdev);
+    }
     
   }
   return retval;

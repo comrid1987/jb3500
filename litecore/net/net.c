@@ -7,7 +7,7 @@
 #if TELNET_SERVER_ENABLE
 #include "Telnet_uif.c"
 #endif
-#if DEBUG_ENABLE
+#if DEBUG_NET_ENABLE
 #include <net/rtxip/Retarget.c>
 #endif
 #include <net/rtxip/rtxip_eth.c>
