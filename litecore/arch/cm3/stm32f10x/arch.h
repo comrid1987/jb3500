@@ -30,6 +30,7 @@ extern "C" {
 #include <arch/cm3/stm32f10x/nand.h>
 #include <arch/cm3/stm32f10x/rtc.h>
 #include <arch/cm3/stm32f10x/spi.h>
+#include <arch/cm3/stm32f10x/timer.h>
 
 #if OS_TYPE
 #include <arch/cm3/stm32f10x/uart.h>

@@ -49,7 +49,10 @@ extern "C" {
 #warning "WatchDog is disabled........................."
 #endif
 
-
+//External Macros
+#if WDG_ENABLE == 0
+#define wdg_Reload(...)
+#endif
 
 
 #ifdef __cplusplus

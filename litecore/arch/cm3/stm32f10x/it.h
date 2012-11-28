@@ -16,7 +16,7 @@ extern "C" {
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 #define ARCH_EXTIRQ_QTY			16
-#define ARCH_TIMER_QTY			8
+#define ARCH_TIMER_QTY			6
 
 
 

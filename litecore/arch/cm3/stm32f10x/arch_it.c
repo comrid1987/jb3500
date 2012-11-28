@@ -587,7 +587,8 @@ void TIM2_IRQHandler(void)
 #if IRQ_TIMER_ENABLE
 	os_irq_Enter();
 
-	acm_Tim2Isr();
+	irq_TimerISR(0);
+	arch_TimerIntClear(0);
 
 	os_irq_Leave();
 #endif
@@ -602,6 +603,15 @@ void TIM2_IRQHandler(void)
 *******************************************************************************/
 void TIM3_IRQHandler(void)
 {
+
+#if IRQ_TIMER_ENABLE
+	os_irq_Enter();
+
+	irq_TimerISR(1);
+	arch_TimerIntClear(1);
+
+	os_irq_Leave();
+#endif
 }
 
 /*******************************************************************************
@@ -613,6 +623,15 @@ void TIM3_IRQHandler(void)
 *******************************************************************************/
 void TIM4_IRQHandler(void)
 {
+
+#if IRQ_TIMER_ENABLE
+	os_irq_Enter();
+
+	irq_TimerISR(2);
+	arch_TimerIntClear(2);
+
+	os_irq_Leave();
+#endif
 }
 
 /*******************************************************************************
@@ -919,6 +938,15 @@ void SDIO_IRQHandler(void)
 *******************************************************************************/
 void TIM5_IRQHandler(void)
 {
+
+#if IRQ_TIMER_ENABLE
+	os_irq_Enter();
+
+	irq_TimerISR(3);
+	arch_TimerIntClear(3);
+
+	os_irq_Leave();
+#endif
 }
 
 /*******************************************************************************
@@ -979,6 +1007,15 @@ void UART5_IRQHandler(void)
 *******************************************************************************/
 void TIM6_IRQHandler(void)
 {
+
+#if IRQ_TIMER_ENABLE
+	os_irq_Enter();
+
+	irq_TimerISR(4);
+	arch_TimerIntClear(4);
+
+	os_irq_Leave();
+#endif
 }
 
 /*******************************************************************************
@@ -990,6 +1027,15 @@ void TIM6_IRQHandler(void)
 *******************************************************************************/
 void TIM7_IRQHandler(void)
 {
+
+#if IRQ_TIMER_ENABLE
+	os_irq_Enter();
+
+	irq_TimerISR(5);
+	arch_TimerIntClear(5);
+
+	os_irq_Leave();
+#endif
 }
 
 /*******************************************************************************

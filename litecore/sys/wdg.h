@@ -8,9 +8,6 @@ extern "C" {
 
 
 //External Macros
-#if WDG_ENABLE == 0
-#define wdg_Reload(...)
-#endif
 
 
 //External Functions

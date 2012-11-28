@@ -78,8 +78,7 @@ sys_res os_que_Send(uint_t nEvt, void *pDev, void *pData, uint_t nLen, int nTmo)
 {
 	os_que p;
 
-	nTmo /= OS_TICK_MS;
-	do {
+	for (nTmo /= OS_TICK_MS; ; nTmo--) {
 		if ((p = os_que_Alloc()) != NULL) {
 			p->evt = nEvt;
 			p->dev = pDev;
@@ -90,8 +89,10 @@ sys_res os_que_Send(uint_t nEvt, void *pDev, void *pData, uint_t nLen, int nTmo)
 				p->data->val = *(uint_t *)pData;
 			return SYS_R_OK;
 		}
+		if (nTmo == 0)
+			break;
 		os_thd_Slp1Tick();
-	} while (nTmo--);
+	}
 	return SYS_R_TMO;
 }
 
@@ -139,16 +140,19 @@ os_que os_que_Wait(uint_t nEvt, void *pDev, int nTmo)
 {
 	os_que p;
 
-	nTmo /= OS_TICK_MS;
-	do {
-		for (p = queue; p < ARR_ENDADR(queue); p++)
-			if (p->ste == OS_QUE_S_ALLOC)
+	for (nTmo /= OS_TICK_MS; ; nTmo--) {
+		for (p = queue; p < ARR_ENDADR(queue); p++) {
+			if (p->ste == OS_QUE_S_ALLOC) {
 				if ((p->evt == nEvt) && (p->dev == pDev)) {
 					p->ste = OS_QUE_S_BUSY;
 					return p;
 				}
+			}
+		}
+		if (nTmo == 0)
+			break;
 		os_thd_Slp1Tick();
-	} while (nTmo--);
+	}
 	return NULL;
 }
 
@@ -163,9 +167,11 @@ void os_que_Idle()
 {
 	os_que p;
 
-	for (p = queue; p < ARR_ENDADR(queue); p++)
-		if (p->ste == OS_QUE_S_ALLOC)
+	for (p = queue; p < ARR_ENDADR(queue); p++) {
+		if (p->ste == OS_QUE_S_ALLOC) {
 			if (--p->tmo == 0)
 				os_que_Release(p);
+		}
+	}
 }
 

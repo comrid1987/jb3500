@@ -154,16 +154,7 @@ void irq_TimerISR(uint_t nId)
 {
 	t_irq_vector *p = &irq_aTimer[nId];
 
-#if IRQ_HALF_ENABLE
-	if (p->mode == IRQ_MODE_NORMAL) {
-		(p->handler)(p->args);
-	} else {
-		p->bottom = 1;
-		rt_sem_release(&irq_sem);
-	}
-#else
 	(p->handler)(p->args);
-#endif
 }
 #endif
 
