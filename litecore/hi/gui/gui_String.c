@@ -1,6 +1,17 @@
 #if GUI_ENABLE
 
+//Private Defines
+#define ASC12_OFFSET			0x00000
+#define ASC16_OFFSET			0x00474
+#define FNT12_OFFSET_A1			0x00A64
+#define FNT12_OFFSET_A2			0x045E0
+#define FNT16_OFFSET_A1			0x19058
+#define FNT16_OFFSET_A2			0x1FA18
 
+
+
+
+//Private Macros
 #if GUI_FONT_TYPE == GUI_FONT_STD12
 #define gui_DrawChar_ASC		gui_DrawString_ASC6x12
 #define gui_DrawChar_HZ			gui_DrawChar_HZ12
@@ -184,12 +195,6 @@ static void gui_GetFont(uint_t nOffset, void *pBuf, uint_t nLen)
 #endif
 
 
-#define ASC12_OFFSET			0x00000
-#define ASC16_OFFSET			0x00474
-#define FNT12_OFFSET_A1			0x00A64
-#define FNT12_OFFSET_A2			0x045E0
-#define FNT16_OFFSET_A1			0x19058
-#define FNT16_OFFSET_A2			0x1FA18
 
 void gui_DrawChar_HZ12(int x, int y, const char *pStr, t_color nColor)
 {

@@ -1044,7 +1044,7 @@ void UART5_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void TIM6_IRQHandler(void)
+void TIM6_DAC_IRQHandler(void)
 {
 
 #if IRQ_TIMER_ENABLE

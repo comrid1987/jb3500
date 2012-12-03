@@ -32,7 +32,7 @@ void arch_TimerInit(uint_t nId)
 		break;
 	case 4:
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);
-		xNVIC.NVIC_IRQChannel = TIM6_IRQn;
+		xNVIC.NVIC_IRQChannel = TIM6_DAC_IRQn;
 		break;
 	case 5:
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);
