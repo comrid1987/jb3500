@@ -205,6 +205,7 @@ typedef const struct {
 //External Functions
 void gw3761_Init(p_gw3761 p);
 sys_res gw3761_Handler(p_gw3761 p);
+void gw3761_Response(p_gw3761 p);
 
 sys_res gw3761_TmsgSend(p_gw3761 p, uint_t nFun, uint_t nAfn, buf b, uint_t nType);
 sys_res gw3761_TmsgConfirm(p_gw3761 p);

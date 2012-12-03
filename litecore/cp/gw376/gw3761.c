@@ -1,5 +1,4 @@
 #if RTC_ENABLE
-#include <cp/gw376/gw3761_data.h>
 
 
 //Private Defines
@@ -179,7 +178,51 @@ static void gw3761_TmsgAfn00(p_gw3761 p, uint32_t nDu, uint_t nFun)
 	buf_Release(b);
 }
 
+//-------------------------------------------------------------------------
+//
+//-------------------------------------------------------------------------
+static sys_res gw3761_TmsgLinkcheck(void *p, uint_t nCmd)
+{
+	buf b = {0};
 
+	switch (nCmd) {
+	case DLRCP_LINKCHECK_LOGIN:
+		nCmd = 1;
+		break;
+	case DLRCP_LINKCHECK_LOGOUT:
+		nCmd = 2;
+		break;
+	default:
+		nCmd = 3;
+		break;
+	}
+	buf_PushData(b, gw3761_ConvertFn2Du(0, nCmd), 4);
+	gw3761_TmsgSend(p, GW3761_FUN_LINKCHECK, GW3761_AFN_LINKCHECK, b, DLRCP_TMSG_PULSEON);
+	buf_Release(b);
+#if GW3761_ECREPORT_ENABLE
+	buf_PushData(b, gw3761_ConvertFn2Du(0, 7), 4);
+	buf_PushData(b, evt_GetCount(), 2);
+	gw3761_TmsgSend(p, GW3761_FUN_RESPONSE, GW3761_AFN_DATA_L1, b, DLRCP_TMSG_REPORT);
+	buf_Release(b);
+#endif
+	return SYS_R_OK;
+}
+
+
+
+
+
+//External Functions
+//-------------------------------------------------------------------------
+//
+//-------------------------------------------------------------------------
+void gw3761_Init(p_gw3761 p)
+{
+
+	memset(p, 0, sizeof(t_gw3761));
+	p->parent.linkcheck = gw3761_TmsgLinkcheck;
+	p->parent.analyze = gw3761_RmsgAnalyze;
+}
 
 //-------------------------------------------------------------------------
 //发送报文
@@ -229,8 +272,6 @@ sys_res gw3761_TmsgSend(p_gw3761 p, uint_t nFun, uint_t nAfn, buf b, uint_t nTyp
 }
 
 
-
-
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
@@ -254,131 +295,13 @@ sys_res gw3761_TmsgReject(p_gw3761 p)
 
 
 //-------------------------------------------------------------------------
-//
+//规约处理
 //-------------------------------------------------------------------------
-sys_res gw3761_TmsgLinkcheck(void *p, uint_t nCmd)
-{
-	buf b = {0};
-
-	switch (nCmd) {
-	case DLRCP_LINKCHECK_LOGIN:
-		nCmd = 1;
-		break;
-	case DLRCP_LINKCHECK_LOGOUT:
-		nCmd = 2;
-		break;
-	default:
-		nCmd = 3;
-		break;
-	}
-	buf_PushData(b, gw3761_ConvertFn2Du(0, nCmd), 4);
-	gw3761_TmsgSend(p, GW3761_FUN_LINKCHECK, GW3761_AFN_LINKCHECK, b, DLRCP_TMSG_PULSEON);
-	buf_Release(b);
-#if GW3761_ECREPORT_ENABLE
-	buf_PushData(b, gw3761_ConvertFn2Du(0, 7), 4);
-	buf_PushData(b, evt_GetCount(), 2);
-	gw3761_TmsgSend(p, GW3761_FUN_RESPONSE, GW3761_AFN_DATA_L1, b, DLRCP_TMSG_REPORT);
-	buf_Release(b);
-#endif
-	return SYS_R_OK;
-}
-
-
-
-
-
-
-
-
-void gw3761_Init(p_gw3761 p)
-{
-
-	memset(p, 0, sizeof(t_gw3761));
-	p->parent.linkcheck = gw3761_TmsgLinkcheck;
-	p->parent.analyze = gw3761_RmsgAnalyze;
-}
-
-
 sys_res gw3761_Handler(p_gw3761 p)
 {
-	uint8_t *pData, *pEnd;
-	int res = 0;
-	buf b = {0};
-	u_word2 uDu;
 
-	if (dlrcp_Handler(&p->parent) == SYS_R_OK) {
-		switch (p->rmsg.afn) {
-		case GW3761_AFN_CONFIRM:
-		case GW3761_AFN_LINKCHECK:
-			//不需回应
-			break;
-		case GW3761_AFN_RESET:
-			gw3761_ResponseReset(p);
-			break;
-		case GW3761_AFN_PARA_SET:
-			gw3761_ResponseSetParam(p);
-			break;
-		case GW3761_AFN_DATA_L1:
-			gw3761_ResponseData1(p);
-			break;
-		case GW3761_AFN_DATA_L2:
-			gw3761_ResponseData2(p);
-			break;
-		default:
-			//统一回应
-			pData = p->rmsg.data->p;
-			pEnd = pData + p->rmsg.data->len;
-			for (; (pData + 4) <= pEnd; ) {
-				memcpy(&uDu, pData, 4);
-				buf_Push(b, pData, 4);
-				pData += 4;
-				switch (p->rmsg.afn) {
-				case GW3761_AFN_CMD_RELAY:
-					break;
-				case GW3761_AFN_CMD_CTRL:
-					res += gw3761_ResponseCtrlCmd(p, &uDu, &pData);
-					break;
-#if GW3761_ESAM_ENABLE
-				case GW3761_AFN_AUTHORITY:
-					res += gw3761_ResponseAuthority(p, b, &uDu, &pData);
-					break;
-#endif
-				case GW3761_AFN_CONFIG_GET:
-					res += gw3761_ResponseGetConfig(p, b, &uDu);
-					break;
-				case GW3761_AFN_PARA_GET:
-					res += gw3761_ResponseGetParam(p, b, &uDu, &pData);
-					break;
-				case GW3761_AFN_DATA_L3:
-					res += gw3761_ResponseData3(p, b, &uDu, &pData);
-					break;
-				case GW3761_AFN_FILE_TRANS:
-					res += gw3761_ResponseFileTrans(p, b, &uDu, &pData);
-					break;
-				case GW3761_AFN_DATA_TRANS:
-					res += gw3761_ResponseTransmit(p, b, &uDu, &pData);
-					break;
-				default:
-					buf_Unpush(b, 4);
-					break;
-				}
-			}
-			if (b->len > 4) {
-				gw3761_TmsgSend(p, GW3761_FUN_RESPONSE, p->rmsg.afn, b, DLRCP_TMSG_RESPOND);
-			} else {
-				if (res)
-					gw3761_TmsgConfirm(p);
-				else
-					gw3761_TmsgReject(p);
-			}
-			buf_Release(b);
-			break;
-		}
-		return SYS_R_OK;
-	}
-	return SYS_R_ERR;
+	return dlrcp_Handler(&p->parent);
 }
-
 
 
 
