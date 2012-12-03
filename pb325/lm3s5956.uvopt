@@ -173,24 +173,7 @@
           <Name>-U11111117 -O105 -S0 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST0 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8004 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -TB1 -TFE0 -FO11 -FD20000000 -FC800 -FN1 -FF0LM3S_256 -FS00 -FL040000</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
-      <Breakpoint>
-        <Bp>
-          <Number>0</Number>
-          <Type>0</Type>
-          <LineNumber>282</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>90822</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>D:\Workspace\litecore\drivers\modem.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\pb325\../litecore/drivers/modem.c\282</Expression>
-        </Bp>
-      </Breakpoint>
+      <Breakpoint/>
       <MemoryWindow1>
         <Mm>
           <WinNumber>1</WinNumber>
@@ -378,13 +361,13 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>68</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>23</TopLine>
-      <CurrentLine>32</CurrentLine>
+      <TopLine>38</TopLine>
+      <CurrentLine>57</CurrentLine>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\app\gw3761_fn01.c</PathWithFileName>
-      <FilenameWithoutPath>gw3761_fn01.c</FilenameWithoutPath>
+      <PathWithFileName>.\app\gw3761.c</PathWithFileName>
+      <FilenameWithoutPath>gw3761.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -394,13 +377,13 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>23</ColumnNumber>
+      <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>405</TopLine>
-      <CurrentLine>415</CurrentLine>
+      <TopLine>1</TopLine>
+      <CurrentLine>11</CurrentLine>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\app\gw3761_fn040A.c</PathWithFileName>
-      <FilenameWithoutPath>gw3761_fn040A.c</FilenameWithoutPath>
+      <PathWithFileName>.\app\gw3761_fn01.c</PathWithFileName>
+      <FilenameWithoutPath>gw3761_fn01.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -412,11 +395,11 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>1</TopLine>
+      <CurrentLine>1</CurrentLine>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\app\gw3761_fn05.c</PathWithFileName>
-      <FilenameWithoutPath>gw3761_fn05.c</FilenameWithoutPath>
+      <PathWithFileName>.\app\gw3761_fn040A.c</PathWithFileName>
+      <FilenameWithoutPath>gw3761_fn040A.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -426,13 +409,13 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>23</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>25</TopLine>
+      <CurrentLine>11</CurrentLine>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\app\gw3761_fn09.c</PathWithFileName>
-      <FilenameWithoutPath>gw3761_fn09.c</FilenameWithoutPath>
+      <PathWithFileName>.\app\gw3761_fn05.c</PathWithFileName>
+      <FilenameWithoutPath>gw3761_fn05.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -442,13 +425,13 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>4</ColumnNumber>
+      <ColumnNumber>35</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>458</TopLine>
-      <CurrentLine>468</CurrentLine>
+      <TopLine>24</TopLine>
+      <CurrentLine>13</CurrentLine>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\app\gw3761_fn0C.c</PathWithFileName>
-      <FilenameWithoutPath>gw3761_fn0C.c</FilenameWithoutPath>
+      <PathWithFileName>.\app\gw3761_fn09.c</PathWithFileName>
+      <FilenameWithoutPath>gw3761_fn09.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -458,13 +441,13 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>37</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>572</TopLine>
+      <CurrentLine>14</CurrentLine>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\app\gw3761_fn0D.c</PathWithFileName>
-      <FilenameWithoutPath>gw3761_fn0D.c</FilenameWithoutPath>
+      <PathWithFileName>.\app\gw3761_fn0C.c</PathWithFileName>
+      <FilenameWithoutPath>gw3761_fn0C.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -474,13 +457,13 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>9</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>315</TopLine>
+      <CurrentLine>492</CurrentLine>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\app\gw3761_fn0E.c</PathWithFileName>
-      <FilenameWithoutPath>gw3761_fn0E.c</FilenameWithoutPath>
+      <PathWithFileName>.\app\gw3761_fn0D.c</PathWithFileName>
+      <FilenameWithoutPath>gw3761_fn0D.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -492,11 +475,11 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>1</TopLine>
+      <CurrentLine>14</CurrentLine>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\app\gw3761_fn0F.c</PathWithFileName>
-      <FilenameWithoutPath>gw3761_fn0F.c</FilenameWithoutPath>
+      <PathWithFileName>.\app\gw3761_fn0E.c</PathWithFileName>
+      <FilenameWithoutPath>gw3761_fn0E.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -506,13 +489,13 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>24</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>30</TopLine>
+      <CurrentLine>15</CurrentLine>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\app\gw3761_fn10.c</PathWithFileName>
-      <FilenameWithoutPath>gw3761_fn10.c</FilenameWithoutPath>
+      <PathWithFileName>.\app\gw3761_fn0F.c</PathWithFileName>
+      <FilenameWithoutPath>gw3761_fn0F.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -522,13 +505,13 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>21</ColumnNumber>
+      <ColumnNumber>37</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>77</TopLine>
-      <CurrentLine>99</CurrentLine>
+      <TopLine>1</TopLine>
+      <CurrentLine>16</CurrentLine>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\app\upcomm.c</PathWithFileName>
-      <FilenameWithoutPath>upcomm.c</FilenameWithoutPath>
+      <PathWithFileName>.\app\gw3761_fn10.c</PathWithFileName>
+      <FilenameWithoutPath>gw3761_fn10.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -538,10 +521,26 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>9</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
       <TopLine>1</TopLine>
-      <CurrentLine>1</CurrentLine>
+      <CurrentLine>58</CurrentLine>
+      <bDave2>0</bDave2>
+      <PathWithFileName>.\app\upcomm.c</PathWithFileName>
+      <FilenameWithoutPath>upcomm.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>2</GroupNumber>
+      <FileNumber>19</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <Focus>0</Focus>
+      <ColumnNumber>0</ColumnNumber>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <TopLine>757</TopLine>
+      <CurrentLine>769</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\alarm.c</PathWithFileName>
       <FilenameWithoutPath>alarm.c</FilenameWithoutPath>
@@ -550,7 +549,7 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>19</FileNumber>
+      <FileNumber>20</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
@@ -566,7 +565,7 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>20</FileNumber>
+      <FileNumber>21</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
@@ -582,14 +581,14 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>21</FileNumber>
+      <FileNumber>22</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>4</ColumnNumber>
+      <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>74</TopLine>
-      <CurrentLine>75</CurrentLine>
+      <TopLine>225</TopLine>
+      <CurrentLine>226</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\para.c</PathWithFileName>
       <FilenameWithoutPath>para.c</FilenameWithoutPath>
@@ -598,7 +597,7 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>22</FileNumber>
+      <FileNumber>23</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
@@ -614,13 +613,13 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>23</FileNumber>
+      <FileNumber>24</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>380</TopLine>
+      <TopLine>382</TopLine>
       <CurrentLine>384</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\app\display.c</PathWithFileName>

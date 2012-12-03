@@ -44,11 +44,6 @@ void gw3761_Response(p_gw3761 p)
 			case GW3761_AFN_CMD_CTRL:
 				res += gw3761_ResponseCtrlCmd(p, &uDu, &pData);
 				break;
-#if GW3761_ESAM_ENABLE
-			case GW3761_AFN_AUTHORITY:
-				res += gw3761_ResponseAuthority(p, b, &uDu, &pData);
-				break;
-#endif
 			case GW3761_AFN_CONFIG_GET:
 				res += gw3761_ResponseGetConfig(p, b, &uDu);
 				break;
