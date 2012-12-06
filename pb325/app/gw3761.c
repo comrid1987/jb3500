@@ -18,16 +18,16 @@ void gw3761_Response(p_gw3761 p)
 	case GW3761_AFN_LINKCHECK:
 		//不需回应
 		break;
-	case GW3761_AFN_RESET:
+	case 0x01:	//复位
 		gw3761_ResponseReset(p);
 		break;
-	case GW3761_AFN_PARA_SET:
+	case 0x04:	//设置参数
 		gw3761_ResponseSetParam(p);
 		break;
-	case GW3761_AFN_DATA_L1:
+	case 0x0C:	//一类数据
 		gw3761_ResponseData1(p);
 		break;
-	case GW3761_AFN_DATA_L2:
+	case 0x0D:	//二类数据
 		gw3761_ResponseData2(p);
 		break;
 	default:
@@ -39,24 +39,29 @@ void gw3761_Response(p_gw3761 p)
 			buf_Push(b, pData, 4);
 			pData += 4;
 			switch (p->rmsg.afn) {
-			case GW3761_AFN_CMD_RELAY:
+			case 0x03:	//中继命令
 				break;
-			case GW3761_AFN_CMD_CTRL:
+			case 0x05:	//控制命令
 				res += gw3761_ResponseCtrlCmd(p, &uDu, &pData);
 				break;
-			case GW3761_AFN_CONFIG_GET:
+#if GW3761_ESAM_ENABLE
+			case 0x06:	//消息认证
+				res += gw3761_ResponseAuthority(p, b, &uDu, &pData);
+				break;
+#endif
+			case 0x09:	//读取配置
 				res += gw3761_ResponseGetConfig(p, b, &uDu);
 				break;
-			case GW3761_AFN_PARA_GET:
+			case 0x0A:	//读取参数
 				res += gw3761_ResponseGetParam(p, b, &uDu, &pData);
 				break;
-			case GW3761_AFN_DATA_L3:
+			case 0x0E:	//读事件
 				res += gw3761_ResponseData3(p, b, &uDu, &pData);
 				break;
-			case GW3761_AFN_FILE_TRANS:
+			case 0x0F:	//文件传输
 				res += gw3761_ResponseFileTrans(p, b, &uDu, &pData);
 				break;
-			case GW3761_AFN_DATA_TRANS:
+			case 0x10:	//数据转发
 				res += gw3761_ResponseTransmit(p, b, &uDu, &pData);
 				break;
 			default:

@@ -6,13 +6,7 @@ extern "C" {
 #endif
 
 
-
-
-
-
-
-
-
+//Public Defines
 
 
 

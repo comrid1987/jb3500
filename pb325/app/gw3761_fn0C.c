@@ -4,6 +4,7 @@
 #include "meter.h"
 #include "alarm.h"
 #include "acm.h"
+#include "gw3761.h"
 
 
 //Private Defines
@@ -746,7 +747,7 @@ int gw3761_ResponseData1(p_gw3761 p)
 			}
 		}
 		if (b->len > 4) {
-			gw3761_TmsgSend(p, GW3761_FUN_RESPONSE, GW3761_AFN_DATA_L1, b, DLRCP_TMSG_RESPOND);
+			gw3761_TmsgSend(p, GW3761_FUN_RESPONSE, 0x0C, b, DLRCP_TMSG_RESPOND);
 			res += 1;
 		}
 		buf_Release(b);

@@ -4,6 +4,7 @@
 #include "para.h"
 #include "data.h"
 #include "acm.h"
+#include "gw3761.h"
 
 
 //Internal Functions
@@ -492,7 +493,7 @@ int gw3761_ResponseData2(p_gw3761 p)
 		}
 	}
 	if (res)
-		gw3761_TmsgSend(p, GW3761_FUN_RESPONSE, GW3761_AFN_DATA_L2, b, DLRCP_TMSG_RESPOND);
+		gw3761_TmsgSend(p, GW3761_FUN_RESPONSE, 0x0D, b, DLRCP_TMSG_RESPOND);
 	else
 		gw3761_TmsgReject(p);
 	buf_Release(b);
