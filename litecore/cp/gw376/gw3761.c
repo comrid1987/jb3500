@@ -1,4 +1,3 @@
-#if RTC_ENABLE
 
 
 //Private Defines
@@ -51,7 +50,7 @@ static int gw3761_IsEC(uint_t nAfn)
 
 #if 0
 	switch (nAfn) {
-	case 0x00:
+	case GW3761_AFN_CONFIRM:
 	case 0x08:
 	case 0x09:
 	case 0x0A:
@@ -66,7 +65,7 @@ static int gw3761_IsEC(uint_t nAfn)
 	}
 #else
 	switch (nAfn) {
-	case 0x02:
+	case GW3761_AFN_LINKCHECK:
 		return 1;
 	default:
 		return 0;
@@ -196,18 +195,19 @@ static sys_res gw3761_TmsgLinkcheck(void *p, uint_t nCmd)
 		nCmd = 3;
 		break;
 	}
-	buf_PushData(b, gw3761_ConvertFn2Du(0, nCmd), 4);
+	buf_PushData(b, gw3761_ConvertDa2DA(0), 2);
+	buf_PushData(b, gw3761_ConvertFn2DT(nCmd), 2);
 	gw3761_TmsgSend(p, GW3761_FUN_LINKCHECK, GW3761_AFN_LINKCHECK, b, DLRCP_TMSG_PULSEON);
 	buf_Release(b);
 #if GW3761_ECREPORT_ENABLE
-	buf_PushData(b, gw3761_ConvertFn2Du(0, 7), 4);
+	buf_PushData(b, gw3761_ConvertDa2DA(0), 2);
+	buf_PushData(b, gw3761_ConvertFn2DT(7), 2);
 	buf_PushData(b, evt_GetCount(), 2);
-	gw3761_TmsgSend(p, GW3761_FUN_RESPONSE, GW3761_AFN_DATA_L1, b, DLRCP_TMSG_REPORT);
+	gw3761_TmsgSend(p, GW3761_FUN_RESPONSE, 0x0C, b, DLRCP_TMSG_REPORT);
 	buf_Release(b);
 #endif
 	return SYS_R_OK;
 }
-
 
 
 
@@ -307,13 +307,6 @@ sys_res gw3761_Handler(p_gw3761 p)
 
 
 
-#include <cp/gw376/gw3761_table.c>
-#include <cp/gw376/gw3761_authority.c>
-#include <cp/gw376/gw3761_convert.c>
-#include <cp/gw376/gw3761_tmsg.c>
-#include <cp/gw376/gw3761_data.c>
 
-
-#endif
 
 

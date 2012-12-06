@@ -4,7 +4,7 @@
 //-------------------------------------------------------------------------
 //Êý¾Ý×ª»»
 //-------------------------------------------------------------------------
-uint32_t gw3761_ConvertDa2DA(uint_t nDa)
+uint_t gw3761_ConvertDa2DA(uint_t nDa)
 {
 
 #if GW3761_TYPE == GW3761_T_GWJC2009
@@ -14,7 +14,7 @@ uint32_t gw3761_ConvertDa2DA(uint_t nDa)
 	}
 #else
 	if (nDa)
-		return (0x00000100 << ((nDa - 1) & 7)) | (0x00000001 << (nDa >> 3));
+		return (0x0100 << ((nDa - 1) & 7)) | (0x0001 << (nDa >> 3));
 #endif
 	return 0;
 }
@@ -22,11 +22,11 @@ uint32_t gw3761_ConvertDa2DA(uint_t nDa)
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-uint32_t gw3761_ConvertFn2Du(uint_t nDa, uint_t nFn)
+uint_t gw3761_ConvertFn2DT(uint_t nFn)
 {
 
 	nFn -= 1;
-	return ((0x00010000 << (nFn % 8)) | ((nFn / 8) << 24) | gw3761_ConvertDa2DA(nDa));
+	return ((0x0001 << (nFn % 8)) | ((nFn / 8) << 8));
 }
 
 //-------------------------------------------------------------------------
@@ -66,15 +66,19 @@ uint_t gw3761_ConvertDa2Map(uint_t nDA, void *pData)
 	}
 	nDa -= 1;
 #if GW3761_TYPE == GW3761_T_GWJC2009
-	for (j = 0; j < 8; j++)
+	for (j = 0; j < 8; j++) {
 		if (nDA & BITMASK(j))
 			p[nQty++] = nDa * 8 + j + 1;
+	}
 #else
-	for (i = 0; i < 8; i++)
-		if (nDa & BITMASK(i))
-			for (j = 0; j < 8; j++)
+	for (i = 0; i < 8; i++) {
+		if (nDa & BITMASK(i)) {
+			for (j = 0; j < 8; j++) {
 				if (nDA & BITMASK(j))
 					p[nQty++] = i * 8 + j;
+			}
+		}
+	}
 #endif
 	return nQty;
 }

@@ -227,8 +227,15 @@ dque	dqueue = {ARR_SIZE(__dqueue), __dqueue};
 #if GDFTS_ENABLE
 #include <cp/gdfts.c>
 #endif
+#if NW12_ENABLE
+#include <cp/nw12.c>
+#endif
 #if GW3761_ENABLE
 #include <cp/gw376/gw3761.c>
+#include <cp/gw376/gw3761_convert.c>
+#if GW3761_ESAM_ENABLE
+#include <cp/gw376/gw3761_authority.c>
+#endif
 #endif
 
 #if RTP_ENABLE

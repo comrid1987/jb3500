@@ -11,47 +11,75 @@ extern "C" {
 
 
 //Public Defines
-//国网集抄2009通讯规约
-#define GW3761_T_GWJC2009		0
-
+//国网2009通讯规约
+#define GW3761_T_GWJC2009			0
+//PB325配电通讯规约
+#define GW3761_T_PB325				1
 //国网负控2004通讯规约
-#define GW3761_T_GWFK2004		8
+#define GW3761_T_GWFK2004			4
 //国网负控2005通讯规约
-#define GW3761_T_GWFK2005		9
+#define GW3761_T_GWFK2005			5
+//重庆负控2006通讯规约
+#define GW3761_T_CQFK2006			6
+
 
 //南网负控2007通讯规约
-#define GW3761_T_NWFK2007		16
+#define GW3761_T_NWFK2007			16
 
-//重庆负控2006通讯规约
-#define GW3761_T_CQFK2006		24
 
 
 #if GW3761_TYPE == GW3761_T_GWJC2009
-#define GW3761_PROTOCOL_ID		2
-#define GW3761_PW_SIZE			16
-#define GW3761_GROUPADR_QTY		8
-
-#elif GW3761_TYPE == GW3761_T_GWFK2004
-#define GW3761_PROTOCOL_ID		1
-#define GW3761_PW_SIZE			2
-#define GW3761_GROUPADR_QTY		8
-
-#elif GW3761_TYPE == GW3761_T_GWFK2005
-#define GW3761_PROTOCOL_ID		1
-#define GW3761_PW_SIZE			16
-#define GW3761_GROUPADR_QTY		8
-
-#elif GW3761_TYPE == GW3761_T_NWFK2007
-#define GW3761_PROTOCOL_ID		1
-#define GW3761_PW_SIZE			16
-#define GW3761_GROUPADR_QTY		8
-
-#elif GW3761_TYPE == GW3761_T_CQFK2006
-#define GW3761_PROTOCOL_ID		1
-#define GW3761_PW_SIZE			2
-#define GW3761_GROUPADR_QTY		16
-
+#define GW3761_PROTOCOL_ID			2
+#define GW3761_PW_SIZE				16
+#define GW3761_GROUPADR_QTY			8
+#define GW3761_ECREPORT_ENABLE		0
 #endif
+
+#if GW3761_TYPE == GW3761_T_PB325
+#define GW3761_PROTOCOL_ID			2
+#define GW3761_PW_SIZE				16
+#define GW3761_GROUPADR_QTY			8
+#define GW3761_ECREPORT_ENABLE		1
+#endif
+
+#if GW3761_TYPE == GW3761_T_GWFK2004
+#define GW3761_PROTOCOL_ID			1
+#define GW3761_PW_SIZE				2
+#define GW3761_GROUPADR_QTY			8
+#define GW3761_ECREPORT_ENABLE		0
+#endif
+
+#if GW3761_TYPE == GW3761_T_GWFK2005
+#define GW3761_PROTOCOL_ID			1
+#define GW3761_PW_SIZE				16
+#define GW3761_GROUPADR_QTY			8
+#define GW3761_ECREPORT_ENABLE		0
+#endif
+
+#if GW3761_TYPE == GW3761_T_NWFK2007
+#define GW3761_PROTOCOL_ID			1
+#define GW3761_PW_SIZE				16
+#define GW3761_GROUPADR_QTY			8
+#define GW3761_ECREPORT_ENABLE		0
+#endif
+
+#if GW3761_TYPE == GW3761_T_CQFK2006
+#define GW3761_PROTOCOL_ID			1
+#define GW3761_PW_SIZE				2
+#define GW3761_GROUPADR_QTY			16
+#define GW3761_ECREPORT_ENABLE		0
+#endif
+
+
+
+
+
+
+
+//AFN
+#define GW3761_AFN_CONFIRM			0x00
+#define GW3761_AFN_LINKCHECK		0x02
+
 
 //FUN
 #define GW3761_FUN_RESET			1
@@ -119,6 +147,7 @@ extern "C" {
 #define GW3761_DATA_T_25			25
 #define GW3761_DATA_T_26			26
 #define GW3761_DATA_T_27			27
+
 #define GW3761_DATA_T_BIN			40
 #define GW3761_DATA_T_TIME			41
 #define GW3761_DATA_T_PERCENT		42
@@ -211,8 +240,8 @@ sys_res gw3761_TmsgSend(p_gw3761 p, uint_t nFun, uint_t nAfn, buf b, uint_t nTyp
 sys_res gw3761_TmsgConfirm(p_gw3761 p);
 sys_res gw3761_TmsgReject(p_gw3761 p);
 
-uint32_t gw3761_ConvertDa2DA(uint_t nDa);
-uint32_t gw3761_ConvertFn2Du(uint_t nDa, uint_t nFN);
+uint_t gw3761_ConvertDa2DA(uint_t nDa);
+uint_t gw3761_ConvertFn2DT(uint_t nFN);
 uint_t gw3761_ConvertDt2Fn(uint_t nDT);
 uint_t gw3761_ConvertDa2Map(uint_t nDA, void *pData);
 void gw3761_ConvertData(void *p, uint32_t nData, uint_t nDec, uint32_t nMark, uint_t nSignBit, uint_t nSize, uint_t nSign);

@@ -17,6 +17,9 @@ extern "C" {
 
 #include <cp/gd5100.h>
 #include <cp/gdvms.h>
+
+#include <cp/nw12.h>
+
 #include <cp/gw376/gw3761.h>
 #include <cp/gw376/gw3762.h>
 

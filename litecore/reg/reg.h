@@ -65,25 +65,7 @@ typedef const struct {
 //信息点号定义
 #define REG_DA_ALL					0xFFFF
 
-//AFN定义
-#define GW3761_AFN_CONFIRM			0x00
-#define GW3761_AFN_RESET			0x01
-#define GW3761_AFN_LINKCHECK		0x02
-#define GW3761_AFN_CMD_RELAY		0x03
-#define GW3761_AFN_PARA_SET			0x04
-#define GW3761_AFN_CMD_CTRL			0x05
-#define GW3761_AFN_AUTHORITY		0x06
-#define GW3761_AFN_CASCADE_QUERY	0x08
-#define GW3761_AFN_CONFIG_GET		0x09
-#define GW3761_AFN_PARA_GET			0x0A
-#define GW3761_AFN_DATA_TASK		0x0B
-#define GW3761_AFN_DATA_L1			0x0C
-#define GW3761_AFN_DATA_L2			0x0D
-#define GW3761_AFN_DATA_L3			0x0E
-#define GW3761_AFN_FILE_TRANS		0x0F
-#define GW3761_AFN_DATA_TRANS		0x10
-
-
+//
 
 
 

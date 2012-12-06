@@ -1,4 +1,3 @@
-#if GW3761_ESAM_ENABLE
 
 
 //Private Variables
@@ -45,5 +44,4 @@ int gw3761_ResponseAuthority(p_gw3761 p, buf b, u_word2 *pDu, uint8_t **ppData)
 }
 
 
-#endif
 
