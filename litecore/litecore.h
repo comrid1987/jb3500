@@ -25,6 +25,8 @@ extern "C" {
 #include <reg/reg.h>
 
 #include <cp/cp.h>
+
+#include <hi/gui.h>
 #endif
 
 #include <dbg/dbg.h>
