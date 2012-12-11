@@ -32,6 +32,7 @@ typedef struct {
 	uint8_t		retryed;
 	uint8_t		hour;
 	char		apn[19];
+	char		ccid[20];
 	uint16_t	cnt;
 	uint16_t	tmo;
 	uint16_t	span;
@@ -79,6 +80,7 @@ void modem_SetPwd(char *pPwd);
 sys_res modem_IsOnline(void);
 int modem_GetSignal(void);
 int modem_GetState(void);
+int modem_GetCCID(char *pCCID);
 void modem_Refresh(void);
 
 

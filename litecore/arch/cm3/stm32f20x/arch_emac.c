@@ -436,7 +436,7 @@ static void write_PHY(uint32_t PhyReg, uint16_t Value) {
   uint32_t tout;
 
   ETH->MACMIIDR = Value;
-  ETH->MACMIIAR = DP83848C_DEF_ADR << 11 | PhyReg << 6 | MMAR_MW | MMAR_MB;
+  ETH->MACMIIAR = PHY_DEF_ADR << 11 | PhyReg << 6 | MMAR_MW | MMAR_MB;
 
   /* Wait utill operation completed */
   tout = 0;
@@ -454,7 +454,7 @@ static uint16_t read_PHY(uint32_t PhyReg) {
   /* Read a PHY register 'PhyReg'. */
   uint32_t tout;
 
-  ETH->MACMIIAR = DP83848C_DEF_ADR << 11 | PhyReg << 6 | MMAR_MB;
+  ETH->MACMIIAR = PHY_DEF_ADR << 11 | PhyReg << 6 | MMAR_MB;
 
   /* Wait until operation completed */
   tout = 0;

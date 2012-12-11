@@ -1,6 +1,5 @@
 #if STM32_ETH_ENABLE
 #if 1
-#include <net/rtxip/Net_Config.h>
 
 /* The following macro definitions may be used to select the speed
    of the physical link:
@@ -65,6 +64,25 @@ static uint16_t read_PHY(uint32_t PhyReg);
 #define MAPR_OFFSET                 (AFIO_OFFSET + 0x04) 
 #define MII_RMII_SEL_BitNumber      ((u8)0x17) 
 #define MAPR_MII_RMII_SEL_BB        (PERIPH_BB_BASE + (MAPR_OFFSET * 32) + (MII_RMII_SEL_BitNumber * 4))
+
+
+static uint16_t Read_PHY(uint_t nPhyAdr, uint32_t PhyReg) {
+  /* Read a PHY register 'PhyReg'. */
+  uint32_t tout;
+
+  ETH->MACMIIAR = nPhyAdr << 11 | PhyReg << 6 | MMAR_MB;
+
+  /* Wait until operation completed */
+  tout = 0;
+  for (tout = 0; tout < MII_RD_TOUT; tout++) {
+    if ((ETH->MACMIIAR & MMAR_MB) == 0) {
+      break;
+    }
+  }
+  return (ETH->MACMIIDR & MMDR_MD);
+}
+
+
 
 void arch_EmacInit()
 {
@@ -209,11 +227,17 @@ void arch_EmacInit()
 	/* MDC Clock range 60-72MHz. */
 	ETH->MACMIIAR = 0x00000000;
 
-	/* Put the DP83848C in reset mode */
+	for (tout = 0; tout < 32; tout++) {
+		regv = Read_PHY(tout, PHY_REG_IDR1);
+		if (regv != 0xFFFF)
+			break;
+	}
+
+	/* Put the PHY in reset mode */
 	write_PHY(PHY_REG_BMCR, 0x8000);
 
 	/* Wait for hardware reset to end. */
-	for (tout = 0; tout < 0x1000; tout++) {
+	for (tout = 0; tout < 0x50000; tout++) {
 		regv = read_PHY(PHY_REG_BMCR);
 		if (!(regv & 0x8800)) {
 			/* Reset complete, device not Power Down. */
@@ -221,7 +245,7 @@ void arch_EmacInit()
 		}
 	}
 
-	/* Check if this is a DP83848C PHY. */
+	/* Check if this is a DM9161 PHY. */
 	id1 = read_PHY(PHY_REG_IDR1);
 	id2 = read_PHY(PHY_REG_IDR2);
 
@@ -343,6 +367,7 @@ void arch_EmacPacketTx(const void *pData, uint_t nLen)
 	ETH->DMATPDR = 0;
 }
 
+#include <net/rtxip/Net_Config.h>
 
 void arch_EmacIsr()
 {
@@ -436,7 +461,7 @@ static void write_PHY(uint32_t PhyReg, uint16_t Value) {
   uint32_t tout;
 
   ETH->MACMIIDR = Value;
-  ETH->MACMIIAR = DP83848C_DEF_ADR << 11 | PhyReg << 6 | MMAR_MW | MMAR_MB;
+  ETH->MACMIIAR = PHY_DEF_ADR << 11 | PhyReg << 6 | MMAR_MW | MMAR_MB;
 
   /* Wait utill operation completed */
   tout = 0;
@@ -454,7 +479,7 @@ static uint16_t read_PHY(uint32_t PhyReg) {
   /* Read a PHY register 'PhyReg'. */
   uint32_t tout;
 
-  ETH->MACMIIAR = DP83848C_DEF_ADR << 11 | PhyReg << 6 | MMAR_MB;
+  ETH->MACMIIAR = PHY_DEF_ADR << 11 | PhyReg << 6 | MMAR_MB;
 
   /* Wait until operation completed */
   tout = 0;

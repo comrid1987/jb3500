@@ -226,6 +226,18 @@ static sys_res modem_InitCmd(p_modem p)
 #endif
 	if (modem_SendCmd(p, "ATE0\r", "OK\r", 4) != SYS_R_OK)
 		return SYS_R_TMO;
+	//SIM¿¨´®ºÅ
+	p->ccid[0] = 0;
+	for (i = 0; i < 3; i++) {
+		if (modem_SendCmd(p, "AT+CCID\r", "OK\r", 1) != SYS_R_OK) {
+	 		if (modem_SendCmd(p, "AT+ZGETICCID\r", "OK\r", 1) != SYS_R_OK)
+				continue;
+		}
+		if ((pTemp = modem_FindStr(p, "CCID: ")) == NULL)
+			continue;
+		memcpy(p->ccid, pTemp + 6, 20);
+		break;
+	}
 	if (modem_SendCmd(p, "AT+CPIN?\r", "OK\r", 30) != SYS_R_OK)
 		return SYS_R_TMO;
 	//×¢²áÍøÂç
@@ -550,6 +562,19 @@ int modem_GetState()
 
 	return gsmModem[MODEM_PPP_ID].ste;
 }
+
+int modem_GetCCID(char *pCCID)
+{
+	p_modem p = &gsmModem[MODEM_PPP_ID];
+
+	if (p->ccid[0] == 0)
+		return 0;
+	memcpy(pCCID, p->ccid, 20);
+	return 1;
+}
+
+
+
 
 void modem_Refresh()
 {
