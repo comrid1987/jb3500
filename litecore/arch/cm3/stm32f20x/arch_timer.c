@@ -78,7 +78,7 @@ void arch_TimerStop(uint_t nId)
 uint_t arch_TimerClockGet()
 {
 
-	return 60000000;
+	return (MCU_CLOCK / 2);
 }
 
 

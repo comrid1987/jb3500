@@ -1087,7 +1087,7 @@ void DMA2_Channel4_5_IRQHandler(void)
 void ETH_IRQHandler(void)
 {
 
-#if TCPPS_ETH_ENABLE
+#if ETH_INT_ENABLE
 	os_irq_Enter();
 
 	arch_EmacIsr();

@@ -34,17 +34,17 @@ void send_frame(OS_FRAME *frame)
 
 	/* Send frame to ENET ethernet controller */
 #if DM9000_ENABLE
-	dm9000_PacketSend(frame->data, frame->length);
+	dm9000_PacketSend(&frame->data[0], frame->length);
 #endif
 #if ENC28J60_ENABLE
-	enc28j60_PacketSend(frame->data, frame->length);
+	enc28j60_PacketSend(&frame->data[0], frame->length);
 #endif
 #if STM32_ETH_ENABLE || LM3S_ETH_ENABLE || LPC176X_ETH_ENABLE
-	arch_EmacPacketTx(frame->data, frame->length);
+	arch_EmacPacketTx(&frame->data[0], frame->length);
 #endif
 }
 
-#if 0
+#if ETH_INT_ENABLE
 void int_enable_eth()
 {
 

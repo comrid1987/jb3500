@@ -32,8 +32,9 @@ uint16_t bin2bcd16(uint16_t x)
 	uint8_t bcd[2 + 1];
 
 	sprintf(str, "%6ld", x);
-	for (i = 0;  i < 3;  i++)
+	for (i = 0;  i < 3;  i++) {
 		bcd[2 - i] = ((str[2 * i] & 0x0F) << 4) | (str[2 * i + 1] & 0x0F);
+	}
 	i = (bcd[1] << 8) | bcd[0];
 	return i;
 }
@@ -64,8 +65,9 @@ uint32_t bin2bcd32(uint32_t x)
 	uint8_t bcd[4 + 1];
 
 	sprintf(str, "%10ld", x);
-	for (i = 0;  i < 5;  i++)
+	for (i = 0;  i < 5;  i++) {
 		bcd[4 - i] = ((str[2 * i] & 0x0F) << 4) | (str[2 * i + 1] & 0x0F);
+	}
 	memcpy(&i, bcd, sizeof(i));
 	return i;
 }

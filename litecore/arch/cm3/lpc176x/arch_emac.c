@@ -16,7 +16,7 @@ static void write_PHY (uint32_t PhyReg, uint32_t Value)
 {
 	unsigned int tout;
 
-	LPC_EMAC->MADR = PHY_DEF_ADR | PhyReg;
+	LPC_EMAC->MADR = PHY_DEF_ADDR | PhyReg;
 	LPC_EMAC->MWTD = Value;
 
 	/* Wait utill operation completed */
@@ -35,7 +35,7 @@ static uint16_t read_PHY (uint8_t PhyReg)
 {
 	uint32_t tout;
 
-	LPC_EMAC->MADR = PHY_DEF_ADR | PhyReg;
+	LPC_EMAC->MADR = PHY_DEF_ADDR | PhyReg;
 	LPC_EMAC->MCMD = MCMD_READ;
 
 	/* Wait until operation completed */

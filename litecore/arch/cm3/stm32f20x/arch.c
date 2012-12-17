@@ -6,28 +6,24 @@
 
 
 //Internal Functions
+#if OS_TYPE
 static void stm32_OsTickInit()
 {
-#if OS_TYPE
-	RCC_ClocksTypeDef  rcc_clocks;
-	rt_uint32_t         cnts;
 
-	RCC_GetClocksFreq(&rcc_clocks);
-
-	cnts = (rt_uint32_t)rcc_clocks.HCLK_Frequency / RT_TICK_PER_SECOND;
-
-	SysTick_Config(cnts);
+	SysTick_Config(MCU_CLOCK / RT_TICK_PER_SECOND);
 	SysTick_CLKSourceConfig(SysTick_CLKSource_HCLK);
-#endif
 }
+#endif
 
 static void stm32_RccInit()
 {
 
 	SystemInit();
 
+#if OS_TYPE
 	//SysTick Initialize
 	stm32_OsTickInit();
+#endif
 }
 
 static void stm32_IrqInit()
@@ -56,6 +52,10 @@ static void stm32_IrqInit()
 	NVIC_Init(&xNVIC);
 	xNVIC.NVIC_IRQChannel = EXTI15_10_IRQn;
 	NVIC_Init(&xNVIC);
+#if ETH_INT_ENABLE
+	xNVIC.NVIC_IRQChannel = ETH_IRQn;
+	NVIC_Init(&xNVIC);
+#endif
 #if USB_ENABLE == 0
 	xNVIC.NVIC_IRQChannelCmd = DISABLE;
 	xNVIC.NVIC_IRQChannel = OTG_FS_IRQn;

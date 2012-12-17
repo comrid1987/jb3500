@@ -315,7 +315,7 @@ static sys_res dm9000_Reset(const uint8_t *pMacAddr)
 
 	/* Activate DM9000 */
 	dm9000_RegWrite(DM9000_RCR, RCR_DIS_LONG | RCR_DIS_CRC | RCR_RXEN);	/* RX enable */
-#if DM9000_INT_ENABLE
+#if ETH_INT_ENABLE
 	dm9000_RegWrite(DM9000_IMR, IMR_PAR | IMR_PRM);	/* Enable RX interrupt mask */
 	return irq_ExtRegister(gpio_node(tbl_bspDm9000, 1)->port, gpio_node(tbl_bspDm9000, 1)->pin, IRQ_TRIGGER_FALLING, dm9000_Isr, NULL, IRQ_MODE_HALF);
 #else

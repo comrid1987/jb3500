@@ -38,9 +38,9 @@ extern "C" {
 #if MCU_FREQUENCY == MCU_SPEED_LOW
 #define MCU_CLOCK			25000000
 #elif MCU_FREQUENCY == MCU_SPEED_HALF
-#define MCU_CLOCK			50000000
+#define MCU_CLOCK			60000000
 #else
-#define MCU_CLOCK			100000000
+#define MCU_CLOCK			120000000
 #endif
 
 

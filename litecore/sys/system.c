@@ -23,7 +23,7 @@ void sys_IOHandle(void *args)
 	if (irq_Wait() == SYS_R_OK)
 		irq_BottomHandler();
 #endif
-#if DM9000_ENABLE && (DM9000_INT_ENABLE == 0)
+#if DM9000_ENABLE && (ETH_INT_ENABLE == 0)
 	dm9000_Isr();
 #endif
 #if OS_QUEUE_QTY
@@ -161,9 +161,6 @@ void sys_Maintain()
 		if ((nCnt & 0x03) == 0) {
 #if DEBUG_MEMORY_ENABLE
 			list_memdebug(0, 0);
-#endif
-#if DM9000_INT_ENABLE
-			dm9000_Isr(NULL);
 #endif
 		}
 		if ((nCnt & 0x1F) == 0) {

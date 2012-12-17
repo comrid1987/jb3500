@@ -142,7 +142,7 @@ void rtxip_Handler(void *args)
 	rtxip_TxBuf();
 #endif
 	//TCP协议栈处理
-#if TCPPS_ETH_ENABLE
+#if ETH_INT_ENABLE == 0
 	poll_ethernet();
 #endif
 	main_TcpNet();
