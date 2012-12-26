@@ -14,9 +14,9 @@ extern LOCALM localm[];
 //发送缓冲使能
 #define RTXIP_TXBUF_ENABLE	0
 
-#define TCP_NUMSOCKS   6
-#define UDP_NUMSOCKS   2
-#define TICK_INTERVAL  10
+#define TCP_NUMSOCKS		6
+#define UDP_NUMSOCKS		2
+#define TICK_INTERVAL		10
 
 
 
@@ -92,6 +92,18 @@ static uint16_t rtxip_udp_callback (uint8_t s, uint8_t *remip, uint16_t remport,
 	return 1;
 }
 
+static void rtxip_ping_cback (U8 event)
+{
+
+	switch (event) {
+	case ICMP_EVT_SUCCESS:
+		break;
+	case ICMP_EVT_TIMEOUT:
+		/* Timeout, try again. */
+		break;
+	}
+}
+
 static void net_GetIpAddr(int nType, void *pIp, void *pMask, void *pGetway)
 {
 
@@ -146,12 +158,14 @@ void rtxip_Handler(void *args)
 	poll_ethernet();
 #endif
 	main_TcpNet();
-	nCnt += 1;
-	if (nCnt >= (TICK_INTERVAL / OS_TICK_MS)) {
-		nCnt = 0;
-		//TCP协议栈时间Tick
+	//TCP协议栈时间Tick
+	if ((nCnt % (TICK_INTERVAL / OS_TICK_MS)) == 0)
 		timer_tick();
-	}
+#if TCPPS_ETH_ENABLE
+	if ((nCnt % (2000 / OS_TICK_MS)) == 0)
+		icmp_ping(localm[NETIF_ETH].IpAdr, rtxip_ping_cback);
+#endif
+	nCnt += 1;
 }
 
 
@@ -325,7 +339,7 @@ int net_Send(int s, uint8_t *pBuf, uint_t nLen)
 			if (pTemp == NULL)
 				break;
 			memcpy(pTemp, pBuf, nMaxLen);
-			if (tcp_send(s, pTemp, nMaxLen) != __TRUE)
+ 			if (tcp_send(s, pTemp, nMaxLen) != __TRUE)
 				break;
 		}
 	}
@@ -351,5 +365,19 @@ void net_GetIpPPP(void *pIp, void *pMask, void *pGetway)
 
 	net_GetIpAddr(NETIF_PPP, pIp, pMask, pGetway);
 }
+
+void net_GetIpETH(void *pIp, void *pMask, void *pGetway)
+{
+
+	net_GetIpAddr(NETIF_ETH, pIp, pMask, pGetway);
+}
+
+
+void net_SetIpETH(void *pIp, void *pMask, void *pGetway)
+{
+
+	net_GetIpAddr(NETIF_ETH, pIp, pMask, pGetway);
+}
+
 
 

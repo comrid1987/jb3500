@@ -66,7 +66,7 @@ static uint16_t read_PHY(uint32_t PhyReg);
 #define MAPR_MII_RMII_SEL_BB        (PERIPH_BB_BASE + (MAPR_OFFSET * 32) + (MII_RMII_SEL_BitNumber * 4))
 
 
-void arch_EmacInit()
+int arch_EmacInit()
 {
 	/* Initialize the ETH ethernet controller. */
 	uint32_t regv,tout,id1,id2;
@@ -200,13 +200,19 @@ void arch_EmacInit()
 		if ((ETH->DMABMR & DBMR_SR) == 0)
 			break;
 	}
+	if (tout >= 0x10000)
+		return (-1);
 
 	/* MDC Clock range 60-72MHz. */
 	ETH->MACMIIAR = 0x00000000;
 
 	/* Put the PHY in reset mode */
 	write_PHY(PHY_REG_BMCR, 0x8000);
-
+#if 1	
+	gpio_Set(4, 0);
+	os_thd_Slp1Tick();
+	gpio_Set(4, 1);
+#endif
 	/* Wait for hardware reset to end. */
 	for (tout = 0; tout < 0x8000; tout++) {
 		regv = read_PHY(PHY_REG_BMCR);
@@ -221,12 +227,9 @@ void arch_EmacInit()
 	id2 = read_PHY(PHY_REG_IDR2);
 
 	/* Configure the PHY device */
-#if defined (_10MBIT_)
+#if 0
 	/* Connect at 10MBit */
 	write_PHY (PHY_REG_BMCR, PHY_FULLD_10M);
-#elif defined (_100MBIT_)
-	/* Connect at 100MBit */
-	write_PHY (PHY_REG_BMCR, PHY_FULLD_100M);
 #else
 	/* Use autonegotiation about the link speed. */
 	write_PHY (PHY_REG_BMCR, PHY_AUTO_NEG);
@@ -251,11 +254,13 @@ void arch_EmacInit()
 		ETH->MACCR |= MCR_DM;
 	}
 
+#if 1
 	/* Configure 100MBit/10MBit mode. */
 	if ((regv & 0x0002) == 0) {
 		/* 100MBit mode. */
 		ETH->MACCR |= MCR_FES;
 	}
+#endif
 
 	/* MAC address filtering, accept multicast packets. */
 	ETH->MACFFR = MFFR_HPF | MFFR_PAM;
@@ -278,6 +283,7 @@ void arch_EmacInit()
 	/* Enable Rx and NIS interrupts. */
 	ETH->DMAIER = INT_NISE | INT_RIE;
 #endif
+	return 0;
 }
 
 void arch_EmacAddr(uint8_t *pAdr)

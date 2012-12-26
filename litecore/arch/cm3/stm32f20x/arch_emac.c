@@ -165,7 +165,7 @@ static void ETH_GPIO_Config(void)
 #endif
 }
 
-void arch_EmacInit()
+int arch_EmacInit()
 {
 	/* Initialize the ETH ethernet controller. */
 	uint32_t regv, tout, id1, id2;
@@ -184,6 +184,8 @@ void arch_EmacInit()
 		if ((ETH->DMABMR & DBMR_SR) == 0)
 			break;
 	}
+	if (tout >= 0x10000)
+		return (-1);
 
 	/* HCLK Clock range 100-120MHz. */
 	ETH->MACMIIAR = 0x00000004;
@@ -255,6 +257,7 @@ void arch_EmacInit()
 	/* Enable Rx and Tx interrupts. */
 	ETH->DMAIER = INT_NISE | INT_AISE | INT_RBUIE | INT_RIE;
 #endif
+	return 0;
 }
 
 void arch_EmacAddr(uint8_t *pAdr)
