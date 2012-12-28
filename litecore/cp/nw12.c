@@ -170,7 +170,7 @@ static sys_res nw12_TmsgLinkcheck(void *p, uint_t nCmd)
 void nw12_Init(p_nw12 p)
 {
 
-	memset(p, 0, sizeof(t_gw3761));
+	memset(p, 0, sizeof(t_nw12));
 	p->parent.linkcheck = nw12_TmsgLinkcheck;
 	p->parent.analyze = nw12_RmsgAnalyze;
 }
