@@ -77,8 +77,8 @@ typedef __packed struct {
 typedef struct {
 	t_dlrcp		parent;
 	uint8_t		msa;
- 	uint16_t	rtua;
- 	uint16_t	terid;
+ 	uint8_t		rtua[3];
+ 	uint8_t		terid[3];
 	t_nw12_c		c;
 	uint8_t			afn;
 	t_nw12_seq	seq;

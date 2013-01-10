@@ -117,10 +117,8 @@ static void nw12_TmsgHeaderInit(p_nw12 p, p_nw12_header pH)
 	bzero(pH, sizeof(t_nw12_header));
 	pH->sc1 = 0x68;
 	pH->sc2 = 0x68;
-	memcpy(pH->a1, &p->rtua, 2);
-	pH->a1[2] = 0;
-	memcpy(pH->a2, &p->terid, 2);
-	pH->a2[2] = 0;
+	memcpy(pH->a1, &p->rtua, 3);
+	memcpy(pH->a2, &p->terid, 3);
 }
 
 //-------------------------------------------------------------------------
