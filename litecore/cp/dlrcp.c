@@ -154,7 +154,6 @@ sys_res dlrcp_Handler(p_dlrcp p)
 {
 	sys_res res = SYS_R_ERR;
 	p_dlrcp_tmsg pMsg;
-
 	switch (p->chl->ste) {
 	default:
 		p->ste = DLRCP_S_IDLE;
