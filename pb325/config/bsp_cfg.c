@@ -321,10 +321,14 @@ IR              rx PE4
 		2,
 		MODEM_EFFECT_LOW, 
 		{GPIO_T_HC595,	GPIO_P0,	5,		GPIO_M_OUT_PP,		GPIO_INIT_NULL},	//Act
+#if MODEM_PWR_ENABLE
 		MODEM_EFFECT_HIGH,
 		{GPIO_T_HC595,	GPIO_P0,	3,		GPIO_M_OUT_PP,		GPIO_INIT_NULL},	//Power
+#endif
+#if MODEM_RST_ENABLE
 		MODEM_EFFECT_LOW,
 		{GPIO_T_HC595, 	GPIO_P0,	4,		GPIO_M_OUT_PP,		GPIO_INIT_NULL},	//Reset
+#endif
 	};
 	t_modem_def * const tbl_bspModem[BSP_MODEM_QTY] = {
 		&tbl_bspModem01,

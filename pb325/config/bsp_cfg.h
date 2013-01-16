@@ -7,7 +7,7 @@
 //硬件版本
 #define VER_HARD						0x0010
 //软件版本
-#define VER_SOFT						0x0104
+#define VER_SOFT						0x0110
 
 
 //Main Control Unit Select
@@ -316,7 +316,7 @@
 		#define MODEM_AUTOBAUD_ENABLE	0
 
 		#define BSP_MODEM_QTY			1
-		#define MODEM_PWR_ENABLE		1
+		#define MODEM_PWR_ENABLE		0
 		#define MODEM_RST_ENABLE		1
 		#define MODEM_CTS_ENABLE		0
 		#define MODEM_RTS_ENABLE		0

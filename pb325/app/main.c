@@ -80,10 +80,20 @@ void app_Daemon(uint_t nCnt)
 	}
 }
 
+#if MODEM_PWR_ENABLE == 0
+static t_gpio_def modem_GpioPower[] = {
+		GPIO_T_HC595,	GPIO_P0,	3,		GPIO_M_OUT_PP,		GPIO_INIT_NULL,		//GPRS Power
+};
+#endif
 
 void app_Entry()
 {
 
+#if MODEM_PWR_ENABLE == 0
+	sys_GpioConf(&modem_GpioPower[0]);
+	sys_GpioSet(&modem_GpioPower[0], 0);
+#endif
+	
 	icp_Init();
 	evt_Init();
 
