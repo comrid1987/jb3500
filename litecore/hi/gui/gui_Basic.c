@@ -107,9 +107,11 @@ void gui_DrawRect_Fill(int x1, int y1, int x2, int y2, t_color color)
 {
 	int i,j;
 
-	for (i = y1; i <= y2; i++)
-		for (j = x1; j <= x2; j++)
+	for (i = y1; i <= y2; i++) {
+		for (j = x1; j <= x2; j++) {
 			gui_DrawPoint(j, i, color);
+		}
+	}
 }
 
 //»­ºÚ°×Í¼±ê
@@ -118,13 +120,16 @@ void gui_DrawIcon_Mono(int x1, int y1, int x2, int y2, const uint8_t *p)
 	int x, y;
 	uint_t i;
 
-	for (y = y1; y < y2; y++)
-		for (x = x1; x < x2; p++)
-			for (i = 128; (i && (x < x2)); i >>= 1, x++)
+	for (y = y1; y < y2; y++) {
+		for (x = x1; x < x2; p++) {
+			for (i = 128; (i && (x < x2)); i >>= 1, x++) {
 				if (*p & i)
 					gui_DrawPoint(x, y, COLOR_BLACK);
 				else
 					gui_DrawPoint(x, y, COLOR_WHITE);
+			}
+		}
+	}
 }
 
 //»­ºÚ°×bmpÎÄ¼þ
@@ -134,11 +139,14 @@ void gui_DrawBMP_Mono(uint8_t *p)
 	int i, j, k;
 
 	p += GUI_BMP_OFFSET;
-	for (i = 0; i < LCD_Y_MAX; i++)
-		for (j = 0; j < (LCD_X_MAX / 8); j++, p++)
-			for (k = 0; k < 8; k++)
+	for (i = 0; i < LCD_Y_MAX; i++) {
+		for (j = 0; j < (LCD_X_MAX / 8); j++, p++) {
+			for (k = 0; k < 8; k++) {
 				if (*p & (1 << k))
 					gui_DrawPoint(j * 8 + 7 - k, LCD_Y_MAX - 1 - i, COLOR_BLACK);
+			}
+		}
+	}
 }
 
 #endif

@@ -25,7 +25,6 @@ extern "C" {
 #define GW3762_T_XC_GW				0
 #define GW3762_T_XC_RT				1
 #define GW3762_T_XC_GD				2
-#define GW3762_T_XC_N6				3
 
 #define GW3762_T_ES_RT				4
 #define GW3762_T_ES_38				5

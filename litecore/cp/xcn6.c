@@ -160,7 +160,7 @@ static sys_res xcn12_Transmit2Meter(t_gw3762 *p, uint_t nCtrl, const void *pAdr,
 	byteadd(&bTx->p[12], 0x33, bTx->p[11]);
 	buf_PushData(bTx, 0x1600 | cs8(&bTx->p[2], bTx->len - 2), 2);
 
-	xcn6n12_DbgOut(1, bTx->p[2], bTx->len - 2);
+	xcn6n12_DbgOut(1, &bTx->p[2], bTx->len - 2);
  
 	chl_Send(p->chl, bTx->p, bTx->len);
 	buf_Release(bTx);
