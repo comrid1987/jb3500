@@ -72,7 +72,11 @@ typedef __packed struct {
 	uint8_t	tp[4];
 	uint8_t	dly;
 }t_nw12_tp;
-
+typedef	struct {
+	uint8_t		r_msa;
+	uint8_t		r_rtua[3];
+ 	uint8_t		r_terid[3];
+}t_radr;
 //NW12规约结构
 typedef struct {
 	t_dlrcp		parent;
@@ -83,7 +87,8 @@ typedef struct {
 	uint8_t			afn;
 	t_nw12_seq	seq;
 	t_nw12_tp		tp;
-	uint8_t			pw[16];
+	uint8_t			pw[16];	
+	t_radr			r_adr;	//接收地址域
 	buf				data;
 }t_nw12, *p_nw12;
 
