@@ -190,7 +190,8 @@ void sys_Daemon(void *args)
 {
 	static uint_t nCnt = 0;
 
-	wdg_Reload(1);
+	if ((nCnt & 0x03) == 0)
+		wdg_Reload(1);
 	if ((nCnt % 10) == 0) {
 #if RTC_ENABLE
 		rtc_OsTick();
