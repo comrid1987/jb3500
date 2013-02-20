@@ -84,9 +84,7 @@ static sys_res nw12_RmsgAnalyze(void *args)
 			continue;
 		//接收到报文
 		//----Unfinished ----判断地址转级联
-		p->r_adr.r_msa = pH->msa;		
- 		memcpy(&p->r_adr.r_rtua, pH->a1, 3);
- 		memcpy(&p->r_adr.r_terid, pH->a2, 3);				
+		p->msa = pH->msa;		
 		p->c = pH->c;
 		p->afn = pH->afn;
 		p->seq = pH->seq;
@@ -118,7 +116,6 @@ static void nw12_TmsgHeaderInit(p_nw12 p, p_nw12_header pH)
 	bzero(pH, sizeof(t_nw12_header));
 	pH->sc1 = 0x68;
 	pH->sc2 = 0x68;
-// 	memcpy(pH->a1, &p->r_adr.r_rtua, 3);
 	memcpy(pH->a1, p->rtua, 3);
 	memcpy(pH->a2, p->terid, 3);
 }
@@ -129,6 +126,7 @@ static void nw12_TmsgHeaderInit(p_nw12 p, p_nw12_header pH)
 static void nw12_TmsgAfn00(p_nw12 p, uint32_t nDu, uint_t nFun)
 {
 	buf b = {0};
+
 	buf_PushData(b, nDu, 4);
 	nw12_TmsgSend(p, nFun, NW12_AFN_CONFIRM, b, DLRCP_TMSG_RESPOND);
 	buf_Release(b);
@@ -182,12 +180,8 @@ sys_res nw12_TmsgSend(p_nw12 p, uint_t nFun, uint_t nAfn, buf b, uint_t nType)
 {
 	t_nw12_header xH;
 	uint_t nCS;
-// 	p->rtua[0] = 0x08;
-// 			p->rtua[1] = 0x01;
-// 			p->rtua[2] = 0x00;
-// 			p->terid = nTerid;
+
 	nw12_TmsgHeaderInit(p, &xH);
-	
 	switch (nType) {
 	case DLRCP_TMSG_REPORT:
 		xH.c.prm = 1;
@@ -288,61 +282,6 @@ sys_res nw12_Handler(p_nw12 p)
 
 	return dlrcp_Handler(&p->parent);
 }
-/****************************************************************************
-*功能：通道p数据通过通道pD转发												*
-****************************************************************************/
-sys_res nw12_Transmit(p_nw12 p, p_nw12 pD)
-{
-	sys_res res;
-	t_nw12_header xH;
-	uint_t nCS;
-	buf b = {0};
-	buf_Push(b, p->data->p, p->data->len);
-	xH.sc1 = 0x68;
-	xH.sc2 = 0x68;
-	memcpy(xH.a1, &p->r_adr.r_rtua, 3);
-	memcpy(xH.a2, &p->r_adr.r_terid, 3);
-	xH.msa = p->r_adr.r_msa;
-	xH.c = p->c;
-	xH.afn = p->afn;
-	xH.seq = p->seq;
-	xH.len1 = xH.len2 = b->len + (sizeof(t_nw12_header) - NW12_FIXHEADER_SIZE);
-	nCS = cs8((uint8_t *)&xH + NW12_FIXHEADER_SIZE, (sizeof(t_nw12_header) - NW12_FIXHEADER_SIZE));
-	nCS = (nCS + cs8(b->p, b->len)) & 0xFF;
-	buf_PushData(b, 0x1600 | nCS, 2);
-	res = dlrcp_TmsgSend(&pD->parent, &xH, sizeof(t_nw12_header), b->p, b->len);
-	buf_Release(b);
-	return res;
-}
-/****************************************************************************
-*地址检测																	*
-****************************************************************************/
-int nw12_RecvCheck(p_nw12 p)
-{
-	uint8_t i;
-	uint_t temp_rtua,temp_terid;
-	memcpy(&temp_rtua,p->r_adr.r_rtua,3);
-	memcpy(&temp_terid,p->r_adr.r_terid,3);
-	if((temp_rtua&0xffffff != 0xffffff) || (temp_terid&0xffffff!= 0xffffff)){
-		for (i=0;i<3;i++) {
-			if((p->r_adr.r_rtua[i] != p->rtua[i])||(p->r_adr.r_terid[i] != p->terid[i]))
-				return 0;
-			else
-				continue;
-		}
-	}
-	return 1;
-}
-
-
-
-
-
-
-
-
-
-
 
 
 
