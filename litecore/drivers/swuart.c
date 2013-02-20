@@ -71,7 +71,7 @@ static void swuart_RxStart(void *args)
 
 	irq_ExtDisable(p->rxint);
 	p->rxste = SWUART_DATA_1;
-	irq_TimerStart(pDef->id, p->tick + (p->tick >> 8));
+	irq_TimerStart(pDef->id, p->tick + (p->tick >> SWUART_DELAY));
 }
 
 static void swuart_IrdaTimer(void *args)
