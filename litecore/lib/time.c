@@ -76,6 +76,46 @@ void day4timet(time_t tTime, int nDay, uint8_t *p, uint_t nIsBcd)
 	memcpy(p, &aTime[3], 3);
 }
 
+void nextmonth(uint8_t *p, uint_t nIsBcd)
+{
+	
+	if (nIsBcd) {
+		if (p[0] >= 0x12) {
+			p[0] = 1;
+			p[1] = bin2bcd8(bcd2bin8(p[1]) + 1);
+		} else {
+			p[0] = bin2bcd8(bcd2bin8(p[0]) + 1);
+		}
+	} else {
+		if (p[0] >= 12) {
+			p[0] = 1;
+			p[1] += 1;
+		} else {
+			p[0] += 1;
+		}
+	}
+}
+
+void prevmonth(uint8_t *p, uint_t nIsBcd)
+{
+
+	if (nIsBcd) {
+		if (p[0] <= 1) {
+			p[0] = 0x12;
+			p[1] = bin2bcd8(bcd2bin8(p[1]) - 1);
+		} else {
+			p[0] = bin2bcd8(bcd2bin8(p[0]) - 1);
+		}
+	} else {
+		if (p[0] <= 1) {
+			p[0] = 12;
+			p[1] -= 1;
+		} else {
+			p[0] -= 1;
+		}
+	}
+}
+
 void month4timet(time_t tTime, int nMon, uint8_t *p, uint_t nIsBcd)
 {
 	uint8_t aTime[6];
@@ -85,40 +125,12 @@ void month4timet(time_t tTime, int nMon, uint8_t *p, uint_t nIsBcd)
 	if (nMon < 0) {
  		nMon = -nMon;
  		for (i = 0; i < nMon; i++) {
-			if (nIsBcd) {
-	 			if (aTime[4] <= 1) {
- 					aTime[4] = 0x12;
- 					aTime[5] = bin2bcd8(bcd2bin8(aTime[5]) - 1);
- 				} else {
- 					aTime[4] = bin2bcd8(bcd2bin8(aTime[4]) - 1);
- 				}
-			} else {
-	 			if (aTime[4] <= 1) {
- 					aTime[4] = 12;
- 					aTime[5] -= 1;
- 				} else {
- 					aTime[4] -= 1;
- 				}
- 			}
+			prevmonth(&aTime[4], nIsBcd);
  		}
  		memcpy(p, &aTime[4], 2);
 	} else {
 		for (i = 0; i < nMon; i++) {
-			if (nIsBcd) {
-	 			if (aTime[4] >= 0x12) {
- 					aTime[4] = 1;
- 					aTime[5] = bin2bcd8(bcd2bin8(aTime[5]) + 1);
- 				} else {
- 					aTime[4] = bin2bcd8(bcd2bin8(aTime[4]) + 1);
- 				}
-			} else {
-	 			if (aTime[4] >= 12) {
- 					aTime[4] = 1;
- 					aTime[5] += 1;
- 				} else {
- 					aTime[4] += 1;
- 				}
- 			}
+			nextmonth(&aTime[4], nIsBcd);
 		}
 		memcpy(p, &aTime[4], 2);
 	}
