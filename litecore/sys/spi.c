@@ -140,7 +140,7 @@ sys_res spi_Send(p_dev_spi p, const void *pData, uint_t nLen)
 #if SPI_SOFTWARE
 	res = spibus_Send(p, pData, nLen);
 #else
-	res = arch_SpiSend(p, pData, nLen);
+	res = arch_SpiSend(p, (uint8_t *)pData, nLen);
 #endif
 	p->ste = SPI_S_IDLE;
 	return res;
@@ -192,7 +192,7 @@ sys_res spi_Transce(p_dev_spi p, const void *pCmd, uint_t nCmdLen, void *pRec, u
 #if SPI_SOFTWARE
 	res = spibus_Transce(p, pCmd, nCmdLen, pRec, nRecLen);
 #else
-	res = arch_SpiTransce(p, pCmd, nCmdLen, pRec, nRecLen);
+	res = arch_SpiTransce(p, (uint_t)pCmd, pRec, nRecLen);
 #endif
 	p->ste = SPI_S_IDLE;
 	return res;
