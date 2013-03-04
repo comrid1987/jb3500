@@ -38,11 +38,15 @@ void arch_SpiInit(p_dev_spi p)
 	//Enable SPI Clock
 	stm32_SpiApbClockCmd(pSpi, ENABLE);
 
-	xGpio.GPIO_Speed = GPIO_Speed_10MHz;
-	if (pDef->outmode == DEV_PIN_OD)
-		xGpio.GPIO_Mode = GPIO_Mode_AF_OD;
-	else
-		xGpio.GPIO_Mode = GPIO_Mode_AF_PP;
+	xGpio.GPIO_Speed = GPIO_Speed_50MHz;
+	if (pDef->outmode == DEV_PIN_OD){
+		xGpio.GPIO_Mode = GPIO_Mode_AF;
+		xGpio.GPIO_OType = GPIO_OType_OD;
+	}
+	else{
+		xGpio.GPIO_Mode = GPIO_Mode_AF;
+		xGpio.GPIO_OType = GPIO_OType_PP;
+	}
 	//SCK
 	xGpio.GPIO_Pin = BITMASK(pDef->sckpin);
 	stm32_GpioClockEnable(pDef->sckport);
@@ -63,6 +67,11 @@ void arch_SpiInit(p_dev_spi p)
 	stm32_GpioClockEnable(pDef->nssport);
 	GPIO_SetBits(arch_GpioPortBase(pDef->nssport), BITMASK(pDef->nsspin));
 	GPIO_Init(arch_GpioPortBase(pDef->nssport), &xGpio);
+	
+	GPIO_PinAFConfig(arch_GpioPortBase(pDef->sckport), pDef->sckpin, GPIO_AF_SPI2);
+	GPIO_PinAFConfig(arch_GpioPortBase(pDef->mosiport), pDef->mosipin, GPIO_AF_SPI2);
+	GPIO_PinAFConfig(arch_GpioPortBase(pDef->misoport), pDef->misopin, GPIO_AF_SPI2);
+	
 }
 
 sys_res arch_SpiConfig(p_dev_spi p)

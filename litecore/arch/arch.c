@@ -56,6 +56,7 @@
 #include <arch/cm3/stm32f20x/stm32f2xx_syscfg.c>
 #include <arch/cm3/stm32f20x/stm32f2xx_tim.c>
 #include <arch/cm3/stm32f20x/stm32f2xx_usart.c>
+#include <arch/cm3/stm32f20x/stm32f2xx_spi.c>
 
 
 #ifdef RT_USING_CONSOLE
