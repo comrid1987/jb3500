@@ -46,7 +46,8 @@ static p_dev_spi att7022_SpiGet()
 {
 	p_dev_spi p;
 	
-	p = spi_Get(SPIF_COMID, OS_TMO_FOREVER);
+// 	p = spi_Get(SPIF_COMID, OS_TMO_FOREVER);
+	p = spi_Get(0, OS_TMO_FOREVER);
 	spi_Config(p, SPI_SCKIDLE_LOW, SPI_LATCH_2EDGE, ATT7022_SPI_SPEED);
 #if SPI_SEL_ENABLE
 	spi_CsSel(p, ATT7022_CSID);
@@ -671,6 +672,125 @@ void att7022_UIP_gainCalibration(p_att7022 p, p_att7022_cali pCali)
 		//功率校正
 		pCali->Pgain0[i] = att7022_PgainCalibration(p, PHASE_A + i );   
 	}
+}
+//------------------------------------------------------------------------
+//名	称: BSP_ATT7022B_Phase_gainCalibration () 
+//设	计: 
+//输	入: -
+//输	出: -
+//返	回: -
+//功	能: 相位角校正
+//------------------------------------------------------------------------
+void att7022_Phase_gainCalibration(p_att7022 p, p_att7022_cali pCali)
+{
+	uint_t i;
+	uint32_t phv;
+
+	phv = att7022_PhaseCali1Seg(p);
+	for(i = 0; i < 5; i++)
+	{
+		//
+		pCali->PhsregA[i] = phv;   
+		pCali->PhsregB[i] = phv;  
+		pCali->PhsregC[i] = phv;  
+	}
+}
+//------------------------------------------------------------------------
+//名	称: att7022_PhaseCali1Seg () 
+//设	计: 
+//输	入: 
+//输	出: 
+//返	回: 
+//功	能: 相位校正(0.5L处校正), 此处分两段校正
+//------------------------------------------------------------------------
+uint32_t att7022_PhaseCali1Seg(p_att7022 p) {
+	uint32_t phv;
+	uint_t i;
+	phv= att7022_PhaseCalibration(p,PHASE_A, 1); //7.5A处校正
+	att7022_WriteEnable(p); //ATT7022B校正使能
+	for ( i = 0; i < 3; i++ )
+	{
+		att7022_WriteReg(p,ATT7022_REG_PhsregA0 + i * 5, phv);
+		att7022_WriteReg(p,ATT7022_REG_PhsregA1 + i * 5, phv);
+		att7022_WriteReg(p,ATT7022_REG_PhsregA2 + i * 5, phv);
+		att7022_WriteReg(p,ATT7022_REG_PhsregA3 + i * 5, phv);
+		att7022_WriteReg(p,ATT7022_REG_PhsregA4 + i * 5, phv);
+	}
+	att7022_WriteDisable(p); //ATT7022B校正禁止
+	return phv;
+}
+//------------------------------------------------------------------------
+//名	称: att7022_PhaseCalibration () 
+//设	计: 
+//输	入: nPhase - 待校正的相位
+//			cali_point - 校正点(0 - 4)
+//输	出: -
+//返	回: phase_v - 返回计算出的相位校正值(长整形) 
+//功	能:相位校正, 此处分两段校正
+//------------------------------------------------------------------------
+uint32_t att7022_PhaseCalibration(p_att7022 p,uint8_t nPhase, uint8_t nCali) {
+	uint32_t i;
+	float fPhase = 0;
+	switch (nCali) {
+		case 0:
+			att7022_WriteEnable(p);
+			for (i = 0; i < 5; i++) {
+				//清除所有校正寄存器值
+				att7022_WriteReg(p,ATT7022_REG_PhsregA0 + (nPhase *5) + i, 0);
+			}
+			for (i = 0; i < 4; i++) {
+				//清除寄存器值
+				att7022_WriteReg(p,ATT7022_REG_Irgion1 + i, 0);
+			}
+			att7022_WriteDisable(p);
+			sys_Delay(50000);
+			fPhase = att7022_FPhaseCaliData(p,nPhase, nCali);
+			break;
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+			fPhase = att7022_FPhaseCaliData(p,nPhase, nCali);
+			break;
+		default:
+			break;
+	}
+	return (uint32_t)fPhase;
+}
+//------------------------------------------------------------------------
+//名	称: att7022_PhaseCaliData () 
+//设	计: 
+//输	入: nPhase - 待校正的相位
+//			cali_point - 校正点(0 - 4)
+//输	出: -
+//返	回: phase_v - 返回计算出的相位校正值(双精度浮点数) 
+//功	能: 相位校正数据计算
+//------------------------------------------------------------------------
+
+float att7022_FPhaseCaliData(p_att7022 p,uint8_t nPhase, uint8_t cali_point) 
+{
+	float phase_v = 0, att7022_pvalue, seta, err, pcali_value, eck;
+	if (nPhase > 2) {
+		return __FALSE;
+	}
+	eck = 3200.0f / (float)ATT7022_CONST_EC; //脉冲输出系数
+	pcali_value = 0; //phiconst_tab[cali_point];				//载入校正点的有功功率常数
+	att7022_pvalue = att7022_ReadReg(p,ATT7022_REG_PA + nPhase); //读取有功功率值
+	if (att7022_pvalue > MAX_VALUE1) {
+		att7022_pvalue -= MAX_VALUE2;
+	}
+	att7022_pvalue = (att7022_pvalue / 256) *eck; //转换成工程量
+	err = (att7022_pvalue - pcali_value) / pcali_value; //误差计算
+	if (err) {
+		seta = acosf((1 + err) * 0.5);
+		seta -= PI / 3;
+		if (seta < 0) {
+			phase_v = MAX_VALUE2 + seta * MAX_VALUE1;
+		} else {
+			phase_v = seta * MAX_VALUE1;
+		}
+	}
+	return phase_v;
 }
 
 uint32_t att7022_Status(p_att7022 p)
