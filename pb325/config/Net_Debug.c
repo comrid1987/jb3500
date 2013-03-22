@@ -3,10 +3,10 @@
  *----------------------------------------------------------------------------
  *      Name:    NET_DEBUG.C
  *      Purpose: Debug Module
- *      Rev.:    V4.50
+ *      Rev.:    V4.70
  *----------------------------------------------------------------------------
  *      This code is part of the RealView Run-Time Library.
- *      Copyright (c) 2004-2012 KEIL - An ARM Company. All rights reserved.
+ *      Copyright (c) 2004-2013 KEIL - An ARM Company. All rights reserved.
  *---------------------------------------------------------------------------*/
 
 #include <Net_Config.h>
@@ -30,7 +30,7 @@
 
 //   <o>PPP Debug   <0=> Off <1=> Errors only <2=> Full debug
 //   <i> Turn On/Off PPP debug messages
-#define DBG_PPP        2
+#define DBG_PPP        0
 
 //   <o>SLIP Debug  <0=> Off <1=> Errors only <2=> Full debug
 //   <i> Turn On/Off SLIP debug messages

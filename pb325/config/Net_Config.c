@@ -3,10 +3,10 @@
  *----------------------------------------------------------------------------
  *      Name:    NET_CONFIG.C
  *      Purpose: Configuration of RL TCPnet by user.
- *      Rev.:    V5.00
+ *      Rev.:    V4.70
  *----------------------------------------------------------------------------
  *      This code is part of the RealView Run-Time Library.
- *      Copyright (c) 2004-2012 KEIL - An ARM Company. All rights reserved.
+ *      Copyright (c) 2004-2013 KEIL - An ARM Company. All rights reserved.
  *---------------------------------------------------------------------------*/
 
 #include <Net_Config.h>
@@ -22,7 +22,7 @@
 //   <i> Default: "mcb2300"
 #define LHOST_NAME     "pb325"
 
-//   <o>Memory Pool size <1500-64000:4><#/4>
+//   <o>Memory Pool size <1536-262144:4><#/4>
 //   <i> This is the size of a memory pool in bytes. Buffers for
 //   <i> TCPnet packets are allocated from this memory pool.
 //   <i> Default: 8000 bytes
@@ -50,15 +50,15 @@
 //     <i> LSB is an ethernet Multicast bit.
 //     <i> Must be 0 for local MAC address.
 //     <i> Default: 0x00
-#define _MAC1          0x11
+#define _MAC1          0x1E
 
 //     <o>Address byte 2 <0x00-0xff>
 //     <i> Default: 0x30
-#define _MAC2          0x11
+#define _MAC2          0x30
 
 //     <o>Address byte 3 <0x00-0xff>
 //     <i> Default: 0x6C
-#define _MAC3          0x11
+#define _MAC3          0x6C
 
 //     <o>Address byte 4 <0x00-0xff>
 //     <i> Default: 0x00
@@ -88,11 +88,11 @@
 
 //     <o>Address byte 3 <0-255>
 //     <i> Default: 0
-#define _IP3           18
+#define _IP3           0
 
 //     <o>Address byte 4 <0-255>
 //     <i> Default: 100
-#define _IP4           254
+#define _IP4           100
 
 //   </h>
 //   <h>Subnet mask
@@ -108,7 +108,7 @@
 
 //     <o>Mask byte 3 <0-255>
 //     <i> Default: 255
-#define _MSK3          0
+#define _MSK3          255
 
 //     <o>Mask byte 4 <0-255>
 //     <i> Default: 0
@@ -128,11 +128,11 @@
 
 //     <o>Address byte 3 <0-255>
 //     <i> Default: 0
-#define _GW3           18
+#define _GW3           0
 
 //     <o>Address byte 4 <0-255>
 //     <i> Default: 254
-#define _GW4           1
+#define _GW4           254
 
 //   </h>
 //   <h>Primary DNS Server
@@ -140,19 +140,19 @@
 //   <i> Primary DNS Server IP Address
 //     <o>Address byte 1 <0-255>
 //     <i> Default: 194
-#define _pDNS1         192
+#define _pDNS1         194
 
 //     <o>Address byte 2 <0-255>
 //     <i> Default: 25
-#define _pDNS2         168
+#define _pDNS2         25
 
 //     <o>Address byte 3 <0-255>
 //     <i> Default: 2
-#define _pDNS3         18
+#define _pDNS3         2
 
 //     <o>Address byte 4 <0-255>
 //     <i> Default: 129
-#define _pDNS4         1
+#define _pDNS4         129
 
 //   </h>
 //   <h>Secondary DNS Server
@@ -160,19 +160,19 @@
 //   <i> Secondary DNS Server IP Address
 //     <o>Address byte 1 <0-255>
 //     <i> Default: 194
-#define _sDNS1         192
+#define _sDNS1         194
 
 //     <o>Address byte 2 <0-255>
 //     <i> Default: 25
-#define _sDNS2         168
+#define _sDNS2         25
 
 //     <o>Address byte 3 <0-255>
 //     <i> Default: 2
-#define _sDNS3         18
+#define _sDNS3         2
 
 //     <o>Address byte 4 <0-255>
 //     <i> Default: 130
-#define _sDNS4         1
+#define _sDNS4         130
 
 //   </h>
 //   <h>ARP Definitions
@@ -532,6 +532,12 @@
 //   <i> Default: 1460
 #define TCP_MAXSEGSZ   1460
 
+//   <o>Receive Window Size <536-65535>
+//   <i> Receive Window Size specifies the size of data, 
+//   <i> that the socket is able to buffer in flow-control mode.
+//   <i> Default: 4380
+#define TCP_RECWINSZ   4380
+
 /* TCP fixed timeouts */
 #define TCP_INIT_RETRY_TOUT 1     /* TCP initial Retransmit period in sec.   */
 #define TCP_SYN_RETRY_TOUT  2     /* TCP SYN frame retransmit period in sec. */
@@ -610,7 +616,7 @@
 //   <i> When enabled, the user will have to authenticate
 //   <i> himself by username and password before access
 //   <i> to the system is allowed.
-#define TNET_ENAUTH    0
+#define TNET_ENAUTH    1
 
 //     <s.15>Authentication Username
 //     <i> Default: "admin"
@@ -636,6 +642,12 @@
 //   <i> Listening port number.
 //   <i> Default: 69
 #define TFTP_PORTNUM   69
+
+//   <q>Enable Firewall Support
+//   <i> Use the same Port Number to receive
+//   <i> requests and send answers to clients.
+//   <i> Default: Not Enabled
+#define TFTP_ENFWALL   0
 
 //   <o>Inactive Session Timeout in seconds <5-120>
 //   <i> When timeout expires TFTP Session is closed.

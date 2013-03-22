@@ -81,7 +81,7 @@
 
 
 //看门狗使能
-#define WDG_ENABLE						1
+#define WDG_ENABLE						0
 #if WDG_ENABLE
 	//片内看门狗使能
 	#define WDT_INT_ENABLE				1
@@ -272,6 +272,7 @@
 	#define SWUART_ENABLE				1
 	#if SWUART_ENABLE
 		#define SWUART_QTY				1
+		#define SWUART_DELAY			2
 	#endif
 
 	//SMARTCARD使能

@@ -815,11 +815,12 @@ void evt_GetFlag(void *pBuf)
 
 int evt_Read(buf b, uint_t nPm, uint_t nPn, uint_t nIsNormal)
 {
-	uint_t i, nCnt = 0, nCycle = 0, nStart, nLast, nLen;
+	uint_t i, nCnt = 0, nCycle = 0, nStart, nEnd, nLast, nLen;
 	uint8_t aBuf[EVT_SIZE];
 
+	nEnd = nPn;
 	if (nPm > nPn)
-		nPn += 256;
+		nEnd += 256;
 	sfs_Read(&evt_SfsDev, EVT_CNT_ADDR + nIsNormal, &nCnt);
 	if (nCnt > EVT_QTY) {
 		nCnt &= (EVT_QTY - 1);
@@ -829,15 +830,20 @@ int evt_Read(buf b, uint_t nPm, uint_t nPn, uint_t nIsNormal)
 		if (nCycle) {
 			nCnt += EVT_QTY;
 			nStart = nCnt & (~0xFF);
+			if (nPm > nPn)
+				nStart -= 256;
 		} else
 			nStart = 0;
-	} else
+	} else {
 		nStart = nCnt & (~0xFF);
+		if (nPm > nPn)
+			nStart -= 256;
+	}
 	i = nStart + nPm;
 	buf_PushData(b, nPm, 2);
 	nLen = b->len - 1;
 	nIsNormal = EVT_DATA_BASE + nIsNormal * (EVT_QTY * EVT_SIZE);
-	for (nLast = i; (i < (nStart + nPn)) && (i < nCnt); i++) {
+	for (nLast = i; (i < (nStart + nEnd)) && (i < nCnt); i++) {
 		spif_Read(nIsNormal + (i & (EVT_QTY - 1)) * EVT_SIZE, aBuf, sizeof(aBuf));
 		buf_Push(b, aBuf, aBuf[1] + 2);
 		nLast = i + 1;
