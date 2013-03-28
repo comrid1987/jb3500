@@ -100,9 +100,10 @@ sys_res arch_SpiConfig(p_dev_spi p)
 	return SYS_R_OK;
 }
 
-sys_res arch_SpiSend(p_dev_spi p, uint8_t *pData, uint_t nLen)
+sys_res arch_SpiSend(p_dev_spi p, const void *pSend, uint_t nLen)
 {
 	SPI_TypeDef *pSpi = stm32_tblSpiId[tbl_bspSpiDef[p->parent->id].chipid];
+	uint8_t *pData = (uint8_t *)p;
 
 	for (; nLen; nLen--) {
 		while (SPI_I2S_GetFlagStatus(pSpi, SPI_I2S_FLAG_TXE) == RESET);

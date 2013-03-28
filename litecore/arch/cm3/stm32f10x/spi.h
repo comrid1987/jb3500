@@ -19,7 +19,7 @@ extern "C" {
 //External Functions
 void arch_SpiInit(p_dev_spi p);
 sys_res arch_SpiConfig(p_dev_spi p);
-sys_res arch_SpiSend(p_dev_spi p, uint8_t *pData, uint_t nLen);
+sys_res arch_SpiSend(p_dev_spi p, const void *pSend, uint_t nLen);
 sys_res arch_SpiRecv(p_dev_spi p, uint8_t *pRec, uint_t nLen);
 sys_res arch_SpiTransce(p_dev_spi p, uint_t nCmd, uint8_t *pRec, uint_t nLen);
 

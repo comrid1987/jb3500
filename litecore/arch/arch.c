@@ -47,6 +47,7 @@
 
 #elif ARCH_TYPE == ARCH_T_STM32F20X
 #include <arch/cm3/stm32f20x/misc.c>
+#include <arch/cm3/stm32f20x/stm32f2xx_adc.c>
 #include <arch/cm3/stm32f20x/stm32f2xx_exti.c>
 #include <arch/cm3/stm32f20x/stm32f2xx_fsmc.c>
 #include <arch/cm3/stm32f20x/stm32f2xx_flash.c>
