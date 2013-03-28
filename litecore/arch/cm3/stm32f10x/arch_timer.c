@@ -9,41 +9,39 @@ static TIM_TypeDef * const stm32_tblTimBase[ARCH_TIMER_QTY] = {
 	TIM7,
 };
 
+static uint_t const stm32_tblTimAPB[ARCH_TIMER_QTY] = {
+	RCC_APB1Periph_TIM2,
+	RCC_APB1Periph_TIM3,
+	RCC_APB1Periph_TIM4,
+	RCC_APB1Periph_TIM5,
+	RCC_APB1Periph_TIM6,
+	RCC_APB1Periph_TIM7,
+};
+
+static uint_t const stm32_tblTimIRQn[ARCH_TIMER_QTY] = {
+	TIM2_IRQn,
+	TIM3_IRQn,
+	TIM4_IRQn,
+	TIM5_IRQn,
+	TIM6_IRQn,
+	TIM7_IRQn,
+};
 
 void arch_TimerInit(uint_t nId)
 {
 	NVIC_InitTypeDef xNVIC;
+	TIM_TypeDef * const	pTim = stm32_tblTimBase[nId];
 
-	switch(nId) {
-	default:
-		RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
-		xNVIC.NVIC_IRQChannel = TIM2_IRQn;
-		break;
-	case 1:
-		RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
-		xNVIC.NVIC_IRQChannel = TIM3_IRQn;
-		break;
-	case 2:
-		RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
-		xNVIC.NVIC_IRQChannel = TIM4_IRQn;
-		break;
-	case 3:
-		RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);
-		xNVIC.NVIC_IRQChannel = TIM5_IRQn;
-		break;
-	case 4:
-		RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);
-		xNVIC.NVIC_IRQChannel = TIM6_IRQn;
-		break;
-	case 5:
-		RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);
-		xNVIC.NVIC_IRQChannel = TIM7_IRQn;
-		break;
-	}
+	xNVIC.NVIC_IRQChannel = stm32_tblTimIRQn[nId];
 	xNVIC.NVIC_IRQChannelPreemptionPriority = 0;
-	xNVIC.NVIC_IRQChannelSubPriority = 1;
+	xNVIC.NVIC_IRQChannelSubPriority = 0;
 	xNVIC.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&xNVIC);
+
+	RCC_APB1PeriphClockCmd(stm32_tblTimAPB[nId], ENABLE);
+	TIM_InternalClockConfig(pTim);//内部时钟源
+	TIM_DeInit(pTim);
+	TIM_ITConfig(pTim, TIM_IT_Update, ENABLE);
 }
 
 void arch_TimerIntClear(uint_t nId)
@@ -54,32 +52,30 @@ void arch_TimerIntClear(uint_t nId)
 
 void arch_TimerStart(uint_t nId, uint_t nValue)
 {
-	TIM_TimeBaseInitTypeDef  xTIM_TimeBase;
-	
-	TIM_InternalClockConfig(stm32_tblTimBase[nId]);//内部时钟源
-    TIM_DeInit(stm32_tblTimBase[nId]);
-    xTIM_TimeBase.TIM_Period = nValue;          //ARR
-    xTIM_TimeBase.TIM_Prescaler = 0;			//PSC
-    xTIM_TimeBase.TIM_ClockDivision = TIM_CKD_DIV1; 
-    xTIM_TimeBase.TIM_CounterMode = TIM_CounterMode_Up; //计数方式
-	TIM_TimeBaseInit(stm32_tblTimBase[nId], &xTIM_TimeBase); 
-	TIM_ClearFlag(stm32_tblTimBase[nId], TIM_FLAG_Update);   
-	TIM_Cmd(stm32_tblTimBase[nId], ENABLE); //使能
-	TIM_ITConfig(stm32_tblTimBase[nId], TIM_IT_Update | TIM_IT_Trigger, ENABLE);
+	TIM_TimeBaseInitTypeDef xTIM_TimeBase;
+	TIM_TypeDef * const	pTim = stm32_tblTimBase[nId];
+
+	xTIM_TimeBase.TIM_Period = nValue;          //ARR
+	xTIM_TimeBase.TIM_Prescaler = 0;			//PSC
+	xTIM_TimeBase.TIM_ClockDivision = TIM_CKD_DIV1;
+	xTIM_TimeBase.TIM_CounterMode = TIM_CounterMode_Up; //计数方式
+	TIM_TimeBaseInit(pTim, &xTIM_TimeBase);
+	TIM_ClearFlag(pTim, TIM_FLAG_Update);
+	TIM_Cmd(pTim, ENABLE); //使能
 }
 
 void arch_TimerStop(uint_t nId)
 {
+	TIM_TypeDef * const	pTim = stm32_tblTimBase[nId];
 
-	TIM_ClearFlag(stm32_tblTimBase[nId], TIM_FLAG_Update);  
-	TIM_Cmd(stm32_tblTimBase[nId], DISABLE); //
-	TIM_ITConfig(stm32_tblTimBase[nId], TIM_IT_Update | TIM_IT_Trigger, DISABLE);
+	TIM_ClearFlag(pTim, TIM_FLAG_Update);  
+	TIM_Cmd(pTim, DISABLE); //
 }
 
 uint_t arch_TimerClockGet()
 {
 
-	return 60000000;
+	return MCU_CLOCK;
 }
 
 

@@ -61,14 +61,12 @@ int arch_ExtIrqRegister(uint_t nPort, uint_t nPin, uint_t nTriggerMode)
 	xEXTI.EXTI_Line = BITMASK(nPin);
 	xEXTI.EXTI_Mode = EXTI_Mode_Interrupt;
 	switch (nTriggerMode) {
-	case IRQ_TRIGGER_FALLING:
+	default:
 		xEXTI.EXTI_Trigger = EXTI_Trigger_Falling;
 		break;
 	case IRQ_TRIGGER_RISING:
 		xEXTI.EXTI_Trigger = EXTI_Trigger_Rising;
 		break;
-	default:
-		return -1;
 	}
 	xEXTI.EXTI_LineCmd = ENABLE;
 	EXTI_Init(&xEXTI);
@@ -77,13 +75,30 @@ int arch_ExtIrqRegister(uint_t nPort, uint_t nPin, uint_t nTriggerMode)
 
 
 void arch_ExtIrqEnable(uint_t nPort, uint_t nPin, uint_t nMode)
-{
+{ 
+	EXTI_InitTypeDef xEXTI;
 
+	xEXTI.EXTI_Line = BITMASK(nPin);
+	xEXTI.EXTI_Mode = EXTI_Mode_Interrupt;
+	switch (nMode) {
+	default:
+		xEXTI.EXTI_Trigger = EXTI_Trigger_Falling;
+		break;
+	case IRQ_TRIGGER_RISING:
+		xEXTI.EXTI_Trigger = EXTI_Trigger_Rising;
+		break;
+	} 
+	xEXTI.EXTI_LineCmd = ENABLE;
+	EXTI_Init(&xEXTI);
 }
 
 void arch_ExtIrqDisable(uint_t nPort, uint_t nPin, uint_t nMode)
 {
+	EXTI_InitTypeDef xEXTI;
 
+	xEXTI.EXTI_Line = BITMASK(nPin);
+	xEXTI.EXTI_LineCmd = DISABLE;
+	EXTI_Init(&xEXTI);
 }
 
 /*******************************************************************************

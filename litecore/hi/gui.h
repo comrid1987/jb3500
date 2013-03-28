@@ -45,7 +45,6 @@ typedef int							t_color;
 #endif
 
 #include <hi/gui/gui_Basic.h>
-#include <hi/gui/gui_Combo.h>
 #include <hi/gui/gui_Editor.h>
 #include <hi/gui/gui_String.h>
 

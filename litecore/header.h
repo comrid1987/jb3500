@@ -10,9 +10,9 @@ extern "C" {
 
 
 //Include HeaderFiles
-#if (ARCH_TYPE == ARCH_T_STM32F10X_HD) || (ARCH_TYPE == ARCH_T_STM32F10X_CL) || \
+#if (ARCH_TYPE == ARCH_T_STM32F10X_HD) || (ARCH_TYPE == ARCH_T_STM32F10X_CL) || (ARCH_TYPE == ARCH_T_STM32F20X) || \
 	(ARCH_TYPE == ARCH_T_LM3S9X) || (ARCH_TYPE == ARCH_T_LM3S5X) || \
-	(ARCH_TYPE == ARCH_T_LPC176X) || (ARCH_TYPE == ARCH_T_STM32F20X)
+	(ARCH_TYPE == ARCH_T_LPC176X)
 
 #include <arch/cm3/typedef.h>
 #endif

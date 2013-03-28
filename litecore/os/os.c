@@ -116,9 +116,9 @@ void os_Start()
 	rt_hw_console_init();
 #endif
 	rt_console_set_device("uart1");
-#endif
 	/* show version */
 	rt_show_version();
+#endif
 #ifdef RT_USING_DEVICE
 	/* init hardware serial device */
 	rt_device_init_all();

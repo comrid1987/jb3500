@@ -1,26 +1,8 @@
 
 
-static uint8_t stm32_EXTI_IRQn(uint_t nPin)
-{
-	switch(nPin){
-		case GPIO_PinSource0:
-			return EXTI0_IRQn;
-		case GPIO_PinSource1:
-			return EXTI1_IRQn;	
-		case GPIO_PinSource2:
-			return EXTI2_IRQn;
-		case GPIO_PinSource3:
-			return EXTI3_IRQn;
-		case GPIO_PinSource4:
-			return EXTI4_IRQn;
-	}
-	return 0;
-}
-
 int arch_ExtIrqRegister(uint_t nPort, uint_t nPin, uint_t nTriggerMode)
 {
-	EXTI_InitTypeDef	xEXTI;
-	NVIC_InitTypeDef	xNVIC;
+	EXTI_InitTypeDef xEXTI;
 	uint_t nPortSource;
 
 	switch (nPort) {
@@ -52,77 +34,44 @@ int arch_ExtIrqRegister(uint_t nPort, uint_t nPin, uint_t nTriggerMode)
 	xEXTI.EXTI_Line = BITMASK(nPin);
 	xEXTI.EXTI_Mode = EXTI_Mode_Interrupt;
 	switch (nTriggerMode) {
-	case IRQ_TRIGGER_FALLING:
+	default:
 		xEXTI.EXTI_Trigger = EXTI_Trigger_Falling;
 		break;
 	case IRQ_TRIGGER_RISING:
 		xEXTI.EXTI_Trigger = EXTI_Trigger_Rising;
 		break;
-	default:
-		return -1;
 	}
 	xEXTI.EXTI_LineCmd = ENABLE;
 	EXTI_Init(&xEXTI);
-	xNVIC.NVIC_IRQChannel = stm32_EXTI_IRQn(nPin);
-	xNVIC.NVIC_IRQChannelPreemptionPriority = 0x0F;
-	xNVIC.NVIC_IRQChannelSubPriority = 0x0F;
-	xNVIC.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&xNVIC);
 	return nPin;
 }
 
 
-void arch_ExtIrqRxConf(uint_t nPort, uint_t nPin)
-{
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
-	switch(nPort){
-		case 0:
-			SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, nPin );
-			break;
-		case 1:
-			SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, nPin );			
-			break;
-	}
-}
-
 void arch_ExtIrqEnable(uint_t nPort, uint_t nPin, uint_t nMode)
 { 
-	EXTI_InitTypeDef   xEXTI;
-	NVIC_InitTypeDef   xNVIC;
+	EXTI_InitTypeDef xEXTI;
+
 	xEXTI.EXTI_Line = BITMASK(nPin);
 	xEXTI.EXTI_Mode = EXTI_Mode_Interrupt;
 	switch (nMode) {
-	case IRQ_TRIGGER_FALLING:
+	default:
 		xEXTI.EXTI_Trigger = EXTI_Trigger_Falling;
 		break;
 	case IRQ_TRIGGER_RISING:
 		xEXTI.EXTI_Trigger = EXTI_Trigger_Rising;
 		break;
-	default:
-		xEXTI.EXTI_Trigger = EXTI_Trigger_Falling;
-		break;
 	} 
 	xEXTI.EXTI_LineCmd = ENABLE;
 	EXTI_Init(&xEXTI);
-	
-	xNVIC.NVIC_IRQChannel = stm32_EXTI_IRQn(nPin);
-	xNVIC.NVIC_IRQChannelPreemptionPriority = 0x0F;
-	xNVIC.NVIC_IRQChannelSubPriority = 0x0F;
-	xNVIC.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&xNVIC);
 }
 
 void arch_ExtIrqDisable(uint_t nPort, uint_t nPin, uint_t nMode)
 {
-	EXTI_InitTypeDef   xEXTI;
-	NVIC_InitTypeDef   xNVIC;
+	EXTI_InitTypeDef xEXTI;
 
 	xEXTI.EXTI_Line = BITMASK(nPin);
 	xEXTI.EXTI_LineCmd = DISABLE;
 	EXTI_Init(&xEXTI);
-	xNVIC.NVIC_IRQChannel = stm32_EXTI_IRQn(nPin);
-	xNVIC.NVIC_IRQChannelCmd = DISABLE;
-	NVIC_Init(&xNVIC);
 }
 
 /*******************************************************************************
@@ -862,7 +811,7 @@ void EXTI15_10_IRQHandler(void)
 			}
 		}
 	}
-			
+
 	os_irq_Leave();
 #endif
 }

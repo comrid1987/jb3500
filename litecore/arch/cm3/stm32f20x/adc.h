@@ -9,7 +9,7 @@
 
 //External Functions
 void arch_AdcInit(void);
-float arch_AdcData(void);
+uint_t arch_AdcData(uint_t nPort, uint_t nPin);
 
 
 #endif

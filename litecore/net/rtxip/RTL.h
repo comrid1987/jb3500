@@ -3,17 +3,17 @@
  *----------------------------------------------------------------------------
  *      Name:    RTL.H 
  *      Purpose: Application Programming Interface 
- *      Rev.:    V4.53
+ *      Rev.:    V4.70
  *----------------------------------------------------------------------------
  *      This code is part of the RealView Run-Time Library.
- *      Copyright (c) 2004-2012 KEIL - An ARM Company. All rights reserved.
+ *      Copyright (c) 2004-2013 KEIL - An ARM Company. All rights reserved.
  *---------------------------------------------------------------------------*/
 
 #ifndef __RTL_H__
 #define __RTL_H__
 
 /* RL-ARM version number. */
-#define __RL_ARM_VER    453
+#define __RL_ARM_VER    470
  
 #define __task          __declspec(noreturn)
 #define __used          __attribute__((used))
@@ -70,10 +70,9 @@ typedef unsigned int    BOOL;
 #define htonl(v)        ntohl(v)
 
 
-#ifdef __cplusplus
-extern "C"  {
-#endif
-
+/*----------------------------------------------------------------------------
+ *                        Flash File System API
+ *---------------------------------------------------------------------------*/
 
 typedef struct {                        /* RL Time format (FFS, TCPnet)      */
   U8  hr;                               /* Hours    [0..23]                  */
@@ -83,6 +82,7 @@ typedef struct {                        /* RL Time format (FFS, TCPnet)      */
   U8  mon;                              /* Month    [1..12]                  */
   U16 year;                             /* Year     [1980..2107]             */
 } RL_TIME;
+
 
 
 /*----------------------------------------------------------------------------
@@ -165,6 +165,7 @@ typedef struct {                        /* RL Time format (FFS, TCPnet)      */
 #define FIONBIO            1      /* Set mode (blocking/non-blocking)        */
 #define FIO_DELAY_ACK      2      /* Set DELAY_ACK mode for stream socket    */
 #define FIO_KEEP_ALIVE     3      /* Set KEEP_ALIVE mode for stream socket   */
+#define FIO_FLOW_CTRL      4      /* Set FLOW_CTRL mode for stream socket    */
 
 /* ICMP (ping) Callback Events */
 #define ICMP_EVT_SUCCESS   0      /* Pinged Host responded                   */
@@ -195,6 +196,9 @@ typedef struct {                        /* RL Time format (FFS, TCPnet)      */
 #define FTPC_CMD_APPEND    2      /* Append file on FTP server (with create) */
 #define FTPC_CMD_DELETE    3      /* Deletes a file on FTP server            */
 #define FTPC_CMD_LIST      4      /* Lists files stored on FTP server        */
+#define FTPC_CMD_RENAME    5      /* Renames a file on FTP server            */
+#define FTPC_CMD_MKDIR     6      /* Makes a directory on FTP server         */
+#define FTPC_CMD_RMDIR     7      /* Removes an empty directory on FTP server*/
 
 /* FTP Client Callback Events */
 #define FTPC_EVT_SUCCESS   0      /* File operation successful               */
@@ -202,7 +206,9 @@ typedef struct {                        /* RL Time format (FFS, TCPnet)      */
 #define FTPC_EVT_LOGINFAIL 2      /* Login error, username/passw invalid     */
 #define FTPC_EVT_NOACCESS  3      /* File access not allowed                 */
 #define FTPC_EVT_NOTFOUND  4      /* File not found                          */
-#define FTPC_EVT_ERROR     5      /* Generic FTP client error                */
+#define FTPC_EVT_NOPATH    5      /* Working directory path not found        */
+#define FTPC_EVT_ERRLOCAL  6      /* Local file open error                   */
+#define FTPC_EVT_ERROR     7      /* Generic FTP client error                */
 
 /* TFTP Client Callback Events */
 #define TFTPC_EVT_SUCCESS  0      /* File operation successful               */
@@ -254,7 +260,7 @@ typedef struct hostent {          /* << BSD Host Entry structure >>          */
 } HOSTENT;
 
 extern void init_TcpNet (void);
-extern void main_TcpNet (void);
+extern BOOL main_TcpNet (void);
 extern void timer_tick (void);
 extern U8   udp_get_socket (U8 tos, U8 opt, 
                             U16 (*listener)(U8 socket, U8 *remip, U16 port, U8 *buf, U16 len));
@@ -326,4 +332,4 @@ extern HOSTENT *gethostbyname (const char *name, int *err);
  *---------------------------------------------------------------------------*/
 
 #endif
- 
+

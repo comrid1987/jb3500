@@ -45,13 +45,14 @@ static void dque_Release(p_dque p)
 //-------------------------------------------------------------------------
 void dque_Init(dque pQue)
 {
-	p_dque p = pQue->list, pEnd;
+	p_dque pEnd, p = pQue->list;
 
 #if DQUE_LOCK_ENABLE
 	rt_sem_init(&dque_sem, "dque", 1, RT_IPC_FLAG_FIFO);
 #endif
-	for (pEnd = p + pQue->qty; p < pEnd; p++)
+	for (pEnd = p + pQue->qty; p < pEnd; p++) {
 		dque_Release(p);
+	}
 }
 
 //-------------------------------------------------------------------------
@@ -77,8 +78,10 @@ int dque_Pop(dque pQue, uint_t nChl, buf b)
 					dque_Release(p);
 			}
 			p->first = 1;
-			if (p->out >= p->in)
-				p->in = p->out = 0;
+			if (p->out >= p->in) {
+				p->in = 0;
+				p->out = 0;
+			}
 			break;
 		}
 	}
@@ -104,8 +107,10 @@ int dque_PopChar(dque pQue, uint_t nChl)
 					pQue->list[p->next - 1].first = 1;
 					dque_Release(p);
 				}
-			} else if (p->out >= p->in)
-				p->in = p->out = 0;
+			} else if (p->out >= p->in) {
+				p->in = 0;
+				p->out = 0;
+			}
 			break;
 		}
 	}

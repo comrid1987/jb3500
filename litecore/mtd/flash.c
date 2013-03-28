@@ -15,6 +15,22 @@
 
 
 
+int flash_BlkSize(uint_t nDev)
+{
+
+	switch (nDev) {
+#if INTFLASH_ENABLE
+	case FLASH_DEV_INT:
+		return INTFLASH_BLK_SIZE;
+#endif
+#if NORFLASH_ENABLE
+	case FLASH_DEV_EXTNOR:
+		return NORFLASH_BLK_SIZE;
+#endif
+	default:
+		return -1;
+	}
+}
 
 sys_res flash_nolockErase(uint_t nDev, adr_t nAdr)
 {
@@ -108,6 +124,15 @@ sys_res flash_Program(uint_t nDev, adr_t nAdr, const void *pData, uint_t nLen)
 }
 
 
+
+
+//Private Defines
+#define FLASH_LOCK_ENABLE		(1 && OS_TYPE)
+
+#define FLASH_BLOCK_INVALID		(-1)
+
+
+//Private Typedefs
 typedef struct {
 	int		type;
 	int		sector;
@@ -115,12 +140,6 @@ typedef struct {
 	uint8_t	fbuf[SPIF_SEC_SIZE];
 }t_flash_buffer, *p_flash_buffer;
 
-
-
-//Private Defines
-#define FLASH_LOCK_ENABLE		(1 && OS_TYPE)
-
-#define FLASH_BLOCK_INVALID		(-1)
 
 
 //Private Variables

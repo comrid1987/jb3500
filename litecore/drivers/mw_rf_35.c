@@ -286,7 +286,6 @@ uint8_t mw_35lt_set_time(p_dev_uart rs485_3_dev,uint8_t *cTxS)
 {
     StructMWTxData psrTxData[1] = {0};
     StructMWRxData psrRxData[1] = {0};
-    struct tm tmTime[1] = {0};
     uint8_t status = 0;
     uint8_t cTemp;
 
@@ -294,20 +293,19 @@ uint8_t mw_35lt_set_time(p_dev_uart rs485_3_dev,uint8_t *cTxS)
     psrTxData->cTxSeq = *cTxS;
     psrTxData->cCommand = MW_COMMAND_S_TM;
     psrTxData->cLength = 7;
-    rtc_GetTm(tmTime);
-    cTemp = bin2bcd8(tmTime->tm_year);    
+    cTemp = bin2bcd8(rtc_pTm()->tm_year);
     buf_Push(psrTxData->buf, (uint8_t *)&cTemp, 1);
-    cTemp = bin2bcd8(tmTime->tm_wday + 1);
+    cTemp = bin2bcd8(rtc_pTm()->tm_wday + 1);
     buf_Push(psrTxData->buf, (uint8_t *)&cTemp, 1);
-    cTemp = bin2bcd8(tmTime->tm_mon + 1);
+    cTemp = bin2bcd8(rtc_pTm()->tm_mon + 1);
     buf_Push(psrTxData->buf, (uint8_t *)&cTemp, 1);
-    cTemp = bin2bcd8(tmTime->tm_mday);
+    cTemp = bin2bcd8(rtc_pTm()->tm_mday);
     buf_Push(psrTxData->buf, (uint8_t *)&cTemp, 1);
-    cTemp = bin2bcd8(tmTime->tm_hour);    
+    cTemp = bin2bcd8(rtc_pTm()->tm_hour);
     buf_Push(psrTxData->buf, (uint8_t *)&cTemp, 1);
-    cTemp = bin2bcd8(tmTime->tm_min);    
+    cTemp = bin2bcd8(rtc_pTm()->tm_min);
     buf_Push(psrTxData->buf, (uint8_t *)&cTemp, 1);
-    cTemp = bin2bcd8(tmTime->tm_sec);
+    cTemp = bin2bcd8(rtc_pTm()->tm_sec);
     buf_Push(psrTxData->buf, (uint8_t *)&cTemp, 1);
 
     status = mw_send_command(rs485_3_dev,psrRxData,psrTxData);

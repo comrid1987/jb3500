@@ -2,6 +2,9 @@
 
 //Private Variables
 static int bat_nPowerOff = 0;
+#if BAT_VOL_ENABLE
+static float bat_fV;
+#endif
 
 
 //External Functions
@@ -25,19 +28,34 @@ void bat_Off()
 #endif
 }
 
-#if BAT_VOL_ENABLE
-float bat_Voltage()
-{
-
-	return arch_AdcData();
-}
-#endif
-
 int bat_IsPowerOn()
 {
 
 	return sys_GpioRead(gpio_node(tbl_bspBattery, 1));
 }
+
+#if BAT_CHECK_ENABLE
+int bat_IsBatteryOff()
+{
+
+	return sys_GpioRead(gpio_node(tbl_bspBattery, 2));
+}
+#endif
+
+#if BAT_VOL_ENABLE
+float bat_Voltage()
+{
+
+	return bat_fV;
+}
+
+void bat_VolGet()
+{
+	tbl_gpio_def p = gpio_node(tbl_bspBattery, 3);
+
+	bat_fV = arch_AdcData(p->port, p->pin) * (3.3f / 4096.0f * 1.86f);
+}
+#endif
 
 int bat_GetPowerOffCnt()
 {

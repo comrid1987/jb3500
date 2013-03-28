@@ -129,7 +129,7 @@ static void stm32_IrqInit()
 	xNVIC.NVIC_IRQChannel = ETH_IRQn;
 	NVIC_Init(&xNVIC);
 #endif
-#if USB_ENABLE == 0
+#if (ARCH_TYPE == ARCH_T_STM32F10X_CL) && (USB_ENABLE == 0)
 	xNVIC.NVIC_IRQChannelCmd = DISABLE;
 	xNVIC.NVIC_IRQChannel = OTG_FS_IRQn;
 	NVIC_Init(&xNVIC);

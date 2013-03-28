@@ -13,7 +13,11 @@
 
 //Private Macros
 #if GUI_FONT_TYPE == GUI_FONT_STD12
+#if ASC_HEIGHT == 12
 #define gui_DrawChar_ASC		gui_DrawString_ASC6x12
+#else
+#define gui_DrawChar_ASC		gui_DrawString_ASC6x8
+#endif
 #define gui_DrawChar_HZ			gui_DrawChar_HZ12
 #elif GUI_FONT_TYPE == GUI_FONT_STD16
 #define gui_DrawChar_ASC		gui_DrawString_ASC6x16
@@ -26,7 +30,7 @@
 //===============================================================
 //混合字符串显示，包含汉字和ASC字符
 //===============================================================
-int gui_GetStringWidth(const char *pStr)
+static int gui_GetStringWidth(const char *pStr)
 {
 	int nWidth = 0;
 
@@ -35,7 +39,7 @@ int gui_GetStringWidth(const char *pStr)
 			nWidth += ASC_WIDTH;
 			pStr += 1;
 		} else {
-			nWidth += HZ_WIDTH;
+			nWidth += (HZ_WIDTH + HZ_SPAN);
 			pStr += 2;
 		}
 	}
@@ -47,20 +51,19 @@ int gui_GetStringWidth(const char *pStr)
 //在字符表里面已经包含了字符之间的间隙位置
 //x,y  输入起始坐标,pStr字符串
 //===============================================================
-void gui_DrawString_ASC6x8(int x, int y, const char *pStr, t_color nColor)
+static void gui_DrawChar_ASC6x8(int x, int y, const char cChar, t_color nColor)
 {
 	int i, j;
-	const uint8_t *pOffset;
+	const uint8_t *p;
 
-	while (*pStr != '\0') {
-		pOffset = FONT6x8ASCII + (int)(*pStr++ - ' ') * ASC6x8_SIZE;	//将ASCII转换成实际值"!"的ASCII为33。
-		for(i = 0; i < ASC6x8_SIZE; i++, pOffset++)
-			for(j = 0; j < 8; j++)
-				if (*pOffset & BITMASK(j))
-					gui_DrawPoint(x + i, y + j, nColor);
-				else
-					gui_DrawPoint(x + i, y + j, ~nColor);
-		x += ASC_WIDTH;
+	p = FONT6x8ASCII + (int)(cChar - ' ') * ASC6x8_SIZE;	//将ASCII转换成实际值"!"的ASCII为33。
+	for(i = 0; i < ASC6x8_SIZE; i++, p++) {
+		for(j = 0; j < 8; j++) {
+			if (*p & BITMASK(j))
+				gui_DrawPoint(x + i, y + j, nColor);
+			else
+				gui_DrawPoint(x + i, y + j, ~nColor);
+		}
 	}
 }
 
@@ -69,51 +72,45 @@ void gui_DrawString_ASC6x8(int x, int y, const char *pStr, t_color nColor)
 //显示一个6*12点阵字符
 //x,y  输入起始坐标,pStr字符串
 //===============================================================
-void gui_DrawString_ASC6x12(int x, int y, const char *pStr, t_color nColor)
+static void gui_DrawChar_ASC6x12(int x, int y, const char cChar, t_color nColor)
 {
 	int i, j;
 	const uint8_t *p;
 
-	while (*pStr != '\0') {
-		p = FONT6x12ASCII + (int)(*pStr++ - ' ') * ASC6x12_SIZE;	//将ASCII转换成实际值"!"的ASCII为33。
-        for(i = 0; i < 12; i++, p++) {
-            for(j = 0; j < 6; j++) {
-                if (*p & BITMASK(j))
-                    lcd_DrawPoint(x + j, y + i, nColor);
-                else
-                    lcd_DrawPoint(x + j, y + i, ~nColor);
-            }
+	p = FONT6x12ASCII + (int)(cChar - ' ') * ASC6x12_SIZE;	//将ASCII转换成实际值"!"的ASCII为33。
+    for(i = 0; i < 12; i++, p++) {
+        for(j = 0; j < 6; j++) {
+            if (*p & BITMASK(j))
+                lcd_DrawPoint(x + j, y + i, nColor);
+            else
+                lcd_DrawPoint(x + j, y + i, ~nColor);
         }
-		x += ASC_WIDTH;
-	}
+    }
 }
 
 //===============================================================
 //显示一个6*16点阵字符
 //x,y  输入起始坐标,pStr字符串
 //===============================================================
-void gui_DrawString_ASC6x16(int x, int y, const char *pStr, t_color nColor)
+static void gui_DrawChar_ASC6x16(int x, int y, const char cChar, t_color nColor)
 {
 	int i, j;
 	const uint8_t *p1, *p2;
 
-	while (*pStr != '\0') {
-		p1 = FONT6x16ASCII + (int)(*pStr++ - ' ') * ASC6x16_SIZE;	//将ASCII转换成实际值"!"的ASCII为33
-		p2 = p1 + 6;
-		for(i = 0; i < 6; i++, p1++, p2++) {
-			for(j = 0; j < 8; j++) {
-				if (*p1 & BITMASK(j))
-				    lcd_DrawPoint(x + i, y + j, nColor);
-				else
-				    lcd_DrawPoint(x + i, y + j, ~nColor);
-				if (*p2 & BITMASK(j))
-				    lcd_DrawPoint(x + i, y + j + 8, nColor);
-				else
-				    lcd_DrawPoint(x + i, y + j + 8, ~nColor);
-			}
-		}               
-		x += ASC_WIDTH;
-	}
+	p1 = FONT6x16ASCII + (int)(cChar - ' ') * ASC6x16_SIZE;	//将ASCII转换成实际值"!"的ASCII为33
+	p2 = p1 + 6;
+	for(i = 0; i < 6; i++, p1++, p2++) {
+		for(j = 0; j < 8; j++) {
+			if (*p1 & BITMASK(j))
+			    lcd_DrawPoint(x + i, y + j, nColor);
+			else
+			    lcd_DrawPoint(x + i, y + j, ~nColor);
+			if (*p2 & BITMASK(j))
+			    lcd_DrawPoint(x + i, y + j + 8, nColor);
+			else
+			    lcd_DrawPoint(x + i, y + j + 8, ~nColor);
+		}
+	}               
 }
 
 //===============================================================
@@ -125,7 +122,16 @@ void gui_DrawString_ASC6x16(int x, int y, const char *pStr, t_color nColor)
 static void gui_GetFont(uint_t nOffset, void *pBuf, uint_t nLen)
 {
 
+#if 0
 	memcpy(pBuf, (const void *)(GUI_FONT_BASE + nOffset), nLen);
+#else
+	uint8_t *p1 = (uint8_t *)pBuf, *p2 = (uint8_t *)(GUI_FONT_BASE + nOffset);
+	uint_t i;
+
+	for (i = 0; i < nLen; i++) {
+		*p1++ = *p2++;		
+	}
+#endif
 }
 #endif
 
@@ -194,9 +200,7 @@ static void gui_GetFont(uint_t nOffset, void *pBuf, uint_t nLen)
 }
 #endif
 
-
-
-void gui_DrawChar_HZ12(int x, int y, const char *pStr, t_color nColor)
+static void gui_DrawChar_HZ12(int x, int y, const char *pStr, t_color nColor)
 {
 	int x1, y1;
 	uint_t i = 0, nOffset, nLow, nHigh;
@@ -223,17 +227,25 @@ void gui_DrawChar_HZ12(int x, int y, const char *pStr, t_color nColor)
 				lcd_DrawPoint(x1, y1, nColor);
 			else
 				lcd_DrawPoint(x1, y1, ~nColor);
-			i++;
+			i += 1;
 		}
 	}
+#if HZ_SPAN
+	x1 = x + HZ_WIDTH;
+	for (i = 0; i < HZ_SPAN; i++, x1++) {
+		for (y1 = y; y1 < (y + HZ_WIDTH); y1++) {
+			lcd_DrawPoint(x1, y1, ~nColor);
+		}
+	}
+#endif
 }
 
-void gui_DrawChar_HZ16(int x, int y, const char *pStr, t_color nColor)
+static void gui_DrawChar_HZ16(int x, int y, const char *pStr, t_color nColor)
 {
 	int x1, y1;
 	uint_t i, nOffset, nLow, nHigh, nByte = 0;
 	uint8_t aData[HZ_SIZE];
-	const uint8_t *pOffset = &aData[0];
+	const uint8_t *p = aData;
 
 	if (pStr[0] >= 0xA0 + 16) {
 		nOffset = FNT16_OFFSET_A2 + ((pStr[0] - 0xA0 - 16) * 94 + pStr[1] - 0xA1) * HZ_SIZE;
@@ -255,7 +267,7 @@ void gui_DrawChar_HZ16(int x, int y, const char *pStr, t_color nColor)
 	for (; y < y1; y++, x -= HZ_WIDTH) {
 		for (i = 7; x < x1; i--, x++) {
 			if (i == 7)
-				nByte = *pOffset++;
+				nByte = *p++;
 			if (nByte & BITMASK(i))
 				gui_DrawPoint(x, y, nColor);
 			else
@@ -264,42 +276,70 @@ void gui_DrawChar_HZ16(int x, int y, const char *pStr, t_color nColor)
 				i = 8;
 		}
  	}
+#if HZ_SPAN
+	for (i = 0; i < HZ_SPAN; i++, x1++) {
+		for (y1 = y; y1 < (y + HZ_WIDTH); y1++) {
+			lcd_DrawPoint(x1, y1, ~nColor);
+		}
+	}
+#endif
 }
 
 
-//===============================================================
-//混合字符串显示，包含汉字和ASC字符
-//===============================================================
-void gui_DrawChar_ASC4HZK(int x, int y, char *pStr, t_color nColor)
-{
-	int i, j;
-	uint8_t aData[HZ_SIZE];
-	const uint8_t *pOffset = &aData[0];
 
-	gui_GetFont(((10 - 1) * 94 + *pStr - 33) * HZ_SIZE, aData, sizeof(aData));
-	for (i = 0; i < HZ_HEIGHT; i++, y++, x -= ASC_WIDTH) {
-		//取8bits
-		for (j = ASC_WIDTH - 1; j >= 0; j--, x++)
-			if (*pOffset & BITMASK(j))
-				gui_DrawPoint(x, y, nColor);
-			else
-				gui_DrawPoint(x, y, ~nColor);
-		pOffset += 2;
+//External Functions
+//===============================================================
+//
+//===============================================================
+void gui_DrawString_ASC6x8(int x, int y, const char *pStr, t_color nColor)
+{
+
+	while (*pStr != '\0') {
+		gui_DrawChar_ASC6x8(x, y, *pStr++, nColor);
+		x += ASC_WIDTH;
 	}
 }
 
+
+//===============================================================
+//
+//===============================================================
+void gui_DrawString_ASC6x12(int x, int y, const char *pStr, t_color nColor)
+{
+
+	while (*pStr != '\0') {
+		gui_DrawChar_ASC6x12(x, y, *pStr++, nColor);
+		x += ASC_WIDTH;
+	}
+}
+
+//===============================================================
+//
+//===============================================================
+void gui_DrawString_ASC6x16(int x, int y, const char *pStr, t_color nColor)
+{
+
+	while (*pStr != '\0') {
+		gui_DrawChar_ASC6x16(x, y, *pStr++, nColor);
+		x += ASC_WIDTH;
+	}
+}
+
+//===============================================================
+//
+//===============================================================
 int gui_DrawString_Mixed(int x, int y, const char *pStr, t_color nColor)
 {
 
 	while (*pStr != '\0') {
 		if (*pStr < 0x80) {
-			gui_DrawChar_ASC(x, y, pStr, nColor);		//ASC码
+			gui_DrawChar_ASC(x, y + (HZ_HEIGHT - ASC_HEIGHT), pStr, nColor);		//ASC码
 			pStr += 1;
 			x += ASC_WIDTH;
 		} else {
 			gui_DrawChar_HZ(x, y, pStr, nColor);		//汉字
 			pStr += 2;
-			x += HZ_WIDTH;
+			x += (HZ_WIDTH + HZ_SPAN);
 		}
 	}
 	return x;

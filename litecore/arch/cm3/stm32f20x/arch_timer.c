@@ -40,7 +40,7 @@ void arch_TimerInit(uint_t nId)
 		break;
 	}
 	xNVIC.NVIC_IRQChannelPreemptionPriority = 0;
-	xNVIC.NVIC_IRQChannelSubPriority = 1;
+	xNVIC.NVIC_IRQChannelSubPriority = 0;
 	xNVIC.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&xNVIC);
 }
@@ -53,7 +53,7 @@ void arch_TimerIntClear(uint_t nId)
 
 void arch_TimerStart(uint_t nId, uint_t nValue)
 {
-	TIM_TimeBaseInitTypeDef  xTIM_TimeBase;
+	TIM_TimeBaseInitTypeDef xTIM_TimeBase;
 	
 	TIM_InternalClockConfig(stm32_tblTimBase[nId]);//内部时钟源
     TIM_DeInit(stm32_tblTimBase[nId]);

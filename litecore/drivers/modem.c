@@ -523,7 +523,7 @@ void modem_Run()
 void modem_Config(char *pApn, uint_t nSpan, uint_t nRetry)
 {
 	p_modem p = &gsmModem[MODEM_PPP_ID];
-	
+
 	sprintf(p->apn, pApn);
 	p->idle = nSpan * 3;
 	p->retrytime = nRetry;

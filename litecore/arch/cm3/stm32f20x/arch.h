@@ -9,7 +9,7 @@ extern "C" {
 //Header Files
 #if ARCH_TYPE == ARCH_T_STM32F20X
 #define STM32F2XX
-//#define USE_USB_OTG_FS
+#define USE_USB_OTG_FS
 #endif
 
 #define USE_STDPERIPH_DRIVER

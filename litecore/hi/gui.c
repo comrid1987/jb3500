@@ -11,9 +11,7 @@
 
 #include <hi/gui/gui_font.c>
 #include <hi/gui/gui_basic.c>
-#include <hi/gui/gui_combo.c>
 #include <hi/gui/gui_editor.c>
-#include <hi/gui/gui_menu.c>
 #include <hi/gui/gui_string.c>
 
 

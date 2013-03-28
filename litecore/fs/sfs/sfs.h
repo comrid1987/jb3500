@@ -29,14 +29,14 @@ typedef struct {
 
 
 //Externel Functions
-sys_res sfs_Init(sfs_dev pDev);
-sys_res sfs_Write(sfs_dev pDev, t_sfs_id nRecord, const void *pData, uint_t nLen);
-sys_res sfs_Read(sfs_dev pDev, t_sfs_id nRecord, void *pData);
-sys_res sfs_ReadRandom(sfs_dev pDev, t_sfs_id nRecord, void *pData, uint_t nOffset, uint_t nLen);
-sys_res sfs_Read2Buf(sfs_dev pDev, t_sfs_id nRecord, buf b);
-sys_res sfs_Find(sfs_dev pDev, t_sfs_id nRecord, buf b, uint_t nLen);
-sys_res sfs_Info(sfs_dev pDev, t_sfs_id nRecord, sfs_info info);
-sys_res sfs_Delete(sfs_dev pDev, t_sfs_id nRecord);
+sys_res sfs_Init(sfs_dev p);
+sys_res sfs_Write(sfs_dev p, t_sfs_id nRecord, const void *pData, uint_t nLen);
+sys_res sfs_Read(sfs_dev p, t_sfs_id nRecord, void *pData);
+sys_res sfs_ReadRandom(sfs_dev p, t_sfs_id nRecord, void *pData, uint_t nOffset, uint_t nLen);
+sys_res sfs_Read2Buf(sfs_dev p, t_sfs_id nRecord, buf b);
+sys_res sfs_Find(sfs_dev p, t_sfs_id nRecord, buf b, uint_t nLen);
+sys_res sfs_Info(sfs_dev p, t_sfs_id nRecord, sfs_info info);
+sys_res sfs_Delete(sfs_dev p, t_sfs_id nRecord);
 
 
 #ifdef __cplusplus

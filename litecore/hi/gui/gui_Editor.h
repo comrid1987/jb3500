@@ -21,27 +21,25 @@ typedef const struct {
 
 
 //External Functions
-int gui_Editor_Special(int y, t_gui_spec_editor *pTable, uint_t nQty, int nIndex, int nSelect);
+int gui_Editor_Special(const char *pInfo, t_gui_spec_editor *pTable, uint_t nQty, int nIndex, int nSelect);
 
 void gui_Editor_IPAddressCreate(char *pStr, uint8_t *pIP);
-void gui_Editor_IPAddressSet(int y, char *pStr, int nIndex, int nSelect);
+void gui_Editor_IPAddressSet(const char *pInfo, char *pStr, int nIndex, int nSelect);
 void gui_Editor_IPAddressDone(char *pStr, uint8_t *pIP);
 
 void gui_Editor_TimeCreate(char *pStr, time_t tTime);
-void gui_Editor_TimeSet(int y, char *pStr, int nIndex, int nSelect);
+void gui_Editor_TimeSet(const char *pInfo, char *pStr, int nIndex, int nSelect);
 time_t gui_Editor_TimeDone(char *pStr);
 
 void gui_Editor_DayCreate(char *pStr, int nDay, time_t tTime);
-void gui_Editor_DaySet(int y, char *pStr, int nIndex, int nSelect);
+void gui_Editor_DaySet(const char *pInfo, char *pStr, int nIndex, int nSelect);
 void gui_Editor_DayDone(char *pStr, uint8_t *pTime);
 
 void gui_Editor_NumberCreate(char *pStr, sint32_t nNum, uint_t nBits, int nHex);
-void gui_Editor_NumberSet(int y, char *pStr, int nIndex, int nSelect, int nSign, int nHex);
+void gui_Editor_NumberSet(const char *pInfo, char *pStr, int nIndex, int nSelect, int nSign, int nHex);
 sint64_t gui_Editor_NumberDone(char *pStr, int nHex);
-void gui_Editor_StringDcmCreate(char *pStr, int nIndex);
-void gui_Editor_StringDcmSet(int y,char * pStr,int nIndex,int nSelect,int nType);
 
-void gui_Editor_StringSet(int y, char *pStr, int nIndex, int nSelect, int nType);
+void gui_Editor_StringSet(const char *pInfo, char *pStr, int nIndex, int nSelect, int nType);
 
 
 #ifdef __cplusplus

@@ -32,19 +32,15 @@ extern "C" {
 
 //Public Typedefs
 typedef const struct {
-	adr_t		start;
-	uint32_t	size;
-}t_flash_blk;
-
-typedef const struct {
 	uint16_t	dev;
 	uint16_t	blk;
-	t_flash_blk *tbl;
+	adr_t		start;
 }t_flash_dev;
 
 
 
 //External Functions
+int flash_BlkSize(uint_t nDev);
 sys_res flash_nolockErase(uint_t nDev, adr_t nAdr);
 sys_res flash_nolockProgram(uint_t nDev, adr_t nAdr, const void *pData, uint_t nLen);
 

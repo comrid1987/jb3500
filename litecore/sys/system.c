@@ -162,6 +162,9 @@ void sys_Maintain()
 #if DEBUG_MEMORY_ENABLE
 			list_memdebug(0, 0);
 #endif
+#if BAT_VOL_ENABLE
+			bat_VolGet();
+#endif
 		}
 		if ((nCnt & 0x1F) == 0) {
 #if RTC_ENABLE
@@ -404,28 +407,33 @@ void sys_Start()
 #endif
 
 #if GPIO_ENABLE
-	for (p = tbl_bspGpio[0]; p < tbl_bspGpio[1]; p++)
+	for (p = tbl_bspGpio[0]; p < tbl_bspGpio[1]; p++) {
 		sys_GpioConf(p);
+	}
 #endif
 
 #if HC138_ENABLE
-	for (p = tbl_bspHC138[0]; p < tbl_bspHC138[1]; p++)
+	for (p = tbl_bspHC138[0]; p < tbl_bspHC138[1]; p++) {
 		sys_GpioConf(p);
+	}
 #endif
 
 #if HC165_ENABLE
-	for (p = tbl_bspHC165[0]; p < tbl_bspHC165[1]; p++)
+	for (p = tbl_bspHC165[0]; p < tbl_bspHC165[1]; p++) {
 		sys_GpioConf(p);
+	}
 #endif
 
 #if HC595_ENABLE
-	for (p = tbl_bspHC595[0]; p < tbl_bspHC595[1]; p++)
+	for (p = tbl_bspHC595[0]; p < tbl_bspHC595[1]; p++) {
 		sys_GpioConf(p);
+	}
 #endif
 
 #if BATTERY_ENABLE
-	for (p = tbl_bspBattery[0]; p < tbl_bspBattery[1]; p++)
+	for (p = tbl_bspBattery[0]; p < tbl_bspBattery[1]; p++) {
 		sys_GpioConf(p);
+	}
 #if BAT_VOL_ENABLE
 	arch_AdcInit();
 #endif
@@ -448,8 +456,9 @@ void sys_Start()
 #endif
 
 #if EPI_SOFTWARE
-	for (p = tbl_bspEpiData[0]; p < tbl_bspEpiData[1]; p++)
+	for (p = tbl_bspEpiData[0]; p < tbl_bspEpiData[1]; p++) {
 		sys_GpioConf(p);
+	}
 #endif
 
 #if I2C_ENABLE

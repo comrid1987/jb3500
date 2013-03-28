@@ -160,7 +160,7 @@ void stm32_FsmcInit()
 	xNor.FSMC_WriteOperation = FSMC_WriteOperation_Enable;
 	xNor.FSMC_WaitSignal = FSMC_WaitSignal_Disable;
 	xNor.FSMC_ExtendedMode = FSMC_ExtendedMode_Disable;
-	xNor.FSMC_AsyncWait = FSMC_AsyncWait_Disable;
+	xNor.FSMC_AsynchronousWait = FSMC_AsynchronousWait_Disable;
 	xNor.FSMC_WriteBurst = FSMC_WriteBurst_Disable;
 	xNor.FSMC_ReadWriteTimingStruct = &xNorReadTiming;
 	xNor.FSMC_WriteTimingStruct = &xNorWriteTiming;
@@ -199,7 +199,7 @@ void stm32_FsmcInit()
 	xNor.FSMC_WriteOperation = FSMC_WriteOperation_Enable;
 	xNor.FSMC_WaitSignal = FSMC_WaitSignal_Disable;
 	xNor.FSMC_ExtendedMode = FSMC_ExtendedMode_Disable;
-	xNor.FSMC_AsyncWait = FSMC_AsyncWait_Disable;
+	xNor.FSMC_AsynchronousWait = FSMC_AsynchronousWait_Disable;
 	xNor.FSMC_WriteBurst = FSMC_WriteBurst_Disable;
 	xNor.FSMC_ReadWriteTimingStruct = &xNorReadTiming;
 	xNor.FSMC_WriteTimingStruct = &xNorWriteTiming;
@@ -238,7 +238,7 @@ void stm32_FsmcInit()
 	xNor.FSMC_WriteOperation = FSMC_WriteOperation_Enable;
 	xNor.FSMC_WaitSignal = FSMC_WaitSignal_Disable;
 	xNor.FSMC_ExtendedMode = FSMC_ExtendedMode_Enable;
-	xNor.FSMC_AsyncWait = FSMC_AsyncWait_Disable;
+	xNor.FSMC_AsynchronousWait = FSMC_AsynchronousWait_Disable;
 	xNor.FSMC_WriteBurst = FSMC_WriteBurst_Disable;
 	xNor.FSMC_ReadWriteTimingStruct = &xNorReadTiming;
 	xNor.FSMC_WriteTimingStruct = &xNorWriteTiming;
@@ -277,7 +277,7 @@ void stm32_FsmcInit()
 	xNor.FSMC_WriteOperation = FSMC_WriteOperation_Enable;
 	xNor.FSMC_WaitSignal = FSMC_WaitSignal_Disable;
 	xNor.FSMC_ExtendedMode = FSMC_ExtendedMode_Disable;
-	xNor.FSMC_AsyncWait = FSMC_AsyncWait_Disable;
+	xNor.FSMC_AsynchronousWait = FSMC_AsynchronousWait_Disable;
 	xNor.FSMC_WriteBurst = FSMC_WriteBurst_Disable;
 	xNor.FSMC_ReadWriteTimingStruct = &xNorReadTiming;
 	xNor.FSMC_WriteTimingStruct = &xNorWriteTiming;

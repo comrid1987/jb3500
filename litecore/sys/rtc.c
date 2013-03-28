@@ -89,24 +89,6 @@ time_t rtc_GetTimet()
 	return rtc_tTime;
 }
 
-//-------------------------------------------------------------------------
-//rtc_GetTm - 获得struct tm *结构时间
-//
-//@tmTime:存放获取的struct tm结构内容的指针
-//
-//Note: 
-//
-//Return: SYS_R_OK on success,  errno otherwise
-//-------------------------------------------------------------------------
-sys_res rtc_GetTm(struct tm *ptmTime)
-{
-	time_t tTime;
-
-	tTime = rtc_GetTimet();
-	localtime_r(&tTime, ptmTime);
-	return SYS_R_OK;
-}
-
 
 //-------------------------------------------------------------------------
 //rtc_GetTm - 获得struct tm *结构时间

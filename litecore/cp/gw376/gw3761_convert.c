@@ -133,7 +133,7 @@ void gw3761_ConvertData_01(void *p, time_t tTime)
 {
 	struct tm tmTime;
 	uint8_t *pData = (uint8_t *)p;
-	
+
 	localtime_r(&tTime, &tmTime);
 	*pData++ = bin2bcd8(tmTime.tm_sec);
 	*pData++ = bin2bcd8(tmTime.tm_min);

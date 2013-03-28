@@ -3,10 +3,10 @@
  *----------------------------------------------------------------------------
  *      Name:    NET_CONFIG.H
  *      Purpose: Common TCPnet Definitions
- *      Rev.:    V4.50
+ *      Rev.:    V4.70
  *----------------------------------------------------------------------------
  *      This code is part of the RealView Run-Time Library.
- *      Copyright (c) 2004-2012 KEIL - An ARM Company. All rights reserved.
+ *      Copyright (c) 2004-2013 KEIL - An ARM Company. All rights reserved.
  *---------------------------------------------------------------------------*/
 
 #ifndef __NET_CONFIG_H__
@@ -121,24 +121,34 @@ typedef struct udp_info {         /* << UDP Socket info >>                   */
 } UDP_INFO;
 
 typedef struct tcp_info {         /* << TCP Socket info >>                   */
-  U8  State;                      /* TCP Socket entry current state          */
-  U8  Type;                       /* TCP Socket type                         */
+  U8  State;                      /* Socket entry current state              */
+  U8  Type;                       /* Socket type                             */
   U8  Flags;                      /* State machine flags                     */
   U8  Tos;                        /* Type of service allocated               */
   U8  RemIpAdr[IP_ADRLEN];        /* Remote IP address                       */
   U16 RemPort;                    /* Remote TCP port                         */
   U16 LocPort;                    /* Local TCP port                          */
   U16 MaxSegSize;                 /* Transmit Max. Segment Size              */
-  U16 WinSize;                    /* Receive Window Size                     */
-  U32 SendSeq;                    /* Current Send Sequence Number not acked  */
-  U32 SendSeqNext;                /* Next Send Sequence Number               */
-  U32 RecSeqNext;                 /* Next Receive Sequence Number            */
   U16 Tout;                       /* Socket idle timeout (in seconds)        */
-  U16 AliveTimer;                 /* Keep Alive timer value                  */
-  U16 RetryTimer;                 /* Retransmission timer value              */
-  U8  TxFlags;                    /* TCP Transmit Flags                      */
+  U16 AliveTimer;                 /* Keep Alive timer                        */
+  U16 RetryTimer;                 /* Retransmission timer                    */
+  U8  AckTimer;                   /* Receive Delay-ack timer                 */
+  U8  Id;                         /* Socket identification number            */
   U8  Retries;                    /* Number of retries left before aborting  */
-  OS_FRAME *ReTransFrm;           /* Retransmission frame                    */
+  U8  DupAcks;                    /* Number of duplicate acks (fast recovery)*/
+  U32 SendUna;                    /* Send Sequence Number unacknowledged     */
+  U32 SendNext;                   /* Next Send Sequence Number               */
+  U32 SendChk;                    /* Check Sequence Number for dupacks       */
+  U32 SendWl1;                    /* Sequence Number of last Window update   */
+  U32 SendWl2;                    /* Acknowledge Number of last Window update*/
+  U16 SendWin;                    /* Current Send Window                     */
+  S16 RttSa;                      /* Scaled Average for RTT estimator        */
+  S16 RttSv;                      /* Scaled deViation for RTT estimator      */
+  U16 CWnd;                       /* Congestion Window                       */
+  U16 SsThresh;                   /* Slow Start Treshold                     */
+  U16 RecWin;                     /* Current Receive Window                  */
+  U32 RecNext;                    /* Next Receive Sequence Number            */
+  OS_FRAME *unack_list;           /* Unacked queue list                      */
                                   /* Application Event-CallBack function     */
   U16 (*cb_func)(U8 socket, U8 event, U8 *p1, U16 p2);
 } TCP_INFO;
@@ -265,6 +275,7 @@ typedef struct sys_cfg {          /* << SYS Configuration info >>            */
   U32 MemSize;                    /* Memory Pool size in bytes               */
   U8  TickRate;                   /* Tick Rate in ticks per second           */
   U8  TickItv;                    /* Tick Interval in ms                     */
+  U8  T200ms;                     /* Delay 200 ms in ticks                   */
   U8  NetCfg;                     /* Network Interface Configuration flags   */
   U8 *HostName;                   /* Local Host Name                         */
 } const SYS_CFG;
@@ -281,7 +292,6 @@ typedef struct arp_cfg {          /* << ARP Configuration info >>            */
 typedef struct igmp_cfg {         /* << IGMP Configuration info >>           */
   IGMP_INFO *Table;               /* Group Table array                       */
   U16 TabSize;                    /* Group Table size                        */
-  U8  T200ms;                     /* Delay 200 ms in ticks                   */
 } const IGMP_CFG;
 
 typedef struct dhcp_cfg {         /* << DHCP Configuration info >>           */
@@ -313,6 +323,7 @@ typedef struct tcp_cfg {          /* << TCP Configuration info >>            */
   U16 InitRetryTout;              /* Initial Retransmit timeout in ticks     */
   U16 DefTout;                    /* Default Connect Timeout in seconds      */
   U16 MaxSegSize;                 /* Maximum Segment Size value              */
+  U16 RecWinSize;                 /* Receiving Window Size in bytes          */
   U8  ConRetry;                   /* Number of Retries to Connect            */
 } const TCP_CFG;
 
@@ -344,6 +355,7 @@ typedef struct tftp_cfg {         /* << TFTP Configuration info >>           */
   U8  MaxRetry;                   /* Number of Retries                       */
   U16 PortNum;                    /* Listening Port number                   */
   U8  DefTout;                    /* Inactive Session Timeout in seconds     */
+  U8  EnFwall;                    /* Enable Firewall Support                 */
 } const TFTP_CFG;
 
 typedef struct tftpc_cfg {        /* << TFTPC Configuration info >>          */
@@ -385,9 +397,8 @@ typedef struct snmp_cfg {         /* << SNMP Configuration info >>           */
 typedef struct bsd_cfg {          /* << BSD Configuration info >>            */
   BSD_INFO *Scb;                  /* Socket Control Block array              */
   U8  NumSocks;                   /* Number of BSD Sockets                   */
-  U8  T200ms;                     /* Delay 200ms in ticks                    */
-  U16 RcvTout;                    /* Blocking recv timeout in ticks          */
   U8  InRtx;                      /* Running in RTX environment              */
+  U16 RcvTout;                    /* Blocking recv timeout in ticks          */
 } const BSD_CFG;
 
 typedef enum {                    /* << Fatal System Error Codes >>          */

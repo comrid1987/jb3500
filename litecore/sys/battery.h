@@ -17,6 +17,7 @@ void bat_On(void);
 void bat_Off(void);
 float bat_Voltage(void);
 int bat_IsPowerOn(void);
+int bat_IsBatteryOff(void);
 int bat_GetPowerOffCnt(void);
 void bat_Maintain(void);
 

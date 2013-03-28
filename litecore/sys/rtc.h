@@ -31,7 +31,6 @@ extern "C" {
 sys_res rtc_Init(void);
 void rtc_OsTick(void);
 time_t rtc_GetTimet(void);
-sys_res rtc_GetTm(struct tm *ptmTime);
 struct tm *rtc_pTm(void);
 sys_res rtc_SetTimet(time_t tTime);
 sys_res rtc_SetTm(struct tm *ptmTime);

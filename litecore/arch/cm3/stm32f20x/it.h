@@ -18,7 +18,7 @@ extern "C" {
 #define ARCH_EXTIRQ_QTY			16
 #define ARCH_TIMER_QTY			6
 
-
+#define arch_ExtIrqRxConf(...)
 
 /* Exported functions ------------------------------------------------------- */
 int arch_ExtIrqRegister(uint_t nPort, uint_t nPin, uint_t nTriggerMode);
