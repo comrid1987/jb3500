@@ -415,7 +415,7 @@ extern "C" {
 #define	IB_VO						0.4f		//Ib时互感器的电压输出信号(0.4V)
 #define	UCALI_CONST					220			//电压校正常数(220V处校正)
 #define	ICALI_CONST					5			//电流校正常数(5A处校正)Ib值
-#define	ICALI_MUL					16			//电流校正时Ib扩的倍数5*2^4 = 80
+#define	ICALI_MUL					1			//电流校正时Ib扩的倍数
 
 #define PCALI_CONST					(UCALI_CONST * ICALI_CONST)//1100				//功率校正常数(220V/5A处校正, 功率因数为1)
 

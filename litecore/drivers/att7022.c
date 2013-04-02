@@ -169,7 +169,7 @@ sys_res att7022_Reset(p_att7022 p, p_att7022_cali pCali)
 	att7022_CaliClear(p);
 
 	att7022_WriteReg(p, ATT7022_REG_UADCPga, 0);			//电压通道ADC增益设置为1
-	att7022_WriteReg(p, ATT7022_REG_HFConst, 16);			//设置HFConst
+	att7022_WriteReg(p, ATT7022_REG_HFConst, pCali->HFConst);	//设置HFConst
 	nTemp = IB_VO * ISTART_RATIO * CONST_G * MAX_VALUE1;
 	att7022_WriteReg(p, ATT7022_REG_Istartup, nTemp);		//启动电流设置
 	att7022_WriteReg(p, ATT7022_REG_EnUAngle, 0x003584);	//使能电压夹角测量
@@ -197,7 +197,7 @@ sys_res att7022_Reset(p_att7022 p, p_att7022_cali pCali)
 		att7022_WriteReg(p, ATT7022_REG_PhsregB0 + i, pCali->PhsregB[i]);
 		att7022_WriteReg(p, ATT7022_REG_PhsregC0 + i, pCali->PhsregC[i]);
 	}
-
+	
 	return att7022_WriteDisable(p);
 }
 
@@ -277,7 +277,7 @@ float att7022_GetPower(p_att7022 p, uint_t nReg, uint_t nPhase)
 	return fResult;
 }
 
-uint32_t att7022_GetFlag(p_att7022 p) 
+float att7022_GetFlag(p_att7022 p) 
 {
 	
 	return (att7022_ReadReg(p,ATT7022_REG_SFlag)); //读取状态寄存器 
@@ -506,7 +506,7 @@ uint32_t att7022_UgainCalibration(p_att7022 p, uint8_t nPhase )
 	//读取该相电压值 
 	urms = att7022_ReadReg(p, ATT7022_REG_URmsA + nPhase);
 	
-	if (urms )
+	if(urms)
 	{
 		 //计算实际测出的工程量
 		urms = urms / SYS_KVALUE; 
@@ -671,6 +671,7 @@ void att7022_UIP_gainCalibration(p_att7022 p, p_att7022_cali pCali)
 		
 		//功率校正
 		pCali->Pgain0[i] = att7022_PgainCalibration(p, PHASE_A + i );   
+		pCali->Pgain1[i] = pCali->Pgain0[i];
 	}
 }
 //------------------------------------------------------------------------
@@ -679,7 +680,7 @@ void att7022_UIP_gainCalibration(p_att7022 p, p_att7022_cali pCali)
 //输	入: -
 //输	出: -
 //返	回: -
-//功	能: 相位角校正
+//功	能: 相位角校正,功率因数为  0.5L  的条件下
 //------------------------------------------------------------------------
 void att7022_Phase_gainCalibration(p_att7022 p, p_att7022_cali pCali)
 {
