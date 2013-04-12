@@ -67,6 +67,7 @@ extern "C" {
 #define	ATT7022_REG_SelectPQSU		0x2f		//基波电压功率输出选择
 #define	ATT7022_REG_EnDtIorder		0x30		//电流相序检测使能控制
 #define	ATT7022_REG_LineFreqPg		0x31		//基波功率校正
+#define	ATT7022_REG_EnHarmonic		0x3C		//基波测量鱼谐波测量切换选择
 #define	ATT7022_REG_UADCPga			0x3f		//电压通道ADC增益选择
 
 //------------------------------------------------------------------------
@@ -252,6 +253,7 @@ extern "C" {
 #define ATT7022_REG_SelectPQSU		0x2f		//基波电压功率输出选择
 #define ATT7022_REG_EnDtIorder		0x30		//电流相序检测使能控制
 #define ATT7022_REG_LineFreqPg		0x31		//基波功率校正
+#define	ATT7022_REG_EnHarmonic		0x3C		//基波测量鱼谐波测量切换选择
 #define ATT7022_REG_UADCPga			0x3f		//电压通道ADC增益选择
 
 //------------------------------------------------------------------------

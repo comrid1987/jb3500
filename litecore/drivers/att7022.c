@@ -175,8 +175,9 @@ sys_res att7022_Reset(p_att7022 p, p_att7022_cali pCali)
 	att7022_WriteReg(p, ATT7022_REG_EnUAngle, 0x003584);	//使能电压夹角测量
 	att7022_WriteReg(p, ATT7022_REG_EnDtIorder, 0x005678);	//使能相序检测
 	att7022_WriteReg(p, ATT7022_REG_EAddMode, 0);			//合相能量累加模式	
-	att7022_WriteReg(p, ATT7022_REG_GCtrlT7Adc, 5); 		//开启温度和ADC7测量 	
-	att7022_WriteReg(p, ATT7022_REG_EnlineFreq, 0x000000);	//禁止基波/谐波测量功能
+	att7022_WriteReg(p, ATT7022_REG_GCtrlT7Adc, 0); 		//关闭温度和ADC7测量 	
+	att7022_WriteReg(p, ATT7022_REG_EnlineFreq, 0x007812);	//基波/谐波测量功能
+	att7022_WriteReg(p, ATT7022_REG_EnHarmonic, 0x0055AA);	//基波/谐波测量功能
 
 	//写入功率增益
 	for (i = 0; i < 3; i++) {
@@ -191,7 +192,8 @@ sys_res att7022_Reset(p_att7022 p, p_att7022_cali pCali)
 	//写入电流增益
 	for (i = 0; i < 3; i++)
 		att7022_WriteReg(p, ATT7022_REG_IgainA + i, pCali->Igain[i]);
-
+	
+	//写入相位角增益
 	for (i = 0; i < 5; i++) {
 		att7022_WriteReg(p, ATT7022_REG_PhsregA0 + i, pCali->PhsregA[i]);
 		att7022_WriteReg(p, ATT7022_REG_PhsregB0 + i, pCali->PhsregB[i]);
@@ -775,7 +777,7 @@ float att7022_FPhaseCaliData(p_att7022 p,uint8_t nPhase, uint8_t cali_point)
 		return __FALSE;
 	}
 	eck = 3200.0f / (float)ATT7022_CONST_EC; //脉冲输出系数
-	pcali_value = 0; //phiconst_tab[cali_point];				//载入校正点的有功功率常数
+	pcali_value = PCALI_CONST * 0.5; //phiconst_tab[cali_point];				//载入校正点的有功功率常数
 	att7022_pvalue = att7022_ReadReg(p,ATT7022_REG_PA + nPhase); //读取有功功率值
 	if (att7022_pvalue > MAX_VALUE1) {
 		att7022_pvalue -= MAX_VALUE2;
