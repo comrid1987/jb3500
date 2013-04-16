@@ -22,7 +22,7 @@ extern "C" {
 /* Exported functions ------------------------------------------------------- */
 int arch_ExtIrqRegister(uint_t nPort, uint_t nPin, uint_t nTriggerMode);
 void arch_ExtIrqEnable(uint_t nPort, uint_t nPin, uint_t nMode);
-void arch_ExtIrqDisable(uint_t nPort, uint_t nPin, uint_t nMode);
+void arch_ExtIrqDisable(uint_t nPort, uint_t nPin);
 
 
 void WDT_IRQHandler(int vector);

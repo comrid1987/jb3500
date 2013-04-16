@@ -27,6 +27,10 @@ void gui_Editor_IPAddressCreate(char *pStr, uint8_t *pIP);
 void gui_Editor_IPAddressSet(const char *pInfo, char *pStr, int nIndex, int nSelect);
 void gui_Editor_IPAddressDone(char *pStr, uint8_t *pIP);
 
+void gui_Editor_PercentCreate(char *pStr, uint_t nData);
+void gui_Editor_PercentSet(const char *pInfo, char *pStr, int nIndex, int nSelect);
+void gui_Editor_PercentDone(char *pStr, uint_t *pData);
+
 void gui_Editor_TimeCreate(char *pStr, time_t tTime);
 void gui_Editor_TimeSet(const char *pInfo, char *pStr, int nIndex, int nSelect);
 time_t gui_Editor_TimeDone(char *pStr);

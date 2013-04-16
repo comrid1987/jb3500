@@ -32,7 +32,7 @@ void arch_ExtIrqEnable(uint_t nPort, uint_t nPin, uint_t nMode)
 	rt_hw_interrupt_umask(EINT0_INT);
 }
 
-void arch_ExtIrqDisable(uint_t nPort, uint_t nPin, uint_t nMode)
+void arch_ExtIrqDisable(uint_t nPort, uint_t nPin)
 {
 
 	rt_hw_interrupt_mask(EINT0_INT);

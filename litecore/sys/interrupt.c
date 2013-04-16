@@ -97,7 +97,7 @@ void irq_ExtDisable(uint_t nId)
 {
 	t_irq_vector *p = &irq_aExt[nId];
 
-	arch_ExtIrqDisable(p->port, p->pin, p->mode);
+	arch_ExtIrqDisable(p->port, p->pin);
 }
 
 void irq_ExtISR(uint_t nId)

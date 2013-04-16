@@ -75,7 +75,7 @@ void arch_ExtIrqEnable(uint_t nPort, uint_t nPin, uint_t nMode)
 	MAP_GPIOPinIntEnable(nBase, nPin);
 }
 
-void arch_ExtIrqDisable(uint_t nPort, uint_t nPin, uint_t nMode)
+void arch_ExtIrqDisable(uint_t nPort, uint_t nPin)
 {
 
 	MAP_GPIOPinIntDisable(arch_GpioPortBase(nPort), BITMASK(nPin));

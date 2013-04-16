@@ -114,6 +114,48 @@ void gui_Editor_IPAddressDone(char *pStr, uint8_t *pIP)
 
 
 //-------------------------------------------------------------------------
+//百分比设置
+//-------------------------------------------------------------------------
+void gui_Editor_PercentCreate(char *pStr, uint_t nData)
+{
+
+	//转换为规格字符串
+	sprintf(pStr, "%03d.%02d%%", nData / 100, nData % 100);
+}
+
+void gui_Editor_PercentSet(const char *pInfo, char *pStr, int nIndex, int nSelect)
+{
+	int x;
+
+	//绘制提升信息
+	gui_DrawString_Mixed_Align(0, GUI_EDIT_INFO_Y, pInfo, COLOR_BLACK, GUI_ALIGN_CENTER);
+
+	//整形
+	pStr[3] = '.';
+	if (nIndex > 2)
+		nIndex += 1;
+
+	//数字滚动
+	pStr[nIndex] = gui_EditorCompnet_Number(pStr[nIndex], 1, 10, nSelect);
+
+	//绘制IP地址及光标
+	x = gui_DrawString_Mixed_Align(0, GUI_EDIT_DATA_Y, pStr, COLOR_BLACK, GUI_ALIGN_CENTER) + ASC_WIDTH * nIndex;
+	gui_DrawHLine(x, GUI_EDIT_DATA_Y + HZ_HEIGHT, x + (ASC_WIDTH - 1), COLOR_BLACK);
+}
+
+void gui_Editor_PercentDone(char *pStr, uint_t *pData)
+{
+
+	//整形
+	memmove(&pStr[3], &pStr[4], 2);
+	pStr[5] = 0;
+
+	//转换规格字符串为数字
+	*pData = atoi(pStr);
+}
+
+
+//-------------------------------------------------------------------------
 //时间设置
 //-------------------------------------------------------------------------
 void gui_Editor_TimeCreate(char *pStr, time_t tTime)

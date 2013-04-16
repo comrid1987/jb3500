@@ -1,4 +1,4 @@
-
+#if OS_TYPE
 
 void arch_AdcInit()
 {
@@ -46,5 +46,5 @@ uint_t arch_AdcData(uint_t nPort, uint_t nPin)
 	return nSum;
 }
 
-
+#endif
 

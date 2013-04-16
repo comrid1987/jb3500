@@ -61,19 +61,15 @@ void arch_ExtIrqEnable(uint_t nPort, uint_t nPin, uint_t nMode)
 	}
 }
 
-void arch_ExtIrqDisable(uint_t nPort, uint_t nPin, uint_t nMode)
+void arch_ExtIrqDisable(uint_t nPort, uint_t nPin)
 {
 
 	if (nPort) {
-		if (nMode == IRQ_TRIGGER_FALLING)
-			CLRBIT(LPC_GPIOINT->IO2IntEnF, nPin);
-		else
-			CLRBIT(LPC_GPIOINT->IO2IntEnR, nPin);
+		CLRBIT(LPC_GPIOINT->IO2IntEnF, nPin);
+		CLRBIT(LPC_GPIOINT->IO2IntEnR, nPin);
 	} else {
-		if (nMode == IRQ_TRIGGER_FALLING)
-			CLRBIT(LPC_GPIOINT->IO0IntEnF, nPin);
-		else
-			CLRBIT(LPC_GPIOINT->IO0IntEnR, nPin);
+		CLRBIT(LPC_GPIOINT->IO0IntEnF, nPin);
+		CLRBIT(LPC_GPIOINT->IO0IntEnR, nPin);
 	}
 }
 
