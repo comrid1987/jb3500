@@ -2,6 +2,28 @@
 
 //Private Defines
 #define NW12_DATA_SIZE				4096
+#if NW12_DEBUG_ENABLE
+static void nw12_DbgOut(uint_t nType, const void *pBuf, uint_t nLen)
+{
+	const uint8_t *pData, *pEnd;
+	char str[198];
+
+	pData = (const uint8_t *)pBuf;
+	pEnd = pData + nLen;
+
+	if (nType)
+		nLen = sprintf(str, "<NWT>");
+	else
+		nLen = sprintf(str, "<NWR>");
+	while ((pData < pEnd) && (nLen < (sizeof(str) - 3)))
+		nLen += sprintf(&str[nLen], " %02X", *pData++);
+
+	dbg_trace(str);
+}
+#else
+#define nw12_DbgOut(...)
+#endif
+
 
 //固定帧头长度
 #define NW12_FIXHEADER_SIZE			6
@@ -82,6 +104,9 @@ static sys_res nw12_RmsgAnalyze(void *args)
 		//结束符
 		if (*(pTemp + 1) != 0x16)
 			continue;
+#if NW12_DEBUG_ENABLE
+		nw12_DbgOut(0, p->parent.rbuf->p, NW12_FIXHEADER_SIZE + 2 + pH->len1);
+#endif
 		//接收到报文
 		//----Unfinished ----判断地址转级联
 		p->msa = pH->msa;		
@@ -213,6 +238,9 @@ sys_res nw12_TmsgSend(p_nw12 p, uint_t nFun, uint_t nAfn, buf b, uint_t nType)
 	nCS = cs8((uint8_t *)&xH + NW12_FIXHEADER_SIZE, (sizeof(t_nw12_header) - NW12_FIXHEADER_SIZE));
 	nCS = (nCS + cs8(b->p, b->len)) & 0xFF;
 	buf_PushData(b, 0x1600 | nCS, 2);
+#if NW12_DEBUG_ENABLE
+	nw12_DbgOut(1, b->p, b->len);
+#endif
 	return dlrcp_TmsgSend(&p->parent, &xH, sizeof(t_nw12_header), b->p, b->len);
 }
 
