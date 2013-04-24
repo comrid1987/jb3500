@@ -2,28 +2,6 @@
 
 //Private Defines
 #define NW12_DATA_SIZE				4096
-#if NW12_DEBUG_ENABLE
-static void nw12_DbgOut(uint_t nType, const void *pBuf, uint_t nLen)
-{
-	const uint8_t *pData, *pEnd;
-	char str[198];
-
-	pData = (const uint8_t *)pBuf;
-	pEnd = pData + nLen;
-
-	if (nType)
-		nLen = sprintf(str, "<NWT>");
-	else
-		nLen = sprintf(str, "<NWR>");
-	while ((pData < pEnd) && (nLen < (sizeof(str) - 3)))
-		nLen += sprintf(&str[nLen], " %02X", *pData++);
-
-	dbg_trace(str);
-}
-#else
-#define nw12_DbgOut(...)
-#endif
-
 
 //固定帧头长度
 #define NW12_FIXHEADER_SIZE			6
@@ -62,6 +40,52 @@ static int nw12_IsPW(uint_t nAfn)
 		return 0;
 	}
 }
+
+
+//Private Macros
+#if NW12_DEBUG_ENABLE
+static void nw12_DbgTx(const void *pHeader, const void *pBuf, uint_t nLen)
+{
+	const uint8_t *pData, *pEnd;
+	char str[198];
+
+	nLen = sprintf(str, "<NWT>");
+
+	pData = (const uint8_t *)pHeader;
+	pEnd = pData + sizeof(t_nw12_header);
+
+	while (pData < pEnd) {
+		nLen += sprintf(&str[nLen], " %02X", *pData++);
+	}
+
+	pData = (const uint8_t *)pBuf;
+	pEnd = pData + nLen;
+
+	while ((pData < pEnd) && (nLen < (sizeof(str) - 3))) {
+		nLen += sprintf(&str[nLen], " %02X", *pData++);
+	}
+
+	dbg_trace(str);
+}
+static void nw12_DbgRx(const void *pBuf, uint_t nLen)
+{
+	const uint8_t *pData, *pEnd;
+	char str[198];
+
+	pData = (const uint8_t *)pBuf;
+	pEnd = pData + nLen;
+
+	nLen = sprintf(str, "<NWR>");
+	while ((pData < pEnd) && (nLen < (sizeof(str) - 3))) {
+		nLen += sprintf(&str[nLen], " %02X", *pData++);
+	}
+
+	dbg_trace(str);
+}
+#else
+#define nw12_DbgTx(...)
+#define nw12_DbgRx(...)
+#endif
 
 
 
@@ -105,7 +129,7 @@ static sys_res nw12_RmsgAnalyze(void *args)
 		if (*(pTemp + 1) != 0x16)
 			continue;
 #if NW12_DEBUG_ENABLE
-		nw12_DbgOut(0, p->parent.rbuf->p, NW12_FIXHEADER_SIZE + 2 + pH->len1);
+		nw12_DbgRx(p->parent.rbuf->p, NW12_FIXHEADER_SIZE + 2 + pH->len1);
 #endif
 		//接收到报文
 		//----Unfinished ----判断地址转级联
@@ -239,7 +263,7 @@ sys_res nw12_TmsgSend(p_nw12 p, uint_t nFun, uint_t nAfn, buf b, uint_t nType)
 	nCS = (nCS + cs8(b->p, b->len)) & 0xFF;
 	buf_PushData(b, 0x1600 | nCS, 2);
 #if NW12_DEBUG_ENABLE
-	nw12_DbgOut(1, b->p, b->len);
+	nw12_DbgTx(&xH, b->p, b->len);
 #endif
 	return dlrcp_TmsgSend(&p->parent, &xH, sizeof(t_nw12_header), b->p, b->len);
 }
