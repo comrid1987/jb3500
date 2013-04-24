@@ -186,13 +186,15 @@ sys_res att7022_Reset(p_att7022 p, p_att7022_cali pCali)
 	}
 
 	//写入电压增益
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < 3; i++) {
 		att7022_WriteReg(p, ATT7022_REG_UgainA + i, pCali->Ugain[i]);
+	}
 
 	//写入电流增益
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < 3; i++) {
 		att7022_WriteReg(p, ATT7022_REG_IgainA + i, pCali->Igain[i]);
-	
+	}
+
 	//写入相位角增益
 	for (i = 0; i < 5; i++) {
 		att7022_WriteReg(p, ATT7022_REG_PhsregA0 + i, pCali->PhsregA[i]);
