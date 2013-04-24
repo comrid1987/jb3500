@@ -44,10 +44,11 @@ static int nw12_IsPW(uint_t nAfn)
 
 //Private Macros
 #if NW12_DEBUG_ENABLE
-static void nw12_DbgTx(const void *pHeader, const void *pBuf, uint_t nLen)
+static void nw12_DbgTx(const void *pHeader, const void *pBuf, uint_t nTxLen)
 {
 	const uint8_t *pData, *pEnd;
-	char str[198];
+	char str[256];
+	uint_t nLen;
 
 	nLen = sprintf(str, "<NWT>");
 
@@ -59,7 +60,7 @@ static void nw12_DbgTx(const void *pHeader, const void *pBuf, uint_t nLen)
 	}
 
 	pData = (const uint8_t *)pBuf;
-	pEnd = pData + nLen;
+	pEnd = pData + nTxLen;
 
 	while ((pData < pEnd) && (nLen < (sizeof(str) - 3))) {
 		nLen += sprintf(&str[nLen], " %02X", *pData++);
@@ -70,7 +71,7 @@ static void nw12_DbgTx(const void *pHeader, const void *pBuf, uint_t nLen)
 static void nw12_DbgRx(const void *pBuf, uint_t nLen)
 {
 	const uint8_t *pData, *pEnd;
-	char str[198];
+	char str[256];
 
 	pData = (const uint8_t *)pBuf;
 	pEnd = pData + nLen;

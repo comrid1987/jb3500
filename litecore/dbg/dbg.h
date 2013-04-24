@@ -9,8 +9,11 @@ extern "C" {
 
 
 //External Functions
+#if 0
 void dbg_trace(const char *fmt, ...);
-
+#else
+void dbg_trace(const char *str);
+#endif
 
 #ifdef __cplusplus
 }
