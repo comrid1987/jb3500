@@ -228,7 +228,7 @@ void stm32_FsmcInit()
 	xNor.FSMC_WriteBurst = FSMC_WriteBurst_Disable;
 	xNor.FSMC_ReadWriteTimingStruct = &xNorReadTiming;
 	xNor.FSMC_WriteTimingStruct = &xNorWriteTiming;
-	
+
 	xNor.FSMC_Bank = nBank;
 	FSMC_NORSRAMInit(&xNor);
 	FSMC_NORSRAMCmd(nBank, ENABLE);
@@ -341,7 +341,7 @@ void stm32_FsmcInit()
 	xNor.FSMC_WriteOperation = FSMC_WriteOperation_Enable;
 	xNor.FSMC_WaitSignal = FSMC_WaitSignal_Disable;
 	xNor.FSMC_ExtendedMode = FSMC_ExtendedMode_Disable;
-	xNor.FSMC_AsyncWait = FSMC_AsyncWait_Disable;
+	xNor.FSMC_AsynchronousWait = FSMC_AsynchronousWait_Disable;
 	xNor.FSMC_WriteBurst = FSMC_WriteBurst_Disable;
 	xNor.FSMC_ReadWriteTimingStruct = &xNorReadTiming;
 	xNor.FSMC_WriteTimingStruct = &xNorWriteTiming;
