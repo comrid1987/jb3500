@@ -484,7 +484,7 @@ typedef struct {
       uint32_t Res18;
       uint32_t HFDouble;		//脉冲常数加倍选择       
       uint32_t UADCPga;			//电压通道ADC增益选择       
-      uint32_t CRC1;				//以上数据的校验和
+      uint32_t CRC;				//以上数据的校验和
       uint32_t CalitFlage;		//校表标识 0：没有校表 1：校表当中 2：完成校表      
 }t_att7022_cali, *p_att7022_cali;
 
