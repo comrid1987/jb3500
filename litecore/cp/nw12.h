@@ -79,12 +79,12 @@ typedef struct {
 	uint8_t		msa;
  	uint8_t		rtua[3];
  	uint8_t		terid[3];
-	t_nw12_c		c;
-	uint8_t			afn;
+	t_nw12_c	c;
+	uint8_t		afn;
 	t_nw12_seq	seq;
-	t_nw12_tp		tp;
-	uint8_t			pw[16];	
-	buf				data;
+	t_nw12_tp	tp;
+	uint8_t		pw[16];	
+	buf			data;
 }t_nw12, *p_nw12;
 
 
