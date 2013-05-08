@@ -9,6 +9,7 @@
 #if OS_TYPE
 #include <os/os.c>
 #include <sys/dev.c>
+#include <dbg/dbg.c>
 #endif
 
 
@@ -75,7 +76,6 @@ t_dque	__dqueue[DQUEUE_QTY];
 dque	dqueue = {ARR_SIZE(__dqueue), __dqueue};
 #endif
 
-#include <dbg/dbg.c>
 
 
 //-------------------------------------------------------------------------
