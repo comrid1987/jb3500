@@ -59,33 +59,15 @@ void tsk_Upcom1(void *args)
 	}
 }
 
-void dbg_trace(const char *fmt, ...)
+void dbg_trace(const char *str)
 {
-	va_list args;
-	char str[200];
-	uint_t nRemote, nRS232;
 
-	if (g_sys_status & BITMASK(SYS_STATUS_UART))
-		nRS232 = 1;
-	else
-		nRS232 = 0;
-	
-	if (rcp_aGw3761[1].parent.chl->ste == CHL_S_READY)
-		nRemote = 1;
-	else
-		nRemote = 0;
-
-	if (nRS232 || nRemote) {
-		str[0] = '\r';
-		str[1] = '\n';
-		va_start(args, fmt);
-		vsnprintf(&str[2], sizeof(str) - 2, fmt, args);
-		va_end(args);
-
-		if (nRS232)
+	if (g_sys_status & BITMASK(SYS_STATUS_UART)) {
+			chl_Send(rcp_aGw3761[4].parent.chl, dbg_header, sizeof(dbg_header));
 			chl_Send(rcp_aGw3761[4].parent.chl, str, strlen(str));
-
-		if (nRemote)
+	}
+	if (rcp_aGw3761[1].parent.chl->ste == CHL_S_READY) {
+			chl_Send(rcp_aGw3761[1].parent.chl, dbg_header, sizeof(dbg_header));
 			chl_Send(rcp_aGw3761[1].parent.chl, str, strlen(str));
 	}
 }
