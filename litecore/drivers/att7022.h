@@ -508,7 +508,7 @@ uint32_t att7022_GetPhaseEQ(p_att7022 p, uint_t nQuad, uint_t nDir, uint_t nPhas
 float att7022_GetVoltage(p_att7022 p, uint_t nPhase);
 float att7022_GetCurrent(p_att7022 p, uint_t nPhase);
 float att7022_GetPower(p_att7022 p, uint_t nPhase, uint_t nType);
-uint8_t att7022_GetPowerDir(p_att7022 p);
+uint32_t att7022_GetPowerDir(p_att7022 p);
 float att7022_GetSV(p_att7022 p, uint_t nPhase);
 float att7022_GetPFV(p_att7022 p, uint_t nPhase);
 float att7022_GetPAG(p_att7022 p, uint_t nPhase);

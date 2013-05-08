@@ -30,11 +30,11 @@ static int nw12_IsPW(uint_t nAfn)
 {
 
 	switch (nAfn) {
-	case 0x01:
+//	case 0x01:
 	case 0x04:
 	case 0x05:
-	case 0x06:
-	case 0x10:
+//	case 0x06:
+//	case 0x10:
 		return 1;
 	default:
 		return 0;
