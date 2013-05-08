@@ -35,7 +35,7 @@ static t_att7022 att7022;
 
 //Internal Functions
 #if ATT7022_DEBUG_ENABLE
-#define att7022_DbgOut				dbg_trace
+#define att7022_DbgOut				dbg_printf
 #else
 #define att7022_DbgOut(...)
 #endif

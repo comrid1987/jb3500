@@ -47,7 +47,7 @@ static int nw12_IsPW(uint_t nAfn)
 static void nw12_DbgTx(const void *pHeader, const void *pBuf, uint_t nTxLen)
 {
 	const uint8_t *pData, *pEnd;
-	char str[256];
+	char str[DBG_BUF_SIZE];
 	uint_t nLen;
 
 	nLen = sprintf(str, "<NWT>");
@@ -71,7 +71,7 @@ static void nw12_DbgTx(const void *pHeader, const void *pBuf, uint_t nTxLen)
 static void nw12_DbgRx(const void *pBuf, uint_t nLen)
 {
 	const uint8_t *pData, *pEnd;
-	char str[256];
+	char str[DBG_BUF_SIZE];
 
 	pData = (const uint8_t *)pBuf;
 	pEnd = pData + nLen;

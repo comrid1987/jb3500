@@ -3,7 +3,7 @@
 
 //Private Defines
 #if DLRCP_DEBUG_ENABLE
-#define dlrcp_DbgOut				dbg_trace
+#define dlrcp_DbgOut				dbg_printf
 #else
 #define dlrcp_DbgOut(...)
 #endif

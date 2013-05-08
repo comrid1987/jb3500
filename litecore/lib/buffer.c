@@ -9,7 +9,7 @@
 #define BUF_BLK_MASK		(BUF_BLK_SIZE - 1)
 
 #if BUF_DEBUG_ENABLE
-#define buf_DbgOut			dbg_trace
+#define buf_DbgOut			dbg_printf
 #else
 #define buf_DbgOut(...)
 #endif

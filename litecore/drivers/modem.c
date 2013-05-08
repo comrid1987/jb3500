@@ -5,7 +5,7 @@
 #define MODEM_PPP_ID			0
 
 #if MODEM_DEBUG_ENABLE
-#define modem_DbgOut			dbg_trace
+#define modem_DbgOut			dbg_printf
 #else
 #define modem_DbgOut(...)
 #endif
@@ -330,7 +330,7 @@ static void modem_DbgIpInfo()
 	uint8_t aIp[4], aMask[4], aGateway[4];
 
 	net_GetIpPPP(aIp, aMask, aGateway);
-	dbg_trace("<Modem> Online IP:%d.%d.%d.%d", aIp[0], aIp[1], aIp[2], aIp[3]);
+	dbg_printf("<Modem> Online IP:%d.%d.%d.%d", aIp[0], aIp[1], aIp[2], aIp[3]);
 }
 #endif
 

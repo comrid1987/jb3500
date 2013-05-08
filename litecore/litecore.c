@@ -75,7 +75,7 @@ t_dque	__dqueue[DQUEUE_QTY];
 dque	dqueue = {ARR_SIZE(__dqueue), __dqueue};
 #endif
 
-
+#include <dbg/dbg.c>
 
 
 //-------------------------------------------------------------------------

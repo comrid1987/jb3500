@@ -15,7 +15,7 @@
 static void xcn6n12_DbgOut(uint_t nType, const void *pBuf, uint_t nLen)
 {
 	const uint8_t *pData, *pEnd;
-	char str[198];
+	char str[DBG_BUF_SIZE];
 
 	pData = (const uint8_t *)pBuf;
 	pEnd = pData + nLen;
