@@ -48,7 +48,7 @@ static int gw3761_IsPW(uint_t nAfn)
 static int gw3761_IsEC(uint_t nAfn)
 {
 
-#if 0
+#if 1
 	switch (nAfn) {
 	case GW3761_AFN_CONFIRM:
 	case 0x08:
@@ -126,9 +126,11 @@ static sys_res gw3761_RmsgAnalyze(void *args)
 		if (*(pTemp + 1) != 0x16)
 			continue;
 		//接收到报文
-		//----Unfinished ----判断地址转级联
-		p->msa = pH->msa;
 		p->rmsg.c = pH->c;
+		p->rmsg.a1 = pH->a1;
+		p->rmsg.a2 = pH->a2;
+		p->rmsg.group = pH->group;
+		p->rmsg.msa = pH->msa;
 		p->rmsg.afn = pH->afn;
 		p->rmsg.seq = pH->seq;
 		if (pH->seq.tpv) {
@@ -245,7 +247,7 @@ sys_res gw3761_TmsgSend(p_gw3761 p, uint_t nFun, uint_t nAfn, buf b, uint_t nTyp
 		xH.seq.con = 1;
 		break;
 	default:
-		xH.msa = p->msa;
+		xH.msa = p->rmsg.msa;
 		xH.seq.seq = p->rmsg.seq.seq;
 		break;
 	}
@@ -266,8 +268,8 @@ sys_res gw3761_TmsgSend(p_gw3761 p, uint_t nFun, uint_t nAfn, buf b, uint_t nTyp
 	}
 	xH.len1 = xH.len2 = b->len + (sizeof(t_gw3761_header) - GW3761_FIXHEADER_SIZE);
 	nCS = cs8((uint8_t *)&xH + GW3761_FIXHEADER_SIZE, (sizeof(t_gw3761_header) - GW3761_FIXHEADER_SIZE));
-	nCS = (nCS + cs8(b->p, b->len)) & 0xFF;
-	buf_PushData(b, 0x1600 | nCS, 2);
+	nCS += cs8(b->p, b->len);
+	buf_PushData(b, 0x1600 | (nCS & 0xFF), 2);
 	return dlrcp_TmsgSend(&p->parent, &xH, sizeof(t_gw3761_header), b->p, b->len);
 }
 
@@ -291,6 +293,58 @@ sys_res gw3761_TmsgReject(p_gw3761 p)
 
 	gw3761_TmsgAfn00(p, 0x00020000, GW3761_FUN_NODATA);
 	return SYS_R_OK;
+}
+
+
+//-------------------------------------------------------------------------
+//
+//-------------------------------------------------------------------------
+sys_res gw3761_Transmit(p_gw3761 p, p_gw3761 pD)
+{
+	sys_res res;
+	t_gw3761_header xH;
+	uint_t nCS;
+	buf b = {0};
+
+	buf_Push(b, p->rmsg.data->p, p->rmsg.data->len);
+	xH.sc1 = 0x68;
+	xH.sc2 = 0x68;
+	xH.prtc1 = GW3761_PROTOCOL_ID;
+	xH.prtc2 = GW3761_PROTOCOL_ID;
+	xH.c = p->rmsg.c;
+	xH.a1 = p->rmsg.a1;
+	xH.a2 = p->rmsg.a2;
+	xH.group = p->rmsg.group;
+	xH.msa = p->rmsg.msa;
+	xH.afn = p->rmsg.afn;
+	xH.seq = p->rmsg.seq;
+	//有时间标志
+	if (xH.seq.tpv)
+		buf_Push(b, &p->rmsg.tp, sizeof(p->rmsg.tp));
+	//有密码
+	if (gw3761_IsPW(xH.afn))
+		buf_Push(b, &p->rmsg.pw, sizeof(p->rmsg.pw));
+	xH.len1 = xH.len2 = b->len + (sizeof(t_gw3761_header) - GW3761_FIXHEADER_SIZE);
+	nCS = cs8((uint8_t *)&xH + GW3761_FIXHEADER_SIZE, (sizeof(t_gw3761_header) - GW3761_FIXHEADER_SIZE));
+	nCS += cs8(b->p, b->len);
+	buf_PushData(b, 0x1600 | (nCS & 0xFF), 2);
+	res = dlrcp_TmsgSend(&p->parent, &xH, sizeof(t_gw3761_header), b->p, b->len);
+	buf_Release(b);
+	return res;
+}
+
+
+//-------------------------------------------------------------------------
+//
+//-------------------------------------------------------------------------
+int gw3761_RecvCheck(p_gw3761 p)
+{
+
+	if ((p->rmsg.a1 != 0xFFFF) || (p->rmsg.a2 != 0xFFFF)) {
+		if ((p->rtua != p->rmsg.a1) || (p->terid != p->rmsg.a2))
+			return 0;
+	}
+	return 1;
 }
 
 

@@ -46,8 +46,7 @@ static p_dev_spi att7022_SpiGet()
 {
 	p_dev_spi p;
 	
-// 	p = spi_Get(SPIF_COMID, OS_TMO_FOREVER);
-	p = spi_Get(0, OS_TMO_FOREVER);
+	p = spi_Get(ATT7022_COMID, OS_TMO_FOREVER);
 	spi_Config(p, SPI_SCKIDLE_LOW, SPI_LATCH_2EDGE, ATT7022_SPI_SPEED);
 #if SPI_SEL_ENABLE
 	spi_CsSel(p, ATT7022_CSID);
@@ -169,7 +168,13 @@ sys_res att7022_Reset(p_att7022 p, p_att7022_cali pCali)
 	att7022_CaliClear(p);
 
 	att7022_WriteReg(p, ATT7022_REG_UADCPga, 0);			//电压通道ADC增益设置为1
+#if ATT7022_CONST_EC == 3200
+	att7022_WriteReg(p, ATT7022_REG_HFConst, 114);	//设置HFConst
+#elif ATT7022_CONST_EC == 800
+	att7022_WriteReg(p, ATT7022_REG_HFConst, 456);	//设置HFConst
+#else
 	att7022_WriteReg(p, ATT7022_REG_HFConst, pCali->HFConst);	//设置HFConst
+#endif
 	nTemp = IB_VO * ISTART_RATIO * CONST_G * MAX_VALUE1;
 	att7022_WriteReg(p, ATT7022_REG_Istartup, nTemp);		//启动电流设置
 	att7022_WriteReg(p, ATT7022_REG_EnUAngle, 0x003584);	//使能电压夹角测量

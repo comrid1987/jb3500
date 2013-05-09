@@ -122,7 +122,8 @@ sys_res dlrcp_TmsgSend(p_dlrcp p, void *pHeader, uint_t nHeaderLen, void *pData,
 	sys_res res = SYS_R_ERR;
 	p_dlrcp_tmsg pMsg;
 
-	if ((pMsg = dlrcp_TmsgNew(p)) != NULL) {
+	pMsg = dlrcp_TmsgNew(p);
+	if (pMsg != NULL) {
 		buf_Push(pMsg->data, pHeader, nHeaderLen);
 		buf_Push(pMsg->data, pData, nDataLen);
 #if DLRCP_ZIP_ENABLE
@@ -141,8 +142,8 @@ sys_res dlrcp_TmsgSend(p_dlrcp p, void *pHeader, uint_t nHeaderLen, void *pData,
 		//	return SYS_R_OK;
 		//} else
 			res = chl_Send(p->chl, pMsg->data->p, pMsg->data->len);
+		dlrcp_TmsgRelease(p, pMsg);
 	}
-	dlrcp_TmsgRelease(p, pMsg);
 	return res;
 }
 

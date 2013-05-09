@@ -194,6 +194,10 @@ typedef __packed struct {
 
 //GDW3761接收帧
 typedef struct {
+ 	uint16_t		a1;			//地市区县码
+ 	uint16_t		a2;			//终端地址
+	uint8_t			group : 1,
+					msa : 7;
 	t_gw3761_c		c;
 	uint8_t			afn;
 	t_gw3761_seq	seq;
@@ -205,7 +209,6 @@ typedef struct {
 //GDW3761规约结构
 typedef struct {
 	t_dlrcp		parent;
-	uint8_t		msa;
  	uint16_t	rtua;
  	uint16_t	terid;
 	t_gw3761_rmsg rmsg;
@@ -233,7 +236,10 @@ typedef const struct {
 
 //External Functions
 void gw3761_Init(p_gw3761 p);
+sys_res gw3761_Transmit(p_gw3761 p, p_gw3761 pD);
+int gw3761_RecvCheck(p_gw3761 p);
 sys_res gw3761_Handler(p_gw3761 p);
+
 void gw3761_Response(p_gw3761 p);
 
 sys_res gw3761_TmsgSend(p_gw3761 p, uint_t nFun, uint_t nAfn, buf b, uint_t nType);
