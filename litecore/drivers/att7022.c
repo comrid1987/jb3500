@@ -494,8 +494,7 @@ sys_res att7022_GetHarmonic(p_att7022 p, uint_t Ch, sint16_t *pbuf)
 //------------------------------------------------------------------------ 
 uint32_t att7022_UgainCalibration(p_att7022 p, uint8_t nPhase )
 {
-	float urms, k;
-	sint32_t gain; 
+	float urms, k, gain;
 
 	//校表使能  
 	att7022_WriteEnable(p);
@@ -511,26 +510,18 @@ uint32_t att7022_UgainCalibration(p_att7022 p, uint8_t nPhase )
 	if(urms)
 	{
 		 //计算实际测出的工程量
-		urms = urms / SYS_KVALUE; 
+		urms = urms / SYS_KVALUE;
 		//此处以UCALI_CONST为标准计算Ugain 
-		k = UCALI_CONST / urms - 1; 
+		k = UCALI_CONST / urms - 1;
 
-		if (k >= 0 )
-		{
-			//Ur / Urms 大于等于0 
-			gain = k * MAX_VALUE1;
-		}
-		else
-		{
-			//Ur / Urms 小于0 
-			gain = k * MAX_VALUE1; 
+		gain = k * MAX_VALUE1;
+		if (k < 0)
 			gain = MAX_VALUE2 + gain;
-		} 
 
 		//校表使能  
 		att7022_WriteEnable(p);
 		//写入电压校表数据
-		att7022_WriteReg (p, ATT7022_REG_UgainA + nPhase, gain);
+		att7022_WriteReg (p, ATT7022_REG_UgainA + nPhase, (uint32_t)gain);
 		//校表禁止
 		att7022_WriteDisable(p); 
 	}
@@ -566,17 +557,10 @@ uint32_t att7022_IgainCalibration(p_att7022 p, uint32_t nPhase)
 		//此处以ICALI_CONST为标准计算Igain	
 		k = (ICALI_CONST * ICALI_MUL) / irms - 1;	
 
-		if (k >= 0 )
-		{	
-			//Ir / Irms 大于等于0 
-			gain = k * MAX_VALUE1;
-		}
-		else
-		{
-			//Ir / Irms 小于0 
-			gain = k * MAX_VALUE1; 
+		gain = k * MAX_VALUE1;
+		if (k < 0)
 			gain = MAX_VALUE2 + gain;
-		} 
+
 		//校表使能  
 		att7022_WriteEnable(p); 
 		//写入电压校表数据
@@ -597,8 +581,7 @@ uint32_t att7022_IgainCalibration(p_att7022 p, uint32_t nPhase)
 //------------------------------------------------------------------------
 uint32_t att7022_PgainCalibration(p_att7022 p, uint8_t nPhase)
 {
-	float pvalue, err, eck;
-	sint32_t pgain;
+	float pvalue, err, eck, pgain;
 
 	//脉冲输出系数
 	eck = 3200.0f / (float)ATT7022_CONST_EC;
@@ -621,21 +604,15 @@ uint32_t att7022_PgainCalibration(p_att7022 p, uint8_t nPhase)
 	//转换成工程量
 	pvalue = (pvalue / 256.0f) * eck;		
 	//误差计算
-	err = (pvalue - (float)PCALI_CONST ) / (float)PCALI_CONST;					
+	err = (pvalue - (float)PCALI_CONST) / (float)PCALI_CONST;					
 	if (err )
 	{
 		err = -err / (1 + err);
 
-		if (err >= 0 )
-		{
-			//计算Pgain
-			pgain = err * MAX_VALUE1;
-		}
-		else
-		{
-			//pgain 为负值
-			pgain = MAX_VALUE2 + err * MAX_VALUE1;			//计算Pgain
-		}
+		pgain = err * MAX_VALUE1;
+		if (err < 0 )
+			pgain = MAX_VALUE2 + pgain;			//计算Pgain
+
 		//校表使能  
 		att7022_WriteEnable(p); 
 		att7022_WriteReg(p, ATT7022_REG_PgainA0 + nPhase, pgain);
