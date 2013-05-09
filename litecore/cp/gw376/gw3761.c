@@ -328,7 +328,7 @@ sys_res gw3761_Transmit(p_gw3761 p, p_gw3761 pD)
 	nCS = cs8((uint8_t *)&xH + GW3761_FIXHEADER_SIZE, (sizeof(t_gw3761_header) - GW3761_FIXHEADER_SIZE));
 	nCS += cs8(b->p, b->len);
 	buf_PushData(b, 0x1600 | (nCS & 0xFF), 2);
-	res = dlrcp_TmsgSend(&p->parent, &xH, sizeof(t_gw3761_header), b->p, b->len);
+	res = dlrcp_TmsgSend(&pD->parent, &xH, sizeof(t_gw3761_header), b->p, b->len);
 	buf_Release(b);
 	return res;
 }
