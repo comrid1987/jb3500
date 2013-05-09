@@ -384,12 +384,7 @@ void tsk_Display(void *args)
 	time_t tTime;
 
     Display_Number(bcd2bin16(VER_SOFT), 8, 4);
-	que = os_que_Wait(QUE_EVT_KEYBOARD, NULL, 1000);
-	if (que != NULL) {
-		if (que->data->val == 1)
-			SETBIT(g_sys_status, SYS_STATUS_UART);
-		os_que_Release(que);
-	}
+	os_thd_Sleep(1000);
     for (; ; ) {
 		if (tTime != rtc_GetTimet()) {
 			tTime = rtc_GetTimet();

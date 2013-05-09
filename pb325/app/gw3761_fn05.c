@@ -42,13 +42,13 @@ int gw3761_ResponseCtrlCmd(p_gw3761 p, u_word2 *pDu, uint8_t **ppData)
 					break;
 				if (xPM.prtl == ECL_PRTL_DLQ_QL) {
 					dlt645_Packet2Buf(b, xPM.madr, DLT645_CODE_WRITE97, ecl_DlqQlCmd[nFn - 1], 3);
-					if (ecl_485_RealRead(b, 1200, 2) == SYS_R_OK)
+					if (ecl_485_RealRead(b, 1200, 2000) == SYS_R_OK)
 						res += 1;
 					buf_Release(b);
 				}
 				if (xPM.prtl == ECL_PRTL_DLQ_SY) {
 					dlt645_Packet2Buf(b, xPM.madr, DLT645_CODE_CTRL07, ecl_DlqSyCmd[nFn - 1], 4);
-					if (ecl_485_RealRead(b, 2400, 2) == SYS_R_OK)
+					if (ecl_485_RealRead(b, 2400, 2000) == SYS_R_OK)
 						res += 1;
 					buf_Release(b);
 				}

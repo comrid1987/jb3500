@@ -55,17 +55,12 @@ void tsk_Idle(void *args)
 
 void app_Daemon(uint_t nCnt)
 {
-	uint_t nTemp;
 	static uint_t nRstCnt = 0;
 
 	//运行指示灯
-	if (g_sys_status & BITMASK(SYS_STATUS_UART))
-		nTemp = 1;
-	else
-		nTemp = 7;
-	if ((nCnt & nTemp) == 0)
+	if ((nCnt & 0x07) == 0)
 		LED_RUN(1);
-	if ((nCnt & nTemp) == 1)
+	if ((nCnt & 0x07) == 1)
 		LED_RUN(0);
 	//2小时无通讯复位终端
 	if ((nCnt & 0xFF) == 0) {

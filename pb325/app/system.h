@@ -15,7 +15,6 @@ extern "C" {
 #define BEEP(x)         gpio_Set(3, x)			//高电平有效
 
 //System Status Defines
-#define SYS_STATUS_UART		0
 #define SYS_STATUS_LOGIN	1
 
 
