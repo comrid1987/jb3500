@@ -168,13 +168,7 @@ sys_res att7022_Reset(p_att7022 p, p_att7022_cali pCali)
 	att7022_CaliClear(p);
 
 	att7022_WriteReg(p, ATT7022_REG_UADCPga, 0);			//电压通道ADC增益设置为1
-#if ATT7022_CONST_EC == 3200
-	att7022_WriteReg(p, ATT7022_REG_HFConst, 114);	//设置HFConst
-#elif ATT7022_CONST_EC == 800
-	att7022_WriteReg(p, ATT7022_REG_HFConst, 456);	//设置HFConst
-#else
 	att7022_WriteReg(p, ATT7022_REG_HFConst, pCali->HFConst);	//设置HFConst
-#endif
 	nTemp = IB_VO * ISTART_RATIO * CONST_G * MAX_VALUE1;
 	att7022_WriteReg(p, ATT7022_REG_Istartup, nTemp);		//启动电流设置
 	att7022_WriteReg(p, ATT7022_REG_EnUAngle, 0x003584);	//使能电压夹角测量
@@ -604,12 +598,12 @@ uint32_t att7022_IgainCalibration(p_att7022 p, uint32_t nPhase)
 //返	回:  pgain - 校准成功返回pgain的当前值 
 //功	能: 功率参数pgain校准
 //------------------------------------------------------------------------
-uint32_t att7022_PgainCalibration(p_att7022 p, uint8_t nPhase )
+uint32_t att7022_PgainCalibration(p_att7022 p, uint8_t nPhase)
 {
 	float pvalue = 0.0f;
 	float err = 0.0f;
 	uint32_t pgain = 0.0f;
-	float eck = 0.0f;
+	float eck;
 
 	//脉冲输出系数
 	eck = 3200.0f / (float)ATT7022_CONST_EC;
@@ -632,7 +626,7 @@ uint32_t att7022_PgainCalibration(p_att7022 p, uint8_t nPhase )
 	//转换成工程量
 	pvalue = (pvalue / 256.0f) * eck;		
 	//误差计算
-	err = (pvalue - (float)PCALI_CONST ) / (float)PCALI_CONST ;					
+	err = (pvalue - (float)PCALI_CONST ) / (float)PCALI_CONST;					
 	if (err )
 	{
 		err = -err / (1 + err);
@@ -640,11 +634,11 @@ uint32_t att7022_PgainCalibration(p_att7022 p, uint8_t nPhase )
 		if (err >= 0 )
 		{
 			//计算Pgain
-			pgain = err * MAX_VALUE1;				
+			pgain = err * MAX_VALUE1;
 		}
 		else
 		{
-			//pgain 为负值												
+			//pgain 为负值
 			pgain = MAX_VALUE2 + err * MAX_VALUE1;			//计算Pgain
 		}
 		//校表使能  
@@ -670,16 +664,16 @@ void att7022_UIP_gainCalibration(p_att7022 p, p_att7022_cali pCali)
 {
 	uint_t i;
 
-	for(i = 0; i < 3; i++)
+	for (i = 0; i < 3; i++)
 	{
 		//电压通道校正
 		pCali->Ugain [i] = att7022_UgainCalibration(p, PHASE_A + i);   
 		
 		//电流通道校正
-		pCali->Igain[i] = att7022_IgainCalibration(p, PHASE_A + i );   
+		pCali->Igain[i] = att7022_IgainCalibration(p, PHASE_A + i);   
 		
 		//功率校正
-		pCali->Pgain0[i] = att7022_PgainCalibration(p, PHASE_A + i );   
+		pCali->Pgain0[i] = att7022_PgainCalibration(p, PHASE_A + i);   
 		pCali->Pgain1[i] = pCali->Pgain0[i];
 	}
 }
