@@ -494,14 +494,13 @@ sys_res att7022_GetHarmonic(p_att7022 p, uint_t Ch, sint16_t *pbuf)
 //------------------------------------------------------------------------ 
 uint32_t att7022_UgainCalibration(p_att7022 p, uint8_t nPhase )
 {
-	float urms = 0.0f; 
-	float k = 0.0f; 
-	sint32_t gain = 0; 
+	float urms, k;
+	sint32_t gain; 
 
 	//校表使能  
 	att7022_WriteEnable(p);
 	//设置电压校正寄存器为0
-	att7022_WriteReg(p, ATT7022_REG_UgainA + nPhase, 0 ); 
+	att7022_WriteReg(p, ATT7022_REG_UgainA + nPhase, 0); 
 	//校表禁止 
 	att7022_WriteDisable(p); 
 	//等1秒
@@ -548,14 +547,12 @@ uint32_t att7022_UgainCalibration(p_att7022 p, uint8_t nPhase )
 //------------------------------------------------------------------------ 
 uint32_t att7022_IgainCalibration(p_att7022 p, uint32_t nPhase)
 {
-	float irms = 0.0f; 
-	float k = 0.0f; 
-	float gain = 0.0f; 
+	float irms, k, gain;
 
 	//校表使能  
 	att7022_WriteEnable(p); 
 	//设置电压校正寄存器为0
-	att7022_WriteReg(p, ATT7022_REG_IgainA + nPhase, 0 ); 
+	att7022_WriteReg(p, ATT7022_REG_IgainA + nPhase, 0); 
 	//校表禁止 
 	att7022_WriteDisable(p);  
 	//等1秒
@@ -567,7 +564,7 @@ uint32_t att7022_IgainCalibration(p_att7022 p, uint32_t nPhase)
 	{
 		irms = irms / SYS_KVALUE; 
 		//此处以ICALI_CONST为标准计算Igain	
-		k = (ICALI_CONST * ICALI_MUL ) / irms - 1;	
+		k = (ICALI_CONST * ICALI_MUL) / irms - 1;	
 
 		if (k >= 0 )
 		{	
@@ -600,10 +597,8 @@ uint32_t att7022_IgainCalibration(p_att7022 p, uint32_t nPhase)
 //------------------------------------------------------------------------
 uint32_t att7022_PgainCalibration(p_att7022 p, uint8_t nPhase)
 {
-	float pvalue = 0.0f;
-	float err = 0.0f;
-	uint32_t pgain = 0.0f;
-	float eck;
+	float pvalue, err, eck;
+	sint32_t pgain;
 
 	//脉冲输出系数
 	eck = 3200.0f / (float)ATT7022_CONST_EC;
