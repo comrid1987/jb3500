@@ -3,6 +3,7 @@
 #include <litecore.h>
 #include "system.h"
 #include "para.h"
+#include "meter.h"
 
 
 //Private Variables
