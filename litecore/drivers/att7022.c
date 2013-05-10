@@ -724,13 +724,13 @@ uint32_t att7022_PhaseCalibration(p_att7022 p, uint8_t nPhase, uint8_t nCali)
 		}
 		att7022_WriteDisable(p);
 		sys_Delay(50000);
-		fPhase = att7022_FPhaseCaliData(p,nPhase, nCali);
+		fPhase = att7022_FPhaseCaliData(p, nPhase, nCali);
 		break;
 	case 1:
 	case 2:
 	case 3:
 	case 4:
-		fPhase = att7022_FPhaseCaliData(p,nPhase, nCali);
+		fPhase = att7022_FPhaseCaliData(p, nPhase, nCali);
 		break;
 	default:
 		break;
