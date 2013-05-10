@@ -75,22 +75,26 @@ void tsk_Upcom1(void *args)
 		}
 		if (gw3761_Handler(pM) == SYS_R_OK) {
 			SETBIT(g_sys_status, SYS_STATUS_LOGIN);
-			if (gw3761_RecvCheck(pM)) {
-				gw3761_Response(pM);
-			} else {
-				//级联转发
-				if (ecl_485_Wait(20000) == SYS_R_OK) {
-					gw3761_Transmit(pM, pS);
-					if (upcom_Wait(pS, 3000) == SYS_R_OK)
-						gw3761_Transmit(pS, pM);
-					ecl_485_Release();
+			if (pM->rmsg.c.dir == GW3761_DIR_RECV) {
+				if (gw3761_RecvCheck(pM)) {
+					gw3761_Response(pM);
+				} else {
+					//级联转发
+					if (ecl_485_Wait(20000) == SYS_R_OK) {
+						gw3761_Transmit(pM, pS);
+						if (upcom_Wait(pS, 3000) == SYS_R_OK)
+							gw3761_Transmit(pS, pM);
+						ecl_485_Release();
+					}
 				}
 			}
 		}
 		if (ecl_485_Wait(OS_TICK_MS) == SYS_R_OK) {
 			if (gw3761_Handler(pS) == SYS_R_OK) {
-				if (gw3761_RecvCheck(pS))
-					gw3761_Response(pS);
+				if (pS->rmsg.c.dir == GW3761_DIR_RECV) {
+					if (gw3761_RecvCheck(pS))
+						gw3761_Response(pS);
+				}
 			}
 			ecl_485_Release();
 		}
