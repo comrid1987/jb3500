@@ -74,6 +74,9 @@ extern "C" {
 
 
 
+//传送方向定义
+#define GW3761_DIR_RECV				0	//主站发出
+#define GW3761_DIR_SEND				1	//终端发出
 
 
 //AFN

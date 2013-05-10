@@ -6,9 +6,6 @@
 //固定帧头长度
 #define GW3761_FIXHEADER_SIZE		6
 
-//传送方向定义
-#define GW3761_DIR_RECV				0	//主站发出
-#define GW3761_DIR_SEND				1	//终端发出
 
 
 
