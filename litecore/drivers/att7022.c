@@ -679,18 +679,20 @@ void att7022_Phase_gainCalibration(p_att7022 p, p_att7022_cali pCali)
 //返	回: 
 //功	能: 相位校正(0.5L处校正), 此处分两段校正
 //------------------------------------------------------------------------
-uint32_t att7022_PhaseCali1Seg(p_att7022 p) {
+uint32_t att7022_PhaseCali1Seg(p_att7022 p)
+{
 	uint32_t phv;
 	uint_t i;
-	phv= att7022_PhaseCalibration(p,PHASE_A, 1); //7.5A处校正
+
+	phv= att7022_PhaseCalibration(p, PHASE_A, 1); //7.5A处校正
 	att7022_WriteEnable(p); //ATT7022B校正使能
-	for ( i = 0; i < 3; i++ )
+	for (i = 0; i < 3; i++)
 	{
-		att7022_WriteReg(p,ATT7022_REG_PhsregA0 + i * 5, phv);
-		att7022_WriteReg(p,ATT7022_REG_PhsregA1 + i * 5, phv);
-		att7022_WriteReg(p,ATT7022_REG_PhsregA2 + i * 5, phv);
-		att7022_WriteReg(p,ATT7022_REG_PhsregA3 + i * 5, phv);
-		att7022_WriteReg(p,ATT7022_REG_PhsregA4 + i * 5, phv);
+		att7022_WriteReg(p, ATT7022_REG_PhsregA0 + i * 5, phv);
+		att7022_WriteReg(p, ATT7022_REG_PhsregA1 + i * 5, phv);
+		att7022_WriteReg(p, ATT7022_REG_PhsregA2 + i * 5, phv);
+		att7022_WriteReg(p, ATT7022_REG_PhsregA3 + i * 5, phv);
+		att7022_WriteReg(p, ATT7022_REG_PhsregA4 + i * 5, phv);
 	}
 	att7022_WriteDisable(p); //ATT7022B校正禁止
 	return phv;
@@ -704,32 +706,34 @@ uint32_t att7022_PhaseCali1Seg(p_att7022 p) {
 //返	回: phase_v - 返回计算出的相位校正值(长整形) 
 //功	能:相位校正, 此处分两段校正
 //------------------------------------------------------------------------
-uint32_t att7022_PhaseCalibration(p_att7022 p,uint8_t nPhase, uint8_t nCali) {
+uint32_t att7022_PhaseCalibration(p_att7022 p, uint8_t nPhase, uint8_t nCali)
+{
 	uint32_t i;
 	float fPhase = 0;
+
 	switch (nCali) {
-		case 0:
-			att7022_WriteEnable(p);
-			for (i = 0; i < 5; i++) {
-				//清除所有校正寄存器值
-				att7022_WriteReg(p,ATT7022_REG_PhsregA0 + (nPhase *5) + i, 0);
-			}
-			for (i = 0; i < 4; i++) {
-				//清除寄存器值
-				att7022_WriteReg(p,ATT7022_REG_Irgion1 + i, 0);
-			}
-			att7022_WriteDisable(p);
-			sys_Delay(50000);
-			fPhase = att7022_FPhaseCaliData(p,nPhase, nCali);
-			break;
-		case 1:
-		case 2:
-		case 3:
-		case 4:
-			fPhase = att7022_FPhaseCaliData(p,nPhase, nCali);
-			break;
-		default:
-			break;
+	case 0:
+		att7022_WriteEnable(p);
+		for (i = 0; i < 5; i++) {
+			//清除所有校正寄存器值
+			att7022_WriteReg(p,ATT7022_REG_PhsregA0 + (nPhase *5) + i, 0);
+		}
+		for (i = 0; i < 4; i++) {
+			//清除寄存器值
+			att7022_WriteReg(p,ATT7022_REG_Irgion1 + i, 0);
+		}
+		att7022_WriteDisable(p);
+		sys_Delay(50000);
+		fPhase = att7022_FPhaseCaliData(p,nPhase, nCali);
+		break;
+	case 1:
+	case 2:
+	case 3:
+	case 4:
+		fPhase = att7022_FPhaseCaliData(p,nPhase, nCali);
+		break;
+	default:
+		break;
 	}
 	return (uint32_t)fPhase;
 }
@@ -746,25 +750,20 @@ uint32_t att7022_PhaseCalibration(p_att7022 p,uint8_t nPhase, uint8_t nCali) {
 float att7022_FPhaseCaliData(p_att7022 p,uint8_t nPhase, uint8_t cali_point) 
 {
 	float phase_v = 0, att7022_pvalue, seta, err, pcali_value, eck;
-	if (nPhase > 2) {
-		return __FALSE;
-	}
+
 	eck = 3200.0f / (float)ATT7022_CONST_EC; //脉冲输出系数
 	pcali_value = PCALI_CONST * 0.5; //phiconst_tab[cali_point];				//载入校正点的有功功率常数
 	att7022_pvalue = att7022_ReadReg(p,ATT7022_REG_PA + nPhase); //读取有功功率值
-	if (att7022_pvalue > MAX_VALUE1) {
+	if (att7022_pvalue > MAX_VALUE1)
 		att7022_pvalue -= MAX_VALUE2;
-	}
 	att7022_pvalue = (att7022_pvalue / 256) *eck; //转换成工程量
 	err = (att7022_pvalue - pcali_value) / pcali_value; //误差计算
 	if (err) {
 		seta = acosf((1 + err) * 0.5);
 		seta -= PI / 3;
-		if (seta < 0) {
-			phase_v = MAX_VALUE2 + seta * MAX_VALUE1;
-		} else {
-			phase_v = seta * MAX_VALUE1;
-		}
+		phase_v = seta * MAX_VALUE1;
+		if (seta < 0)
+			phase_v = MAX_VALUE2 + phase_v;
 	}
 	return phase_v;
 }
