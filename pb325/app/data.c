@@ -71,7 +71,7 @@ void data_MinWrite(const uint8_t *pTime, t_data_min *pData)
 	spif_Read(nAdr, aBuf, 3);
 	if (memcmp(aBuf, &pTime[2], 3)) {
 		//时间错,初始化
-		spif_Fill(nAdr, nAdr + ECL_DATA_MIN_ALLSIZE, GW3761_DATA_INVALID);
+		spif_Fill(nAdr, GW3761_DATA_INVALID, ECL_DATA_MIN_ALLSIZE);
 		spif_Write(nAdr, &pTime[2], 3);
 	}
 	nAdr += (ECL_DATA_MIN_HEADER + (bcd2bin8(pTime[1]) * 60 + bcd2bin8(pTime[0])) * ECL_DATA_MIN_MSIZE);
@@ -108,7 +108,7 @@ void data_QuarterWrite(const uint8_t *pTime, t_data_quarter *pData)
 	spif_Read(nAdr, aBuf, 3);
 	if (memcmp(aBuf, &pTime[2], 3)) {
 		//时间错,初始化
-		spif_Fill(nAdr, nAdr + ECL_DATA_QUAR_ALLSIZE, GW3761_DATA_INVALID);
+		spif_Fill(nAdr, GW3761_DATA_INVALID, ECL_DATA_QUAR_ALLSIZE);
 		spif_Write(nAdr, &pTime[2], 3);
 	}
 	nAdr += (ECL_DATA_QUAR_HEADER + (bcd2bin8(pTime[1]) * 4 + bcd2bin8(pTime[0]) / 15) * ECL_DATA_QUAR_MSIZE);
