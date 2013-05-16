@@ -122,3 +122,24 @@ uint64_t bcd2bin64(uint64_t x)
 }
 
 
+//-------------------------------------------------------------------------
+//
+//-------------------------------------------------------------------------
+int isnotbcd(const void *pAdr, uint_t nLen)
+{
+	uint_t i;
+	uint8_t *p, nTemp;
+
+	p = (uint8_t *)pAdr;
+	for (i = 0; i < nLen; i++) {
+		nTemp = bcd2bin8(p[i]);
+		nTemp = bin2bcd8(nTemp);
+		if (nTemp != p[i])
+			break;
+	}
+	if (i < nLen)
+		return 1;
+	return 0;
+}
+
+

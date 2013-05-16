@@ -56,7 +56,7 @@ void spif_SecRead(uint_t nSec, void *pData);
 void spif_SecWrite(uint_t nSec, const void *pBuf);
 void spif_Read(uint_t nAdr, void *pData, uint_t nLen);
 void spif_Write(uint_t nAdr, const void *pBuf, uint_t nLen);
-void spif_Fill(uint_t nAdr, uint_t nEnd, uint_t nVal);
+void spif_Fill(uint_t nAdr, uint_t nVal, uint_t nLen);
 
 void flash_Flush(uint_t nDelay);
 

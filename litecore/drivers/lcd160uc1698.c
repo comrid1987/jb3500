@@ -187,7 +187,7 @@ void lcd_SetPM(uint8_t nPm)
 	if (nPm)
 		lcd_nPm = nPm;
 	lcd_WriteCmd(UC1698_SetPM);
-	lcd_WriteCmd(lcd_nPm);	
+	lcd_WriteCmd(lcd_nPm);
 }
 
 

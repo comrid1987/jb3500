@@ -18,7 +18,8 @@ extern "C" {
 #define GW3762_AFN_ROUTE_FETCH		0x10
 #define GW3762_AFN_ROUTE_SET		0x11
 #define GW3762_AFN_ROUTE_CTRL		0x12
-#define GW3762_AFN_TRANSMIT_ROUTE	0x13
+#define GW3762_AFN_ROUTE_TRANSMIT	0x13
+#define GW3762_AFN_ROUTE_REQUEST	0x14
 #define GW3762_AFN_AUTOREPORT		0xF0
 
 
@@ -132,6 +133,7 @@ sys_res gw3762_Broadcast(t_gw3762 *p, const void *pAdr, const void *pData, uint_
 sys_res gw3762_MeterRead(t_gw3762 *p, const void *pAdr, uint_t nRelay, const void *pRtAdr, const void *pData, uint_t nLen);
 sys_res gw3762_MeterRT(t_gw3762 *p, const void *pAdr, const void *pData, uint_t nLen);
 
+sys_res gw3762_Confirm(t_gw3762 *p, uint_t nFlag, uint_t nTmo);
 sys_res gw3762_HwReset(t_gw3762 *p, uint_t nTmo);
 sys_res gw3762_ParaReset(t_gw3762 *p, uint_t nTmo);
 sys_res gw3762_InfoGet(t_gw3762 *p, uint_t nTmo);
@@ -143,6 +145,9 @@ sys_res gw3762_SubAdrAdd(t_gw3762 *p, uint_t nSn, const void *pAdr, uint_t nPrtl
 sys_res gw3762_SubAdrDelete(t_gw3762 *p, const void *pAdr, uint_t nTmo);
 sys_res gw3762_ModeSet(t_gw3762 *p, uint_t nMode, uint_t nTmo);
 sys_res gw3762_RtCtrl(t_gw3762 *p, uint_t nDT, uint_t nTmo);
+sys_res gw3762_RequestAnswer(t_gw3762 *p, uint_t nPhase, const void *pAdr, uint_t nIsRead, const void *pData, uint_t nLen);
+
+sys_res gw3762_Transmit(t_gw3762 *p, buf b, const void *pData, uint_t nLen);
 
 sys_res gw3762_Es_ModeGet(t_gw3762 *p, uint_t *pMode, uint_t nTmo);
 sys_res gw3762_Es_ModeSet(t_gw3762 *p, uint_t nMode, uint_t nTmo);

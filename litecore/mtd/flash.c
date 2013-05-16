@@ -382,13 +382,12 @@ void spif_Write(uint_t nAdr, const void *pBuf, uint_t nLen)
 	flash_Unlock();
 }
 
-void spif_Fill(uint_t nAdr, uint_t nEnd, uint_t nVal)
+void spif_Fill(uint_t nAdr, uint_t nVal, uint_t nLen)
 {
-	uint_t nLen, nFill;
+	uint_t nFill;
 	uint8_t aBuf[64];
 
 	memset(aBuf, nVal, sizeof(aBuf));
-	nLen = nEnd - nAdr;
 	for (; nLen; nLen -= nFill, nAdr += nFill) {
 		nFill = MIN(sizeof(aBuf), nLen);
 		spif_Write(nAdr, aBuf, nFill);

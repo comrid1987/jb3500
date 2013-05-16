@@ -494,7 +494,7 @@ sys_res att7022_GetHarmonic(p_att7022 p, uint_t Ch, sint16_t *pbuf)
 //------------------------------------------------------------------------ 
 uint32_t att7022_UgainCalibration(p_att7022 p, uint8_t nPhase )
 {
-	float urms, k, gain;
+	float urms, k, gain = 0;
 
 	//校表使能  
 	att7022_WriteEnable(p);
@@ -538,7 +538,7 @@ uint32_t att7022_UgainCalibration(p_att7022 p, uint8_t nPhase )
 //------------------------------------------------------------------------ 
 uint32_t att7022_IgainCalibration(p_att7022 p, uint32_t nPhase)
 {
-	float irms, k, gain;
+	float irms, k, gain = 0;
 
 	//校表使能  
 	att7022_WriteEnable(p); 
@@ -581,7 +581,7 @@ uint32_t att7022_IgainCalibration(p_att7022 p, uint32_t nPhase)
 //------------------------------------------------------------------------
 uint32_t att7022_PgainCalibration(p_att7022 p, uint8_t nPhase)
 {
-	float pvalue, err, eck, pgain;
+	float pvalue, err, eck, pgain = 0;
 
 	//脉冲输出系数
 	eck = 3200.0f / (float)ATT7022_CONST_EC;

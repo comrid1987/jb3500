@@ -129,7 +129,7 @@ static sys_res gw3762_Transmit2Meter(t_gw3762 *p, uint_t nRoute, uint_t nAfn, ui
 
 	buf_PushData(bTx, nAfn, 1);
 	buf_PushData(bTx, nDT, 2);
-	if (nAfn == GW3762_AFN_TRANSMIT_ROUTE)
+	if (nAfn == GW3762_AFN_ROUTE_TRANSMIT)
 		buf_PushData(bTx, 0x0002, 2);
 	else
 		buf_PushData(bTx, 0x02, 1);
@@ -171,6 +171,9 @@ int gw3762_IsNeedRt(t_gw3762 *p)
 	}
 }
 
+
+
+
 int gw3762_IsNotSync(t_gw3762 *p)
 {
 
@@ -210,6 +213,8 @@ int gw3762_GetWait(t_gw3762 *p, uint_t nRelay)
 		return 6 + nRelay * 4;
 	case GW3762_T_XC_RT:
 		return 30;
+	case GW3762_T_TOPCOM:
+		return 90;
 	default:
 		return 20;
 	}
@@ -235,10 +240,10 @@ sys_res gw3762_Analyze(t_gw3762 *p)
 				return SYS_R_ERR;
 			pH = (t_gw3762_header *)p->rbuf->p;
 			//报文头检查
-			if (pH->sc1 == 0x68)
+			if (pH->sc1 == 0x68) {
 				if (pH->c.dir == GW3762_CODE_D_2TERMINAL)
-					if (pH->c.prm == GW3762_CODE_P_ACK)
-						break;
+					break;
+			}
 		}
 		//不足长度
 		if (p->rbuf->len < pH->len)
@@ -274,14 +279,14 @@ sys_res gw3762_Analyze(t_gw3762 *p)
 
 sys_res gw3762_Broadcast(t_gw3762 *p, const void *pAdr, const void *pData, uint_t nLen)
 {
-	uint_t nAfn, nDT, nRoute;
+	uint_t nAfn, nDT, nRoute, nTmo;
 
 	nRoute = 1;
 	switch (p->type) {
 	case GW3762_T_XC_GW:
 		nRoute = 0;
 	case GW3762_T_XC_RT:
-		nAfn = GW3762_AFN_TRANSMIT_ROUTE;
+		nAfn = GW3762_AFN_ROUTE_TRANSMIT;
 		nDT = 0x0001;
 		break;
 	case GW3762_T_ES_38:
@@ -291,7 +296,18 @@ sys_res gw3762_Broadcast(t_gw3762 *p, const void *pAdr, const void *pData, uint_
 		nDT = 0x0004;
 		break;
 	}
-	return gw3762_Transmit2Meter(p, nRoute, nAfn, nDT, pAdr, 0, NULL, pData, nLen);;
+	gw3762_Transmit2Meter(p, nRoute, nAfn, nDT, pAdr, 0, NULL, pData, nLen);;
+	for (nTmo = 30000 / OS_TICK_MS; nTmo; nTmo--) {
+		if (gw3762_Analyze(p) == SYS_R_OK)
+			break;
+	}
+	if (nTmo == 0)
+		return SYS_R_TMO;
+	if (p->rmsg.afn != GW3762_AFN_CONFIRM)
+		return SYS_R_ERR;
+	if (p->rmsg.fn != 0x0001)
+		return SYS_R_ERR;
+	return SYS_R_OK;
 }
 
 sys_res gw3762_MeterRead(t_gw3762 *p, const void *pAdr, uint_t nRelay, const void *pRtAdr, const void *pData, uint_t nLen)
@@ -304,7 +320,7 @@ sys_res gw3762_MeterRead(t_gw3762 *p, const void *pAdr, uint_t nRelay, const voi
 		nAfn = GW3762_AFN_TRANSMIT;
 		break;
 	default:
-		nAfn = GW3762_AFN_TRANSMIT_ROUTE;
+		nAfn = GW3762_AFN_ROUTE_TRANSMIT;
 		break;
 	}
 	return gw3762_Transmit2Meter(p, 0, nAfn, 0x0001, pAdr, nRelay, pRtAdr, pData, nLen);
@@ -317,8 +333,37 @@ sys_res gw3762_MeterRT(t_gw3762 *p, const void *pAdr, const void *pData, uint_t 
 	if (p->type == GW3762_T_RISECOM)
 		nAfn = GW3762_AFN_TRANSMIT;
 	else
-		nAfn = GW3762_AFN_TRANSMIT_ROUTE;
+		nAfn = GW3762_AFN_ROUTE_TRANSMIT;
 	return gw3762_Transmit2Meter(p, 1, nAfn, 0x0001, pAdr, 0, NULL, pData, nLen);
+}
+
+
+//-------------------------------------------------------------------------------------
+// 确认
+//-------------------------------------------------------------------------------------
+sys_res gw3762_Confirm(t_gw3762 *p, uint_t nFlag, uint_t nTmo)
+{
+	buf bTx = {0};
+	t_gw3762_rdown xR = {0};
+	
+	xR.route = GW3762_RZONE_R_TRANS;
+
+	buf_PushData(bTx, 0x01000068, 4);
+	buf_Push(bTx, &xR, sizeof(xR));
+
+	buf_PushData(bTx, GW3762_AFN_CONFIRM, 1);
+	buf_PushData(bTx, 0x0001, 2);
+	buf_PushData(bTx, nFlag, 2);
+	buf_PushData(bTx, nTmo, 2);
+	buf_PushData(bTx, cs8(&bTx->p[1 + GW3762_HEADER_L_SIZE], bTx->len - (1 + GW3762_HEADER_L_SIZE)) | 0x1600, 2);
+	memcpy(&bTx->p[1], &bTx->len, GW3762_HEADER_L_SIZE);
+
+	gw3762_DbgOut(1, bTx->p, bTx->len);
+
+	chl_Send(p->chl, bTx->p, bTx->len);
+	buf_Release(bTx);
+
+	return SYS_R_OK;
 }
 
 
@@ -469,8 +514,6 @@ sys_res gw3762_StateGet(t_gw3762 *p, uint_t nTmo)
 		return SYS_R_ERR;
 	if (p->rmsg.fn != 0x0008)
 		return SYS_R_ERR;
-	if ((p->rmsg.data->p[0] & 1) == 0)
-		return SYS_R_ERR;
 	return SYS_R_OK;
 }
 
@@ -547,6 +590,7 @@ sys_res gw3762_ModeSet(t_gw3762 *p, uint_t nMode, uint_t nTmo)
 		return SYS_R_ERR;
 	return SYS_R_OK;
 }
+
 //-------------------------------------------------------------------------------------
 // 路由控制
 //-------------------------------------------------------------------------------------
@@ -564,6 +608,63 @@ sys_res gw3762_RtCtrl(t_gw3762 *p, uint_t nDT, uint_t nTmo)
 		return SYS_R_ERR;
 	if (p->rmsg.fn != 0x0001)
 		return SYS_R_ERR;
+	return SYS_R_OK;
+}
+
+//-------------------------------------------------------------------------------------
+// 路由请求应答
+//-------------------------------------------------------------------------------------
+sys_res gw3762_RequestAnswer(t_gw3762 *p, uint_t nPhase, const void *pAdr, uint_t nIsRead, const void *pData, uint_t nLen)
+{
+	buf bTx = {0};
+	t_gw3762_rdown xR = {0};
+
+	xR.module = GW3762_RZONE_M_2METER;
+	xR.chlid = nPhase;
+	xR.acklen = 40;
+
+	buf_PushData(bTx, 0x01000068, 4);
+	buf_Push(bTx, &xR, sizeof(xR));
+	buf_Push(bTx, p->adr, sizeof(p->adr));
+	buf_Push(bTx, pAdr, 6);
+
+	buf_PushData(bTx, GW3762_AFN_ROUTE_REQUEST, 1);
+	buf_PushData(bTx, 0x0001, 2);
+	if (nIsRead) {
+		buf_PushData(bTx, 0x02, 1);
+		buf_PushData(bTx, nLen, 1);
+	}
+	buf_Push(bTx, pData, nLen);
+	buf_PushData(bTx, 0, 1);
+	buf_PushData(bTx, cs8(&bTx->p[1 + GW3762_HEADER_L_SIZE], bTx->len - (1 + GW3762_HEADER_L_SIZE)) | 0x1600, 2);
+	memcpy(&bTx->p[1], &bTx->len, GW3762_HEADER_L_SIZE);
+
+	gw3762_DbgOut(1, bTx->p, bTx->len);
+
+	chl_Send(p->chl, bTx->p, bTx->len);
+	buf_Release(bTx);
+	
+	return SYS_R_OK;
+}
+
+//-------------------------------------------------------------------------------------
+// 透明转发
+//-------------------------------------------------------------------------------------
+sys_res gw3762_Transmit(t_gw3762 *p, buf b, const void *pData, uint_t nLen)
+{
+	uint_t nTmo;
+
+	gw3762_DbgOut(1, pData, nLen);
+
+	chl_Send(p->chl, pData, nLen);
+
+	for (nTmo = 200 / OS_TICK_MS; nTmo; nTmo--) {
+		chl_RecData(p->chl, b, OS_TICK_MS);
+	}
+	if (b->len == 0)
+		return SYS_R_ERR;		
+
+	gw3762_DbgOut(0, b->p, b->len);
 	return SYS_R_OK;
 }
 
