@@ -7,7 +7,7 @@
 uint_t gw3761_ConvertDa2DA(uint_t nDa)
 {
 
-#if GW3761_TYPE == GW3761_T_GWJC2009
+#if GW3761_TYPE < GW3761_T_GWFK2004
 	if (nDa) {
 		nDa -= 1;
 		return (((nDa >> 3) + 1) << 8) | BITMASK(nDa & 7);
@@ -51,7 +51,7 @@ uint_t gw3761_ConvertDt2Fn(uint_t nDt)
 //-------------------------------------------------------------------------
 uint_t gw3761_ConvertDa2Map(uint_t nDA, void *pData)
 {
-#if GW3761_TYPE == GW3761_T_GWJC2009
+#if GW3761_TYPE < GW3761_T_GWFK2004
 	uint16_t *p = (uint16_t *)pData;
 #else
 	uint_t i;
@@ -65,7 +65,7 @@ uint_t gw3761_ConvertDa2Map(uint_t nDA, void *pData)
 		return 1;
 	}
 	nDa -= 1;
-#if GW3761_TYPE == GW3761_T_GWJC2009
+#if GW3761_TYPE < GW3761_T_GWFK2004
 	for (j = 0; j < 8; j++) {
 		if (nDA & BITMASK(j))
 			p[nQty++] = nDa * 8 + j + 1;

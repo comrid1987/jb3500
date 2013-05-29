@@ -781,7 +781,7 @@ static void gw3761_DataSetOther(uint_t nDa, uint_t nReg, uint8_t **ppData)
 #if 0
 int gw3761_ResponseData1(buf b, u_word2 *pDu, uint_t nAfn, uint8_t **ppData)
 {
-#if GW3761_TYPE == GW3761_T_GWJC2009
+#if GW3761_TYPE < GW3761_T_GWFK2004
 	uint16_t aDa[8];
 #else
 	uint8_t aDa[64];
@@ -959,7 +959,7 @@ int gw3761_ResponseData1(buf b, u_word2 *pDu, uint_t nAfn, uint8_t **ppData)
 #if 0 //Unfinished
 int gw3761_ResponseData2(buf b, uint_t nDa, uint_t nDt, uint8_t **ppData, uint_t nIsReport)
 {
-#if GW3761_TYPE == GW3761_T_GWJC2009
+#if GW3761_TYPE < GW3761_T_GWFK2004
 	uint16_t aDa[8];
 #else
 	uint8_t aDa[64];
@@ -1100,7 +1100,7 @@ int gw3761_ResponseEventQuery(buf b, uint_t nDa, uint_t nDt, uint8_t **ppData)
 //-------------------------------------------------------------------------
 int gw3761_ResponseSetParam(p_gw3761 p)
 {
-#if GW3761_TYPE == GW3761_T_GWJC2009
+#if GW3761_TYPE < GW3761_T_GWFK2004
 	uint16_t aDa[8];
 #else
 	uint8_t aDa[64];
