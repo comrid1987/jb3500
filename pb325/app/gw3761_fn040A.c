@@ -339,7 +339,7 @@ static int gw3761_Afn0A_F201(buf b)
 //External Functions
 int gw3761_ResponseSetParam(p_gw3761 p)
 {
-#if GW3761_TYPE == GW3761_T_GWJC2009
+#if GW3761_TYPE < GW3761_T_GWFK2004
 	uint16_t aDa[8];
 #else
 	uint8_t aDa[64];
@@ -423,7 +423,7 @@ int gw3761_ResponseSetParam(p_gw3761 p)
 
 int gw3761_ResponseGetParam(p_gw3761 p, buf b, u_word2 *pDu, uint8_t **ppData)
 {
-#if GW3761_TYPE == GW3761_T_GWJC2009
+#if GW3761_TYPE < GW3761_T_GWFK2004
 	uint16_t aDa[8];
 #else
 	uint8_t aDa[64];

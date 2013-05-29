@@ -71,7 +71,7 @@ static void gw3761_Data2_Other(buf b, time_t tTime)
 //External Functions
 int gw3761_ResponseData2(p_gw3761 p)
 {
-#if GW3761_TYPE == GW3761_T_GWJC2009
+#if GW3761_TYPE < GW3761_T_GWFK2004
 	uint16_t aDa[8];
 #else
 	uint8_t aDa[64];

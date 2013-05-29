@@ -606,7 +606,7 @@ static int gw3761_Afn0C_F64(buf b, uint_t nDa)
 //External Functions
 int gw3761_ResponseData1(p_gw3761 p)
 {
-#if GW3761_TYPE == GW3761_T_GWJC2009
+#if GW3761_TYPE < GW3761_T_GWFK2004
 	uint16_t aDa[8];
 #else
 	uint8_t aDa[64];

@@ -17,7 +17,7 @@ const uint8_t ecl_DlqSyCmd[2][4] = {
 };
 int gw3761_ResponseCtrlCmd(p_gw3761 p, u_word2 *pDu, uint8_t **ppData)
 {
-#if GW3761_TYPE == GW3761_T_GWJC2009
+#if GW3761_TYPE < GW3761_T_GWFK2004
 	uint16_t aDa[8];
 #else
 	uint8_t aDa[64];
