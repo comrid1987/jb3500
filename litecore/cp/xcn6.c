@@ -176,7 +176,8 @@ sys_res xcn12_Meter(t_gw3762 *p, buf b, uint_t nCode, const void *pAdr, uint_t n
 	uint8_t *pH;
 
 	xcn12_Transmit2Meter(p, nCode, pAdr, nRelay, pRtAdr, pData, nLen);
-	for (nTmo = gw3762_GetWait(p, nRelay) * 1000 / OS_TICK_MS; nTmo; nTmo--) {
+	nTmo = gw3762_GetWait(p, nRelay);
+	for (nTmo *= 1000 / OS_TICK_MS; nTmo; nTmo--) {
 		if (chl_RecData(p->chl, b, OS_TICK_MS) != SYS_R_OK)
 			continue;
 		pH = dlt645_PacketAnalyze(b->p, b->len);
@@ -208,7 +209,8 @@ sys_res xcn6_MeterRead(t_gw3762 *p, buf b, const void *pAdr, uint_t nRelay, cons
 	uint_t nTmo;
 
 	xcn6_Transmit2Meter(p, 0x01, pAdr, nRelay, pRtAdr, pData, nLen);
-	for (nTmo = gw3762_GetWait(p, nRelay) * 1000 / OS_TICK_MS; nTmo; nTmo--) {
+	nTmo = gw3762_GetWait(p, nRelay);
+	for (nTmo *= 1000 / OS_TICK_MS; nTmo; nTmo--) {
 		if (xcn6_Analyze(p) != SYS_R_OK)
 			continue;
 		if (memcmp(p->rmsg.madr, pAdr, 3))
@@ -224,7 +226,8 @@ sys_res xcn6_MeterWrite(t_gw3762 *p, buf b, const void *pAdr, uint_t nRelay, con
 	uint_t nTmo;
 
 	xcn6_Transmit2Meter(p, 0x04, pAdr, nRelay, pRtAdr, pData, nLen);
-	for (nTmo = gw3762_GetWait(p, nRelay) * 1000 / OS_TICK_MS; nTmo; nTmo--) {
+	nTmo = gw3762_GetWait(p, nRelay);
+	for (nTmo *= 1000 / OS_TICK_MS; nTmo; nTmo--) {
 		if (xcn6_Analyze(p) != SYS_R_OK)
 			continue;
 		if (memcmp(p->rmsg.madr, pAdr, 3))

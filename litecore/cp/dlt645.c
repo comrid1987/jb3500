@@ -63,9 +63,9 @@ void dlt645_Packet2Buf(buf b, const void *pAdr, uint_t nC, const void *pData, ui
 	buf_PushData(b, 0x1600 | cs8(b->p, b->len), 2);
 }
 
-uint8_t *dlt645_PacketAnalyze(uint8_t *p, uint_t nLen)
+uint8_t *dlt645_PacketAnalyze(const uint8_t *p, uint_t nLen)
 {
-	uint8_t *pTemp;
+	const uint8_t *pTemp;
 	t_dlt645_header *pH;
 
 	for (; ; p++, nLen--) {
@@ -88,7 +88,7 @@ uint8_t *dlt645_PacketAnalyze(uint8_t *p, uint_t nLen)
 			continue;
 		break;
 	}
-	return p;
+	return (uint8_t *)p;
 }
 
 static const uint8_t dlt645_aFE[] = {0xFE, 0xFE, 0xFE, 0xFE};
