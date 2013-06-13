@@ -53,7 +53,7 @@ void tsk_Upcom1(void *args)
 			tTime = rtc_GetTimet();
 			if ((nCnt & 0x3F) == 0) {
 				icp_ParaRead(4, 85, TERMINAL, &xF85, sizeof(t_afn04_f85));
-#if 0
+#if 1
 				icp_ParaRead(4, 1, TERMINAL, &xF1, sizeof(t_afn04_f1));
 				if (xF1.span < 1)
 					xF1.span = 1;

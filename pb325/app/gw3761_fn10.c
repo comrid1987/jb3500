@@ -12,7 +12,7 @@ int gw3761_ResponseTransmit(p_gw3761 p, buf b, u_word2 *pDu, uint8_t **ppData)
 {
 	sys_res res;
 	int nRelay;
-	uint_t i, nPort, nBaud, nCtrl, nLen, nFn, nTemp;
+	uint_t i, nPort, nBaud, nCtrl, nLen, nFn, nTemp, nMS;
 	uint8_t *pAdr, *pTemp;
 	uint32_t nDI;
 	buf bTx = {0};
@@ -33,12 +33,16 @@ int gw3761_ResponseTransmit(p_gw3761 p, buf b, u_word2 *pDu, uint8_t **ppData)
 			buf_Push(bTx, pTemp, nLen - (pTemp - *ppData));
 			*ppData += nLen;
             nTemp = nCtrl >> 5;
+            if(nRelay & BITMASK(7))
+                nMS = (nRelay & 0x7F)* 1000;
+            else
+                nMS = (nRelay & 0x7F) * 10;
             if (2 == nTemp) {
-                res = ecl_485_RealRead(bTx, 1200, 2000);
+                res = ecl_485_RealRead(bTx, 1200, nMS);
 
             }
             else{
-                res = ecl_485_RealRead(bTx, 2400, 2000);
+                res = ecl_485_RealRead(bTx, 2400, nMS);
             }
 
 			if (res == SYS_R_OK) {
