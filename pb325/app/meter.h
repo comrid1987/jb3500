@@ -52,7 +52,6 @@ sys_res ecl_485_RealRead(buf b, uint_t nBaud, uint_t nTmo);
 
 
 
-
 #ifdef __cplusplus
 }
 #endif

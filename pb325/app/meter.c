@@ -102,7 +102,7 @@ sys_res ecl_485_RealRead(buf b, uint_t nBaud, uint_t nTmo)
 		return res;
 	
 	chl_rs232_Config(p->chl, nBaud, UART_PARI_EVEN, UART_DATA_8D, UART_STOP_1D);
-	res = dlt645_Meter(p->chl, b, 1000);
+	res = dlt645_Meter(p->chl, b, nTmo);
 	ecl_485_Release();
 	return res;
 }
@@ -182,5 +182,7 @@ void tsk_Meter(void *args)
 		}
 	}
 }
+
+
 
 
