@@ -495,6 +495,7 @@ void modem_Run()
 #if MODEM_DEBUG_ENABLE
 			modem_DbgIpInfo();
 #endif
+            net_GetIpPPP(&gsmModem[MODEM_PPP_ID].aIp, &gsmModem[MODEM_PPP_ID].aMask, &gsmModem[MODEM_PPP_ID].aGateway);
 			p->ste = MODEM_S_ONLINE;
 			p->cnt = 0;
 			p->tmo = 0;
@@ -584,6 +585,23 @@ void modem_Refresh()
 }
 
 
+void modem_GetIpPPP(uint8_t *pIP)
+{
+    uint8_t i;
+    for(i = 0; i < 4; i++)
+    {
+       *pIP++ = gsmModem[MODEM_PPP_ID].aIp[i];
+    }
+
+    for(i = 0; i < 4; i++)
+    {
+       *pIP++ = gsmModem[MODEM_PPP_ID].aMask[i];
+    }
+    for(i = 0; i < 4; i++)
+    {
+       *pIP++ = gsmModem[MODEM_PPP_ID].aMask[i];
+    }
+}
 
 #endif
 
