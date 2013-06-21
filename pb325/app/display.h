@@ -10,17 +10,17 @@ extern "C" {
 
 
 
-#define LCD_CLEAR         0x01           // Clears entire LCD.
-#define LCD_DISPLAY_ON   0x0C           // Display ON.
-#define LCD_DISPLAY_OFF  0x08           // Display OFF.
-#define MAX_DIGITS    8
+#define LCD_CLEAR           0x01           // Clears entire LCD.
+#define LCD_DISPLAY_ON      0x0C           // Display ON.
+#define LCD_DISPLAY_OFF     0x08           // Display OFF.
+#define MAX_DIGITS          8
 
 #ifndef TRUE
-#define TRUE  1
+#define TRUE    1
 #endif
 
 #ifndef FALSE
-#define FALSE  0
+#define FALSE   0
 #endif
 
 enum LCD_BIAS { BIAS_3rd_4_STATES, BIAS_3rd_3_STATES,

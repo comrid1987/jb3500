@@ -162,7 +162,7 @@ static void Display_Addr(uint16_t addr_4)
 	}
 }
 
-static void Display_BCD_Addr(uint32_t addr_5)
+static void Display_BCD_Addr (uint32_t addr_5)
 {
 	uint8_t tmp[5];
 	uint_t i;
@@ -180,7 +180,13 @@ static void Display_BCD_Addr(uint32_t addr_5)
 		ht1621_Write(i, disp_tblHex[tmp[i]]);
 }
 
-static void disp_Handle(uint_t nSel, uint_t mode)
+static void disp_LastNum (uint8_t Serial_Num )
+{
+    ht1621_Write (iDIGIT0, BLANK);
+    ht1621_Write (iDIGIT0, disp_tblHex[Serial_Num]);
+}
+
+static void disp_Handle (uint_t nSel, uint_t mode)
 {
 	int nTemp;
 	t_afn04_f85 xF85;
@@ -235,9 +241,13 @@ static void disp_Handle(uint_t nSel, uint_t mode)
 #endif
     if(0 < mode){
         icp_ParaRead(4, 3, TERMINAL, &xF3, sizeof(t_afn04_f3));
-        if (nSel > VER)
-            nSel = 0;
-        switch (nSel) {
+        nTemp = nSel;
+        if (nTemp > 16)
+            nTemp = 0;
+        if (nTemp < 0)
+            nTemp = 15;
+        disp_LastNum (nTemp);
+        switch (nTemp) {
         case Master_IP0:
             Display_Number(xF3.ip1[0],8,3);
             break;
