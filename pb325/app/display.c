@@ -185,12 +185,15 @@ static void disp_Handle(uint_t nSel, uint_t mode)
 	int nTemp;
 	t_afn04_f85 xF85;
     t_afn04_f3 xF3;
+	t_afn04_f1 xF1;    
 	t_acm_rtdata *pD = &acm_rtd;
+    uint8_t nTempIP[12];
 
 	ht1621_Write(iDIGIT8, BLANK);
 	ht1621_Write(iDIGIT7, BLANK);
 #if MODEM_ENABLE
     nTemp = modem_GetSignal();
+    modem_GetIpPPP(nTempIP);
 	if ((nTemp > 0) && (nTemp != 99)){
 		if (nTemp < 6)
 			ht1621_Write(iConGprs, 0x01);
@@ -232,7 +235,8 @@ static void disp_Handle(uint_t nSel, uint_t mode)
 #endif
     if(0 < mode){
         icp_ParaRead(4, 3, TERMINAL, &xF3, sizeof(t_afn04_f3));
-
+        if (nSel > VER)
+            nSel = 0;
         switch (nSel) {
         case Master_IP0:
             Display_Number(xF3.ip1[0],8,3);
@@ -249,7 +253,25 @@ static void disp_Handle(uint_t nSel, uint_t mode)
         case Master_PORT:
             Display_Number(xF3.port1,8,5);
             break;
-
+        case Net_IP0:
+            Display_Number(nTempIP[0],8,3);
+            break;
+        case Net_IP1:
+            Display_Number(nTempIP[1],8,3);
+            break;
+        case Net_IP2:
+            Display_Number(nTempIP[2],8,3);
+            break;
+        case Net_IP3:
+            Display_Number(nTempIP[3],8,3);
+            break;
+        case Net_HB:
+            icp_ParaRead(4, 1, TERMINAL, &xF1, sizeof(t_afn04_f1));
+            Display_Number(xF1.span, 8, 3);
+            break;
+        case VER:
+            Display_Number(bcd2bin16(VER_SOFT), 8, 4);
+            break;
 
         default:
             break;            

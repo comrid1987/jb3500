@@ -67,7 +67,7 @@ enum Engineering_Mode
     Master_IP0, Master_IP1, Master_IP2, Master_IP3,
     Master_PORT, 
     Net_IP0, Net_IP1, Net_IP2, Net_IP3, 
-    Net_PORT,
+    Net_HB,
     VER
     
 };
