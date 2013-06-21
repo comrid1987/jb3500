@@ -62,44 +62,44 @@
 enum SEGS                 // List all segments of display in comm/segment order.
 {   
     //COM0 SEGMENTS
-    SEG_1A = COM0 | 1, SEG_1F = COM0 | 2, SEG_2A = COM0 | 3, SEG_2F = COM0 | 4,
-    SEG_3A = COM0 | 5, SEG_3F = COM0 | 19, SEG_4A = COM0 | 6, SEG_4F = COM0 | 7,
-    SEG_5A = COM0 | 8, SEG_5F = COM0 | 9, SEG_6A = COM0 |10, SEG_6F = COM0 |11,
-    SEG_7A = COM0 |12,SEG_7F = COM0 |13, SEG_8A = COM0 |26, SEG_8F = COM0 |27,
-    SEG_PHONE = COM0 |0, SEG_WARN = COM0 |14, SEG_PCNT = COM0 |15, SEG_VO = COM0 |16,
-    SEG_PF = COM0 |17, SEG_CT = COM0 |18, SEG_T9 = COM0 |20, SEG_T1 = COM0 |21, 
-    SEG_T8 = COM0 |22, SEG_UPOWER = COM0 |23, SEG_0A = COM0 |24, SEG_0F = COM0 |25,
-    SEG_I4 = COM0 |28, SEG_H3 = COM0 |29,
+    SEG_1A = COM0 | 1,      SEG_1F = COM0 | 2,      SEG_2A = COM0 | 3,      SEG_2F = COM0 | 4,
+    SEG_3A = COM0 | 5,      SEG_3F = COM0 | 19,     SEG_4A = COM0 | 6,      SEG_4F = COM0 | 7,
+    SEG_5A = COM0 | 8,      SEG_5F = COM0 | 9,      SEG_6A = COM0 |10,      SEG_6F = COM0 |11,
+    SEG_7A = COM0 |12,      SEG_7F = COM0 |13,      SEG_8A = COM0 |26,      SEG_8F = COM0 |27,
+    SEG_PHONE = COM0 |0,    SEG_WARN = COM0 |14,    SEG_PCNT = COM0 |15,    SEG_VO = COM0 |16,
+    SEG_PF = COM0 |17,      SEG_CT = COM0 |18,      SEG_T9 = COM0 |20,      SEG_T1 = COM0 |21, 
+    SEG_T8 = COM0 |22,      SEG_UPOWER = COM0 |23,  SEG_0A = COM0 |24,      SEG_0F = COM0 |25,
+    SEG_I4 = COM0 |28,      SEG_H3 = COM0 |29,
     
     //COM1 SEGMENTS
-    SEG_1B = COM1 | 1, SEG_1G = COM1 | 2, SEG_2B = COM1 | 3, SEG_2G = COM1 | 4,
-    SEG_3B = COM1 | 5, SEG_3G = COM1 | 19, SEG_4B = COM1 | 6, SEG_4G = COM1 | 7,
-    SEG_5B = COM1 | 8, SEG_5G = COM1 | 9, SEG_6B = COM1 |10, SEG_6G = COM1 |11,
-    SEG_7B = COM1 |12, SEG_7G = COM1 |13, SEG_8B = COM1 |26, SEG_8G = COM1 |27,
-    SEG_STATUS = COM1 |0, SEG_USB = COM1 |14, SEG_v = COM1 |15, SEG_CU = COM1 |16,
-    SEG_LASTMONTH = COM1 |17, SEG_LASTDAY = COM1 |18, SEG_T10 = COM1 |20, SEG_T2 = COM1 |21, 
-    SEG_T7 = COM1 |22, SEG_POWER = COM1 |23, SEG_0B = COM1 |24, SEG_0G = COM1 |25,
-    SEG_I3 = COM1 |28, SEG_H4 = COM1 |29,
+    SEG_1B = COM1 | 1,      SEG_1G = COM1 | 2,      SEG_2B = COM1 | 3,      SEG_2G = COM1 | 4,
+    SEG_3B = COM1 | 5,      SEG_3G = COM1 | 19,     SEG_4B = COM1 | 6,      SEG_4G = COM1 | 7,
+    SEG_5B = COM1 | 8,      SEG_5G = COM1 | 9,      SEG_6B = COM1 |10,      SEG_6G = COM1 |11,
+    SEG_7B = COM1 |12,      SEG_7G = COM1 |13,      SEG_8B = COM1 |26,      SEG_8G = COM1 |27,
+    SEG_STATUS = COM1 |0,   SEG_USB = COM1 |14,     SEG_v = COM1 |15,       SEG_CU = COM1 |16,
+    SEG_LASTMONTH = COM1 |17, SEG_LASTDAY = COM1 |18, SEG_T10 = COM1 |20,   SEG_T2 = COM1 |21, 
+    SEG_T7 = COM1 |22,      SEG_POWER = COM1 |23,   SEG_0B = COM1 |24,      SEG_0G = COM1 |25,
+    SEG_I3 = COM1 |28,      SEG_H4 = COM1 |29,
    
     //COM2 SEGMENTS
-    SEG_1C = COM2 | 1, SEG_1E = COM2 | 2, SEG_2C = COM2 | 3, SEG_2E = COM2 | 4,
-    SEG_3C = COM2 | 5, SEG_3E = COM2 | 19, SEG_4C = COM2 | 6, SEG_4E = COM2 | 7,
-    SEG_5C = COM2 | 8, SEG_5E = COM2 | 9, SEG_6C = COM2 |10, SEG_6E = COM2 |11,
-    SEG_7C = COM2 |12, SEG_7E = COM2 |13, SEG_8C = COM2 |26, SEG_8E = COM2 |27,
-    SEG_kvar = COM2 |0, SEG_C = COM2 |14, SEG_i = COM2 |15, SEG_ADDR = COM2 |16,
-    SEG_TODAY = COM2 |17, SEG_SUM = COM2 |18, SEG_T11 = COM2 |20, SEG_T3 = COM2 |21, 
-    SEG_T6 = COM2 |22, SEG_time = COM2 |23, SEG_0C = COM2 |24, SEG_0E = COM2 |25,
-    SEG_I2 = COM2 |28, SEG_H2 = COM2 |29,
+    SEG_1C = COM2 | 1,      SEG_1E = COM2 | 2,      SEG_2C = COM2 | 3,      SEG_2E = COM2 | 4,
+    SEG_3C = COM2 | 5,      SEG_3E = COM2 | 19,     SEG_4C = COM2 | 6,      SEG_4E = COM2 | 7,
+    SEG_5C = COM2 | 8,      SEG_5E = COM2 | 9,      SEG_6C = COM2 |10,      SEG_6E = COM2 |11,
+    SEG_7C = COM2 |12,      SEG_7E = COM2 |13,      SEG_8C = COM2 |26,      SEG_8E = COM2 |27,
+    SEG_kvar = COM2 |0,     SEG_C = COM2 |14,       SEG_i = COM2 |15,       SEG_ADDR = COM2 |16,
+    SEG_TODAY = COM2 |17,   SEG_SUM = COM2 |18,     SEG_T11 = COM2 |20,     SEG_T3 = COM2 |21, 
+    SEG_T6 = COM2 |22,      SEG_time = COM2 |23,    SEG_0C = COM2 |24,      SEG_0E = COM2 |25,
+    SEG_I2 = COM2 |28,      SEG_H2 = COM2 |29,
 
 	//COM3 SEGMENTS
-    SEG_DP1= COM3 | 1, SEG_1D = COM3 | 2, SEG_DP2= COM3 | 3, SEG_2D = COM3 | 4,
-    SEG_DP3= COM3 | 5, SEG_3D = COM3 | 19, SEG_DP4= COM3 | 6, SEG_4D = COM3 | 7,
-    SEG_DP5= COM3 | 8, SEG_5D = COM3 | 9, SEG_DP6= COM3 |10, SEG_6D = COM3 |11,
-    SEG_DP7= COM3 |12, SEG_7D = COM3 |13, SEG_DP8= COM3 |26, SEG_8D = COM3 |27,
-    SEG_KW = COM3 |0, SEG_B = COM3 |14, SEG_T13 = COM3 |15, SEG_AREA = COM3 |16,
-    SEG_MONTH = COM3 |17, SEG_A = COM3 |18, SEG_T12 = COM3 |20, SEG_T4 = COM3 |21, 
-    SEG_T5 = COM3 |22, SEG_day = COM3 |23, SEG_0D = COM3 |25,
-    SEG_I1 = COM3 |28, SEG_H1 = COM3 |29
+    SEG_DP1= COM3 | 1,      SEG_1D = COM3 | 2,      SEG_DP2= COM3 | 3,      SEG_2D = COM3 | 4,
+    SEG_DP3= COM3 | 5,      SEG_3D = COM3 | 19,     SEG_DP4= COM3 | 6,      SEG_4D = COM3 | 7,
+    SEG_DP5= COM3 | 8,      SEG_5D = COM3 | 9,      SEG_DP6= COM3 |10,      SEG_6D = COM3 |11,
+    SEG_DP7= COM3 |12,      SEG_7D = COM3 |13,      SEG_DP8= COM3 |26,      SEG_8D = COM3 |27,
+    SEG_KW = COM3 |0,       SEG_B = COM3 |14,       SEG_T13 = COM3 |15,     SEG_AREA = COM3 |16,
+    SEG_MONTH = COM3 |17,   SEG_A = COM3 |18,       SEG_T12 = COM3 |20,     SEG_T4 = COM3 |21, 
+    SEG_T5 = COM3 |22,      SEG_day = COM3 |23,     SEG_0D = COM3 |25,
+    SEG_I1 = COM3 |28,      SEG_H1 = COM3 |29
 };
 
 
@@ -417,12 +417,12 @@ void ht1621_Write(uint_t nIcon, uint_t nMask)
 	const uint8_t *seg;
 	uint_t i;
 
-	seg = icons[nIcon];	//要显示的第seg个数字
+	seg = icons[nIcon];	        //要显示的第seg个数字
 	for (i = 0; i < num_segs[nIcon]; i++, seg++) {		//笔画数
 		if (nMask & BITMASK(i))//wei:取mask的最低位，为1表示显示该段
 			ht1621_DisSection(*seg);    // Activate segment.
-		else			//为0时表示该段不显示，故清显示
-			ht1621_UnDisSection(*seg);   // DeActivate segment.
+		else			        //为0时表示该段不显示，故清显示
+			ht1621_UnDisSection(*seg);                  // DeActivate segment.
 	}
 }
 
