@@ -24,7 +24,7 @@ static t_dev_i2c dev_I2c[BSP_I2C_QTY];
 //-------------------------------------------------------------------------
 p_dev_i2c i2c_Get(uint_t nId, int nTmo)
 {
-	p_dev_i2c p = &dev_I2c[nId];
+    p_dev_i2c p = &dev_I2c[nId];
 
 	if (dev_Get(p->parent, nTmo) != SYS_R_OK)
 		return NULL;

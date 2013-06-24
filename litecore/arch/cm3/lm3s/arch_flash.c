@@ -47,10 +47,10 @@ sys_res arch_IntfErase(adr_t nAdr)
 sys_res arch_IntfProgram(adr_t nAdr, const void *pData, uint_t nLen)
 {
 	adr_t aEnd;
-	uint32_t *p;
+	__packed uint32_t *p;
 
 	lm3s_intf_Lock();
-	p = (uint32_t *)pData;
+	p = (__packed uint32_t *)pData;
 	aEnd = nAdr + nLen;
 	for (; nAdr < aEnd; nAdr += 4) {
 		while (__raw_readl(FLASH_FMC) & FLASH_FMC_WRITE);
