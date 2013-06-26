@@ -10,33 +10,33 @@ extern "C" {
 #include "data.h"
 
 //Public Defines
-#define ACM_MSAVE_VOL		0
-#define ACM_MSAVE_CUR		6
-#define ACM_MSAVE_PP		18
-#define ACM_MSAVE_PQ		30
-#define ACM_MSAVE_COS		42
+#define ACM_MSAVE_VOL       0
+#define ACM_MSAVE_CUR       6
+#define ACM_MSAVE_PP        18
+#define ACM_MSAVE_PQ        30
+#define ACM_MSAVE_COS       42
 
 
 
 //Public Typedefs
 typedef struct {
-	float	freq;	//
-	float	u[3];	//
-	float	i[4];	//
-	float	pp[4];	//
-	float	pq[4];	//
-	float	ui[4];	//
-	float	cos[4];	//
-	float	ua[3];	//电压角度
-	float	ia[3];	//电流角度
-	float	ub;		//电压不平衡度
-	float	ib;		//电流不平衡度
-	float	uib;	//负载不平衡度
+    float   freq;   //
+    float   u[3];   //
+    float   i[4];   //
+    float   pp[4];  //
+    float   pq[4];  //
+    float   ui[4];  //
+    float   cos[4]; //
+    float   ua[3];  //电压角度
+    float   ia[3];  //电流角度
+    float   ub;     //电压不平衡度
+    float   ib;     //电流不平衡度
+    float   uib;    //负载不平衡度
 }t_acm_rtdata;
 
 typedef struct {
-	float	base;
-	float	xbrate[11];
+    float   base;
+    float   xbrate[11];
 }t_acm_xbdata;
 
 

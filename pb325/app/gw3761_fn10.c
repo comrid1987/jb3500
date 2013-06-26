@@ -59,8 +59,7 @@ int gw3761_ResponseTransmit(p_gw3761 p, buf b, u_word2 *pDu, uint8_t **ppData)
             nTemp = nCtrl >> 5;
             if (nRelay & BITMASK(7))
                 nMS = (nRelay & 0x7F) * 1000;
-            else
-                nMS = (nRelay & 0x7F) * 10;
+            nMS = (nRelay & 0x7F) * 10;
             switch (nTemp) {
             case nBaud_300:     
                 Temp_Baud = 300;
@@ -71,22 +70,22 @@ int gw3761_ResponseTransmit(p_gw3761 p, buf b, u_word2 *pDu, uint8_t **ppData)
               case nBaud_1200:      
                 Temp_Baud = 1200;
                 break;             
-                case nBaud_2400:        
+            case nBaud_2400:        
                 Temp_Baud = 2400;
                 break;             
-                case nBaud_4800:        
+            case nBaud_4800:        
                 Temp_Baud = 4800;
                 break;             
-                case nBaud_7200:        
+            case nBaud_7200:        
                 Temp_Baud = 7200;
                 break;             
-                case nBaud_9600:        
+            case nBaud_9600:        
                 Temp_Baud = 9600;
                 break;             
-                case nBaud_19200:       
+            case nBaud_19200:       
                 Temp_Baud = 19200;
                 break;          
-                default:
+            default:
                 break;  
             }
             res = AFN10_01_Passthrough(bTx, Temp_Baud, nMS);

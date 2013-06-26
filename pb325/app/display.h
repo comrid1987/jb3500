@@ -69,7 +69,6 @@ enum Engineering_Mode
     Net_IP0, Net_IP1, Net_IP2, Net_IP3, 
     Net_HB,
     VER
-    
 };
 
 
