@@ -3,27 +3,27 @@
 #include <lib/buffer.h>
 
 
-#define QUE_EVT_BUF_MASK            BITMASK(7)
+#define QUE_EVT_BUF_MASK			BITMASK(7)
 
-#define QUE_EVT_KEYBOARD            0x00
-#define QUE_EVT_PULSE               0x01
+#define QUE_EVT_KEYBOARD			0x00
+#define QUE_EVT_PULSE				0x01
 
-#define QUE_EVT_GDFTS_TRANS         (QUE_EVT_BUF_MASK | 0x00)
-#define QUE_EVT_GDFTS_RESPOND       (QUE_EVT_BUF_MASK | 0x01)
+#define QUE_EVT_GDFTS_TRANS			(QUE_EVT_BUF_MASK | 0x00)
+#define QUE_EVT_GDFTS_RESPOND		(QUE_EVT_BUF_MASK | 0x01)
 
-#define QUE_EVT_USER_EVT            BITMASK(5)
-#define QUE_EVT_USER_DATA           (QUE_EVT_BUF_MASK | BITMASK(6))
+#define QUE_EVT_USER_EVT			BITMASK(5)
+#define QUE_EVT_USER_DATA			(QUE_EVT_BUF_MASK | BITMASK(6))
 
 
 typedef struct {
-    uint8_t     ste;
-    uint8_t     evt;
-    uint16_t    tmo;
-    void *      dev;
-    union {
-        buf     b;
-        uint_t  val;
-    }data[1];
+	uint8_t		ste;
+	uint8_t		evt;
+	uint16_t	tmo;
+	void *		dev;
+	union {
+		buf		b;
+		uint_t	val;
+	}data[1];
 }t_os_que, *os_que;
 
 
