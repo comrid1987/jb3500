@@ -17,41 +17,41 @@
 //-------------------------------------------------------------------------
 //General External Functions
 //-------------------------------------------------------------------------
-#define GETBIT(n, bit)  		(((n) >> (bit)) & 1)
+#define GETBIT(n, bit)          (((n) >> (bit)) & 1)
 
-#define BITMASK(bit)			(1 << (bit))
-#define BITANTI(bit)			(~(BITMASK(bit)))
+#define BITMASK(bit)            (1 << (bit))
+#define BITANTI(bit)            (~(BITMASK(bit)))
 
-#define SETBIT(n, bit)			((n) |= BITMASK(bit))
-#define CLRBIT(n, bit)			((n) &= BITANTI(bit))
+#define SETBIT(n, bit)          ((n) |= BITMASK(bit))
+#define CLRBIT(n, bit)          ((n) &= BITANTI(bit))
 
-#define MAX(a, b)				(((a) > (b)) ? (a) : (b))
-#define MIN(a, b)				(((a) < (b)) ? (a) : (b))
+#define MAX(a, b)               (((a) > (b)) ? (a) : (b))
+#define MIN(a, b)               (((a) < (b)) ? (a) : (b))
 
-#define ALIGN2(n)				(((n) + 1) & ~1)
-#define ALIGN4(n)				(((n) + 3) & ~3)
+#define ALIGN2(n)               (((n) + 1) & ~1)
+#define ALIGN4(n)               (((n) + 3) & ~3)
 
-#define FPOS(type, field)		((uint_t)&((type *)0)->field)
-#define FSIZ(type, field)		(sizeof(((type *)0)->field))
+#define FPOS(type, field)       ((uint_t)&((type *)0)->field)
+#define FSIZ(type, field)       (sizeof(((type *)0)->field))
 
-#define ARR_SIZE(a)				(sizeof(a) / sizeof(a[0]))
-#define ARR_ENDADR(a)			(&a[ARR_SIZE(a)])
+#define ARR_SIZE(a)             (sizeof(a) / sizeof(a[0]))
+#define ARR_ENDADR(a)           (&a[ARR_SIZE(a)])
 
-#define bzero(a, size)			memset(a, 0, size)
+#define bzero(a, size)          memset(a, 0, size)
 
 typedef struct {
-	uint8_t		ip[4];
-	uint16_t	port;
+    uint8_t     ip[4];
+    uint16_t    port;
 }t_ip4_adr;
 
 typedef union {
-	uint32_t	n;
-	uint8_t		byte[4];
+    uint32_t    n;
+    uint8_t     byte[4];
 }u_byte4;
 
 typedef union {
-	uint32_t	n;
-	uint16_t	word[2];
+    uint32_t    n;
+    uint16_t    word[2];
 }u_word2;
 
 

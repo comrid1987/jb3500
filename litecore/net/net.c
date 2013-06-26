@@ -117,54 +117,54 @@
 #if TCPPS_DEBUG_ENABLE
 void ppp_trace(int level, const char *format,...)
 {
-	va_list args;
+    va_list args;
 
-	if (level < 5) {
-		va_start(args, format);
-		rt_kprintf(format, args);
-		va_end(args);
-	}
+    if (level < 5) {
+        va_start(args, format);
+        rt_kprintf(format, args);
+        va_end(args);
+    }
 }
 #endif
 
 
 void net_Init()
 {
-	struct ip_addr ipaddr, netmask, gw;
+    struct ip_addr ipaddr, netmask, gw;
 #if LWIP_DHCP
- 	rt_uint32_t mscnt = 0;
+    rt_uint32_t mscnt = 0;
 #endif
 
-	tcpip_init(RT_NULL, RT_NULL);
+    tcpip_init(RT_NULL, RT_NULL);
 
 #if TCPPS_ETH_ENABLE
-	eth_system_device_init();
+    eth_system_device_init();
 #if REGISTER_ENABLE
-	///////////////Unfinished////////////////
-	reg_Get(TERMINAL, 0x0161, &ipaddr);
-	reg_Get(TERMINAL, 0x0162, &netmask);
-	reg_Get(TERMINAL, 0x0163, &gw);
-	///////////////////////////////////////
+    ///////////////Unfinished////////////////
+    reg_Get(TERMINAL, 0x0161, &ipaddr);
+    reg_Get(TERMINAL, 0x0162, &netmask);
+    reg_Get(TERMINAL, 0x0163, &gw);
+    ///////////////////////////////////////
 #else
-	IP4_ADDR(&ipaddr, 192, 168, 18, 177);
-	IP4_ADDR(&netmask, 255, 255, 255, 0);
-	IP4_ADDR(&gw, 192, 168, 18, 1);
+    IP4_ADDR(&ipaddr, 192, 168, 18, 177);
+    IP4_ADDR(&netmask, 255, 255, 255, 0);
+    IP4_ADDR(&gw, 192, 168, 18, 1);
 #endif
-	netif_set_addr(netif_default, &ipaddr, &netmask, &gw);
-	netif_set_up(netif_default);
+    netif_set_addr(netif_default, &ipaddr, &netmask, &gw);
+    netif_set_up(netif_default);
 #endif
 
 #if TCPPS_PPP_ENABLE
-	pppInit();
+    pppInit();
 #endif
 
 //#if LWIP_DHCP
 #if 0
-	/* use DHCP client */
-	dhcp_start(netif_default);
+    /* use DHCP client */
+    dhcp_start(netif_default);
 
     while (netif_default->ip_addr.addr == 0)
-	{
+    {
         rt_thread_delay(DHCP_FINE_TIMER_MSECS * RT_TICK_PER_SECOND / 1000);
 
         dhcp_fine_tmr();
@@ -175,12 +175,12 @@ void net_Init()
             mscnt = 0;
         }
     }
-	
-	rt_kprintf("Acquired IP address from DHCP server:");
-	rt_kprintf("%d.%d.%d.%d\n", netif_default->ip_addr.addr & 0xff,
-		(netif_default->ip_addr.addr>>8) & 0xff,
-		(netif_default->ip_addr.addr>>16) & 0xff, 
-		(netif_default->ip_addr.addr>>24) & 0xff);
+    
+    rt_kprintf("Acquired IP address from DHCP server:");
+    rt_kprintf("%d.%d.%d.%d\n", netif_default->ip_addr.addr & 0xff,
+        (netif_default->ip_addr.addr>>8) & 0xff,
+        (netif_default->ip_addr.addr>>16) & 0xff, 
+        (netif_default->ip_addr.addr>>24) & 0xff);
 #endif
 
 #if defined(RT_USING_FINSH) && (LWIP_STATS_DISPLAY)
@@ -195,7 +195,7 @@ void net_Handler()
 {
 
 #if TCPPS_TYPE == TCPPS_T_KEILTCP
-	rtxip_Handler(NULL);
+    rtxip_Handler(NULL);
 #endif
 }
 

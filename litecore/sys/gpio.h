@@ -77,8 +77,8 @@ void sys_GpioConf(tbl_gpio_def p);
 int sys_GpioRead(tbl_gpio_def p);
 void sys_GpioSet(tbl_gpio_def p, uint_t nHL);
 
-#define gpio_Read(n)            sys_GpioRead(gpio_node(tbl_bspGpio, n))
-#define gpio_Set(n, v)          sys_GpioSet(gpio_node(tbl_bspGpio, n), v)
+#define gpio_Read(n)    sys_GpioRead(gpio_node(tbl_bspGpio, n))
+#define gpio_Set(n, v)  sys_GpioSet(gpio_node(tbl_bspGpio, n), v)
 
 
 #ifdef __cplusplus
