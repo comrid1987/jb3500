@@ -12,9 +12,9 @@ void bat_On()
 {
 
 #if BAT_CTRL_HIGH_EN
-	sys_GpioSet(gpio_node(tbl_bspBattery, 0), 1);
+    sys_GpioSet(gpio_node(tbl_bspBattery, 0), 1);
 #else
-	sys_GpioSet(gpio_node(tbl_bspBattery, 0), 0);
+    sys_GpioSet(gpio_node(tbl_bspBattery, 0), 0);
 #endif
 }
 
@@ -22,23 +22,23 @@ void bat_Off()
 {
 
 #if BAT_CTRL_HIGH_EN
-	sys_GpioSet(gpio_node(tbl_bspBattery, 0), 0);
+    sys_GpioSet(gpio_node(tbl_bspBattery, 0), 0);
 #else
-	sys_GpioSet(gpio_node(tbl_bspBattery, 0), 1);
+    sys_GpioSet(gpio_node(tbl_bspBattery, 0), 1);
 #endif
 }
 
 int bat_IsPowerOn()
 {
 
-	return sys_GpioRead(gpio_node(tbl_bspBattery, 1));
+    return sys_GpioRead(gpio_node(tbl_bspBattery, 1));
 }
 
 #if BAT_CHECK_ENABLE
 int bat_IsBatteryOff()
 {
 
-	return sys_GpioRead(gpio_node(tbl_bspBattery, 2));
+    return sys_GpioRead(gpio_node(tbl_bspBattery, 2));
 }
 #endif
 
@@ -46,29 +46,29 @@ int bat_IsBatteryOff()
 float bat_Voltage()
 {
 
-	return bat_fV;
+    return bat_fV;
 }
 
 void bat_VolGet()
 {
-	tbl_gpio_def p = gpio_node(tbl_bspBattery, 3);
+    tbl_gpio_def p = gpio_node(tbl_bspBattery, 3);
 
-	bat_fV = arch_AdcData(p->port, p->pin) * (3.3f / 4096.0f * 1.86f);
+    bat_fV = arch_AdcData(p->port, p->pin) * (3.3f / 4096.0f * 1.86f);
 }
 #endif
 
 int bat_GetPowerOffCnt()
 {
 
-	return bat_nPowerOff;
+    return bat_nPowerOff;
 }
 
 void bat_Maintain()
 {
 
-	if (bat_IsPowerOn())
-		bat_nPowerOff = 0;
-	else
-		bat_nPowerOff += 1;
+    if (bat_IsPowerOn())
+        bat_nPowerOff = 0;
+    else
+        bat_nPowerOff += 1;
 }
 

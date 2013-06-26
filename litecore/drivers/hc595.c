@@ -1,9 +1,9 @@
 
 
-#define hc595_OE(x)             sys_GpioSet(gpio_node(tbl_bspHC595, 0), x)
-#define hc595_Clk(x)            sys_GpioSet(gpio_node(tbl_bspHC595, 1), x)
-#define hc595_RCK(x)            sys_GpioSet(gpio_node(tbl_bspHC595, 2), x)
-#define hc595_SER(x)            sys_GpioSet(gpio_node(tbl_bspHC595, 3), x)
+#define hc595_OE(x)     sys_GpioSet(gpio_node(tbl_bspHC595, 0), x)
+#define hc595_Clk(x)    sys_GpioSet(gpio_node(tbl_bspHC595, 1), x)
+#define hc595_RCK(x)    sys_GpioSet(gpio_node(tbl_bspHC595, 2), x)
+#define hc595_SER(x)    sys_GpioSet(gpio_node(tbl_bspHC595, 3), x)
 
 
 //Private Variables
