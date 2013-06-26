@@ -31,9 +31,6 @@ typedef struct {
 	uint8_t		retrytime;
 	uint8_t		retryed;
 	uint8_t		hour;
-    uint8_t     aIp[4];     //иооъ IP
-    uint8_t     aMask[4];
-    uint8_t     aGateway[4];
 	char		apn[19];
 	char		ccid[20];
 	uint16_t	cnt;
@@ -85,7 +82,7 @@ int modem_GetSignal(void);
 int modem_GetState(void);
 int modem_GetCCID(char *pCCID);
 void modem_Refresh(void);
-void modem_GetIpPPP(uint8_t *pIP);
+
 
 #endif
 

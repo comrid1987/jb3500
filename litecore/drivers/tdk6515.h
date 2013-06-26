@@ -11,8 +11,8 @@ extern "C" {
 
 //Public Typedefs
 typedef struct {
-    uint_t      ste;
-    p_dev_uart  uart;
+	uint_t		ste;
+	p_dev_uart	uart;
 }t_tdk6515;
 
 
@@ -47,23 +47,23 @@ typedef struct {
     uint_t      powerdir;   // 54.功率方向寄存器        SW
     uint_t      netstatus;  // 55.电网运行状态字        SW
     uint_t      connstatus; // 56.电气接线状态字        SW
-    uint_t      adjustsum;  // 57. 校表数据校验和寄存器 U32
-    uint_t      lasttx;     // 58. 上一次TX发送值寄存器     
-    uint_t      uab;        // 59. AB线电压有效值
-    uint_t      ubc;        // 60. BC线电压有效值
-    uint_t      uac;        // 61. AC线电压有效值
-    uint_t      ppulse;     // 62. 有功脉冲计数器
-    uint_t      qpulse;     // 63. 无功脉冲计数器
-    uint_t      pulse1;     // 64. 远动脉冲计数器1
-    uint_t      pulse2;     // 65. 远动脉冲计数器2
-    uint_t      pulse3;     // 66. 远动脉冲计数器3
-    uint_t      pulse4;     // 67. 远动脉冲计数器4
-    uint_t      pulse5;     // 68. 远动脉冲计数器5
-    uint_t      ua1min;     // 69. A相电压一分钟平均值
-    uint_t      ub1min;     // 70. B相电压一分钟平均值
-    uint_t      uc1min;     // 71. C相电压一分钟平均值
+    uint_t      adjustsum;  // 57.校表数据校验和寄存器 U32
+    uint_t      lasttx;     // 58.上一次TX发送值寄存器     
+    uint_t      uab;        // 59.AB线电压有效值
+    uint_t      ubc;        // 60.BC线电压有效值
+    uint_t      uac;        // 61.AC线电压有效值
+    uint_t      ppulse;     // 62.有功脉冲计数器
+    uint_t      qpulse;     // 63.无功脉冲计数器
+    uint_t      pulse1;     // 64.远动脉冲计数器1
+    uint_t      pulse2;     // 65.远动脉冲计数器2
+    uint_t      pulse3;     // 66.远动脉冲计数器3
+    uint_t      pulse4;     // 67.远动脉冲计数器4
+    uint_t      pulse5;     // 68.远动脉冲计数器5
+    uint_t      ua1min;     // 69.A相电压一分钟平均值
+    uint_t      ub1min;     // 70.B相电压一分钟平均值
+    uint_t      uc1min;     // 71.C相电压一分钟平均值
 }t_tdk6515_rtdata;
-    
+
 
 // =============================================================
 // 从计量IC中读取的原始值,最终转换成了浮点数和整型数

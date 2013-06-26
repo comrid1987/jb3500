@@ -10,9 +10,9 @@ extern "C" {
 
 //Public Defines
 #if SFS_RECORD_LEN == 4
-#define t_sfs_id        uint32_t
+#define t_sfs_id		uint32_t
 #elif SFS_RECORD_LEN == 8
-#define t_sfs_id        uint64_t
+#define t_sfs_id		uint64_t
 #else
 #error "SFS_RECORD_LEN must be 4 or 8!!!"
 #endif
@@ -20,10 +20,10 @@ extern "C" {
 
 
 //Public Typedefs
-typedef t_flash_dev     sfs_dev[1];
+typedef t_flash_dev		sfs_dev[1];
 
 typedef struct {
-    uint16_t len;
+	uint16_t len;
 }sfs_info[1];
 
 

@@ -10,7 +10,7 @@
 uint8_t bcd2bin8(uint8_t x)
 {
 
-    return (x & 0x0F) + (x >> 4) * 10;
+	return (x & 0x0F) + (x >> 4) * 10;
 }
 
 //-------------------------------------------------------------------------
@@ -19,7 +19,7 @@ uint8_t bcd2bin8(uint8_t x)
 uint8_t bin2bcd8(uint8_t x)
 {
 
-    return ((x / 10) << 4) + x % 10;
+	return ((x / 10) << 4) + x % 10;
 }
 
 //-------------------------------------------------------------------------
@@ -27,16 +27,16 @@ uint8_t bin2bcd8(uint8_t x)
 //-------------------------------------------------------------------------
 uint16_t bin2bcd16(uint16_t x)
 {
-    uint_t i;
-    char str[6 + 1];
-    uint8_t bcd[2 + 1];
+	uint_t i;
+	char str[6 + 1];
+	uint8_t bcd[2 + 1];
 
-    sprintf(str, "%6ld", x);
-    for (i = 0;  i < 3;  i++) {
-        bcd[2 - i] = ((str[2 * i] & 0x0F) << 4) | (str[2 * i + 1] & 0x0F);
-    }
-    i = (bcd[1] << 8) | bcd[0];
-    return i;
+	sprintf(str, "%6ld", x);
+	for (i = 0;  i < 3;  i++) {
+		bcd[2 - i] = ((str[2 * i] & 0x0F) << 4) | (str[2 * i + 1] & 0x0F);
+	}
+	i = (bcd[1] << 8) | bcd[0];
+	return i;
 }
 
 //-------------------------------------------------------------------------
@@ -44,15 +44,15 @@ uint16_t bin2bcd16(uint16_t x)
 //-------------------------------------------------------------------------
 uint16_t bcd2bin16(uint16_t x)
 {
-    uint_t i, y = 0, nTemp;
-    uint8_t *p = (uint8_t *)&x;
+	uint_t i, y = 0, nTemp;
+	uint8_t *p = (uint8_t *)&x;
 
-    for (i = 0; i < 2; i++) {
-        nTemp = p[i];
-        y += ((uint16_t)(nTemp & 0x0F) * (uint16_t)math_pow10[i * 2]);
-        y += ((uint16_t)((nTemp >> 4) & 0x0F) * (uint16_t)math_pow10[i * 2 + 1]);
-    }
-    return y;
+	for (i = 0; i < 2; i++) {
+		nTemp = p[i];
+		y += ((uint16_t)(nTemp & 0x0F) * (uint16_t)math_pow10[i * 2]);
+		y += ((uint16_t)((nTemp >> 4) & 0x0F) * (uint16_t)math_pow10[i * 2 + 1]);
+	}
+	return y;
 }
 
 //-------------------------------------------------------------------------
@@ -60,16 +60,16 @@ uint16_t bcd2bin16(uint16_t x)
 //-------------------------------------------------------------------------
 uint32_t bin2bcd32(uint32_t x)
 {
-    uint_t i;
-    char str[10 + 1];
-    uint8_t bcd[4 + 1];
+	uint_t i;
+	char str[10 + 1];
+	uint8_t bcd[4 + 1];
 
-    sprintf(str, "%10ld", x);
-    for (i = 0;  i < 5;  i++) {
-        bcd[4 - i] = ((str[2 * i] & 0x0F) << 4) | (str[2 * i + 1] & 0x0F);
-    }
-    memcpy(&i, bcd, sizeof(i));
-    return i;
+	sprintf(str, "%10ld", x);
+	for (i = 0;  i < 5;  i++) {
+		bcd[4 - i] = ((str[2 * i] & 0x0F) << 4) | (str[2 * i + 1] & 0x0F);
+	}
+	memcpy(&i, bcd, sizeof(i));
+	return i;
 }
 
 //-------------------------------------------------------------------------
@@ -77,15 +77,15 @@ uint32_t bin2bcd32(uint32_t x)
 //-------------------------------------------------------------------------
 uint32_t bcd2bin32(uint32_t x)
 {
-    uint_t i, y = 0, nTemp;
-    uint8_t *p = (uint8_t *)&x;
+	uint_t i, y = 0, nTemp;
+	uint8_t *p = (uint8_t *)&x;
 
-    for (i = 0; i < 4; i++) {
-        nTemp = p[i];
-        y += ((uint32_t)(nTemp & 0x0F) * (uint32_t)math_pow10[i * 2]);
-        y += ((uint32_t)((nTemp >> 4) & 0x0F) * (uint32_t)math_pow10[i * 2 + 1]);
-    }
-    return y;
+	for (i = 0; i < 4; i++) {
+		nTemp = p[i];
+		y += ((uint32_t)(nTemp & 0x0F) * (uint32_t)math_pow10[i * 2]);
+		y += ((uint32_t)((nTemp >> 4) & 0x0F) * (uint32_t)math_pow10[i * 2 + 1]);
+	}
+	return y;
 }
 
 //-------------------------------------------------------------------------
@@ -93,15 +93,15 @@ uint32_t bcd2bin32(uint32_t x)
 //-------------------------------------------------------------------------
 uint64_t bin2bcd64(uint64_t x)
 {
-    uint64_t i;
-    char buf[18 + 1];
-    uint8_t bcd[8 + 1];
-    
-    sprintf(buf, "%18lld", x);//////////Unfinished//////////rt_sprintf不支持ll类型
-    for (i = 0; i < 9; i++)
-        bcd[8 - i] = ((buf[2 * i] & 0x0F) << 4) | (buf[2 * i + 1] & 0x0F);   
-    memcpy(&i, bcd, sizeof(i));
-    return i;
+	uint64_t i;
+	char buf[18 + 1];
+	uint8_t bcd[8 + 1];
+	
+	sprintf(buf, "%18lld", x);//////////Unfinished//////////rt_sprintf不支持ll类型
+	for (i = 0; i < 9; i++)
+		bcd[8 - i] = ((buf[2 * i] & 0x0F) << 4) | (buf[2 * i + 1] & 0x0F);	 
+	memcpy(&i, bcd, sizeof(i));
+	return i;
 }
 
 //-------------------------------------------------------------------------
@@ -109,16 +109,16 @@ uint64_t bin2bcd64(uint64_t x)
 //-------------------------------------------------------------------------
 uint64_t bcd2bin64(uint64_t x)
 {
-    uint64_t y = 0;
-    uint_t i, nTemp;
-    uint8_t *p = (uint8_t *)&x;
+	uint64_t y = 0;
+	uint_t i, nTemp;
+	uint8_t *p = (uint8_t *)&x;
 
-    for (i = 0; i < 8; i++) {
-        nTemp = p[i];
-        y += ((uint64_t)(nTemp & 0x0F) * (uint64_t)math_pow10[i * 2]);
-        y += ((uint64_t)((nTemp >> 4) & 0x0F) * (uint64_t)math_pow10[i * 2 + 1]);
-    }
-    return y;
+	for (i = 0; i < 8; i++) {
+		nTemp = p[i];
+		y += ((uint64_t)(nTemp & 0x0F) * (uint64_t)math_pow10[i * 2]);
+		y += ((uint64_t)((nTemp >> 4) & 0x0F) * (uint64_t)math_pow10[i * 2 + 1]);
+	}
+	return y;
 }
 
 
@@ -127,19 +127,19 @@ uint64_t bcd2bin64(uint64_t x)
 //-------------------------------------------------------------------------
 int isnotbcd(const void *pAdr, uint_t nLen)
 {
-    uint_t i;
-    uint8_t *p, nTemp;
+	uint_t i;
+	uint8_t *p, nTemp;
 
-    p = (uint8_t *)pAdr;
-    for (i = 0; i < nLen; i++) {
-        nTemp = bcd2bin8(p[i]);
-        nTemp = bin2bcd8(nTemp);
-        if (nTemp != p[i])
-            break;
-    }
-    if (i < nLen)
-        return 1;
-    return 0;
+	p = (uint8_t *)pAdr;
+	for (i = 0; i < nLen; i++) {
+		nTemp = bcd2bin8(p[i]);
+		nTemp = bin2bcd8(nTemp);
+		if (nTemp != p[i])
+			break;
+	}
+	if (i < nLen)
+		return 1;
+	return 0;
 }
 
 
