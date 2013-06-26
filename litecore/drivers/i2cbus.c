@@ -8,8 +8,7 @@
 
 //Private Defines
 #define I2CBUS_LOCK_ENABLE		0
-#define I2CBUS_DELAY			50
-#define I2CBUS_IOMODE_CHANGE	1
+
 
 //Private Macros
 #if I2CBUS_LOCK_ENABLE
@@ -160,9 +159,10 @@ static sys_res _i2cbus_Write(p_dev_i2c p, uint_t nDev, const uint8_t *pData, uin
 		return SYS_R_ERR;
 	if (i2cbus_Send(p, nDev & BITANTI(0)) != SYS_R_OK)
 		return SYS_R_ERR;
-	for (; nLen; nLen--)
+	for (; nLen; nLen--) {
 		if (i2cbus_Send(p, *pData++) != SYS_R_OK)
 			return SYS_R_ERR;
+	}
 	i2cbus_Stop(p);
 	return SYS_R_OK;
 }
@@ -218,8 +218,9 @@ sys_res i2cbus_Write(p_dev_i2c p, uint_t nDev, const void *pData, uint_t nLen)
 	if (_i2cbus_Write(p, nDev, pData, nLen) != SYS_R_OK) {
 		i2cbus_Init(p);
 		res = SYS_R_ERR;
-	} else
+	} else {
 		res = SYS_R_OK;
+	}
 	i2cbus_Unlock();
 	return res;
 }

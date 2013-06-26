@@ -210,7 +210,7 @@ int gw3762_GetWait(t_gw3762 *p, uint_t nRelay)
 	case GW3762_T_XC_GW:
 		return 10 + nRelay * 4;
 	case GW3762_T_XC_GD:
-		return 10 + nRelay * 6;
+		return 15 + nRelay * 10;
 	case GW3762_T_XC_RT:
 		return 30;
 	case GW3762_T_TOPCOM:
