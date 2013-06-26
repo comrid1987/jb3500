@@ -190,13 +190,13 @@ static void disp_Handle (uint_t nSel, uint_t mode)
     t_afn04_f3 xF3;
     t_afn04_f1 xF1;    
     t_acm_rtdata *pD = &acm_rtd;
-    uint8_t nTempIP[12];
+    uint8_t aIP[12];
 
     ht1621_Write(iDIGIT8, BLANK);
     ht1621_Write(iDIGIT7, BLANK);
 #if MODEM_ENABLE
     nTemp = modem_GetSignal();
-    modem_GetIpPPP(nTempIP);
+    net_GetIpPPP(&aIP[0], &aIP[4], &aIP[8]);
     if ((nTemp > 0) && (nTemp != 99)){
         if (nTemp < 6)
             ht1621_Write(iConGprs, 0x01);
@@ -261,16 +261,16 @@ static void disp_Handle (uint_t nSel, uint_t mode)
             Display_Number(xF3.port1,8,5);
             break;
         case Net_IP0:
-            Display_Number(nTempIP[0],8,3);
+            Display_Number(aIP[0],8,3);
             break;
         case Net_IP1:
-            Display_Number(nTempIP[1],8,3);
+            Display_Number(aIP[1],8,3);
             break;
         case Net_IP2:
-            Display_Number(nTempIP[2],8,3);
+            Display_Number(aIP[2],8,3);
             break;
         case Net_IP3:
-            Display_Number(nTempIP[3],8,3);
+            Display_Number(aIP[3],8,3);
             break;
         case Net_HB:
             icp_ParaRead(4, 1, TERMINAL, &xF1, sizeof(t_afn04_f1));
