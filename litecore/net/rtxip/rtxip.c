@@ -112,7 +112,7 @@ static void net_GetIpAddr(int nType, void *pIp, void *pMask, void *pGetway)
 	memcpy(pGetway, localm[nType].DefGW, IP_ADRLEN);
 }
 
-static void net_SetIpAddr(int nType, void *pIp, void *pMask, void *pGetway)
+static void net_SetIpAddr(int nType, const void *pIp, const void *pMask, const void *pGetway)
 {
 
 	memcpy(localm[nType].IpAdr, pIp, IP_ADRLEN);
@@ -373,10 +373,10 @@ void net_GetIpETH(void *pIp, void *pMask, void *pGetway)
 }
 
 
-void net_SetIpETH(void *pIp, void *pMask, void *pGetway)
+void net_SetIpETH(const void *pIp, const void *pMask, const void *pGetway)
 {
 
-	net_GetIpAddr(NETIF_ETH, pIp, pMask, pGetway);
+	net_SetIpAddr(NETIF_ETH, pIp, pMask, pGetway);
 }
 
 

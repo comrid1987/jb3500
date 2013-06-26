@@ -28,6 +28,8 @@ int net_Send(int s, uint8_t *pBuf, uint_t nLen);
 int net_Recv(int s, char *pBuf, uint_t nMaxLen);
 
 void net_GetIpPPP(void *pIp, void *pMask, void *pGetway);
+void net_GetIpETH(void *pIp, void *pMask, void *pGetway);
+void net_SetIpETH(const void *pIp, const void *pMask, const void *pGetway);
 
 
 
