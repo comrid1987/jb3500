@@ -75,11 +75,10 @@ void modem_Run(void);
 void modem_Reset(void);
 void modem_PowerOff(void);
 void modem_Config(char *pApn, uint_t nSpan, uint_t nRetry);
-void modem_SetUser(char *pUser);
-void modem_SetPwd(char *pPwd);
 sys_res modem_IsOnline(void);
 int modem_GetSignal(void);
 int modem_GetState(void);
+int modem_GetType(void);
 int modem_GetCCID(char *pCCID);
 void modem_Refresh(void);
 

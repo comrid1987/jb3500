@@ -43,7 +43,7 @@
 #include <arch/cm3/stm32f10x/arch_spi.c>
 #include <arch/cm3/stm32f10x/arch_timer.c>
 #include <arch/cm3/stm32f10x/arch_uart.c>
-#include <arch/cm3/stm32f10x/arch_retarget.c>
+//#include <arch/cm3/stm32f10x/arch_retarget.c>
 
 #elif ARCH_TYPE == ARCH_T_STM32F20X
 #include <arch/cm3/stm32f20x/misc.c>
@@ -80,7 +80,7 @@
 #include <arch/cm3/stm32f20x/arch_spi.c>
 #include <arch/cm3/stm32f20x/arch_timer.c>
 #include <arch/cm3/stm32f20x/arch_uart.c>
-#include <arch/cm3/stm32f20x/arch_retarget.c>
+//#include <arch/cm3/stm32f20x/arch_retarget.c>
 
 
 #elif ARCH_TYPE == ARCH_T_LPC176X

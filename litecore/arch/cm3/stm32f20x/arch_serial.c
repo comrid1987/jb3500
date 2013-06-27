@@ -1,7 +1,7 @@
 
 
 //Private Defines
-#define SERIAL_USARTX				USART1
+#define SERIAL_USARTX				USART3
 
 
 /*----------------------------------------------------------------------------

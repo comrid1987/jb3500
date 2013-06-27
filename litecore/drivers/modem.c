@@ -290,7 +290,9 @@ static sys_res modem_InitCmd(p_modem p)
 	if (modem_SendCmd(p, str, "OK\r", 20) != SYS_R_OK)
 		return SYS_R_TMO;
 
-	if (p->type == MODEM_TYPE_GPRS) {
+	if (p->type == MODEM_TYPE_CDMA) {
+		os_thd_Sleep(5000);
+	} else {
 		modem_SendCmd(p, "AT+CGATT=1\r", "OK\r", 10);
 		modem_SendCmd(p, "AT+CGATT?\r", "+CGATT: 1", 30);
 	}
@@ -560,6 +562,13 @@ int modem_GetState()
 
 	return gsmModem[MODEM_PPP_ID].ste;
 }
+
+int modem_GetType()
+{
+
+	return gsmModem[MODEM_PPP_ID].type;
+}
+
 
 int modem_GetCCID(char *pCCID)
 {
