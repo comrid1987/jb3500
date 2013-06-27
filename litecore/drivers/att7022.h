@@ -413,11 +413,12 @@ extern "C" {
 #define	MAX_VALUE2					16777216L	// 2 ^ 24 值
 #define	CONST_G						0.648f
 
-#define	ISTART_RATIO				0.001f		//启动电流比值(Ib * 0.002)
-#define	IB_VO						0.4f		//Ib时互感器的电压输出信号(0.4V)
-#define	UCALI_CONST					220.0f		//电压校正常数(220V处校正)
-#define	ICALI_CONST					1.5f		//电流校正常数(5A处校正)Ib值
-#define	ICALI_MUL					1.0f		//电流校正时Ib扩的倍数
+#define ISTART_RATIO				0.001f		//启动电流比值(Ib * 0.002)
+#define IB_VO						0.4f		//Ib时互感器的电压输出信号(0.4V)
+#define UCALI_CONST					220.0f		//电压校正常数(220V处校正)
+#define ICALI_CONST					1.5f		//电流校正常数(5A处校正)Ib值
+//#define ICALI_CONST					20.0f		//电流校正常数(5A处校正)Ib值
+#define ICALI_MUL					1.0f		//电流校正时Ib扩的倍数
 
 #define PCALI_CONST					(UCALI_CONST * ICALI_CONST)//1100				//功率校正常数(220V/5A处校正, 功率因数为1)
 

@@ -51,8 +51,12 @@ float bat_Voltage()
 
 void bat_VolGet()
 {
+#if BAT_CHECK_ENABLE
 	tbl_gpio_def p = gpio_node(tbl_bspBattery, 3);
-
+#else
+	tbl_gpio_def p = gpio_node(tbl_bspBattery, 2);
+#endif
+	
 	bat_fV = arch_AdcData(p->port, p->pin) * (3.3f / 4096.0f * 1.86f);
 }
 #endif

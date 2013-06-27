@@ -22,7 +22,7 @@ uint_t arch_AdcData(uint_t nPort, uint_t nPin)
 	ADC_InitStructure_ADC.ADC_NbrOfChannel = 1;								// 配置ADC1 模数转换的通道数目 为 1个通道
 	ADC_Init(ADC3, &ADC_InitStructure_ADC);									// 配置ADC1 初始化
 
-	ADC_RegularChannelConfig(ADC3, ADC_Channel_4, 1, ADC_SampleTime_239Cycles5);
+	ADC_RegularChannelConfig(ADC3, ADC_Channel_4, 1, ADC_SampleTime_239Cycles5);//配置ADC1 的规则通道，转化顺序和采样时间
 
 	/* Enable ADC1 ------------------------------------------------------*/
 	ADC_Cmd(ADC3, ENABLE);

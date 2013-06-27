@@ -290,9 +290,11 @@ static sys_res modem_InitCmd(p_modem p)
 	if (modem_SendCmd(p, str, "OK\r", 20) != SYS_R_OK)
 		return SYS_R_TMO;
 
-	modem_SendCmd(p, "AT+CGATT=1\r", "OK\r", 10);
-	modem_SendCmd(p, "AT+CGATT?\r", "+CGATT: 1", 30);
-
+	if (p->type == MODEM_TYPE_GPRS) {
+		modem_SendCmd(p, "AT+CGATT=1\r", "OK\r", 10);
+		modem_SendCmd(p, "AT+CGATT?\r", "+CGATT: 1", 30);
+	}
+		
 	return SYS_R_OK;
 }
 
@@ -462,14 +464,10 @@ void modem_Run()
 			p->ste = MODEM_S_RESET;
 		} else {
 			modem_DbgOut("<Modem> Dial");
-			switch (p->type) {
-			case MODEM_TYPE_CDMA:
+			if (p->type == MODEM_TYPE_CDMA)
 				uart_Send(p->uart, "ATDT#777\r", 9);
-				break;
-			default:
+			else
 				uart_Send(p->uart, "ATD*99***1#\r", 12);
-				break;
-			}
 			p->dialed = 1;
 #if TCPPS_TYPE == TCPPS_T_LWIP
 			pppSetAuth(PPPAUTHTYPE_ANY, NULL, NULL);

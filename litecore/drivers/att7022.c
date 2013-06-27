@@ -128,7 +128,6 @@ uint32_t att7022_ReadReg(p_att7022 p, uint_t nReg)
 
 	//¶ÁÊı¾İ¼Ä´æÆ÷
 	spi_Transce(p->spi, &nReg, 1, &nData, 3);
-	os_thd_Slp1Tick();
 	reverse(&nData, 3);
 	nData &= ATT7022_DATA_MASK;
 	//¶ÁĞ£Ñé¼Ä´æÆ÷	
@@ -168,7 +167,7 @@ sys_res att7022_Reset(p_att7022 p, p_att7022_cali pCali)
 	att7022_CaliClear(p);
 
 	att7022_WriteReg(p, ATT7022_REG_UADCPga, 0);			//µçÑ¹Í¨µÀADCÔöÒæÉèÖÃÎª1
-	att7022_WriteReg(p, ATT7022_REG_HFConst, pCali->HFConst);	//ÉèÖÃHFConst
+//	att7022_WriteReg(p, ATT7022_REG_HFConst, pCali->HFConst);	//ÉèÖÃHFConst
 	nTemp = IB_VO * ISTART_RATIO * CONST_G * MAX_VALUE1;
 	att7022_WriteReg(p, ATT7022_REG_Istartup, nTemp);		//Æô¶¯µçÁ÷ÉèÖÃ
 	att7022_WriteReg(p, ATT7022_REG_EnUAngle, 0x003584);	//Ê¹ÄÜµçÑ¹¼Ğ½Ç²âÁ¿
@@ -463,22 +462,29 @@ sys_res att7022_GetHarmonic(p_att7022 p, uint_t Ch, sint16_t *pbuf)
 {
 	uint_t i, nData, nReg = 0x7f;
 
+	//¿ªÆô²ÉÑù¹¦ÄÜ
 	nData=0xccccc0|Ch;
-	att7022_WriteReg(p, 0xc0, nData);
-	for (i = 20; i; i--) {   //Ò»°ãÖØ¸´3´Î¾ÍĞĞÁË¡
-		if(att7022_ReadReg(p, 0x7e)>=240)
+	att7022_WriteReg(p, 0xc0, nData);//Æô¶¯²¨ĞÎÊı¾İ»º´æ
+	//µÈ´ı²ÉÑùÊı¾İÍê³É
+#if 0
+	os_thd_Sleep(200);
+#else
+	for (i = 20; i; i--) {   //Ò»°ãÖØ¸´3´Î¾ÍĞĞÁË?
+		if(att7022_ReadReg(p, 0x7e)>=240)//ÏÂÒ»¸öĞ´Êı¾İµÄÎ»ÖÃ
 			break;
 		os_thd_Sleep(20);
 	}
+#endif
 	if (i) {
+		//ÉèÖÃÓÃ»§¶ÁÈ¡Ö¸ÕëµÄÆğÊ¼Î»ÖÃ
 		att7022_WriteReg(p, 0xc1, 0);
-		for (i = 0; i < ATT7022_SAMPLEPOINT; i++) {
-			spi_Transce(p->spi, &nReg, 1, &nData, 3);
+		for (i = 0; i < 240; i++) {
+			spi_Transce(p->spi, &nReg, 1, &nData, 3);//¶ÁÈ¡Êı¾İ
 			reverse(&nData, 3);
-			nData &= ATT7022_DATA_MASK;		
-			pbuf[i] = (sint16_t)(nData >> 8);
+			nData &= ATT7022_DATA_MASK;
+			if (i < ATT7022_SAMPLEPOINT)
+				pbuf[i] = (sint16_t)(nData >> 8);
 		}
-		att7022_WriteReg(p, 0xC0, 0);
 		return SYS_R_OK;
 	}
 	return SYS_R_ERR;
