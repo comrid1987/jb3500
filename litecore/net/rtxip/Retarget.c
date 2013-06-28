@@ -47,3 +47,5 @@ void _ttywrch(int ch) {
 void _sys_exit(int return_code) {
   while (1);    /* endless loop */
 }
+
+

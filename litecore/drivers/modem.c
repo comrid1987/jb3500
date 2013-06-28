@@ -277,6 +277,21 @@ static sys_res modem_InitCmd(p_modem p)
 	else
 		p->type = MODEM_TYPE_GPRS;
 
+	//SIM¿¨´®ºÅ
+	p->ccid[0] = 0;
+	if (p->type == MODEM_TYPE_GPRS) {
+		for (i = 0; i < 3; i++) {
+			if (modem_SendCmd(p, "AT+CCID\r", "OK\r", 1) != SYS_R_OK) {
+		 		if (modem_SendCmd(p, "AT+ZGETICCID\r", "OK\r", 1) != SYS_R_OK)
+					continue;
+			}
+			if ((pTemp = modem_FindStr(p, "CCID: ")) == NULL)
+				continue;
+			memcpy(p->ccid, pTemp + 6, 20);
+			break;
+		}
+	}
+
 	switch (p->type) {
 	case MODEM_TYPE_GPRS:
 		sprintf(str, "AT+CGDCONT=1,\"IP\",\"%s\"\r", p->apn);
