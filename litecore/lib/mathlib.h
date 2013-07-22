@@ -35,11 +35,11 @@ typedef struct {
 	fixpoint imag;
 }t_complex_fix;
 
-#define EXP 			(13)
+#define EXP 			(13)//  32位的后13位做小数部分
 #define FIX2DOUBLE(x)	(((double)(x)) / (1UL << EXP))
 #define DOUBLE2FIX(x)	((fixpoint)(((double)(x)) * (1UL << EXP)))
 #define FIX2FLOAT(x)	(((float)(x)) / (1UL << EXP))
-#define FLOAT2FIX(x)	((fixpoint)(((float)(x)) * (1UL << EXP)))
+#define FLOAT2FIX(x)	((fixpoint)(((float)(x)) * (1UL << EXP))) //浮点转定浮点
 #define FIXP_EPSILON	(1.0 / (1UL << EXP))
 
 uint32_t sqrtfix(uint64_t d, uint32_t N);

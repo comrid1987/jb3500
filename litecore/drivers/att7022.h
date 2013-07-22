@@ -514,10 +514,10 @@ float att7022_GetSV(p_att7022 p, uint_t nPhase);
 float att7022_GetPFV(p_att7022 p, uint_t nPhase);
 float att7022_GetPAG(p_att7022 p, uint_t nPhase);
 float att7022_GetPVAG(p_att7022 p, uint_t nPhase);
-uint16_t att7022_GETQuanrant(p_att7022 p, uint_t nPhase);
+uint16_t att7022_GetQuanrant(p_att7022 p, uint_t nPhase);
 sys_res att7022_GetHarmonic(p_att7022 p, uint_t Ch, sint16_t* pbuf);
 void att7022_UIP_gainCalibration(p_att7022 p, p_att7022_cali pCali);
-void att7022_Phase_gainCalibration(p_att7022 p, p_att7022_cali pCali);
+void att7022_Phase_GainCalibration(p_att7022 p, p_att7022_cali pCali);
 uint32_t att7022_Status(p_att7022 p);
 uint32_t att7022_CheckSum1(p_att7022 p);
 uint32_t att7022_CheckSum2(p_att7022 p);
@@ -525,7 +525,6 @@ uint32_t att7022_CheckSum2(p_att7022 p);
 sys_res att7022_WriteReg(p_att7022 p, uint_t nReg, uint32_t nData);
 uint32_t att7022_ReadReg(p_att7022 p, uint_t nReg);
 uint32_t att7022_UgainCalibration(p_att7022 p, uint8_t nPhase );
-uint32_t att7022_PhaseCali1Seg(p_att7022 p);
 uint32_t att7022_PhaseCalibration(p_att7022 p,uint8_t nPhase, uint8_t cali_point);
 float att7022_FPhaseCaliData(p_att7022 p,uint8_t nPhase, uint8_t cali_point);
 
@@ -561,7 +560,7 @@ void att7022_UIP_GainCalibration(void);
 void att7022_PhaseABC_Calibration(void);
 void att7022_GainAD7(uint8_t channel);
 S16 att7022_Getadc7(void);
-uint16_t att7022_GETQuanrant(uint8_t Phase);
+uint16_t att7022_GetQuanrant(uint8_t Phase);
 #endif
 
 //暂时未使用的函数

@@ -237,14 +237,13 @@ sys_res uart_Send(p_dev_uart p, const void *pData, uint_t nLen)
 sys_res uart_RecData(p_dev_uart p, buf b, int nTmo)
 {
  
-	nTmo /= OS_TICK_MS;
-	do {
+	for (nTmo /= OS_TICK_MS; ; nTmo--) {
 		if (uart_GetRxData(p, b) > 0)
 			return SYS_R_OK;
-		else
-			os_thd_Slp1Tick();
-	} while (nTmo--);
-	return SYS_R_TMO;
+		if (nTmo == 0)
+			return SYS_R_TMO;
+		os_thd_Slp1Tick();
+	}
 }
 
 
@@ -259,15 +258,14 @@ sys_res uart_RecData(p_dev_uart p, buf b, int nTmo)
 sys_res uart_RecLength(p_dev_uart p, buf b, uint_t nLen, int nTmo)
 {
 
-	nTmo /= OS_TICK_MS;
-	do {
+	for (nTmo /= OS_TICK_MS; ; nTmo--) {
 		uart_GetRxData(p, b);
 		if (b->len >= nLen)
 			return SYS_R_OK;
-		else
-			os_thd_Slp1Tick();
-	} while (nTmo--);
-	return SYS_R_TMO;
+		if (nTmo == 0)
+			return SYS_R_TMO;
+		os_thd_Slp1Tick();
+	}
 }
 
 

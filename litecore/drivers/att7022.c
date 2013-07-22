@@ -166,8 +166,9 @@ sys_res att7022_Reset(p_att7022 p, p_att7022_cali pCali)
 
 	att7022_CaliClear(p);
 
+#if 1
 	att7022_WriteReg(p, ATT7022_REG_UADCPga, 0);			//电压通道ADC增益设置为1
-//	att7022_WriteReg(p, ATT7022_REG_HFConst, pCali->HFConst);	//设置HFConst
+	att7022_WriteReg(p, ATT7022_REG_HFConst, pCali->HFConst);	//设置HFConst
 	nTemp = IB_VO * ISTART_RATIO * CONST_G * MAX_VALUE1;
 	att7022_WriteReg(p, ATT7022_REG_Istartup, nTemp);		//启动电流设置
 	att7022_WriteReg(p, ATT7022_REG_EnUAngle, 0x003584);	//使能电压夹角测量
@@ -199,7 +200,7 @@ sys_res att7022_Reset(p_att7022 p, p_att7022_cali pCali)
 		att7022_WriteReg(p, ATT7022_REG_PhsregB0 + i, pCali->PhsregB[i]);
 		att7022_WriteReg(p, ATT7022_REG_PhsregC0 + i, pCali->PhsregC[i]);
 	}
-	
+#endif
 	return att7022_WriteDisable(p);
 }
 
@@ -263,18 +264,18 @@ float att7022_GetCurrent(p_att7022 p, uint_t nPhase)
 
 float att7022_GetPower(p_att7022 p, uint_t nReg, uint_t nPhase)
 {
-	int nP = 0;
-	float fResult = 3200.0f / (float)ATT7022_CONST_EC; //脉冲输出系数
-
-	nP = att7022_ReadReg(p, nReg + nPhase);
-	if (nP > MAX_VALUE1)
-		nP -= MAX_VALUE2;
+	float fResult,eck;
+	
+	eck = 3200.0f / (float)ATT7022_CONST_EC; //脉冲输出系数
+	fResult = att7022_ReadReg(p, nReg + nPhase);
+	if (fResult > MAX_VALUE1)
+		fResult -= MAX_VALUE2;
 	if (nPhase < 3) {
 		//读取分相功率
-		fResult = (float)nP * fResult / 256000.0f; //转换成工程量
+		fResult = fResult * eck / 256000.0f; //转换成工程量
 	} else {
 		//读取合相功率
-		fResult = (float)nP * fResult / 64000.0f; //转换成工程量
+		fResult = fResult * eck / 64000.0f; //转换成工程量
 	}
 	return fResult;
 }
@@ -332,12 +333,8 @@ float att7022_GetPFV(p_att7022 p, uint_t nPhase)
 	float f_data = 0.0f;
 
 	nData = att7022_ReadReg(p, ATT7022_REG_PfA + nPhase);
-	if (nData & 0x00800000) {
-		nData &= 0x007FFFFF;
-		nData = -nData;
-	} else {
-		nData &= 0x007FFFFF;
-	}
+	if (nData > MAX_VALUE1)
+		nData -= MAX_VALUE2;
 	f_data = nData / MAX_VALUE1;
 	return f_data;
 }
@@ -352,10 +349,10 @@ float att7022_GetPFV(p_att7022 p, uint_t nPhase)
 float att7022_GetPAG(p_att7022 p, uint_t nPhase) 
 {
 	float sita;
+	
 	sita = att7022_ReadReg(p,ATT7022_REG_PgA + nPhase);
-	if (sita > MAX_VALUE1) {
+	if (sita > MAX_VALUE1)
 		sita -= MAX_VALUE2;
-	}
 	return (sita * 360 / MAX_VALUE1 / PI);
 }
 
@@ -365,17 +362,17 @@ float att7022_GetPAG(p_att7022 p, uint_t nPhase)
 float att7022_GetPVAG(p_att7022 p, uint_t nPhase) 
 {
 
-	return ((float)att7022_ReadReg(p,ATT7022_REG_YUaUb + nPhase) / 8192);
+	return ((float)att7022_ReadReg(p, ATT7022_REG_YUaUb + nPhase) / 8192.0f);
 }
 
-uint16_t att7022_GETQuanrant(p_att7022 p, uint_t Phase) 
+uint16_t att7022_GetQuanrant(p_att7022 p, uint_t Phase) 
 {
 	uint32_t pflag;
 	uint32_t p_direction, q_direction;
 
-	pflag = att7022_ReadReg(p,ATT7022_REG_PFlag); //先读取功率方向寄存器(正向为0,负向为1)
-	p_direction = ((pflag >> Phase) &0x00000001);
-	q_direction = ((pflag >> (Phase + 4)) &0x00000001);
+	pflag = att7022_ReadReg(p, ATT7022_REG_PFlag); //先读取功率方向寄存器(正向为0,负向为1)
+	p_direction = ((pflag >> Phase) & 0x00000001);
+	q_direction = ((pflag >> (Phase + 4)) & 0x00000001);
 	if (p_direction) {
 		if (q_direction) {
 			//P- Q-
@@ -663,45 +660,23 @@ void att7022_UIP_gainCalibration(p_att7022 p, p_att7022_cali pCali)
 //返	回: -
 //功	能: 相位角校正,功率因数为  0.5L  的条件下
 //------------------------------------------------------------------------
-void att7022_Phase_gainCalibration(p_att7022 p, p_att7022_cali pCali)
+void att7022_Phase_GainCalibration(p_att7022 p, p_att7022_cali pCali)
 {
 	uint_t i;
 	uint32_t phv;
 
-	phv = att7022_PhaseCali1Seg(p);
-	for(i = 0; i < 5; i++)
-	{
-		//
+	phv = att7022_PhaseCalibration(p, PHASE_A, 1); //1.5A处校正
+	for(i = 0; i < 5; i++) {
 		pCali->PhsregA[i] = phv;   
+	}
+	phv = att7022_PhaseCalibration(p, PHASE_B, 1); //1.5A处校正
+	for(i = 0; i < 5; i++) {
 		pCali->PhsregB[i] = phv;  
+	}
+	phv = att7022_PhaseCalibration(p, PHASE_B, 1); //1.5A处校正
+	for(i = 0; i < 5; i++) {
 		pCali->PhsregC[i] = phv;  
 	}
-}
-//------------------------------------------------------------------------
-//名	称: att7022_PhaseCali1Seg () 
-//设	计: 
-//输	入: 
-//输	出: 
-//返	回: 
-//功	能: 相位校正(0.5L处校正), 此处分两段校正
-//------------------------------------------------------------------------
-uint32_t att7022_PhaseCali1Seg(p_att7022 p)
-{
-	uint32_t phv;
-	uint_t i;
-
-	phv= att7022_PhaseCalibration(p, PHASE_A, 1); //7.5A处校正
-	att7022_WriteEnable(p); //ATT7022B校正使能
-	for (i = 0; i < 3; i++)
-	{
-		att7022_WriteReg(p, ATT7022_REG_PhsregA0 + i * 5, phv);
-		att7022_WriteReg(p, ATT7022_REG_PhsregA1 + i * 5, phv);
-		att7022_WriteReg(p, ATT7022_REG_PhsregA2 + i * 5, phv);
-		att7022_WriteReg(p, ATT7022_REG_PhsregA3 + i * 5, phv);
-		att7022_WriteReg(p, ATT7022_REG_PhsregA4 + i * 5, phv);
-	}
-	att7022_WriteDisable(p); //ATT7022B校正禁止
-	return phv;
 }
 //------------------------------------------------------------------------
 //名	称: att7022_PhaseCalibration () 
@@ -743,36 +718,33 @@ uint32_t att7022_PhaseCalibration(p_att7022 p, uint8_t nPhase, uint8_t nCali)
 	}
 	return (uint32_t)fPhase;
 }
-//------------------------------------------------------------------------
-//名	称: att7022_PhaseCaliData () 
-//设	计: 
-//输	入: nPhase - 待校正的相位
-//			cali_point - 校正点(0 - 4)
-//输	出: -
-//返	回: phase_v - 返回计算出的相位校正值(双精度浮点数) 
-//功	能: 相位校正数据计算
-//------------------------------------------------------------------------
 
 float att7022_FPhaseCaliData(p_att7022 p,uint8_t nPhase, uint8_t cali_point) 
 {
-	float phase_v = 0, att7022_pvalue, seta, err, pcali_value, eck;
-
-	eck = 3200.0f / (float)ATT7022_CONST_EC; //脉冲输出系数
-	pcali_value = PCALI_CONST * 0.5; //phiconst_tab[cali_point];				//载入校正点的有功功率常数
-	att7022_pvalue = att7022_ReadReg(p,ATT7022_REG_PA + nPhase); //读取有功功率值
-	if (att7022_pvalue > MAX_VALUE1)
-		att7022_pvalue -= MAX_VALUE2;
-	att7022_pvalue = (att7022_pvalue / 256) *eck; //转换成工程量
+	float phase_v = 0, att7022_pvalue, seta, err, pcali_value = 0, eck;
+	uint_t nTmp = 0;
+	
+	eck = 3200.0f / (float)ATT7022_CONST_EC;			//脉冲输出系数
+	pcali_value = PCALI_CONST * 0.5f;					//载入校正点的有功功率常数
+	nTmp = att7022_ReadReg(p, ATT7022_REG_PA + nPhase);	//读取有功功率值
+ 	if (nTmp > MAX_VALUE1) {
+ 		nTmp -= MAX_VALUE2;
+ 	}
+	att7022_pvalue = ((float)nTmp / 256.0f) *eck; //转换成工程量
 	err = (att7022_pvalue - pcali_value) / pcali_value; //误差计算
 	if (err) {
-		seta = acosf((1 + err) * 0.5);
-		seta -= PI / 3;
+		seta = acosf((1 + err) * 0.5f);
+		seta -= PI / 3.0f;
 		phase_v = seta * MAX_VALUE1;
 		if (seta < 0)
 			phase_v = MAX_VALUE2 + phase_v;
 	}
 	return phase_v;
 }
+
+
+
+
 
 uint32_t att7022_Status(p_att7022 p)
 {
@@ -1086,7 +1058,7 @@ S16 att7022_Getadc7(void) {
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-uint16_t att7022_GETQuanrant(uint8_t Phase) {
+uint16_t att7022_GetQuanrant(uint8_t Phase) {
 	uint32_t pflag;
 	uint32_t p_direction, q_direction;
 	pflag = att7022_ReadReg(ATT7022_REG_PFlag); //先读取功率方向寄存器(正向为0,负向为1)
