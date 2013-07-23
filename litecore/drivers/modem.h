@@ -37,6 +37,9 @@ typedef struct {
 	uint16_t	tmo;
 	uint16_t	span;
 	uint16_t	idle;
+#if MODEM_FLOWCTL_ENABLE
+	uint_t		flow;
+#endif
 	p_dev_uart	uart;
 	buf			rbuf;
 }t_modem, *p_modem;
@@ -80,6 +83,9 @@ int modem_GetSignal(void);
 int modem_GetState(void);
 int modem_GetType(void);
 int modem_GetCCID(char *pCCID);
+#if MODEM_FLOWCTL_ENABLE
+int modem_GetFlow(void);
+#endif
 void modem_Refresh(void);
 
 

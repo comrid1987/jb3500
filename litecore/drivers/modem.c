@@ -2,8 +2,10 @@
 #include <drivers/modem.h>
 
 //Private Defines
-#define MODEM_PPP_ID			0
 
+
+
+//Private Macros
 #if MODEM_DEBUG_ENABLE
 #define modem_DbgOut			dbg_printf
 #else
@@ -20,7 +22,7 @@
 #endif
 
 //Private Variables
-static t_modem gsmModem[BSP_MODEM_QTY];
+static t_modem gsmModem;
 #if TCPPS_TYPE == TCPPS_T_KEILTCP
 static BOOL tx_active;
 /*----------------------------------------------------------------------------
@@ -51,10 +53,13 @@ int com_getchar()
 	if (modem_online() != __TRUE)
 		return -1;
 	/* Read a byte from serial interface */
-	c = uart_GetRxChar(gsmModem[MODEM_PPP_ID].uart);
+	c = uart_GetRxChar(gsmModem.uart);
 	if (c == -1)
 		/* Serial receive buffer is empty. */
 		return -1;
+#if MODEM_FLOWCTL_ENABLE
+	gsmModem.flow += 1;
+#endif
 	return c;
 }
 
@@ -63,8 +68,11 @@ BOOL com_putchar(U8 c)
 {
 
 	tx_active = __TRUE;
-	uart_Send(gsmModem[MODEM_PPP_ID].uart, &c, 1);
+	uart_Send(gsmModem.uart, &c, 1);
 	tx_active = __FALSE;
+#if MODEM_FLOWCTL_ENABLE
+	gsmModem.flow += 1;
+#endif
 	return __TRUE;
 }
 
@@ -103,7 +111,7 @@ void modem_hangup()
 
 BOOL modem_online()
 {
-	p_modem p = &gsmModem[MODEM_PPP_ID];
+	p_modem p = &gsmModem;
 
 	if (p->dialed)
 		return __TRUE;
@@ -355,7 +363,7 @@ static void modem_DbgIpInfo()
 
 static int modem_IsPowerOnEnable()
 {
-	p_modem p = &gsmModem[MODEM_PPP_ID];
+	p_modem p = &gsmModem;
 	int res = 1;
 
 	if (p->retrytime) {
@@ -380,8 +388,8 @@ static int modem_IsPowerOnEnable()
 
 void modem_Init()
 {
-	p_modem p = &gsmModem[MODEM_PPP_ID];
-	t_modem_def *pDef = tbl_bspModem[MODEM_PPP_ID];
+	p_modem p = &gsmModem;
+	t_modem_def *pDef = tbl_bspModem[0];
 	uint_t i;
 
 	memset(p, 0, sizeof(t_modem));
@@ -413,8 +421,8 @@ void modem_Init()
 
 void modem_Run()
 {
-	p_modem p = &gsmModem[MODEM_PPP_ID];
-	t_modem_def *pDef = tbl_bspModem[MODEM_PPP_ID];
+	p_modem p = &gsmModem;
+	t_modem_def *pDef = tbl_bspModem[0];
 	sys_res res;
 
 	p->cnt += 1;
@@ -537,7 +545,7 @@ void modem_Run()
 
 void modem_Config(char *pApn, uint_t nSpan, uint_t nRetry)
 {
-	p_modem p = &gsmModem[MODEM_PPP_ID];
+	p_modem p = &gsmModem;
 
 	sprintf(p->apn, pApn);
 	p->idle = nSpan * 3;
@@ -569,25 +577,25 @@ sys_res modem_IsOnline()
 int modem_GetSignal()
 {
 
-	return gsmModem[MODEM_PPP_ID].signal;
+	return gsmModem.signal;
 }
 
 int modem_GetState()
 {
 
-	return gsmModem[MODEM_PPP_ID].ste;
+	return gsmModem.ste;
 }
 
 int modem_GetType()
 {
 
-	return gsmModem[MODEM_PPP_ID].type;
+	return gsmModem.type;
 }
 
 
 int modem_GetCCID(char *pCCID)
 {
-	p_modem p = &gsmModem[MODEM_PPP_ID];
+	p_modem p = &gsmModem;
 
 	if (p->ccid[0] == 0)
 		return 0;
@@ -596,13 +604,22 @@ int modem_GetCCID(char *pCCID)
 }
 
 
+#if MODEM_FLOWCTL_ENABLE
+int modem_GetFlow()
+{
+	int nFlow;
 
+	nFlow = gsmModem.flow;
+	gsmModem.flow = 0;
+	return nFlow;
+}
+#endif
 
 void modem_Refresh()
 {
 
 	if (modem_IsOnline() == SYS_R_OK)
-		gsmModem[MODEM_PPP_ID].cnt = 0;
+		gsmModem.cnt = 0;
 }
 
 

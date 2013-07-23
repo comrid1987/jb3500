@@ -2,6 +2,7 @@
 //Private Defines
 #define CHL_PRECODE_ENABLE				0
 
+
 //Private const variables
 #if CHL_PRECODE_ENABLE
 static uint8_t const tbl_chlHeaderCodes[] = {0xFE, 0xFE};
