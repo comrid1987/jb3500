@@ -2,7 +2,7 @@
 
 
 //Private Defines
-#define DQUE_LOCK_ENABLE		(1 & OS_TYPE)
+#define DQUE_LOCK_ENABLE		1
 
 #define DQUE_INVALID_FLAG		0x7F
 
@@ -13,7 +13,7 @@ static os_sem dque_sem;
 #endif
 
 //Private Macros
-#if DQUE_LOCK_ENABLE
+#if DQUE_LOCK_ENABLE && OS_TYPE
 #define dque_Lock()				rt_sem_take(&dque_sem, RT_WAITING_FOREVER)
 #define dque_Unlock()			rt_sem_release(&dque_sem)
 #else

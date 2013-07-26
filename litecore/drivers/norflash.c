@@ -2,11 +2,11 @@
 #include <drivers/norflash.h>
 
 //Private Defines
-#define NORFLASH_LOCK_ENABLE	(1 & OS_TYPE)
+#define NORFLASH_LOCK_ENABLE	1
 
 
 //Private Const
-#if NORFLASH_LOCK_ENABLE
+#if NORFLASH_LOCK_ENABLE && OS_TYPE
 #define norf_Lock()				os_thd_Lock()
 #define norf_Unlock()			os_thd_Unlock()
 #else
