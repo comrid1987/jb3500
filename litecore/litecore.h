@@ -31,16 +31,17 @@ extern "C" {
 
 #include <dbg/dbg.h>
 
+#if USB_ENABLE
+#include <usb/usb.h>
+#endif
+
 #if MODEM_ENABLE
 #include <drivers/modem.h>
 #endif
 
-
-
 #if TCPPS_ENABLE
 #include <net/net.h>
 #endif
-
 
 
 //Warning

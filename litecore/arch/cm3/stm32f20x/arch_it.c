@@ -1127,7 +1127,6 @@ void OTG_FS_IRQHandler(void)
 #endif
 }
 
-
 /******************* (C) COPYRIGHT 2008 STMicroelectronics *****END OF FILE****/
 
 

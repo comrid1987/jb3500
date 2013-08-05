@@ -1,3 +1,82 @@
+#if USB_PS_T_KEIL
+
+#include "Usb_config.c"
+#if ARCH_TYPE == ARCH_T_STM32F10X_CL
+#include <arch/cm3/stm32f10x/usbh_stm32f10x.c>
+#endif
+#if ARCH_TYPE == ARCH_T_STM32F20X
+#include <arch/cm3/stm32f20x/usbh_stm32f20x.c>
+#endif
+
+
+void usb_Init()
+{
+
+	usbh_init(0);
+}
+
+void usb_HostHandler()
+{
+
+	usbh_engine(0);
+}
+
+void usb_HostIRQ()
+{
+
+	USBH_FS_IRQHandler();
+}
+
+int usb_HostIsConnected(void *p)
+{
+
+#if USBH_HID_ENABLE
+	if (usbh_hid_status(0, 0))
+		return 1;
+#endif
+#if USBH_MSC_ENABLE
+	if (usbh_msc_status(0, 0))
+		return 2;
+#endif
+	return 0;
+}
+
+#if USBH_MSC_ENABLE
+int usb_HostMscRead(void *p, uint_t nSector, void *pBuf, uint_t nLen)
+{
+
+	if (usbh_msc_read(0, 0, nSector, pBuf, nLen))
+		return nLen;
+	return 0;
+}
+
+int usb_HostMscWrite(void *p, uint_t nSector, const void *pBuf, uint_t nLen)
+{
+
+	if (usbh_msc_write(0, 0, nSector, (uint8_t *)pBuf, nLen))
+		return nLen;
+	return 0;
+}
+#endif
+
+
+#if USBH_HID_ENABLE
+int usb_Keybrd_GetData()
+{
+
+	return usbh_hid_kbd_getkey(0, 0);
+}
+
+void usb_Mouse_GetData()
+{
+
+}
+#endif
+
+
+
+
+#else
 
 #if ARCH_TYPE == ARCH_T_STM32F10X_CL || ARCH_TYPE == ARCH_T_STM32F20X
 
@@ -93,41 +172,41 @@ void *usb_HostOpen()
 	return &USB_OTG_Core;
 }
 
-void usb_HostClose(void *pHandler)
+void usb_HostClose(void *p)
 {
 
 }
 
-sys_res usb_HostIsConnected(void *pHandler)
+int usb_HostIsConnected(void *p)
 {
 
-	if (HCD_IsDeviceConnected(pHandler))
-		return SYS_R_OK;
-	return SYS_R_ERR;
+	if (HCD_IsDeviceConnected(p))
+		return 1;
+	return 0;
 }
 
 #if USBH_MSC_ENABLE
-int usb_HostMscRead(void *pHandler, uint_t nSector, void *pBuf, uint_t nLen)
+int usb_HostMscRead(void *p, uint_t nSector, void *pBuf, uint_t nLen)
 {
 	USBH_MSC_Status_TypeDef status;
 
 	do {
-		status = (USBH_MSC_Status_TypeDef)USBH_MSC_Read10(pHandler, pBuf, nSector, nLen * 512);
-		USBH_MSC_HandleBOTXfer(pHandler, &USB_Host);
-		if (HCD_IsDeviceConnected(pHandler) == 0)
+		status = (USBH_MSC_Status_TypeDef)USBH_MSC_Read10(p, pBuf, nSector, nLen * 512);
+		USBH_MSC_HandleBOTXfer(p, &USB_Host);
+		if (HCD_IsDeviceConnected(p) == 0)
 			return nLen;
 	} while (status == USBH_MSC_BUSY);
 	return 0;
 }
 
-int usb_HostMscWrite(void *pHandler, uint_t nSector, const void *pBuf, uint_t nLen)
+int usb_HostMscWrite(void *p, uint_t nSector, const void *pBuf, uint_t nLen)
 {
 	USBH_MSC_Status_TypeDef status;
 
 	do {
-		status = (USBH_MSC_Status_TypeDef)USBH_MSC_Write10(pHandler, (uint8_t *)pBuf, nSector, nLen * 512);
-		USBH_MSC_HandleBOTXfer(pHandler, &USB_Host);
-		if (HCD_IsDeviceConnected(pHandler) == 0)
+		status = (USBH_MSC_Status_TypeDef)USBH_MSC_Write10(p, (uint8_t *)pBuf, nSector, nLen * 512);
+		USBH_MSC_HandleBOTXfer(p, &USB_Host);
+		if (HCD_IsDeviceConnected(p) == 0)
 			return nLen;
 	} while (status == USBH_MSC_BUSY);
 	return 0;
@@ -498,32 +577,33 @@ void *usb_HostOpen()
 	return (void *)USBHMSCDriveOpen(0, MSCCallback);
 }
 
-void usb_HostClose(void *pHandler)
+void usb_HostClose(void *p)
 {
 
-	USBHMSCDriveClose((uint_t)pHandler);
+	USBHMSCDriveClose((uint_t)p);
 }
 
-sys_res usb_HostIsConnected(void *pHandler)
+int usb_HostIsConnected(void *p)
 {
 
-	if (USBHMSCDriveReady((uint_t)pHandler))
-		return SYS_R_ERR;
-	return SYS_R_OK;
+	if (USBHMSCDriveReady((uint_t)p))
+		return 1;
+	return 0;
 }
 
-int usb_HostMscRead(void *pHandler, uint_t nOffset, void *pBuf, uint_t nLen)
+int usb_HostMscRead(void *p, uint_t nOffset, void *pBuf, uint_t nLen)
 {
 
-	return USBHMSCBlockRead((uint_t)pHandler, nOffset, pBuf, nLen);
+	return USBHMSCBlockRead((uint_t)p, nOffset, pBuf, nLen);
 }
 
-int usb_HostMscWrite(void *pHandler, uint_t nOffset, const void *pBuf, uint_t nLen)
+int usb_HostMscWrite(void *p, uint_t nOffset, const void *pBuf, uint_t nLen)
 {
 
-	return USBHMSCBlockWrite((uint_t)pHandler, nOffset, (uint8_t *)pBuf, nLen);
+	return USBHMSCBlockWrite((uint_t)p, nOffset, (uint8_t *)pBuf, nLen);
 }
 
 #endif
 
+#endif
 

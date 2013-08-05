@@ -122,7 +122,7 @@
  #define TXH_P_FS_FIFOSIZ                          96
 
  //#define USB_OTG_FS_LOW_PWR_MGMT_SUPPORT
- //#define USB_OTG_FS_SOF_OUTPUT_ENABLED
+ #define USB_OTG_FS_SOF_OUTPUT_ENABLED
 #endif
 
 /****************** USB OTG MODE CONFIGURATION ********************************/
