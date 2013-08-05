@@ -14,8 +14,8 @@ enum {
 
 
 /* Modem Type */
-#define MODEM_TYPE_GPRS		0
-#define MODEM_TYPE_CDMA		1
+#define MODEM_TYPE_GPRS		1
+#define MODEM_TYPE_CDMA		0
 
 /* Modem Controll Pin Effective */
 #define MODEM_EFFECT_LOW	0
