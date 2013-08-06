@@ -198,16 +198,16 @@ dque	dqueue = {ARR_SIZE(__dqueue), __dqueue};
 //Communication Protocol Modules
 //-------------------------------------------------------------------------
 #if PULSE_COL_ENABLE
-#include <cp/pulse.c>
+#include <cp/ecp/pulse.c>
 #endif
 #if DLT645_ENABLE
-#include <cp/dlt645.c>
-#endif
-#if XCN6N12_ENABLE
-#include <cp/xcn6.c>
+#include <cp/ecp/dlt645.c>
 #endif
 #if GW3762_ENABLE
-#include <cp/gw376/gw3762.c>
+#include <cp/ecp/gw3762.c>
+#endif
+#if XCN6N12_ENABLE
+#include <cp/ecp/xcn6.c>
 #endif
 
 #if DLRCP_ENABLE
@@ -231,10 +231,10 @@ dque	dqueue = {ARR_SIZE(__dqueue), __dqueue};
 #include <cp/nw12.c>
 #endif
 #if GW3761_ENABLE
-#include <cp/gw376/gw3761.c>
-#include <cp/gw376/gw3761_convert.c>
+#include <cp/gw3761.c>
+#include <cp/gw3761_convert.c>
 #if GW3761_ESAM_ENABLE
-#include <cp/gw376/gw3761_authority.c>
+#include <cp/gw3761_authority.c>
 #endif
 #endif
 

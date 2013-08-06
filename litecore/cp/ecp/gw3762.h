@@ -96,28 +96,8 @@ typedef struct {
 	t_gw3762_rmsg	rmsg;
 }t_gw3762;
 
-typedef struct {
-	uint8_t		manualType;
-	uint8_t		ready;
-	uint8_t		ret;
-	uint8_t		meterNo; //电表序号
-	char		stateStr[32];
-	char		resStr[32];
-	uint8_t		ctrPara[32];
-	//无线通信参数
-	uint8_t		cn;
-	uint8_t		pw;
-	uint8_t		baud;
-	uint8_t		wID[2];
-	uint8_t		rType;
-	uint8_t		rsv[2];
-	//路由运行状态
-	uint8_t		rsBit;
-	uint16_t	aNum;
-	uint16_t	sNum;
-	uint8_t 	rsState;
 
-}t_gw3762_info;
+
 
 //External Functions
 void gw3762_Init(t_gw3762 *p);
