@@ -18,10 +18,11 @@ extern "C" {
 
 #include <cp/gdfts.h>
 
-#include <cp/ecp/pulse.h>
-#include <cp/ecp/dlt645.h>
-#include <cp/ecp/gw3762.h>
-#include <cp/ecp/xcn6.h>
+#include <cp/lcp/pulse.h>
+#include <cp/lcp/dlt645.h>
+#include <cp/lcp/gw3762.h>
+#include <cp/lcp/xcn6.h>
+#include <cp/lcp/plc.h>
 
 	
 	
