@@ -3,11 +3,11 @@
 
 
 //Private Definds
-#define SPIBUS_LOCK_ENABLE		(0 && OS_TYPE)
+#define SPIBUS_LOCK_ENABLE		0
 
 
 //Private Macros
-#if SPIBUS_LOCK_ENABLE
+#if SPIBUS_LOCK_ENABLE && OS_TYPE
 #define spibus_Lock()			os_thd_Lock()
 #define spibus_Unlock()			os_thd_Unlock()
 #else

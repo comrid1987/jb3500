@@ -36,7 +36,7 @@ static void xcn6n12_DbgOut(uint_t nType, const void *pBuf, uint_t nLen)
 
 
 
-static sys_res xcn6_Transmit2Meter(t_gw3762 *p, uint_t nCtrl, const void *pAdr, uint_t nRelay, const uint8_t *pRtAdr, const uint8_t *pData, uint_t nLen)
+static sys_res xcn6_Transmit2Meter(t_plc *p, uint_t nCtrl, const void *pAdr, uint_t nRelay, const uint8_t *pRtAdr, const uint8_t *pData, uint_t nLen)
 {
 	uint_t i;
 	buf bTx = {0};
@@ -74,7 +74,7 @@ static sys_res xcn6_Transmit2Meter(t_gw3762 *p, uint_t nCtrl, const void *pAdr, 
 	return SYS_R_OK;
 }
 
-static sys_res xcn6_Analyze(t_gw3762 *p)
+static sys_res xcn6_Analyze(t_plc *p)
 {
 	uint8_t *pData;
 	uint_t nLen, nTemp;
@@ -108,30 +108,30 @@ static sys_res xcn6_Analyze(t_gw3762 *p)
 		if ((nTemp & BITMASK(7)) == 0)
 			continue;
 
-		buf_Release(p->rmsg.data);
-		buf_PushData(p->rmsg.data, nTemp, 1);
-		buf_PushData(p->rmsg.data, nLen - (XCN6_HEADER_RX_SIZE + 7), 1);
+		buf_Release(p->data);
+		buf_PushData(p->data, nTemp, 1);
+		buf_PushData(p->data, nLen - (XCN6_HEADER_RX_SIZE + 7), 1);
 		if (nTemp & BITMASK(6)) {
-			memcpy(p->rmsg.madr, pData, 3);
-			memset(&p->rmsg.madr[3], 0, 3);
+			memcpy(p->madr, pData, 3);
+			memset(&p->madr[3], 0, 3);
 #if 0
 			pData += 4;
-			buf_Push(p->rmsg.data, pData, 1);
+			buf_Push(p->data, pData, 1);
 #else
 			//采集器否认不正确,构造错误字
-			buf_PushData(p->rmsg.data, BITMASK(2), 1);
+			buf_PushData(p->data, BITMASK(2), 1);
 #endif
 		} else {	
 			if ((nTemp & 0x0F) == 0x01) {
-				buf_Push(p->rmsg.data, pData, 2);
+				buf_Push(p->data, pData, 2);
 				pData += 2;
-				memcpy(p->rmsg.madr, pData, 3);
-				memset(&p->rmsg.madr[3], 0, 3);
+				memcpy(p->madr, pData, 3);
+				memset(&p->madr[3], 0, 3);
 				pData += 4;
-				buf_Push(p->rmsg.data, pData, nLen - (XCN6_HEADER_RX_SIZE + 9));
+				buf_Push(p->data, pData, nLen - (XCN6_HEADER_RX_SIZE + 9));
 			} else {
-				memcpy(p->rmsg.madr, pData, 3);
-				memset(&p->rmsg.madr[3], 0, 3);
+				memcpy(p->madr, pData, 3);
+				memset(&p->madr[3], 0, 3);
 			}
 		}
 		buf_Remove(p->rbuf, nLen + (XCN6_HEADER_RX_SIZE + 1));
@@ -139,7 +139,7 @@ static sys_res xcn6_Analyze(t_gw3762 *p)
 	}
 }
 
-static sys_res xcn12_Transmit2Meter(t_gw3762 *p, uint_t nCtrl, const void *pAdr, uint_t nRelay, const uint8_t *pRtAdr, const uint8_t *pData, uint_t nLen)
+static sys_res xcn12_Transmit2Meter(t_plc *p, uint_t nCtrl, const void *pAdr, uint_t nRelay, const uint8_t *pRtAdr, const uint8_t *pData, uint_t nLen)
 {
 	buf bTx = {0};
 
@@ -170,13 +170,13 @@ static sys_res xcn12_Transmit2Meter(t_gw3762 *p, uint_t nCtrl, const void *pAdr,
 
 
 //External Functions
-sys_res xcn12_Meter(t_gw3762 *p, buf b, uint_t nCode, const void *pAdr, uint_t nRelay, const void *pRtAdr, const void *pData, uint_t nLen)
+sys_res xcn12_Meter(t_plc *p, buf b, uint_t nCode, const void *pAdr, uint_t nRelay, const void *pRtAdr, const void *pData, uint_t nLen)
 {
 	uint_t nTmo;
 	uint8_t *pH;
 
 	xcn12_Transmit2Meter(p, nCode, pAdr, nRelay, pRtAdr, pData, nLen);
-	nTmo = gw3762_GetWait(p, nRelay);
+	nTmo = plc_GetWait(p, nRelay);
 	for (nTmo *= 1000 / OS_TICK_MS; nTmo; nTmo--) {
 		if (chl_RecData(p->chl, b, OS_TICK_MS) != SYS_R_OK)
 			continue;
@@ -198,47 +198,47 @@ sys_res xcn12_Meter(t_gw3762 *p, buf b, uint_t nCode, const void *pAdr, uint_t n
 	return SYS_R_TMO;
 }
 
-sys_res xcn12_Broadcast(t_gw3762 *p, const void *pAdr, const void *pData, uint_t nLen)
+sys_res xcn12_Broadcast(t_plc *p, const void *pAdr, const void *pData, uint_t nLen)
 {
 
 	return xcn12_Transmit2Meter(p, DLT645_CODE_BROADCAST, pAdr, 0, NULL, pData, nLen);
 }
 
-sys_res xcn6_MeterRead(t_gw3762 *p, buf b, const void *pAdr, uint_t nRelay, const void *pRtAdr, const void *pData, uint_t nLen)
+sys_res xcn6_MeterRead(t_plc *p, buf b, const void *pAdr, uint_t nRelay, const void *pRtAdr, const void *pData, uint_t nLen)
 {
 	uint_t nTmo;
 
 	xcn6_Transmit2Meter(p, 0x01, pAdr, nRelay, pRtAdr, pData, nLen);
-	nTmo = gw3762_GetWait(p, nRelay);
+	nTmo = plc_GetWait(p, nRelay);
 	for (nTmo *= 1000 / OS_TICK_MS; nTmo; nTmo--) {
 		if (xcn6_Analyze(p) != SYS_R_OK)
 			continue;
-		if (memcmp(p->rmsg.madr, pAdr, 3))
+		if (memcmp(p->madr, pAdr, 3))
 			continue;
-		buf_Push(b, p->rmsg.data->p, p->rmsg.data->len);
+		buf_Push(b, p->data->p, p->data->len);
 		return SYS_R_OK;
 	}
 	return SYS_R_TMO;
 }
 
-sys_res xcn6_MeterWrite(t_gw3762 *p, buf b, const void *pAdr, uint_t nRelay, const void *pRtAdr, const void *pData, uint_t nLen)
+sys_res xcn6_MeterWrite(t_plc *p, buf b, const void *pAdr, uint_t nRelay, const void *pRtAdr, const void *pData, uint_t nLen)
 {
 	uint_t nTmo;
 
 	xcn6_Transmit2Meter(p, 0x04, pAdr, nRelay, pRtAdr, pData, nLen);
-	nTmo = gw3762_GetWait(p, nRelay);
+	nTmo = plc_GetWait(p, nRelay);
 	for (nTmo *= 1000 / OS_TICK_MS; nTmo; nTmo--) {
 		if (xcn6_Analyze(p) != SYS_R_OK)
 			continue;
-		if (memcmp(p->rmsg.madr, pAdr, 3))
+		if (memcmp(p->madr, pAdr, 3))
 			continue;
-		buf_Push(b, p->rmsg.data->p, p->rmsg.data->len);
+		buf_Push(b, p->data->p, p->data->len);
 		return SYS_R_OK;
 	}
 	return SYS_R_TMO;
 }
 
-sys_res xcn6_Broadcast(t_gw3762 *p, const void *pAdr, const void *pData, uint_t nLen)
+sys_res xcn6_Broadcast(t_plc *p, const void *pAdr, const void *pData, uint_t nLen)
 {
 	uint_t i;
 	buf bTx = {0};

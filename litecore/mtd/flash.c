@@ -127,7 +127,7 @@ sys_res flash_Program(uint_t nDev, adr_t nAdr, const void *pData, uint_t nLen)
 
 
 //Private Defines
-#define FLASH_LOCK_ENABLE		(1 && OS_TYPE)
+#define FLASH_LOCK_ENABLE		1
 
 #define FLASH_BLOCK_INVALID		(-1)
 
@@ -151,7 +151,7 @@ static t_flash_buffer flash_buf;
 
 
 //Private Macros
-#if FLASH_LOCK_ENABLE
+#if FLASH_LOCK_ENABLE && OS_TYPE
 #define flash_Lock()				rt_sem_take(&flash_sem, RT_WAITING_FOREVER)
 #define flash_Unlock()				rt_sem_release(&flash_sem)
 #else

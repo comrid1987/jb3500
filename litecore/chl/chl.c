@@ -96,11 +96,11 @@ sys_res chl_Send(chl p, const void *pData, uint_t nLen)
 		return SYS_R_ERR;
 	switch (p->type) {
 #if UART_ENABLE
-	case CHL_T_RS232:
 	case CHL_T_RS485:
 #if CHL_PRECODE_ENABLE
 		uart_Send(p->pIf, (void *)tbl_chlHeaderCodes, sizeof(tbl_chlHeaderCodes));
 #endif
+	case CHL_T_RS232:
 		res = uart_Send(p->pIf, pData, nLen);
 		break;
 #endif

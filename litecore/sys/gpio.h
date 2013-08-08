@@ -37,6 +37,7 @@ extern "C" {
 //GPIO管脚功能定义
 #define GPIO_M_OUT_MASK			4
 
+
 //HIGH IMPEDANCE ANALOG INPUT TRISTATE
 #define GPIO_M_IN_ANALOG		0
 //INPUT FLOATING
@@ -45,6 +46,7 @@ extern "C" {
 #define GPIO_M_IN_PD			2
 //INPUT PULL UP
 #define GPIO_M_IN_PU	 		3
+
 
 //OUTPUT OPEN DRAIN
 #define GPIO_M_OUT_OD	 		(GPIO_M_OUT_MASK | 0)
@@ -55,12 +57,20 @@ extern "C" {
 //ALTERNATE FUNCTION PUSH PULL
 #define GPIO_M_AF_PP			(GPIO_M_OUT_MASK | 3)
 
+
 //GPIO初始电平
 #define GPIO_INIT_NULL			0
 #define GPIO_INIT_HIGH			1
 #define GPIO_INIT_LOW			2
 
 
+//GPIO Controll Pin Effective
+#define GPIO_EFFECT_LOW			0
+#define GPIO_EFFECT_HIGH		1
+
+
+
+//External Typedefs
 typedef const struct {
 	uint8_t		type;
 	uint8_t		port;
@@ -70,15 +80,20 @@ typedef const struct {
 }t_gpio_def, *p_gpio_def, * const tbl_gpio_def;
 
 
+
+
+//External Macros
 #define gpio_node(n, i)			(n[0] + (i))
+
+#define gpio_Read(n)			sys_GpioRead(gpio_node(tbl_bspGpio, n))
+#define gpio_Set(n, v)			sys_GpioSet(gpio_node(tbl_bspGpio, n), v)
+
 
 //External Functions
 void sys_GpioConf(tbl_gpio_def p);
 int sys_GpioRead(tbl_gpio_def p);
 void sys_GpioSet(tbl_gpio_def p, uint_t nHL);
 
-#define gpio_Read(n)			sys_GpioRead(gpio_node(tbl_bspGpio, n))
-#define gpio_Set(n, v)			sys_GpioSet(gpio_node(tbl_bspGpio, n), v)
 
 
 #ifdef __cplusplus

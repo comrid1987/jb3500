@@ -133,39 +133,27 @@ void modem_run()
 static void modem_Act(t_modem_def *p, uint_t nHL)
 {
 
-	if (p->act_effect == MODEM_EFFECT_HIGH) {
-		if (nHL)
-			nHL = 0;
-		else
-			nHL = 1;
-	}
-	sys_GpioSet(&(p)->act, nHL);
+	if (p->act_effect == GPIO_EFFECT_HIGH)
+		nHL ^= 1;
+	sys_GpioSet(&p->act, nHL);
 }
 
 #if MODEM_PWR_ENABLE
 static void modem_Pwr(t_modem_def *p, uint_t nHL)
 {
 
-	if (p->pwr_effect == MODEM_EFFECT_HIGH) {
-		if (nHL)
-			nHL = 0;
-		else
-			nHL = 1;
-	}
-	sys_GpioSet(&(p)->power, nHL);
+	if (p->pwr_effect == GPIO_EFFECT_HIGH)
+		nHL ^= 1;
+	sys_GpioSet(&p->power, nHL);
 }
 #endif
 #if MODEM_RST_ENABLE
 static void modem_Rst(t_modem_def *p, uint_t nHL)
 {
 
-	if (p->rst_effect == MODEM_EFFECT_HIGH) {
-		if (nHL)
-			nHL = 0;
-		else
-			nHL = 1;
-	}
-	sys_GpioSet(&(p)->rst, nHL);
+	if (p->rst_effect == GPIO_EFFECT_HIGH)
+		nHL ^= 1;
+	sys_GpioSet(&p->rst, nHL);
 }
 #endif
 

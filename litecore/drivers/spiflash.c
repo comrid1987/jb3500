@@ -2,7 +2,7 @@
 
 
 //Private Defines
-#define SPIF_LOCK_ENABLE		(0 && OS_TYPE)
+#define SPIF_LOCK_ENABLE		0
 
 #define SPIF_PAGE_SIZE			256
 
@@ -65,7 +65,7 @@ static t_spif_info spif_info;
 static uint32_t spif_dbgJedec[BSP_SPIF_QTY];
 
 //Private Macros
-#if SPIF_LOCK_ENABLE
+#if SPIF_LOCK_ENABLE && OS_TYPE
 #define spif_Lock()				rt_sem_take(&spif_sem, RT_WAITING_FOREVER)
 #define spif_Unlock()			rt_sem_release(&spif_sem)
 #else

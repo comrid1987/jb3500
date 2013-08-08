@@ -7,7 +7,7 @@ extern "C" {
 
 
 
-//External Typedefs
+//Public Typedefs
 typedef const struct {
 	uint8_t		uartid;
 	uint8_t		rst_effect;
@@ -18,18 +18,75 @@ typedef const struct {
 #endif
 }t_plc_def;
 
+typedef __packed struct {
+	uint8_t		fun : 6,
+				prm : 1,
+				dir : 1;
+}t_gw3762_c;
+
+typedef __packed struct {
+	uint8_t		route : 1,
+				addit : 1,
+				module : 1,
+				clash : 1,
+				relay : 4;
+	uint8_t		chlid : 4,
+				eccid : 4;
+	uint8_t		acklen;
+	uint16_t	rate : 15,
+				unit : 1;
+	uint8_t		reserve;
+}t_gw3762_rdown;
+
+
+typedef __packed struct {
+	uint8_t		route : 1,
+				addit : 1,
+				module : 1,
+				clash : 1,
+				relay : 4;
+	uint8_t		chlid : 4,
+				eccid : 4;
+	uint8_t		pulse : 4,
+				chltype : 4;
+	uint8_t		cmdq: 4,
+				ackq: 4;
+	uint16_t	reserve;
+}t_gw3762_ru;
+
+
+//GDW3761Ω” ’÷°
+typedef struct {
+	uint8_t		type;
+	uint8_t		mode;
+	uint8_t		adr[6];
+	chl			chl;
+	buf			rbuf;
+	uint8_t		afn;
+	t_gw3762_c	c;
+	t_gw3762_ru	rup;
+	uint16_t	fn;
+	uint8_t		madr[6];
+	uint8_t		radr[6];
+	buf 		data;
+}t_plc;
 
 
 
 
 
 //External Functions
-sys_res xcn12_Meter(t_gw3762 *p, buf b, uint_t nCode, const void *pAdr, uint_t nRelay, const void *pRtAdr, const void *pData, uint_t nLen);
-sys_res xcn12_Broadcast(t_gw3762 *p, const void *pAdr, const void *pData, uint_t nLen);
+void plc_Init(t_plc *p);
+void plc_Reset(t_plc *p);
+sys_res plc_Sync(t_plc *p);
 
-sys_res xcn6_MeterRead(t_gw3762 *p, buf b, const void *pAdr, uint_t nRelay, const void *pRtAdr, const void *pData, uint_t nLen);
-sys_res xcn6_MeterWrite(t_gw3762 *p, buf b, const void *pAdr, uint_t nRelay, const void *pRtAdr, const void *pData, uint_t nLen);
-sys_res xcn6_Broadcast(t_gw3762 *p, const void *pAdr, const void *pData, uint_t nLen);
+int plc_GetRetry(t_plc *p);
+int plc_GetWait(t_plc *p, uint_t nRelay);
+int plc_IsNeedRt(t_plc *p);
+int plc_IsNotSync(t_plc *p);
+
+//User Functions
+int plc_MeterRead(uint_t nSn, void *pAdr);
 
 
 #ifdef __cplusplus

@@ -3,11 +3,11 @@
 
 
 //Private Defines
-#define INTF_LOCK_ENABLE		(0 && OS_TYPE)
+#define INTF_LOCK_ENABLE		0
 
 
 //Internal Functions
-#if INTF_LOCK_ENABLE
+#if INTF_LOCK_ENABLE && OS_TYPE
 #define intf_Lock()				os_thd_Lock()
 #define intf_Unlock()			os_thd_Unlock()
 #else
