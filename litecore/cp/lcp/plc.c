@@ -4,7 +4,6 @@
 
 
 
-
 static void plc_Rst(uint_t nHL)
 {
 	t_plc_def *p = &tbl_bspPlc;
@@ -158,6 +157,7 @@ void plc_Reset(t_plc *p)
 	p->type = GW3762_T_XC_GW;
 }
 
+#if 0
 
 sys_res plc_Sync(t_plc *p)
 {
@@ -251,6 +251,7 @@ void plc_Broadcast(t_plc *p)
 	uint8_t aBuf[6], aTime[6];
 	uint_t nTemp;
 	
+#if XCN6N12_ENABLE
 	if (p->type == GW3762_T_XC_GD) {
 		chl_rs232_Config(p->chl, 2400, UART_PARI_NO, UART_DATA_8D, UART_STOP_1D);
 		timet2array(rtc_GetTimet(), aTime, 1);
@@ -260,8 +261,8 @@ void plc_Broadcast(t_plc *p)
 		xcn12_Broadcast(p, aBuf, aTime, 6);
 		os_thd_Sleep(3000);
 	} else {
+#endif
 		chl_rs232_Config(p->chl, 9600, UART_PARI_EVEN, UART_DATA_8D, UART_STOP_1D);
-
 		timet2array(rtc_GetTimet(), aTime, 1);
 		dlt645_Packet2Buf(b, aBuf, DLT645_CODE_BROADCAST, aTime, 6);
 		gw3762_Broadcast(p, aBuf, b->p, b->len);
@@ -279,32 +280,229 @@ void plc_Broadcast(t_plc *p)
 
 		if (p->type == GW3762_T_ES_RT) {
 			if (gw3762_Es_ModeGet(p, &nTemp, 3000) == SYS_R_OK) {
-				if (nTemp != 4)
+				if (nTemp != 4) {
 					gw3762_Es_ModeSet(p, 4, 5000);
+					os_thd_Sleep(6000);
+
+					aBuf[5] = 0x99;
+					timet2array(rtc_GetTimet(), aTime, 1);
+					dlt645_Packet2Buf(b, aBuf, DLT645_CODE_BROADCAST, aTime, 6);
+					gw3762_Broadcast(p, aBuf, b->p, b->len);
+					buf_Release(b);
+					os_thd_Sleep(5000);
+					aBuf[5] = 0x98;
+					timet2array(rtc_GetTimet(), aTime, 1);
+					dlt645_Packet2Buf(b, aBuf, DLT645_CODE_BROADCAST, aTime, 6);
+					if (plc_IsNeedRt(p))
+						gw3762_MeterRead(p, aBuf, 0, NULL, b->p, b->len);
+					else
+						gw3762_MeterRT(p, aBuf, b->p, b->len);
+					buf_Release(b);
+					os_thd_Sleep(5000);
+
+					plc_Sync(p);
+				}
 			}
 		}
-		os_thd_Sleep(6000);
-
-		aBuf[5] = 0x99;
-		timet2array(rtc_GetTimet(), aTime, 1);
-		dlt645_Packet2Buf(b, aBuf, DLT645_CODE_BROADCAST, aTime, 6);
-		gw3762_Broadcast(p, aBuf, b->p, b->len);
-		buf_Release(b);
-		os_thd_Sleep(5000);
-		aBuf[5] = 0x98;
-		timet2array(rtc_GetTimet(), aTime, 1);
-		dlt645_Packet2Buf(b, aBuf, DLT645_CODE_BROADCAST, aTime, 6);
-		if (plc_IsNeedRt(p))
-			gw3762_MeterRead(p, aBuf, 0, NULL, b->p, b->len);
-		else
-			gw3762_MeterRT(p, aBuf, b->p, b->len);
-		buf_Release(b);
-		os_thd_Sleep(5000);
-
-		if (p->type == GW3762_T_ES_RT)
-			plc_Sync(p);
-
+#if XCN6N12_ENABLE
 	}
+#endif
+}
+
+
+uint32_t plc_Request(const void *pAdr, uint_t *pIs97)
+{
+
+
+
+
+
+
+	return 0;
+}
+
+
+sys_res ecl_Plc_Recv(t_plc *p)
+{
+	sys_res res = SYS_R_TMO;
+	uint8_t *pTemp;
+	uint16_t nSn;
+	uint32_t nDI, nRecDI = 0;
+	uint_t nCode, nLen, nIs97;
+	t_afn04_f10 xPM;
+	buf bTx = {0};
+
+	if (gw3762_Analyze(p) != SYS_R_OK)
+		return res;
+
+	if (p->afn == GW3762_AFN_ROUTE_REQUEST) {
+		//路由请求
+		if (p->fn == 0x0001) {
+			nDI = plc_Request(&p->data->p[1], &nIs97);
+			if (nDI) {
+				if (nIs97) {
+					nCode = DLT645_CODE_READ97;
+					nLen = 2;
+				} else {
+					nCode = DLT645_CODE_READ07;
+					nLen = 4;
+				}
+				dlt645_Packet2Buf(bTx, &p->data->p[1], nCode, &nDI, nLen);
+				gw3762_RequestAnswer(p, p->data->p[0], &p->data->p[1], 1, bTx->p, bTx->len);
+				buf_Release(bTx);
+			} else {
+				nRecDI = 0x00000001;
+				gw3762_RequestAnswer(p, p->data->p[0], &p->data->p[1], 0, &nRecDI, 3);
+			}
+			return SYS_R_BUSY;
+		}
+		return res;
+	}
+
+	if (p->afn == GW3762_AFN_REPORT) {
+		//自动上报数据
+		if (p->fn == 0x0002) {
+			gw3762_Confirm(p, 0xFFFF, 0);
+			buf_Remove(p->data, 4);
+			//645包解析
+			pTemp = dlt645_PacketAnalyze(p->data->p, p->data->len);
+			if (pTemp == NULL)
+				return SYS_R_ERR;
+			//校验表地址
+			if (memcmp(p->madr, &pTemp[1], 6))
+				return SYS_R_ERR;
+			buf_Remove(p->data, pTemp - p->data->p + (DLT645_HEADER_SIZE - 2));
+			pTemp = p->data->p;
+			byteadd(&pTemp[2], -0x33, pTemp[1]);
+			//搜索表号
+			if (ecl_Madr2Sn(p->madr, &nSn, 1)) {
+				icp_MeterRead(nSn, &xPM, NULL);
+				//645规约类型
+				if (xPM.prtl == ECL_PRTL_DLT645_97) {
+					nCode = DLT645_CODE_READ97;
+					nLen = 2;
+				} else {
+					nCode = DLT645_CODE_READ07;
+					nLen = 4;
+				}
+				if (GETBIT(*pTemp, 6)) {
+					//抄通但电表拒绝该表不再抄杂项
+					data_FlagWrite(xPM.tn, 0xFFFE);					
+					return SYS_R_NO;
+				}
+				if (*pTemp == (nCode | BITMASK(7))) {
+					pTemp += 2;
+					memcpy(&nRecDI, pTemp, nLen);
+					pTemp += nLen;
+					ecl_DataHandler(xPM.tn, xPM.madr, pTask->time, nRecDI, pTemp);
+					//抄成功
+					return SYS_R_OK;
+				}
+			} else {
+				//发现未知表事件
+				evt_ERC35(ECL_PORT_PLC, p->madr);
+				SETBIT(g_sys_status, SYS_STATUS_SYNC);
+			}
+		}
+		return res;
+	}
+
+	if ((p->afn == GW3762_AFN_TRANSMIT) || (p->afn == GW3762_AFN_ROUTE_TRANSMIT)) {
+		if (p->fn == 0x0001) {
+			//点抄
+			//校验模块主节点地址
+			switch (p->type) {
+			case GW3762_T_XC_GW:
+			case GW3762_T_XC_RT:
+			case GW3762_T_XC_GD:
+				break;
+			default:
+				if (memcmp(p->radr, p->adr, 6))
+					dbg_printf("<PLC>ModuleAddr %02X%02X%02X%02X%02X%02X", p->radr[5], p->radr[4], p->radr[3], p->radr[2], p->radr[1], p->radr[0]);
+				break;
+			}
+			buf_Remove(p->data, 2);
+			//645包解析
+			pTemp = dlt645_PacketAnalyze(p->data->p, p->data->len);
+			if (pTemp == NULL)
+				return SYS_R_ERR;
+			//校验表地址
+			if (memcmp(p->madr, &pTemp[1], 6))
+				return SYS_R_ERR;
+			buf_Remove(p->data, pTemp - p->data->p + (DLT645_HEADER_SIZE - 2));
+			pTemp = p->data->p;
+			byteadd(&pTemp[2], -0x33, pTemp[1]);
+			//是否抄表任务的电表回应
+			if (memcmp(p->madr, pTask->f10.madr, 6)) {
+				dbg_printf("<PLC>MeterDI %02X%02X%02X%02X%02X%02X %08X", p->madr[5], p->madr[4], p->madr[3], p->madr[2], p->madr[1], p->madr[0], nRecDI);
+				//搜索表号
+				if (ecl_Madr2Sn(p->madr, &nSn, 1)) {
+					icp_MeterRead(nSn, &xPM, NULL);
+					//645规约类型
+					if (xPM.prtl == ECL_PRTL_DLT645_97) {
+						nCode = DLT645_CODE_READ97;
+						nLen = 2;
+					} else {
+						nCode = DLT645_CODE_READ07;
+						nLen = 4;
+					}
+					if (GETBIT(*pTemp, 6)) {
+						//抄通但电表拒绝该表不再抄杂项
+						data_FlagWrite(xPM.tn, 1);
+						return SYS_R_NO;
+					}
+					if (*pTemp == (nCode | BITMASK(7))) {
+						pTemp += 2;
+						memcpy(&nRecDI, pTemp, nLen);
+						pTemp += nLen;
+						ecl_DataHandler(xPM.tn, xPM.madr, pTask->time, nRecDI, pTemp);
+					}
+				} else {
+					//发现未知表事件
+					evt_ERC35(ECL_PORT_PLC, p->madr);
+				}
+				return SYS_R_ERR;
+			}
+			//645规约类型
+			if (pTask->f10.prtl == ECL_PRTL_DLT645_97) {
+				nCode = DLT645_CODE_READ97;
+				nLen = 2;
+			} else {
+				nCode = DLT645_CODE_READ07;
+				nLen = 4;
+			}
+			if (GETBIT(*pTemp, 6)) {
+				//抄通但电表拒绝该表不再抄杂项
+				data_FlagWrite(pTask->f10.tn, 1);
+				return SYS_R_NO;
+			}
+			if (*pTemp == (nCode | BITMASK(7))) {
+				pTemp += 2;
+				memcpy(&nRecDI, pTemp, nLen);
+				pTemp += nLen;
+				ecl_DataHandler(pTask->f10.tn, pTask->f10.madr, pTask->time, nRecDI, pTemp);
+				if (nRecDI != pTask->di)
+					return SYS_R_ERR;
+			}
+			//抄成功
+			return SYS_R_OK;
+		}
+		return res;
+	}
+
+	if (p->afn == GW3762_AFN_CONFIRM) {
+		switch (p->fn) {
+		case 0x0001:	//确认
+			break;
+		case 0x0002:	//否认
+			res = SYS_R_ERR;
+			break;
+		default:
+			break;
+		}
+		return res;
+	}
+	return res;
 }
 
 
@@ -313,9 +511,7 @@ void plc_Broadcast(t_plc *p)
 
 
 
-
-
-
+#endif
 
 
 

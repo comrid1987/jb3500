@@ -193,8 +193,9 @@ sys_res gw3762_Analyze(t_plc *p)
 			memcpy(p->madr, &p->rbuf->p[sizeof(t_gw3762_header) + 6], 6);
 			memcpy(p->radr, &p->rbuf->p[sizeof(t_gw3762_header) + 12], 6);
 			nOffset = 18;
-		} else
+		} else {
 			nOffset = 6;
+		}
 		p->afn = p->rbuf->p[sizeof(t_gw3762_header) + nOffset];
 		memcpy(&p->fn, &p->rbuf->p[sizeof(t_gw3762_header) + nOffset + 1], 2);
 		buf_Release(p->data);
