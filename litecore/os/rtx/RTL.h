@@ -69,6 +69,33 @@ typedef unsigned int    BOOL;
 #define htons(v)        ntohs(v)
 #define htonl(v)        ntohl(v)
 
+/*----------------------------------------------------------------------------
+ *                             RTX Kernel API
+ *---------------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+extern "C"  {
+#endif
+
+/* Definition of Semaphore type */
+typedef U32 OS_SEM[2];
+
+/* Definition of Mailbox type */
+#define os_mbx_declare(name,cnt)    U32 name [4 + cnt]
+typedef U32 OS_MBX[];
+
+/* Definition of Mutex type */
+typedef U32 OS_MUT[3];
+
+/* Task Identification number. */
+typedef U32 OS_TID;
+
+/* Function return of system calls returning an object identification */
+typedef void *OS_ID;
+
+/* Function return of system calls indicating an event or completion state */
+typedef U32 OS_RESULT;
+
 
 /*----------------------------------------------------------------------------
  *                        Flash File System API

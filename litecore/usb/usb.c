@@ -1,5 +1,6 @@
 #if USB_PS_T_KEIL
 
+#include <os/rtx/RTL.h>
 #include "Usb_config.c"
 #if ARCH_TYPE == ARCH_T_STM32F10X_CL
 #include <arch/cm3/stm32f10x/usbh_stm32f10x.c>

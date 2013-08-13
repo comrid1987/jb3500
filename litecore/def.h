@@ -28,10 +28,10 @@
 
 //Operation System Type Defines
 #define OS_T_NULL			0
-#define OS_T_KEILRTX		1
-#define OS_T_FREERTOS		2
-#define OS_T_UCOSII			3
-#define OS_T_RTTHREAD		4
+#define OS_T_RTTHREAD		1
+#define OS_T_KEILRTX		2
+#define OS_T_FREERTOS		3
+#define OS_T_UCOSII			4
 
 
 //Buffer Type Defines

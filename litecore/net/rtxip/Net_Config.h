@@ -12,7 +12,7 @@
 #ifndef __NET_CONFIG_H__
 #define __NET_CONFIG_H__
 
-#include <net/rtxip/RTL.h>
+#include <os/rtx/RTL.h>
 
 /* Definitions */
 #define ETH_ADRLEN      6         /* Ethernet Address Length in bytes        */
