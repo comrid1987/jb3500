@@ -28,7 +28,9 @@ typedef struct {
 	uint8_t		retrytime;
 	uint8_t		retryed;
 	uint8_t		hour;
-	char		apn[19];
+	char		apn[21];
+	char		info[20];
+	char		ver[20];
 	char		ccid[20];
 	uint16_t	cnt;
 	uint16_t	tmo;
@@ -74,11 +76,12 @@ void modem_Init(void);
 void modem_Run(void);
 void modem_Reset(void);
 void modem_PowerOff(void);
-void modem_Config(char *pApn, uint_t nSpan, uint_t nRetry);
+void modem_Config(const char *pApn, uint_t nSpan, uint_t nRetry);
 sys_res modem_IsOnline(void);
 int modem_GetSignal(void);
 int modem_GetState(void);
 int modem_GetType(void);
+int modem_GetInfo(char *pInfo);
 int modem_GetCCID(char *pCCID);
 #if MODEM_FLOWCTL_ENABLE
 int modem_GetFlow(void);

@@ -157,7 +157,6 @@ void plc_Reset(t_plc *p)
 	p->type = GW3762_T_XC_GW;
 }
 
-#if 0
 
 sys_res plc_Sync(t_plc *p)
 {
@@ -245,6 +244,7 @@ sys_res plc_Sync(t_plc *p)
 	return SYS_R_ERR;
 }
 
+
 void plc_Broadcast(t_plc *p)
 {
 	buf b = {0};
@@ -310,17 +310,8 @@ void plc_Broadcast(t_plc *p)
 }
 
 
-uint32_t plc_Request(const void *pAdr, uint_t *pIs97)
-{
 
-
-
-
-
-
-	return 0;
-}
-
+#if 0
 
 sys_res ecl_Plc_Recv(t_plc *p)
 {

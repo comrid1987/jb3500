@@ -87,10 +87,10 @@ static USBH_URB *CHURB             [OTG_FS_MAX_CH] = { 0 };
 static U16       cntInterval       [OTG_FS_MAX_CH] = { 0 };
 static U8        cntIntervalMax    [OTG_FS_MAX_CH] = { 0 };
 static U16       cntDebounce                       = { 0 };
-static U32       calDelay                          =   0  ;
 static U32       Port_Discon_Evt                   = { 0 };
 static U32       Port_Speed                        = { 0 };
 static U32       Port_Con                          = { 0 };
+static U32       calDelay                          =   0  ;
 
 
 /************************** Local Module Functions ****************************/
@@ -165,8 +165,7 @@ __inline static BOOL USBH_STM32_DMA_Stop (void) {
  *  Return:                 __TRUE = Ok, __FALSE = error
  *----------------------------------------------------------------------------*/
 
-//__inline static BOOL USBH_STM32_DMA_Start (U8 ctrl, U32 *ptrDest, U32 *ptrSrc, U16 len) {
-static BOOL USBH_STM32_DMA_Start (U32 *ptrDest, U32 *ptrSrc, U16 len) {
+__inline static BOOL USBH_STM32_DMA_Start (U32 *ptrDest, U32 *ptrSrc, U16 len) {
   DMA_Stream_TypeDef *ptr_DMA_Stream;
 
   ptr_DMA_Stream = DMA2_Stream0;
@@ -209,8 +208,7 @@ static BOOL USBH_STM32_DMA_Start (U32 *ptrDest, U32 *ptrSrc, U16 len) {
  *  Return:                 __TRUE = Ok, __FALSE = error
  *----------------------------------------------------------------------------*/
 
-//__inline static BOOL USBH_STM32_DMA_Wait (U8 ctrl) {
-static BOOL USBH_STM32_DMA_Wait (void) {
+__inline static BOOL USBH_STM32_DMA_Wait (void) {
   S32 tout;
   DMA_Stream_TypeDef *ptr_DMA_Stream;
 
@@ -554,7 +552,13 @@ void USBH_STM32_Get_Capabilities (USBH_HCI_CAP *cap) {
  *  Parameter:  ms:         Number of milliseconds to delay execution for
  *  Return:
  *----------------------------------------------------------------------------*/
+#if OS_TYPE
+void USBH_STM32_Delay_ms (U32 ms)
+{
 
+	os_thd_Sleep(ms / OS_TICK_MS);
+}
+#else
 void USBH_STM32_Delay_ms (U32 ms) {
   U32 cnt = 0, vals = 0, vale = 0;
 
@@ -587,6 +591,7 @@ start:
     goto start;
   }
 }
+#endif
 
 
 /*------------------------- USBH_STM32_Pins_Config -----------------------------
@@ -734,7 +739,6 @@ BOOL USBH_STM32_Init (BOOL on) {
                            USBH_STM32_GUSBCFG_TRDT(15));
     ptr_OTG->GUSBCFG   &= ~USBH_STM32_GUSBCFG_PHYSEL; 
     ptr_OTG->GUSBCFG   |=  USBH_STM32_GUSBCFG_TRDT(2);    /* Set init values  */
-    calDelay = 0;                                 /* Force delay recalibrate  */
     USBH_STM32_Delay_ms (100);          /* Wait ~100 ms                       */
   }
 

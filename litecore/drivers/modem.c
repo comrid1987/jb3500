@@ -222,17 +222,24 @@ static sys_res modem_InitCmd(p_modem p)
 #endif
 	if (modem_SendCmd(p, "ATE0\r", "OK\r", 4) != SYS_R_OK)
 		return SYS_R_TMO;
-	//SIM¿¨´®ºÅ
-	p->ccid[0] = 0;
-	for (i = 0; i < 3; i++) {
-		if (modem_SendCmd(p, "AT+CCID\r", "OK\r", 1) != SYS_R_OK) {
-	 		if (modem_SendCmd(p, "AT+ZGETICCID\r", "OK\r", 1) != SYS_R_OK)
-				continue;
-		}
-		if ((pTemp = modem_FindStr(p, "CCID: ")) == NULL)
-			continue;
-		memcpy(p->ccid, pTemp + 6, 20);
-		break;
+	//Ä£¿éĞÅÏ¢
+	p->info[0] = '\0';
+	if (modem_SendCmd(p, "AT+CGMM\r", "OK\r", 1) == SYS_R_OK) {
+		buf_Remove(p->rbuf, 2);
+		if ((pTemp = modem_FindStr(p, ":")) != NULL)
+			buf_Remove(p->rbuf, (uint8_t *)pTemp - p->rbuf->p + 1);
+		if ((pTemp = modem_FindStr(p, "\r\n")) != NULL)
+			pTemp[0] = '\0';
+		memcpy(p->info, p->rbuf->p, 20);
+	}
+	p->ver[0] = '\0';
+	if (modem_SendCmd(p, "AT+CGMR\r", "OK\r", 1) == SYS_R_OK) {
+		buf_Remove(p->rbuf, 2);
+		if ((pTemp = modem_FindStr(p, ":")) != NULL)
+			buf_Remove(p->rbuf, (uint8_t *)pTemp - p->rbuf->p + 1);
+		if ((pTemp = modem_FindStr(p, "\r\n")) != NULL)
+			pTemp[0] = '\0';
+		memcpy(p->ver, p->rbuf->p, 20);
 	}
 	if (modem_SendCmd(p, "AT+CPIN?\r", "OK\r", 30) != SYS_R_OK)
 		return SYS_R_TMO;
@@ -531,11 +538,14 @@ void modem_Run()
 }
 
 
-void modem_Config(char *pApn, uint_t nSpan, uint_t nRetry)
+void modem_Config(const char *pApn, uint_t nSpan, uint_t nRetry)
 {
 	p_modem p = &gsmModem;
+	int nLen;
 
-	sprintf(p->apn, pApn);
+	nLen = MIN(sizeof(p->apn) - 1, strlen(pApn));
+	memcpy(p->apn, pApn, nLen);
+	p->apn[nLen] = '\0';
 	p->idle = nSpan * 3;
 	p->retrytime = nRetry;
 }
@@ -580,12 +590,32 @@ int modem_GetType()
 	return gsmModem.type;
 }
 
+int modem_GetInfo(char *pInfo)
+{
+	p_modem p = &gsmModem;
+
+	if (p->info[0] == '\0')
+		return 0;
+	memcpy(pInfo, p->info, 20);
+	return 1;
+}
+
+int modem_GetVersion(char *pVersion)
+{
+	p_modem p = &gsmModem;
+
+	if (p->ver[0] == '\0')
+		return 0;
+	memcpy(pVersion, p->ver, 20);
+	return 1;
+}
+
 
 int modem_GetCCID(char *pCCID)
 {
 	p_modem p = &gsmModem;
 
-	if (p->ccid[0] == 0)
+	if (p->ccid[0] == '\0')
 		return 0;
 	memcpy(pCCID, p->ccid, 20);
 	return 1;

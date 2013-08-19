@@ -16,14 +16,6 @@ int fputc(int ch, FILE *f)
 }
 
 
-/*--------------------------- fgetc --------------------------------------*/
-
-int fgetc(FILE *f)
-{
-
-	return (sendchar(getkey()));
-}
-
 /*--------------------------- ferror --------------------------------------*/
 
 int ferror(FILE *f)
@@ -53,5 +45,6 @@ void _sys_exit (int return_code)
 	/* Endless loop. */
 	while (1);
 }
+
 
 
