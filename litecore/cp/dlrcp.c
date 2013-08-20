@@ -318,10 +318,6 @@ sys_res dlrcp_Handler(p_dlrcp p)
 	return res;
 }
 
-
-
-
-
 #endif
 
 
