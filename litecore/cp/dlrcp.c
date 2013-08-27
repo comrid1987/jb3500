@@ -283,15 +283,18 @@ sys_res dlrcp_Handler(p_dlrcp p)
 			//发送处理
 			pMsg = (p_dlrcp_tmsg)p->tmsg->p;
 			for (; (uint8_t *)pMsg < (p->tmsg->p + p->tmsg->len); pMsg++) {
-				if (pMsg->tmo-- == 0) {
+				pMsg->tmo -= 1;
+				if (pMsg->tmo == 0) {
 					if (pMsg->retry) {
 						chl_Send(p->chl, pMsg->data->p, pMsg->data->len);
 						pMsg->retry -= 1;
 						pMsg->tmo = p->tmo;
 					}
 					//超时,释放
-					if (pMsg->retry == 0)
-						dlrcp_TmsgRelease(p, pMsg--);
+					if (pMsg->retry == 0) {
+						dlrcp_TmsgRelease(p, pMsg);
+						pMsg -= 1;
+					}
 				}
 			}
 		}
