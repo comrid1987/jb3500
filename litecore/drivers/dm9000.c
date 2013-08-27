@@ -4,11 +4,9 @@
 
 #define DM9000_DEBUG		0
 #if DM9000_DEBUG
-#define DM9000_PRINTF		rt_kprintf
-#define DM9000_TRACE		rt_kprintf
+#define dm9000_DbgOut		dbg_trace
 #else
-#define DM9000_PRINTF(...)
-#define DM9000_TRACE(...)
+#define dm9000_DbgOut(...)
 #endif
 
 //Private Defines
@@ -263,12 +261,9 @@ static sys_res dm9000_Reset(const uint8_t *pMacAddr)
 	uint_t i;
 	uint32_t value;
 
-	/* GPIO Initial */
-	sys_GpioConf(gpio_node(tbl_bspDm9000, 0));
-	sys_GpioConf(gpio_node(tbl_bspDm9000, 1));
-
 	/* Reset DM9000,
 	   see DM9000 Application Notes V1.22 Jun 11, 2004 page 29 */
+
 	/* Hardware Reset */
 	dm9000_Rst(0);
 	sys_Delay(2000);
@@ -291,7 +286,7 @@ static sys_res dm9000_Reset(const uint8_t *pMacAddr)
 	value |= dm9000_RegRead(DM9000_PIDH) << 24;
 	if (value != DM9000_ID)
 	    return SYS_R_ERR;
-	DM9000_TRACE("dm9000 id: 0x%x\n", value);
+	dm9000_DbgOut("dm9000 id: 0x%x\n", value);
 
 	/* Set PHY */
 	phy_mode_set(DM9000_AUTO);
@@ -325,7 +320,7 @@ static sys_res dm9000_Reset(const uint8_t *pMacAddr)
 }
 
 #if TCPPS_TYPE == TCPPS_T_KEILTCP
-static void dm9000_Isr()
+static void dm9000_Isr(void *args)
 {
 	uint_t nReg;
 
@@ -333,14 +328,14 @@ static void dm9000_Isr()
 	nReg = dm9000_RegRead(DM9000_ISR);               /* Got ISR */
 	dm9000_RegWrite(DM9000_ISR, nReg);    /* Clear ISR status */
 
-	DM9000_TRACE("dm9000 isr: int status %04x\n", nReg);
+	dm9000_DbgOut("dm9000 isr: int status %04x\n", nReg);
 
 	/* receive overflow */
 	if (nReg & ISR_ROS)
-		DM9000_TRACE("overflow\n");
+		dm9000_DbgOut("overflow\n");
 
 	if (nReg & ISR_ROOS)
-		DM9000_TRACE("overflow counter overflow\n");
+		dm9000_DbgOut("overflow counter overflow\n");
 
 	/* Received the coming packet */
 	if (nReg & ISR_PRS)
@@ -348,7 +343,7 @@ static void dm9000_Isr()
 
 	/* Transmit Interrupt check */
 	if (nReg & ISR_PTS)
-		DM9000_TRACE("dm9000 isr: tx packet\n");
+		dm9000_DbgOut("dm9000 isr: tx packet\n");
 }
 
 
@@ -367,7 +362,7 @@ sys_res dm9000_PacketReceive()
 	if (nSte == 0)
 		return SYS_R_ERR;
 	if (nSte > 1) {
-		DM9000_TRACE("dm9000 rx: rx error, stop device\n");
+		dm9000_DbgOut("dm9000 rx: rx error, stop device\n");
 
 		dm9000_Init();
 		//dm9000_RegWrite(DM9000_RCR, 0x00);	/* Stop Device */
@@ -380,17 +375,17 @@ sys_res dm9000_PacketReceive()
 	nSte = __raw_readw(DM9000_ADR_DATA);
 	nLen = __raw_readw(DM9000_ADR_DATA);
 
-	DM9000_TRACE("dm9000 rx: status %04x nLen %d\n", nSte, nLen);
+	dm9000_DbgOut("dm9000 rx: status %04x nLen %d\n", nSte, nLen);
 
 	if ((nSte & 0xbf00) || (nLen < 0x40) || (nLen > DM9000_PKT_MAX)) {
 		if (nSte & 0x100)
-			DM9000_TRACE("rx fifo error\n");
+			dm9000_DbgOut("rx fifo error\n");
 		if (nSte & 0x200)
-			DM9000_TRACE("rx crc error\n");
+			dm9000_DbgOut("rx crc error\n");
 		if (nSte & 0x8000)
-			DM9000_TRACE("rx length error\n");
+			dm9000_DbgOut("rx length error\n");
 		if (nLen > DM9000_PKT_MAX)
-			DM9000_TRACE("rx length too big\n");
+			dm9000_DbgOut("rx length too big\n");
 		/* RESET device */
 		dm9000_RegWrite(DM9000_NCR, NCR_RST);
 		os_thd_Slp1Tick();
@@ -407,7 +402,7 @@ sys_res dm9000_PacketReceive()
 			*pData++ = __raw_readw(DM9000_ADR_DATA);
 		put_in_queue(frame);
 	} else {
-		DM9000_TRACE("dm9000 rx: no pbuf\n");
+		dm9000_DbgOut("dm9000 rx: no pbuf\n");
 		/* no pbuf, discard pData from DM9000 */
 		for (nLen = ALIGN2(nLen); nLen; nLen -= 2)
 			__raw_readw(DM9000_ADR_DATA);
@@ -417,11 +412,12 @@ sys_res dm9000_PacketReceive()
 	return SYS_R_OK;
 }
 
-sys_res dm9000_PacketSend(const void *pData, uint_t nLen)
+sys_res dm9000_PacketSend(const void *pBuf, uint_t nLen)
 {
 	uint_t i = 10000;
+	uint16_t *pData = (uint16_t *)pBuf;
 
-	DM9000_TRACE("dm9000 tx: %d\n", nLen);
+	dm9000_DbgOut("dm9000 tx: %d\n", nLen);
 
 	/* lock DM9000 device */
 	
@@ -448,7 +444,7 @@ sys_res dm9000_PacketSend(const void *pData, uint_t nLen)
 
 	/* unlock DM9000 device */
 
-	DM9000_TRACE("dm9000 tx done\n");
+	dm9000_DbgOut("dm9000 tx done\n");
 	return SYS_R_OK;
 }
 
@@ -468,369 +464,20 @@ sys_res dm9000_Control(uint_t nCmd, void *args)
     return SYS_R_OK;
 }
 
-sys_res dm9000_Init()
+extern uint8_t own_hw_adr[ETH_ADRLEN];
+void dm9000_Init()
 {
 
-	return dm9000_Reset(dm9000_MacAddr);
+	/* GPIO Initial */
+	sys_GpioConf(gpio_node(tbl_bspDm9000, 0));
+	sys_GpioConf(gpio_node(tbl_bspDm9000, 1));
+
+	dm9000_Reset(own_hw_adr);
 }
 
 #endif
 
-struct rt_dm9000_eth
-{
-    /* inherit from ethernet device */
-    struct eth_device parent;
 
-    enum DM9000_TYPE type;
-	enum DM9000_PHY_mode mode;
-
-    rt_uint8_t imr_all;
-
-    rt_uint8_t packet_cnt;                  /* packet I or II */
-    rt_uint16_t queue_packet_len;           /* queued packet (packet II) */
-
-    /* interface address info. */
-    rt_uint8_t  dev_addr[MAX_ADDR_LEN];		/* hw address	*/
-};
-static struct rt_dm9000_eth dm9000_device;
-static os_sem dm9000_sem_ack, dm9000_sem_lock;
-
-static rt_err_t dm9000_open(rt_device_t dev, rt_uint16_t oflag)
-{
-
-	return RT_EOK;
-}
-
-static rt_err_t dm9000_close(rt_device_t dev)
-{
-
-	/* RESET devie */
-	phy_write(0, 0x8000);	/* PHY RESET */
-	dm9000_RegWrite(DM9000_GPR, 0x01);	/* Power-Down PHY */
-	dm9000_RegWrite(DM9000_IMR, 0x80);	/* Disable all interrupt */
-	dm9000_RegWrite(DM9000_RCR, 0x00);	/* Disable RX */
-
-	return RT_EOK;
-}
-
-static rt_size_t dm9000_read(rt_device_t dev, rt_off_t pos, void* buffer, rt_size_t size)
-{
-
-	rt_set_errno(-RT_ENOSYS);
-	return 0;
-}
-
-static rt_size_t dm9000_write (rt_device_t dev, rt_off_t pos, const void* buffer, rt_size_t size)
-{
-
-	rt_set_errno(-RT_ENOSYS);
-	return 0;
-}
-
-static rt_err_t dm9000_control(rt_device_t dev, rt_uint8_t cmd, void *args)
-{
-    switch (cmd)
-    {
-    case NIOCTL_GADDR:
-        /* get mac address */
-        if (args)
-			memcpy(args, dm9000_device.dev_addr, 6);
-        else
-			return -RT_ERROR;
-        break;
-    default :
-        break;
-    }
-
-    return RT_EOK;
-}
-
-/* ethernet device interface */
-/* transmit packet. */
-static rt_err_t dm9000_tx( rt_device_t dev, struct pbuf* p)
-{
-	
-	DM9000_TRACE("dm9000 tx: %d\n", p->tot_len);
-	
-	/* lock DM9000 device */
-	rt_sem_take(&dm9000_sem_lock, RT_WAITING_FOREVER);
-	
-	/* disable dm9000a interrupt */
-	dm9000_RegWrite(DM9000_IMR, IMR_PAR);
-	
-	/* Move data to DM9000 TX RAM */
-	__raw_writew(DM9000_MWCMD, DM9000_ADR_CMD);
-	
-	{
-		/* q traverses through linked list of pbuf's
-		 * This list MUST consist of a single packet ONLY */
-		struct pbuf *q;
-		rt_uint16_t pbuf_index = 0;
-		rt_uint8_t word[2], word_index = 0;
-	
-		q = p;
-		/* Write data into dm9000a, two bytes at a time
-		 * Handling pbuf's with odd number of bytes correctly
-		 * No attempt to optimize for speed has been made */
-		while (q)
-		{
-			if (pbuf_index < q->len)
-			{
-				word[word_index++] = ((u8_t*)q->payload)[pbuf_index++];
-				if (word_index == 2)
-				{
-					__raw_writew((word[1] << 8) | word[0], DM9000_ADR_DATA);
-					word_index = 0;
-				}
-			}
-			else
-			{
-				q = q->next;
-				pbuf_index = 0;
-			}
-		}
-		/* One byte could still be unsent */
-		if (word_index == 1)
-		{
-			__raw_writew(word[0], DM9000_ADR_DATA);
-		}
-	}
-	
-	if (dm9000_device.packet_cnt == 0)
-	{
-		DM9000_TRACE("dm9000 tx: first packet\n");
-		
-		dm9000_device.packet_cnt ++;
-		/* Set TX length to DM9000 */
-		dm9000_RegWrite(DM9000_TXPLL, p->tot_len & 0xff);
-		dm9000_RegWrite(DM9000_TXPLH, (p->tot_len >> 8) & 0xff);
-		
-		/* Issue TX polling command */
-		dm9000_RegWrite(DM9000_TCR, TCR_TXREQ);	/* Cleared after TX complete */
-	}
-	else
-	{
-		DM9000_TRACE("dm9000 tx: second packet\n");
-		
-		dm9000_device.packet_cnt ++;
-		dm9000_device.queue_packet_len = p->tot_len;
-	}
-	
-	/* enable dm9000a interrupt */
-	dm9000_RegWrite(DM9000_IMR, dm9000_device.imr_all);
-	
-	/* unlock DM9000 device */
-	rt_sem_release(&dm9000_sem_lock);
-	
-	/* wait ack */
-	rt_sem_take(&dm9000_sem_ack, RT_WAITING_FOREVER);
-	
-	DM9000_TRACE("dm9000 tx done\n");
-	
-	return RT_EOK;
-}
-
-/* reception packet. */
-static struct pbuf *_dm9000_rx(rt_device_t dev)
-{
-	struct pbuf *p, *q;
-	uint_t nSte, nLen;
-	uint16_t *pData;
-
-
-    /* Check packet ready or not */
-    dm9000_RegRead(DM9000_MRCMDX);	    		/* Dummy read */
-    nSte = __raw_readw(DM9000_ADR_DATA) & 0xff;		/* Got most updated pData */
-	if (nSte != 1) {
-		if (nSte == 0) {
-	        /* restore receive interrupt */
-		    dm9000_device.imr_all = IMR_PAR | IMR_PTM | IMR_PRM;
-	        dm9000_RegWrite(DM9000_IMR, dm9000_device.imr_all);
-		} else {
-			DM9000_TRACE("dm9000 rx: rx error, reset device\n");
-			dm9000_Reset(dm9000_device.dev_addr);
-		}
-		return NULL;
-	}
-
-	/* A packet ready now  & Get status/length */
-	__raw_writew(DM9000_MRCMD, DM9000_ADR_CMD);
-
-	nSte = __raw_readw(DM9000_ADR_DATA);
-	nLen = __raw_readw(DM9000_ADR_DATA);
-
-	DM9000_TRACE("dm9000 rx: status %04x len %d\n", nSte, nLen);
-	if ((nSte & 0xB700) || (nLen < 0x40) || (nLen > DM9000_PKT_MAX)) {
-		DM9000_PRINTF("rx error: status %04x\n", nSte);
-		if (nSte & 0x0100)
-			DM9000_PRINTF("rx fifo error\n");
-		if (nSte & 0x0200)
-			DM9000_PRINTF("rx crc error\n");
-		if (nSte & 0x8000)
-			DM9000_PRINTF("rx length error\n");
-		if (nLen > DM9000_PKT_MAX) {
-			DM9000_PRINTF("rx length too big\n");
-			/* RESET device */
-			dm9000_Reset(dm9000_device.dev_addr);
-		}
-		return NULL;
-	}
-	/* allocate buffer */
-	p = pbuf_alloc(PBUF_LINK, nLen, PBUF_RAM);
-	if (p != NULL) {
-        for (q = p; q != NULL; q = q->next) {
-            pData = (uint16_t *)q->payload;
-            for (nLen = ALIGN2(q->len); nLen > 2; nLen -= 2)
-                *pData++ = __raw_readw(DM9000_ADR_DATA);
-			if (q->len & 1)
-				*((uint8_t *)q->payload + q->len - 1) = __raw_readw(DM9000_ADR_DATA);
-			else
-                *pData = __raw_readw(DM9000_ADR_DATA);
-        }
-	} else {
-		DM9000_PRINTF("dm9000 rx: no pbuf\n");
-		/* no pbuf, discard pData from DM9000 */
-		for (nLen = ALIGN2(nLen); nLen; nLen -= 2)
-			__raw_readw(DM9000_ADR_DATA);
-	}
-    return p;
-}
-
-static struct pbuf *dm9000_rx(rt_device_t dev)
-{
-	struct pbuf *p;
-
-    /* lock DM9000 device */
-    rt_sem_take(&dm9000_sem_lock, RT_WAITING_FOREVER);
-
-	p = _dm9000_rx(dev);
-
-	/* unlock DM9000 device */
-	rt_sem_release(&dm9000_sem_lock);
-	return p;
-}
-
-
-/* interrupt service routine */
-static void dm9000_Isr(void *args)
-{
-	rt_uint16_t int_status;
-	rt_uint16_t last_io;
-
-	last_io = __raw_readw(DM9000_ADR_CMD);
-
-	/* Disable all interrupts */
-	dm9000_RegWrite(DM9000_IMR, IMR_PAR);
-
-	/* Got DM9000 interrupt status */
-	int_status = dm9000_RegRead(DM9000_ISR);	/* Got ISR */
-	dm9000_RegWrite(DM9000_ISR, int_status);	/* Clear ISR status */
-
-	DM9000_TRACE("dm9000 isr: int status %04x\n", int_status);
-
-	/* receive overflow */
-	if (int_status & ISR_ROS)
-	{
-	    DM9000_PRINTF("overflow\n");
-	}
-
-	if (int_status & ISR_ROOS)
-	{
-	    DM9000_PRINTF("overflow counter overflow\n");
-	}
-
-	/* Received the coming packet */
-	if (int_status & ISR_PRS)
-	{
-		/* disable receive interrupt */
-		dm9000_device.imr_all = IMR_PAR | IMR_PTM;
-
-		/* a frame has been received */
-		eth_device_ready(&(dm9000_device.parent));
-	}
-
-	/* Transmit Interrupt check */
-	if (int_status & ISR_PTS)
-	{
-	    /* transmit done */
-	    int tx_status = dm9000_RegRead(DM9000_NSR);    /* Got TX status */
-
-	    if (tx_status & (NSR_TX2END | NSR_TX1END))
-	    {
-	        dm9000_device.packet_cnt --;
-	        if (dm9000_device.packet_cnt > 0)
-	        {
-	        	DM9000_TRACE("dm9000 isr: tx second packet\n");
-
-	            /* transmit packet II */
-	            /* Set TX length to DM9000 */
-	            dm9000_RegWrite(DM9000_TXPLL, dm9000_device.queue_packet_len & 0xff);
-	            dm9000_RegWrite(DM9000_TXPLH, (dm9000_device.queue_packet_len >> 8) & 0xff);
-
-	            /* Issue TX polling command */
-	            dm9000_RegWrite(DM9000_TCR, TCR_TXREQ);	/* Cleared after TX complete */
-	        }
-
-	        /* One packet sent complete */
-	        rt_sem_release(&dm9000_sem_ack);
-	    }
-	}
-
-	/* Re-enable interrupt mask */
-	dm9000_RegWrite(DM9000_IMR, dm9000_device.imr_all);
-
-	__raw_writew(last_io, DM9000_ADR_CMD);
-}
-
-static rt_err_t dm9000_init(rt_device_t dev)
-{
-
-	if (dm9000_Reset(dm9000_device.dev_addr) != SYS_R_OK)
-		return RT_ERROR;
-
-	return RT_EOK;
-}
-
-
-void dm9000_Init()
-{
-
-	rt_sem_init(&dm9000_sem_ack, "tx_ack", 1, RT_IPC_FLAG_FIFO);
-	rt_sem_init(&dm9000_sem_lock, "ethlock", 1, RT_IPC_FLAG_FIFO);
-
-	dm9000_device.type = TYPE_DM9000A;
-	dm9000_device.mode = DM9000_AUTO;
-	dm9000_device.packet_cnt = 0;
-	dm9000_device.queue_packet_len = 0;
-
-	/*
-	 * SRAM Tx/Rx pointer automatically return to start address,
-	 * Packet Transmitted, Packet Received
-	 */
-	dm9000_device.imr_all = IMR_PAR | IMR_PTM | IMR_PRM;
-
-	dm9000_device.dev_addr[0] = 0x01;
-	dm9000_device.dev_addr[1] = 0x60;
-	dm9000_device.dev_addr[2] = 0x6E;
-	dm9000_device.dev_addr[3] = rand();
-	dm9000_device.dev_addr[4] = rand();
-	dm9000_device.dev_addr[5] = rand();
-
-	dm9000_device.parent.parent.init = dm9000_init;
-	dm9000_device.parent.parent.open = dm9000_open;
-	dm9000_device.parent.parent.close = dm9000_close;
-	dm9000_device.parent.parent.read = dm9000_read;
-	dm9000_device.parent.parent.write = dm9000_write;
-	dm9000_device.parent.parent.control = dm9000_control;
-	dm9000_device.parent.parent.user_data = RT_NULL;
-
-	dm9000_device.parent.eth_rx = dm9000_rx;
-	dm9000_device.parent.eth_tx = dm9000_tx;
-
-	eth_device_init(&(dm9000_device.parent), "eth0");
-	/* init dm9000 device driver */
-	rt_device_init(&(dm9000_device.parent.parent));
-}
 
 #ifdef RT_USING_FINSH
 void dm9000reg(void)

@@ -24,7 +24,7 @@ void sys_IOHandle(void *args)
 		irq_BottomHandler();
 #endif
 #if DM9000_ENABLE && (ETH_INT_ENABLE == 0)
-	dm9000_Isr();
+	dm9000_Isr(NULL);
 #endif
 #if OS_QUEUE_QTY
 	os_que_Idle();

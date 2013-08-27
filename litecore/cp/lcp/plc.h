@@ -6,6 +6,27 @@ extern "C" {
 #endif
 
 
+//Public Defines
+#define PLC_S_INIT				0
+#define PLC_S_SYNC				1
+#define PLC_S_IDLE				2
+#define PLC_S_SLAVE				3
+#define PLC_S_WAIT				4
+
+//Modem Type Defines
+#define PLC_T_XC_GW				0
+#define PLC_T_XC_RT				1
+#define PLC_T_XC_GD				2
+
+#define PLC_T_ES_RT				4
+#define PLC_T_ES_38				5
+
+#define PLC_T_TOPCOM			7
+#define PLC_T_BOST				8
+#define PLC_T_RISECOM			9
+#define PLC_T_LEAGUERME			10
+#define PLC_T_MIARTECH			11
+
 
 //Public Typedefs
 typedef const struct {
@@ -57,9 +78,13 @@ typedef __packed struct {
 
 //GDW3761Ω” ’÷°
 typedef struct {
+	uint8_t		ste;
+	uint8_t		tmo;
 	uint8_t		type;
 	uint8_t		mode;
+	uint8_t		time;
 	uint8_t		adr[6];
+	uint8_t		info[8];
 	chl			chl;
 	buf			rbuf;
 	uint8_t		afn;
@@ -77,16 +102,22 @@ typedef struct {
 
 //External Functions
 void plc_Init(t_plc *p);
-void plc_Reset(t_plc *p);
-sys_res plc_Sync(t_plc *p);
+
+sys_res plc_RealRead(t_plc *p, buf b, const uint8_t *pAdr, uint_t nCode, const void *pData, uint_t nLen, uint_t nRelay, const uint8_t *pRtAdr);
+void plc_Broadcast(t_plc *p);
+sys_res plc_Handler(t_plc *p, buf b, uint8_t *pAdr);
 
 int plc_GetRetry(t_plc *p);
 int plc_GetWait(t_plc *p, uint_t nRelay);
 int plc_IsNeedRt(t_plc *p);
 int plc_IsNotSync(t_plc *p);
+void plc_GetInfo(t_plc *p, char *pInfo);
+
 
 //User Functions
 int plc_MeterRead(uint_t nSn, void *pAdr);
+uint32_t plc_Request(const void *pAdr, uint_t *pIs97);
+int plc_IsInTime(void);
 
 
 #ifdef __cplusplus

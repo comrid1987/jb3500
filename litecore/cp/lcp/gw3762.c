@@ -214,13 +214,13 @@ sys_res gw3762_Broadcast(t_plc *p, const void *pAdr, const void *pData, uint_t n
 
 	nRoute = 1;
 	switch (p->type) {
-	case GW3762_T_XC_GW:
+	case PLC_T_XC_GW:
 		nRoute = 0;
-	case GW3762_T_XC_RT:
+	case PLC_T_XC_RT:
 		nAfn = GW3762_AFN_ROUTE_TRANSMIT;
 		nDT = 0x0001;
 		break;
-	case GW3762_T_ES_38:
+	case PLC_T_ES_38:
 		nRoute = 0;
 	default:
 		nAfn = GW3762_AFN_DATA_SET;
@@ -246,8 +246,8 @@ sys_res gw3762_MeterRead(t_plc *p, const void *pAdr, uint_t nRelay, const void *
 	uint_t nAfn;
 
 	switch (p->type) {
-	case GW3762_T_ES_38:
-	case GW3762_T_XC_GD:
+	case PLC_T_ES_38:
+	case PLC_T_XC_GD:
 		nAfn = GW3762_AFN_TRANSMIT;
 		break;
 	default:
@@ -261,7 +261,7 @@ sys_res gw3762_MeterRT(t_plc *p, const void *pAdr, const void *pData, uint_t nLe
 {
 	uint_t nAfn;
 
-	if (p->type == GW3762_T_RISECOM)
+	if (p->type == PLC_T_RISECOM)
 		nAfn = GW3762_AFN_TRANSMIT;
 	else
 		nAfn = GW3762_AFN_ROUTE_TRANSMIT;
@@ -301,11 +301,12 @@ sys_res gw3762_Confirm(t_plc *p, uint_t nFlag, uint_t nTmo)
 //-------------------------------------------------------------------------------------
 // 硬件初始化
 //-------------------------------------------------------------------------------------
-sys_res gw3762_HwReset(t_plc *p, uint_t nTmo)
+sys_res gw3762_HwReset(t_plc *p)
 {
+	uint_t nTmo;
 
 	gw3762_Transmit2Module(p, GW3762_AFN_RESET, 0x0001, NULL, 0);
-	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
+	for (nTmo = 5000 / OS_TICK_MS; nTmo; nTmo--) {
 		if (gw3762_Analyze(p) == SYS_R_OK)
 			break;
 	}
@@ -321,11 +322,12 @@ sys_res gw3762_HwReset(t_plc *p, uint_t nTmo)
 //-------------------------------------------------------------------------------------
 //参数初始化
 //-------------------------------------------------------------------------------------
-sys_res gw3762_ParaReset(t_plc *p, uint_t nTmo)
+sys_res gw3762_ParaReset(t_plc *p)
 {
+	uint_t nTmo;
 
 	gw3762_Transmit2Module(p, GW3762_AFN_RESET, 0x0002, NULL, 0);
-	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
+	for (nTmo = 5000 / OS_TICK_MS; nTmo; nTmo--) {
 		if (gw3762_Analyze(p) == SYS_R_OK)
 			break;
 	}
@@ -341,12 +343,13 @@ sys_res gw3762_ParaReset(t_plc *p, uint_t nTmo)
 //-------------------------------------------------------------------------------------
 // 获取厂商代码和版本信息
 //-------------------------------------------------------------------------------------
-sys_res gw3762_InfoGet(t_plc *p, uint_t nTmo)
+sys_res gw3762_InfoGet(t_plc *p)
 {
+	uint_t nTmo;
 
 	//查厂商代码及版本信息
 	gw3762_Transmit2Module(p, GW3762_AFN_DATA_FETCH, 0x0001, NULL, 0);
-	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
+	for (nTmo = 3000 / OS_TICK_MS; nTmo; nTmo--) {
 		if (gw3762_Analyze(p) == SYS_R_OK)
 			break;
 	}
@@ -362,11 +365,12 @@ sys_res gw3762_InfoGet(t_plc *p, uint_t nTmo)
 //-------------------------------------------------------------------------------------
 // 设置模块主节点地址
 //-------------------------------------------------------------------------------------
-sys_res gw3762_ModAdrSet(t_plc *p, uint_t nTmo)
+sys_res gw3762_ModAdrSet(t_plc *p)
 {
+	uint_t nTmo;
 
 	gw3762_Transmit2Module(p, GW3762_AFN_DATA_SET, 0x0001, p->adr, 6);
-	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
+	for (nTmo = 3000 / OS_TICK_MS; nTmo; nTmo--) {
 		if (gw3762_Analyze(p) == SYS_R_OK)
 			break;
 	}
@@ -382,11 +386,12 @@ sys_res gw3762_ModAdrSet(t_plc *p, uint_t nTmo)
 //-------------------------------------------------------------------------------------
 // 读取从节点数量
 //-------------------------------------------------------------------------------------
-sys_res gw3762_SubAdrQty(t_plc *p, uint16_t *pQty, uint_t nTmo)
+sys_res gw3762_SubAdrQty(t_plc *p, uint16_t *pQty)
 {
+	uint_t nTmo;
 
 	gw3762_Transmit2Module(p, GW3762_AFN_ROUTE_FETCH, 0x0001, NULL, 0);
-	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
+	for (nTmo = 3000 / OS_TICK_MS; nTmo; nTmo--) {
 		if (gw3762_Analyze(p) == SYS_R_OK)
 			break;
 	}
@@ -403,13 +408,13 @@ sys_res gw3762_SubAdrQty(t_plc *p, uint16_t *pQty, uint_t nTmo)
 //-------------------------------------------------------------------------------------
 // 读取从节点信息
 //-------------------------------------------------------------------------------------
-sys_res gw3762_SubAdrRead(t_plc *p, uint_t nSn, uint16_t *pQty, uint8_t *pAdr, uint_t nTmo)
+sys_res gw3762_SubAdrRead(t_plc *p, uint_t nSn, uint16_t *pQty, uint8_t *pAdr)
 {
-	uint_t nTemp;
+	uint_t nTmo, nTemp;
 
 	nTemp = 0x00010000 | nSn;
 	gw3762_Transmit2Module(p, GW3762_AFN_ROUTE_FETCH, 0x0002, &nTemp, 3);
-	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
+	for (nTmo = 2000 / OS_TICK_MS; nTmo; nTmo--) {
 		if (gw3762_Analyze(p) == SYS_R_OK)
 			break;
 	}
@@ -430,11 +435,12 @@ sys_res gw3762_SubAdrRead(t_plc *p, uint_t nSn, uint16_t *pQty, uint8_t *pAdr, u
 //-------------------------------------------------------------------------------------
 // 读取路由运行状态
 //-------------------------------------------------------------------------------------
-sys_res gw3762_StateGet(t_plc *p, uint_t nTmo)
+sys_res gw3762_StateGet(t_plc *p)
 {
+	uint_t nTmo;
 
 	gw3762_Transmit2Module(p, GW3762_AFN_ROUTE_FETCH, 0x0008, NULL, 0);
-	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
+	for (nTmo = 3000 / OS_TICK_MS; nTmo; nTmo--) {
 		if (gw3762_Analyze(p) == SYS_R_OK)
 			break;
 	}
@@ -451,8 +457,9 @@ sys_res gw3762_StateGet(t_plc *p, uint_t nTmo)
 //-------------------------------------------------------------------------------------
 // 添加从节点
 //-------------------------------------------------------------------------------------
-sys_res gw3762_SubAdrAdd(t_plc *p, uint_t nSn, const void *pAdr, uint_t nPrtl, uint_t nTmo)
+sys_res gw3762_SubAdrAdd(t_plc *p, uint_t nSn, const void *pAdr, uint_t nPrtl)
 {
+	uint_t nTmo;
 	uint8_t aBuf[10];
 
 	aBuf[0] = 1;
@@ -460,7 +467,7 @@ sys_res gw3762_SubAdrAdd(t_plc *p, uint_t nSn, const void *pAdr, uint_t nPrtl, u
 	memcpy(&aBuf[7], &nSn, 2);
 	aBuf[9] = nPrtl;
 	gw3762_Transmit2Module(p, GW3762_AFN_ROUTE_SET, 0x0001, aBuf, 10);
-	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
+	for (nTmo = 2000 / OS_TICK_MS; nTmo; nTmo--) {
 		if (gw3762_Analyze(p) == SYS_R_OK)
 			break;
 	}
@@ -477,14 +484,15 @@ sys_res gw3762_SubAdrAdd(t_plc *p, uint_t nSn, const void *pAdr, uint_t nPrtl, u
 //-------------------------------------------------------------------------------------
 // 删除从节点
 //-------------------------------------------------------------------------------------
-sys_res gw3762_SubAdrDelete(t_plc *p, const void *pAdr, uint_t nTmo)
+sys_res gw3762_SubAdrDelete(t_plc *p, const void *pAdr)
 {
+	uint_t nTmo;
 	uint8_t aBuf[7];
 
 	aBuf[0] = 1;
 	memcpy(&aBuf[1], pAdr, 6);
 	gw3762_Transmit2Module(p, GW3762_AFN_ROUTE_SET, 0x0002, aBuf, 7);
-	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
+	for (nTmo = 2000 / OS_TICK_MS; nTmo; nTmo--) {
 		if (gw3762_Analyze(p) == SYS_R_OK)
 			break;
 	}
@@ -500,15 +508,16 @@ sys_res gw3762_SubAdrDelete(t_plc *p, const void *pAdr, uint_t nTmo)
 //-------------------------------------------------------------------------------------
 // 模式设置
 //-------------------------------------------------------------------------------------
-sys_res gw3762_ModeSet(t_plc *p, uint_t nMode, uint_t nTmo)
+sys_res gw3762_ModeSet(t_plc *p, uint_t nMode)
 {
+	uint_t nTmo;
 	uint8_t aBuf[3];
 
 	aBuf[0] = nMode;
 	aBuf[1] = 0xF4;
 	aBuf[2] = 0x01;
 	gw3762_Transmit2Module(p, GW3762_AFN_ROUTE_SET, 0x0008, aBuf, 3);
-	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
+	for (nTmo = 3000 / OS_TICK_MS; nTmo; nTmo--) {
 		if (gw3762_Analyze(p) == SYS_R_OK)
 			break;
 	}
@@ -524,11 +533,12 @@ sys_res gw3762_ModeSet(t_plc *p, uint_t nMode, uint_t nTmo)
 //-------------------------------------------------------------------------------------
 // 路由控制
 //-------------------------------------------------------------------------------------
-sys_res gw3762_RtCtrl(t_plc *p, uint_t nDT, uint_t nTmo)
+sys_res gw3762_RtCtrl(t_plc *p, uint_t nDT)
 {
+	uint_t nTmo;
 
 	gw3762_Transmit2Module(p, GW3762_AFN_ROUTE_CTRL, nDT, NULL, 0);
-	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
+	for (nTmo = 3000 / OS_TICK_MS; nTmo; nTmo--) {
 		if (gw3762_Analyze(p) == SYS_R_OK)
 			break;
 	}
@@ -601,11 +611,12 @@ sys_res gw3762_Transmit(t_plc *p, buf b, const void *pData, uint_t nLen)
 //-------------------------------------------------------------------------------------
 // 东软扩展-读取路由运行模式
 //-------------------------------------------------------------------------------------
-sys_res gw3762_Es_ModeGet(t_plc *p, uint_t *pMode, uint_t nTmo)
+sys_res gw3762_Es_ModeGet(t_plc *p, uint_t *pMode)
 {
+	uint_t nTmo;
 
 	gw3762_Transmit2ES(p, GW3762_AFN_TRANSMIT, 0x0010, NULL, 0);
-	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
+	for (nTmo = 3000 / OS_TICK_MS; nTmo; nTmo--) {
 		if (gw3762_Analyze(p) == SYS_R_OK)
 			break;
 	}
@@ -622,11 +633,12 @@ sys_res gw3762_Es_ModeGet(t_plc *p, uint_t *pMode, uint_t nTmo)
 //-------------------------------------------------------------------------------------
 // 东软扩展-设置路由运行模式
 //-------------------------------------------------------------------------------------
-sys_res gw3762_Es_ModeSet(t_plc *p, uint_t nMode, uint_t nTmo)
+sys_res gw3762_Es_ModeSet(t_plc *p, uint_t nMode)
 {
+	uint_t nTmo;
 
 	gw3762_Transmit2ES(p, GW3762_AFN_RESET, 0x0040, &nMode, 1);
-	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
+	for (nTmo = 5000 / OS_TICK_MS; nTmo; nTmo--) {
 		if (gw3762_Analyze(p) == SYS_R_OK)
 			break;
 	}
