@@ -21,11 +21,12 @@
 extern uint8_t own_hw_adr[];
 
 //Local Variables
-static uint_t eth_inited = 0;
+static int eth_inited;
 
 void init_ethernet()
 {
 
+	eth_inited = 0;
 #if STM32_ETH_ENABLE || LM3S_ETH_ENABLE || LPC176X_ETH_ENABLE
 	if (arch_EmacInit() == 0) {
 		eth_inited = 1;
