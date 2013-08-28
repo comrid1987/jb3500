@@ -88,6 +88,9 @@ dque	dqueue = {ARR_SIZE(__dqueue), __dqueue};
 //Network Protocal Stack Modules
 //-------------------------------------------------------------------------
 #if TCPPS_ENABLE
+#if DM9000_ENABLE
+#include <drivers/dm9000.c>
+#endif
 #include <net/net.c>
 #endif
 
@@ -97,9 +100,6 @@ dque	dqueue = {ARR_SIZE(__dqueue), __dqueue};
 //-------------------------------------------------------------------------
 #if GUI_ENABLE
 #include <hi/gui.c>
-#endif
-#if DM9000_ENABLE
-#include <drivers/dm9000.c>
 #endif
 
 //-------------------------------------------------------------------------

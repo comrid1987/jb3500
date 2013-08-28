@@ -262,8 +262,10 @@ int net_Listen(int s, int backlog)
 	if (s > TCP_NUMSOCKS) {
 		if (udp_open(s - TCP_NUMSOCKS, rtxip_aLocPort[s - 1]) == __TRUE)
 			return 0;
-	} else if (tcp_listen(s, rtxip_aLocPort[s - 1]) == __TRUE)
-		return 0;
+	} else {
+		if (tcp_listen(s, rtxip_aLocPort[s - 1]) == __TRUE)
+			return 0;
+	}
 	return -1;
 }
 
@@ -278,8 +280,10 @@ int net_Connect(int s, struct sockaddr *name, int namelen)
 		memcpy(&pIp->port, &pTo->sin_port, sizeof(pIp->port));
 		if (udp_open(s - TCP_NUMSOCKS, 0) != __TRUE)
 			return -1;
-	} else if (tcp_connect(s, (uint8_t *)&pTo->sin_addr.s_addr, pTo->sin_port, 0) != __TRUE)
-		return -1;
+	} else {
+		if (tcp_connect(s, (uint8_t *)&pTo->sin_addr.s_addr, pTo->sin_port, 0) != __TRUE)
+			return -1;
+	}
 	return 0;
 }
 

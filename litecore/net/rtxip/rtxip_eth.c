@@ -30,9 +30,11 @@ void init_ethernet()
 	if (arch_EmacInit() == 0) {
 		eth_inited = 1;
 		arch_EmacAddr(own_hw_adr);
-	} else {
-		eth_inited = 0;
 	}
+#endif
+#if DM9000_ENABLE
+	if (dm9000_Reset(own_hw_adr) == SYS_R_OK)
+		eth_inited = 1;
 #endif
 }
  
