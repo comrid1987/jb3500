@@ -128,6 +128,7 @@ uint32_t att7022_ReadReg(p_att7022 p, uint_t nReg)
 
 	//读数据寄存器
 	spi_Transce(p->spi, &nReg, 1, &nData, 3);
+	os_thd_Slp1Tick();
 	reverse(&nData, 3);
 	nData &= ATT7022_DATA_MASK;
 	//读校验寄存器	
@@ -166,7 +167,6 @@ sys_res att7022_Reset(p_att7022 p, p_att7022_cali pCali)
 
 	att7022_CaliClear(p);
 
-#if 1
 	att7022_WriteReg(p, ATT7022_REG_UADCPga, 0);			//电压通道ADC增益设置为1
 	att7022_WriteReg(p, ATT7022_REG_HFConst, pCali->HFConst);	//设置HFConst
 	nTemp = IB_VO * ISTART_RATIO * CONST_G * MAX_VALUE1;
@@ -200,7 +200,7 @@ sys_res att7022_Reset(p_att7022 p, p_att7022_cali pCali)
 		att7022_WriteReg(p, ATT7022_REG_PhsregB0 + i, pCali->PhsregB[i]);
 		att7022_WriteReg(p, ATT7022_REG_PhsregC0 + i, pCali->PhsregC[i]);
 	}
-#endif
+
 	return att7022_WriteDisable(p);
 }
 

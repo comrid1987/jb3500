@@ -312,7 +312,6 @@ void stm32_FsmcInit()
 #else
 	xNand.FSMC_ECCPageSize = FSMC_ECCPageSize_512Bytes;
 #endif
-	xNand.FSMC_AddressLowMapping = FSMC_AddressLowMapping_Direct;
 	xNand.FSMC_TCLRSetupTime = 0x00;
 	xNand.FSMC_TARSetupTime = 0x00;
 	xNand.FSMC_CommonSpaceTimingStruct = &xNandReadTiming;

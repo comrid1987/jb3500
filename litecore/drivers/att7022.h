@@ -413,25 +413,15 @@ extern "C" {
 #define	MAX_VALUE2					16777216L	// 2 ^ 24 值
 #define	CONST_G						0.648f
 
-#define ISTART_RATIO				0.001f		//启动电流比值(Ib * 0.002)
-#define IB_VO						0.4f		//Ib时互感器的电压输出信号(0.4V)
-#define UCALI_CONST					220.0f		//电压校正常数(220V处校正)
-#define ICALI_CONST					1.5f		//电流校正常数(5A处校正)Ib值
-//#define ICALI_CONST				20.0f		//电流校正常数(5A处校正)Ib值
-#define ICALI_MUL					1.0f		//电流校正时Ib扩的倍数
+#define ISTART_RATIO				0.001f				//启动电流比值(Ib * 0.002)
+#define IB_VO						0.4f				//Ib时互感器的电压输出信号(0.4V)
+#define UCALI_CONST					220.0f				//电压校正常数(220V处校正)
+#define ICALI_CONST					ATT7022_CONST_IB	//电流校正常数(5A处校正)Ib值
+#define ICALI_MUL					1.0f				//电流校正时Ib扩的倍数
 
 #define PCALI_CONST					(UCALI_CONST * ICALI_CONST)//1100				//功率校正常数(220V/5A处校正, 功率因数为1)
 
-#if 0
-//谐波通道切换定义 
-#define att7022_AD_Channel_Ua() 	{att7022_ADD0(0);att7022_ADD1(0);att7022_ADD2(0);att7022_GainAD7(0);} 
-#define att7022_AD_Channel_Ub() 	{att7022_ADD0(1);att7022_ADD1(0);att7022_ADD2(0);att7022_GainAD7(1);} 
-#define att7022_AD_Channel_Uc() 	{att7022_ADD0(0);att7022_ADD1(1);att7022_ADD2(0);att7022_GainAD7(2);}  
-#define att7022_AD_Channel_Ia() 	{att7022_ADD0(1);att7022_ADD1(1);att7022_ADD2(0);att7022_GainAD7(3);} 
-#define att7022_AD_Channel_Ib() 	{att7022_ADD0(0);att7022_ADD1(0);att7022_ADD2(1);att7022_GainAD7(4);} 
-#define att7022_AD_Channel_Ic()		{att7022_ADD0(1);att7022_ADD1(0);att7022_ADD2(1);att7022_GainAD7(5);} 
-#define att7022_AD_Channel_None()	{att7022_ADD0(1);att7022_ADD1(1);att7022_ADD2(1);att7022_GainAD7(6);}  
-#endif
+
 
 
 //Public Typedefs

@@ -125,14 +125,14 @@ static const uint8_t uc1698_tblParam[] = {
 };
 
 #if EPI_ENABLE
-void lcd_WriteCmd(int nData)
+static void lcd_WriteCmd(int nData)
 {
 
 	__raw_writeb(nData, GUI_LCD_ADR_CMD);
 	sys_Delay(LCD_DELAY);
 }
 
-void lcd_WriteData(int nData)
+static void lcd_WriteData(int nData)
 {
 
 	__raw_writeb(nData, GUI_LCD_ADR_DATA);
@@ -171,7 +171,7 @@ static void lcd_WriteData(int nData)
 
 
 // 对比度调整
-void lcd_SetBR(char nBr)
+static void lcd_SetBR(char nBr)
 {
 	static uint_t lcd_nBr = UC1698_Bias_10;
 
@@ -180,7 +180,7 @@ void lcd_SetBR(char nBr)
 	lcd_WriteCmd(UC1698_SetBR | (lcd_nBr & 0x03));
 }
 
-void lcd_SetPM(uint8_t nPm)
+static void lcd_SetPM(uint8_t nPm)
 {
 	static uint_t lcd_nPm = 192;
 
@@ -241,9 +241,9 @@ void lcd_ClearAll(t_color color)
 {
 
 	if (color == COLOR_WHITE)
-		rt_memset(gui_aBuf, 0, sizeof(gui_aBuf));
+		memset(gui_aBuf, 0, sizeof(gui_aBuf));
 	else
-		rt_memset(gui_aBuf, 0xFF, sizeof(gui_aBuf));
+		memset(gui_aBuf, 0xFF, sizeof(gui_aBuf));
 }
 
 #if GUI_COLOR_SIZE == 2
@@ -396,3 +396,4 @@ void lcd_Refresh()
 
 
 #endif
+

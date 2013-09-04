@@ -20,12 +20,23 @@
 
 
 #if (ARCH_TYPE == ARCH_T_STM32F10X_HD) || (ARCH_TYPE == ARCH_T_STM32F10X_CL)
+#include <arch/cm3/stm32f10x/misc.c>
+#include <arch/cm3/stm32f10x/stm32f10x_adc.c>
+#include <arch/cm3/stm32f10x/stm32f10x_dma.c>
+#include <arch/cm3/stm32f10x/stm32f10x_exti.c>
+#include <arch/cm3/stm32f10x/stm32f10x_flash.c>
+#include <arch/cm3/stm32f10x/stm32f10x_fsmc.c>
+#include <arch/cm3/stm32f10x/stm32f10x_gpio.c>
+#include <arch/cm3/stm32f10x/stm32f10x_iwdg.c>
+#include <arch/cm3/stm32f10x/stm32f10x_rcc.c>
+#include <arch/cm3/stm32f10x/stm32f10x_tim.c>
+#include <arch/cm3/stm32f10x/stm32f10x_usart.c>
+
 #ifdef RT_USING_CONSOLE
 #include <arch/cm3/stm32f10x/serial.c>
 #endif
 #if ARCH_TYPE == ARCH_T_STM32F10X_CL
 #include <arch/cm3/stm32f10x/system_stm32f10x.c>
-#include <arch/cm3/stm32f10x/stm32f10x_rcc.c>
 #endif
 #include <arch/cm3/stm32f10x/arch.c>
 #include <arch/cm3/stm32f10x/arch_adc.c>
@@ -43,7 +54,7 @@
 #include <arch/cm3/stm32f10x/arch_spi.c>
 #include <arch/cm3/stm32f10x/arch_timer.c>
 #include <arch/cm3/stm32f10x/arch_uart.c>
-//#include <arch/cm3/stm32f10x/arch_retarget.c>
+#include <arch/cm3/stm32f10x/arch_retarget.c>
 
 #elif ARCH_TYPE == ARCH_T_STM32F20X
 #include <arch/cm3/stm32f20x/misc.c>
@@ -59,14 +70,12 @@
 #include <arch/cm3/stm32f20x/stm32f2xx_usart.c>
 #include <arch/cm3/stm32f20x/stm32f2xx_spi.c>
 
-
 #ifdef RT_USING_CONSOLE
 #include <arch/cm3/stm32f20x/serial.c>
 #endif
 #include <arch/cm3/stm32f20x/system_stm32f2xx.c>
 #include <arch/cm3/stm32f20x/arch.c>
 #include <arch/cm3/stm32f20x/arch_adc.c>
-//#include <arch/cm3/stm32f20x/arch_bkp.c>
 #include <arch/cm3/stm32f20x/arch_emac.c>
 #include <arch/cm3/stm32f20x/arch_flash.c>
 #include <arch/cm3/stm32f20x/arch_fsmc.c>
@@ -75,7 +84,6 @@
 #include <arch/cm3/stm32f20x/arch_it.c>
 #include <arch/cm3/stm32f20x/arch_iwdg.c>
 #include <arch/cm3/stm32f20x/arch_nand.c>
-//#include <arch/cm3/stm32f20x/arch_rtc.c>
 #include <arch/cm3/stm32f20x/arch_serial.c>
 #include <arch/cm3/stm32f20x/arch_spi.c>
 #include <arch/cm3/stm32f20x/arch_timer.c>

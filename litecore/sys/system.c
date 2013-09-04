@@ -76,78 +76,6 @@ void tsk_SysIo(void *args)
 #endif
 
 
-
-
-#if NANDFS_ENABLE
-sys_res up_Copy2Nand(const char *filename, uint_t pba, uint_t nDelete)
-{
-	sys_res res = SYS_R_ERR;
-	int fd;
-	uint_t ppo, len;
-	uint32_t nEcc;
-	void *buf;
-	u_byte4 uPage;
-
-	buf = mem_Malloc(NAND_PAGE_DATA + NAND_PAGE_SPARE);
-	if (buf == NULL)
-		return res;
-	os_thd_Lock();
-	do {
-		fd = fs_open(filename, O_RDONLY, 0);
-		if (fd < 0)
-			break;
-		for (ppo = 0, uPage.n = pba * NAND_BLK_PAGE; ; ppo += 1) {
-			if (ppo >= NAND_BLK_PAGE) {
-				ppo = 0;
-				pba += 1;
-			}
-			uPage.n = pba * NAND_BLK_PAGE + ppo;
-			if (ppo == 0)
-				nand_EraseBlock(&uPage);
-			len = fs_read(fd, buf, NAND_PAGE_DATA);
-			nand_ProgData(&uPage, buf, &nEcc);
-			nand_ProgSpare(&uPage, &nEcc);
-			if (len != NAND_PAGE_DATA)
-				break;
-		}
-		fs_close(fd);
-		if (nDelete)
-			fs_unlink(filename);
-		res = SYS_R_OK;
-	}while (0);
-	os_thd_Unlock();
-	mem_Free(buf);
-	return res;
-}
-
-#define IAP_UPGRADE_FILENAME		"/upgrade/gwj8000.bin"
-#define IAP_UPGRADE_OFFSET			4000
-
-static void sys_Upgrade()
-{
-	struct dfs_stat xStat;
-	u_byte4 uPage;
-	uint32_t nEcc;
-
-	os_thd_Lock();
-	do {
-		if (fs_stat(IAP_UPGRADE_FILENAME, &xStat) == -1)
-			break;
-		if (xStat.st_size == 0) {
-			fs_unlink(IAP_UPGRADE_FILENAME);
-			break;
-		}
-		uPage.n = IAP_UPGRADE_OFFSET * NAND_BLK_PAGE;
-		nand_EraseBlock(&uPage);
-		nand_ProgData(&uPage, &xStat.st_size, &nEcc);
-		nand_ProgSpare(&uPage, &nEcc);
-	}while (0);
-	os_thd_Unlock();
-	if (up_Copy2Nand(IAP_UPGRADE_FILENAME, IAP_UPGRADE_OFFSET + 1, 1) == SYS_R_OK)
-		sys_Reset();
-}
-#endif
-
 #if OS_TYPE
 void sys_Maintain()
 {
@@ -175,9 +103,6 @@ void sys_Maintain()
 #endif
 #if FLASH_ENABLE
 			flash_Flush(60);
-#endif
-#if NANDFLASH_ENABLE
-			sys_Upgrade();
 #endif
 		}
 #if UART_ENABLE

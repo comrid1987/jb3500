@@ -6,10 +6,14 @@
 
 #define SPIF_PAGE_SIZE			256
 
+#define SPIF_JEDEC_MX			0x20C2
+#define SPIF_JEDEC_SST			0x25BF
+
 #define SPIF_JEDEC_MX25L16		0x1520C2
 #define SPIF_JEDEC_MX25L32		0x1620C2
 #define SPIF_JEDEC_MX25L64		0x1720C2
-#define SPIF_JEDEC_SST25VF03	0x4A25BF
+#define SPIF_JEDEC_SST25VF16	0x4125BF
+#define SPIF_JEDEC_SST25VF32	0x4A25BF
 
 #define SPIF_T_NULL				0
 #define SPIF_T_MX25LXX			1
@@ -62,7 +66,9 @@ typedef struct {
 static os_sem spif_sem;
 #endif
 static t_spif_info spif_info;
+#if SPI_SEL_ENABLE
 static uint32_t spif_dbgJedec[BSP_SPIF_QTY];
+#endif
 
 //Private Macros
 #if SPIF_LOCK_ENABLE && OS_TYPE
@@ -90,8 +96,9 @@ static void _spif_WaitIdle(p_dev_spi p)
 {
 	uint_t nTmo, nSte = SPIF_SR_BUSY, nCmd = SPIF_CMD_READ_STATUS;
 
-	for (nTmo = 50000; (nSte & SPIF_SR_BUSY) && nTmo; nTmo--)
+	for (nTmo = 50000; (nSte & SPIF_SR_BUSY) && nTmo; nTmo--) {
 		spi_Transce(p, &nCmd, 1, &nSte, 1);
+	}
 }
 
 static void _spif_WriteEnable(p_dev_spi p)
@@ -222,8 +229,18 @@ void spif_Init()
 #endif
 		for (nRetry = 0; nRetry < 3; nRetry++) {
 			nJedecID = _spif_Probe(pSpi);
-			if (nJedecID == SPIF_JEDEC_MX25L32) {
-				p->size += 1024;
+			if ((nJedecID & 0xFFFF) == SPIF_JEDEC_MX) {
+				switch (nJedecID) {
+				case SPIF_JEDEC_MX25L64:
+					p->size += 2048;
+					break;
+				case SPIF_JEDEC_MX25L32:
+					p->size += 1024;
+					break;
+				default:
+					p->size += 512;
+					break;
+				}
 #if SPI_SEL_ENABLE
 				p->csid[j] = tbl_bspSpifCsid[i];
 #endif
@@ -231,17 +248,15 @@ void spif_Init()
 				j += 1;
 				break;
 			}
-			if (nJedecID == SPIF_JEDEC_MX25L64) {
-				p->size += 2048;
-#if SPI_SEL_ENABLE
-				p->csid[j] = tbl_bspSpifCsid[i];
-#endif
-				p->type[j] = SPIF_T_MX25LXX;
-				j += 1;
-				break;
-			}
-			if (nJedecID == SPIF_JEDEC_SST25VF03) {
-				p->size += 1024;
+			if ((nJedecID & 0xFFFF) == SPIF_JEDEC_SST) {
+				switch (nJedecID) {
+				case SPIF_JEDEC_SST25VF32:
+					p->size += 1024;
+					break;
+				default:
+					p->size += 512;
+					break;
+				}
 #if SPI_SEL_ENABLE
 				p->csid[j] = tbl_bspSpifCsid[i];
 #endif
@@ -255,7 +270,9 @@ void spif_Init()
 			sys_Delay(10000);
 #endif
 		}
+#if SPI_SEL_ENABLE
 		spif_dbgJedec[i] = nJedecID;
+#endif
 	}
 	spi_Release(pSpi);
 	spif_Unlock();
@@ -327,8 +344,9 @@ int dbg_SpifInfo(uint8_t *pBuf)
 
 	nLen = sprintf((char *)pBuf, "\r\nSize: %d", p->size * SPIF_SEC_SIZE);
 #if SPI_SEL_ENABLE
-	for (i = 0; i < BSP_SPIF_QTY; i++)
+	for (i = 0; i < BSP_SPIF_QTY; i++) {
 		nLen += sprintf((char *)(pBuf + nLen), "\r\n%d %d %08X", p->csid[i], p->type[i], spif_dbgJedec[i]);
+	}
 #endif
 	return nLen;
 }

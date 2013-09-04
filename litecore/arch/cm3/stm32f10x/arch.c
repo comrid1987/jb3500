@@ -20,15 +20,15 @@ void SystemInit()
 
 	//初始化系统时钟
 	RCC_DeInit();
-#if MCU_HSI_ENABLE
-	//启用内部高速时钟
-	RCC_HSICmd(ENABLE);
-#else
+#if MCU_HSE_ENABLE
 	//启用外部高速晶振
 	RCC_HSEConfig(RCC_HSE_ON);
+#else
+	//启用内部高速时钟
+	RCC_HSICmd(ENABLE);
 #endif
 
-#if MCU_HSI_ENABLE == 0
+#if MCU_HSE_ENABLE
 	if (RCC_WaitForHSEStartUp() == SUCCESS) {
 #endif
 		/* HCLK = 72M Max */
@@ -54,21 +54,25 @@ void SystemInit()
 		FLASH_SetLatency(FLASH_Latency_2);
 #endif
 		/* PLLCLK */
-#if MCU_HSI_ENABLE
+#if MCU_HSE_ENABLE
+#if MCU_FREQUENCY == MCU_SPEED_LOW
+		RCC_PLLConfig(RCC_PLLSource_HSE_Div2, RCC_PLLMul_2);
+#elif MCU_FREQUENCY == MCU_SPEED_HALF
+		RCC_PLLConfig(RCC_PLLSource_HSE_Div2, RCC_PLLMul_9);
+#else
+#if MCU_HSE_FREQ == 8000000
+		RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_9);
+#else
+		RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_6);
+#endif
+#endif
+#else
 #if MCU_FREQUENCY == MCU_SPEED_LOW
 		RCC_PLLConfig(RCC_PLLSource_HSI_Div2, RCC_PLLMul_2);
 #elif MCU_FREQUENCY == MCU_SPEED_HALF
 		RCC_PLLConfig(RCC_PLLSource_HSI_Div2, RCC_PLLMul_9);
 #else
 		RCC_PLLConfig(RCC_PLLSource_HSI_Div2, RCC_PLLMul_16);
-#endif
-#else
-#if MCU_FREQUENCY == MCU_SPEED_LOW
-		RCC_PLLConfig(RCC_PLLSource_HSE_Div2, RCC_PLLMul_2);
-#elif MCU_FREQUENCY == MCU_SPEED_HALF
-		RCC_PLLConfig(RCC_PLLSource_HSE_Div2, RCC_PLLMul_9);
-#else
-		RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_9);
 #endif
 #endif
 		/* Enable PLL */ 
@@ -79,7 +83,7 @@ void SystemInit()
 		RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
 		/* Wait till PLL is used as system clock source */
 		while (RCC_GetSYSCLKSource() != 0x08);
-#if MCU_HSI_ENABLE == 0
+#if MCU_HSE_ENABLE
 	}	
 #endif
 }

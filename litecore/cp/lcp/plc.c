@@ -471,7 +471,7 @@ sys_res plc_Handler(t_plc *p, buf b, uint8_t *pAdr)
 {
 	sys_res res;
 
-	if (p->time != rtc_GetTimet()) {
+	if (p->time != (uint8_t)rtc_GetTimet()) {
 		p->time = rtc_GetTimet();
 		if (p->tmo)
 			p->tmo -= 1;
@@ -531,7 +531,7 @@ sys_res plc_Handler(t_plc *p, buf b, uint8_t *pAdr)
 		//³­±íÊ±¶ÎÍê
 		if (plc_IsInTime() == 0) {
 			gw3762_RtCtrl(p, 0x0002);
-			p->ste = PLC_S_IDLE;
+			p->ste = PLC_S_SYNC;
 		}
 		break;
 	default:

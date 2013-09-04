@@ -16,6 +16,8 @@ extern "C" {
 #endif
 
 #define USE_STDPERIPH_DRIVER
+#define HSE_VALUE				MCU_HSE_FREQ	
+
 #include "stm32f10x.h"
 
 
@@ -45,7 +47,11 @@ extern "C" {
 #elif MCU_FREQUENCY == MCU_SPEED_HALF
 #define MCU_CLOCK			36000000
 #else
-#define MCU_CLOCK			72000000
+#if MCU_HSE_FREQ == 8000000
+#define MCU_CLOCK			(MCU_HSE_FREQ * 9)
+#else
+#define MCU_CLOCK			(MCU_HSE_FREQ * 6)
+#endif
 #endif
 
 

@@ -99,9 +99,9 @@ void lcd_ClearAll(t_color color)
 {
 
 	if (color == COLOR_WHITE)
-		rt_memset(gui_aBuf, 0, sizeof(gui_aBuf));
+		memset(gui_aBuf, 0, sizeof(gui_aBuf));
 	else
-		rt_memset(gui_aBuf, 0xFF, sizeof(gui_aBuf));
+		memset(gui_aBuf, 0xFF, sizeof(gui_aBuf));
 }
 
 //»»Ð´ÆÁ

@@ -82,6 +82,7 @@ int modem_GetSignal(void);
 int modem_GetState(void);
 int modem_GetType(void);
 int modem_GetInfo(char *pInfo);
+int modem_GetVersion(char *pVersion);
 int modem_GetCCID(char *pCCID);
 #if MODEM_FLOWCTL_ENABLE
 int modem_GetFlow(void);

@@ -6,9 +6,8 @@ extern "C" {
 #endif
 
 //Include Headers
-#if BKP_ENABLE
 #include <fs/bkp/bkp.h>
-#endif
+
 #if SFS_ENABLE
 #include <fs/sfs/sfs.h>
 #endif

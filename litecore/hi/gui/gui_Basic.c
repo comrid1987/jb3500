@@ -72,8 +72,9 @@ void gui_DrawHLine(int x0, int y0, int x1, t_color color)
 		i = x1;
 		j = x0;
 	}
-	for (; i <= j; i++)
+	for (; i <= j; i++) {
 		gui_DrawPoint(i, y0, color);
+	}
 }
 
 //»­ÊúÏß

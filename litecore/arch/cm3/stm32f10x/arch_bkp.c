@@ -1,4 +1,4 @@
-
+#if BKP_TYPE == BKP_T_INT
 
 //Private Defines
 #define STM32_BKP_SIZE      16
@@ -83,3 +83,4 @@ sys_res arch_BkpRead(uint_t nStartAdr, uint8_t *p, uint_t nLen)
 	return SYS_R_ERR;
 }
 
+#endif

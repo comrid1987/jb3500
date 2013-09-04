@@ -52,6 +52,69 @@ __heap_limit
                 THUMB
 
 
+                IMPORT  WWDG_IRQHandler            ; Window Watchdog
+                IMPORT  PVD_IRQHandler             ; PVD through EXTI Line detect
+                IMPORT  TAMPER_IRQHandler          ; Tamper
+                IMPORT  RTC_IRQHandler             ; RTC
+                IMPORT  FLASH_IRQHandler           ; Flash
+                IMPORT  RCC_IRQHandler             ; RCC
+                IMPORT  EXTI0_IRQHandler           ; EXTI Line 0
+                IMPORT  EXTI1_IRQHandler           ; EXTI Line 1
+                IMPORT  EXTI2_IRQHandler           ; EXTI Line 2
+                IMPORT  EXTI3_IRQHandler           ; EXTI Line 3
+                IMPORT  EXTI4_IRQHandler           ; EXTI Line 4
+                IMPORT  DMA1_Channel1_IRQHandler   ; DMA1 Channel 1
+                IMPORT  DMA1_Channel2_IRQHandler   ; DMA1 Channel 2
+                IMPORT  DMA1_Channel3_IRQHandler   ; DMA1 Channel 3
+                IMPORT  DMA1_Channel4_IRQHandler   ; DMA1 Channel 4
+                IMPORT  DMA1_Channel5_IRQHandler   ; DMA1 Channel 5
+                IMPORT  DMA1_Channel6_IRQHandler   ; DMA1 Channel 6
+                IMPORT  DMA1_Channel7_IRQHandler   ; DMA1 Channel 7
+                IMPORT  ADC1_2_IRQHandler          ; ADC1 and ADC2
+                IMPORT  CAN1_TX_IRQHandler         ; CAN1 TX
+                IMPORT  CAN1_RX0_IRQHandler        ; CAN1 RX0
+                IMPORT  CAN1_RX1_IRQHandler        ; CAN1 RX1
+                IMPORT  CAN1_SCE_IRQHandler        ; CAN1 SCE
+                IMPORT  EXTI9_5_IRQHandler         ; EXTI Line 9..5
+                IMPORT  TIM1_BRK_IRQHandler        ; TIM1 Break
+                IMPORT  TIM1_UP_IRQHandler         ; TIM1 Update
+                IMPORT  TIM1_TRG_COM_IRQHandler    ; TIM1 Trigger and Commutation
+                IMPORT  TIM1_CC_IRQHandler         ; TIM1 Capture Compare
+                IMPORT  TIM2_IRQHandler            ; TIM2
+                IMPORT  TIM3_IRQHandler            ; TIM3
+                IMPORT  TIM4_IRQHandler            ; TIM4
+                IMPORT  I2C1_EV_IRQHandler         ; I2C1 Event
+                IMPORT  I2C1_ER_IRQHandler         ; I2C1 Error
+                IMPORT  I2C2_EV_IRQHandler         ; I2C2 Event
+                IMPORT  I2C2_ER_IRQHandler         ; I2C1 Error
+                IMPORT  SPI1_IRQHandler            ; SPI1
+                IMPORT  SPI2_IRQHandler            ; SPI2
+                IMPORT  USART1_IRQHandler          ; USART1
+                IMPORT  USART2_IRQHandler          ; USART2
+                IMPORT  USART3_IRQHandler          ; USART3
+                IMPORT  EXTI15_10_IRQHandler       ; EXTI Line 15..10
+                IMPORT  RTCAlarm_IRQHandler        ; RTC alarm through EXTI line
+                IMPORT  OTG_FS_WKUP_IRQHandler     ; USB OTG FS Wakeup through EXTI line
+                IMPORT  TIM5_IRQHandler            ; TIM5
+                IMPORT  SPI3_IRQHandler            ; SPI3
+                IMPORT  UART4_IRQHandler           ; UART4
+                IMPORT  UART5_IRQHandler           ; UART5
+                IMPORT  TIM6_IRQHandler            ; TIM6
+                IMPORT  TIM7_IRQHandler            ; TIM7
+                IMPORT  DMA2_Channel1_IRQHandler   ; DMA2 Channel1
+                IMPORT  DMA2_Channel2_IRQHandler   ; DMA2 Channel2
+                IMPORT  DMA2_Channel3_IRQHandler   ; DMA2 Channel3
+                IMPORT  DMA2_Channel4_IRQHandler   ; DMA2 Channel4
+                IMPORT  DMA2_Channel5_IRQHandler   ; DMA2 Channel5
+                IMPORT  ETH_IRQHandler             ; Ethernet
+                IMPORT  ETH_WKUP_IRQHandler        ; Ethernet Wakeup through EXTI line
+                IMPORT  CAN2_TX_IRQHandler         ; CAN2 TX
+                IMPORT  CAN2_RX0_IRQHandler        ; CAN2 RX0
+                IMPORT  CAN2_RX1_IRQHandler        ; CAN2 RX1
+                IMPORT  CAN2_SCE_IRQHandler        ; CAN2 SCE
+                IMPORT  OTG_FS_IRQHandler          ; USB OTG FS
+
+
 ; Vector Table Mapped to Address 0 at Reset
                 AREA    RESET, DATA, READONLY
                 EXPORT  __Vectors
@@ -205,135 +268,6 @@ SysTick_Handler PROC
                 B       .
                 ENDP
 
-Default_Handler PROC
-
-                EXPORT  WWDG_IRQHandler            [WEAK]
-                EXPORT  PVD_IRQHandler             [WEAK]
-                EXPORT  TAMPER_IRQHandler          [WEAK]
-                EXPORT  RTC_IRQHandler             [WEAK]
-                EXPORT  FLASH_IRQHandler           [WEAK]
-                EXPORT  RCC_IRQHandler             [WEAK]
-                EXPORT  EXTI0_IRQHandler           [WEAK]
-                EXPORT  EXTI1_IRQHandler           [WEAK]
-                EXPORT  EXTI2_IRQHandler           [WEAK]
-                EXPORT  EXTI3_IRQHandler           [WEAK]
-                EXPORT  EXTI4_IRQHandler           [WEAK]
-                EXPORT  DMA1_Channel1_IRQHandler   [WEAK]
-                EXPORT  DMA1_Channel2_IRQHandler   [WEAK]
-                EXPORT  DMA1_Channel3_IRQHandler   [WEAK]
-                EXPORT  DMA1_Channel4_IRQHandler   [WEAK]
-                EXPORT  DMA1_Channel5_IRQHandler   [WEAK]
-                EXPORT  DMA1_Channel6_IRQHandler   [WEAK]
-                EXPORT  DMA1_Channel7_IRQHandler   [WEAK]
-                EXPORT  ADC1_2_IRQHandler          [WEAK]
-                EXPORT  CAN1_TX_IRQHandler         [WEAK]
-                EXPORT  CAN1_RX0_IRQHandler        [WEAK]
-                EXPORT  CAN1_RX1_IRQHandler        [WEAK]
-                EXPORT  CAN1_SCE_IRQHandler        [WEAK]
-                EXPORT  EXTI9_5_IRQHandler         [WEAK]
-                EXPORT  TIM1_BRK_IRQHandler        [WEAK]
-                EXPORT  TIM1_UP_IRQHandler         [WEAK]
-                EXPORT  TIM1_TRG_COM_IRQHandler    [WEAK]
-                EXPORT  TIM1_CC_IRQHandler         [WEAK]
-                EXPORT  TIM2_IRQHandler            [WEAK]
-                EXPORT  TIM3_IRQHandler            [WEAK]
-                EXPORT  TIM4_IRQHandler            [WEAK]
-                EXPORT  I2C1_EV_IRQHandler         [WEAK]
-                EXPORT  I2C1_ER_IRQHandler         [WEAK]
-                EXPORT  I2C2_EV_IRQHandler         [WEAK]
-                EXPORT  I2C2_ER_IRQHandler         [WEAK]
-                EXPORT  SPI1_IRQHandler            [WEAK]
-                EXPORT  SPI2_IRQHandler            [WEAK]
-                EXPORT  USART1_IRQHandler          [WEAK]
-                EXPORT  USART2_IRQHandler          [WEAK]
-                EXPORT  USART3_IRQHandler          [WEAK]
-                EXPORT  EXTI15_10_IRQHandler       [WEAK]
-                EXPORT  RTCAlarm_IRQHandler        [WEAK]
-                EXPORT  OTG_FS_WKUP_IRQHandler     [WEAK]
-                EXPORT  TIM5_IRQHandler            [WEAK]
-                EXPORT  SPI3_IRQHandler            [WEAK]
-                EXPORT  UART4_IRQHandler           [WEAK]
-                EXPORT  UART5_IRQHandler           [WEAK]
-                EXPORT  TIM6_IRQHandler            [WEAK]
-                EXPORT  TIM7_IRQHandler            [WEAK]
-                EXPORT  DMA2_Channel1_IRQHandler   [WEAK]
-                EXPORT  DMA2_Channel2_IRQHandler   [WEAK]
-                EXPORT  DMA2_Channel3_IRQHandler   [WEAK]
-                EXPORT  DMA2_Channel4_IRQHandler   [WEAK]
-                EXPORT  DMA2_Channel5_IRQHandler   [WEAK]
-                EXPORT  ETH_IRQHandler             [WEAK]
-                EXPORT  ETH_WKUP_IRQHandler        [WEAK]
-                EXPORT  CAN2_TX_IRQHandler         [WEAK]
-                EXPORT  CAN2_RX0_IRQHandler        [WEAK]
-                EXPORT  CAN2_RX1_IRQHandler        [WEAK]
-                EXPORT  CAN2_SCE_IRQHandler        [WEAK]
-                EXPORT  OTG_FS_IRQHandler          [WEAK]
-
-WWDG_IRQHandler
-PVD_IRQHandler
-TAMPER_IRQHandler
-RTC_IRQHandler
-FLASH_IRQHandler
-RCC_IRQHandler
-EXTI0_IRQHandler
-EXTI1_IRQHandler
-EXTI2_IRQHandler
-EXTI3_IRQHandler
-EXTI4_IRQHandler
-DMA1_Channel1_IRQHandler
-DMA1_Channel2_IRQHandler
-DMA1_Channel3_IRQHandler
-DMA1_Channel4_IRQHandler
-DMA1_Channel5_IRQHandler
-DMA1_Channel6_IRQHandler
-DMA1_Channel7_IRQHandler
-ADC1_2_IRQHandler
-CAN1_TX_IRQHandler
-CAN1_RX0_IRQHandler
-CAN1_RX1_IRQHandler
-CAN1_SCE_IRQHandler
-EXTI9_5_IRQHandler
-TIM1_BRK_IRQHandler
-TIM1_UP_IRQHandler
-TIM1_TRG_COM_IRQHandler
-TIM1_CC_IRQHandler
-TIM2_IRQHandler
-TIM3_IRQHandler
-TIM4_IRQHandler
-I2C1_EV_IRQHandler
-I2C1_ER_IRQHandler
-I2C2_EV_IRQHandler
-I2C2_ER_IRQHandler
-SPI1_IRQHandler
-SPI2_IRQHandler
-USART1_IRQHandler
-USART2_IRQHandler
-USART3_IRQHandler
-EXTI15_10_IRQHandler
-RTCAlarm_IRQHandler
-OTG_FS_WKUP_IRQHandler
-TIM5_IRQHandler
-SPI3_IRQHandler
-UART4_IRQHandler
-UART5_IRQHandler
-TIM6_IRQHandler
-TIM7_IRQHandler
-DMA2_Channel1_IRQHandler
-DMA2_Channel2_IRQHandler
-DMA2_Channel3_IRQHandler
-DMA2_Channel4_IRQHandler
-DMA2_Channel5_IRQHandler
-ETH_IRQHandler
-ETH_WKUP_IRQHandler
-CAN2_TX_IRQHandler
-CAN2_RX0_IRQHandler
-CAN2_RX1_IRQHandler
-CAN2_SCE_IRQHandler
-OTG_FS_IRQHandler
-
-                B       .
-
-                ENDP
 
                 ALIGN
 

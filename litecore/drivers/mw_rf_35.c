@@ -954,7 +954,7 @@ uint8_t mw_35lt_int_auth(p_dev_uart rs485_3_dev, uint8_t *cTxseq,uint32_t *cardn
             memcpy(cStr,&dwRamdon,8);
             memcpy(&cStr[8],cardnumber,4);
             reverse(&cStr[8],4);
-            rt_memset(&cStr[12],0,4);            
+            memset(&cStr[12],0,4);            
             if(mw_sam_int_auth(rs485_3_dev, cTxseq, 0x01,cStr,(uint8_t*)&dwRamdon) == 0x9000)//sam卡内部认证
             {
                 if(dwD1 == dwRamdon)
@@ -977,7 +977,7 @@ uint8_t mw_35lt_cpu_ext_auth(p_dev_uart rs485_3_dev,uint8_t *cTxseq,uint32_t *ca
         memcpy(cStr,&dwRamdon,8);
         memcpy(&cStr[8],cardnumber,4);
         reverse(&cStr[8],4);
-        rt_memset(&cStr[12],0,4); 
+        memset(&cStr[12],0,4); 
         if(mw_sam_int_auth(rs485_3_dev, cTxseq, 0x03,cStr,(uint8_t*) &dwD1) == 0x9000)
         {
             if(mw_cpu_ext_auth(rs485_3_dev, cTxseq, 0x03,(uint8_t*)&dwD1) == 0x9000)

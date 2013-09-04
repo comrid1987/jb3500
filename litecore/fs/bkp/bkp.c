@@ -1,8 +1,6 @@
 
 #if BKP_ENABLE
 
-//Private Defines
-#define EEPROM_PAGE_SIZE			4
 
 
 
@@ -12,19 +10,20 @@ static sys_res bkp_EepromWrite(uint_t nAdr, const uint8_t *pBuf, uint_t nLen)
 {
 	p_dev_i2c p;
 	uint_t nEnd, nSize;
-	uint8_t aBuf[EEPROM_PAGE_SIZE + 2];
+	uint8_t aBuf[BKP_PAGE_SIZE + 2];
 
-	if ((p = i2c_Get(BKP_COMID, OS_TMO_FOREVER)) == NULL)
-		return SYS_R_TMO;
+	p = i2c_Get(BKP_COMID, OS_TMO_FOREVER);
 	nEnd = nAdr + nLen;
 	for (; nAdr < nEnd; nAdr += nSize, pBuf += nSize, nLen -= nSize) {
 		aBuf[0] = nAdr >> 8;
 		aBuf[1] = nAdr;
-		nSize = nLen < EEPROM_PAGE_SIZE ? nLen : EEPROM_PAGE_SIZE;
+		nSize = nLen < BKP_PAGE_SIZE ? nLen : BKP_PAGE_SIZE;
 		memcpy(&aBuf[2], pBuf, nSize);
 		if (i2c_Write(p, BKP_DEVID, aBuf, nSize + 2))
 			break;
-		os_thd_Sleep(20);
+#if BKP_WAIT_MS
+		os_thd_Sleep(BKP_WAIT_MS);
+#endif
 	}
 	i2c_Release(p);
 	if (nAdr < nEnd)
@@ -108,8 +107,7 @@ sys_res bkp_Read(uint_t nAdr, void *pBuf, uint_t nLen)
 	sys_res res;
 	p_dev_i2c p;
 
-	if ((p = i2c_Get(BKP_COMID, OS_TMO_FOREVER)) == NULL)
-		return SYS_R_TMO;
+	p = i2c_Get(BKP_COMID, OS_TMO_FOREVER);
 	reverse(&nAdr, 2);
 	res = i2c_Write(p, BKP_DEVID, &nAdr, 2);
 	if (res == SYS_R_OK)
