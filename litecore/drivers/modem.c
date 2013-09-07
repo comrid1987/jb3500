@@ -207,6 +207,7 @@ static sys_res modem_InitCmd(p_modem p)
 	char *pTemp, str[64];
 
 	uart_Config(p->uart, 115200, UART_PARI_NO, UART_DATA_8D, UART_STOP_1D);
+	
 #if MODEM_AUTOBAUD_ENABLE
 	if (modem_SendCmd(p, "ATZ0\r", "OK\r", 30) != SYS_R_OK) {
 		uart_Config(p->uart, 57600, UART_PARI_NO, UART_DATA_8D, UART_STOP_1D);
@@ -244,7 +245,7 @@ static sys_res modem_InitCmd(p_modem p)
 	if (modem_SendCmd(p, "AT+CPIN?\r", "OK\r", 30) != SYS_R_OK)
 		return SYS_R_TMO;
 	//×¢²áÍøÂç
-	for (i = 0; i < 20; i++) {
+	for (i = 0; i < 30; i++) {
  		if (modem_SendCmd(p, "AT+CREG?\r", "OK\r", 1) != SYS_R_OK)
 			continue;
 		if ((pTemp = modem_FindStr(p, ",")) == NULL)
@@ -288,12 +289,28 @@ static sys_res modem_InitCmd(p_modem p)
 		 		if (modem_SendCmd(p, "AT+ZGETICCID\r", "OK\r", 1) != SYS_R_OK)
 					continue;
 			}
-			if ((pTemp = modem_FindStr(p, "CCID: ")) == NULL)
-				continue;
-			memcpy(p->ccid, pTemp + 6, 20);
-			break;
+			if ((pTemp = modem_FindStr(p, "CCID: ")) != NULL) {
+				memcpy(p->ccid, pTemp + 6, 20);
+				break;
+			}
+			if ((pTemp = modem_FindStr(p, "CCID:")) != NULL) {
+				memcpy(p->ccid, pTemp + 5, 20);
+				break;
+			}
 		}
 	}
+
+#if MODEM_ME3000_TCP
+	if (modem_SendCmd(p, "AT+ZVERS\r", "OK\r", 3) == SYS_R_OK) {
+		if ((pTemp = modem_FindStr(p, "ME3000_E")) != NULL) {
+			sprintf(str, "AT+ZPNUM=\"%s\"\r", p->apn);
+			if (modem_SendCmd(p, str, "OK\r", 10) == SYS_R_OK) {
+				p->me3000 = 1;
+				return SYS_R_OK;
+			}
+		}
+	}
+#endif
 
 	switch (p->type) {
 	case MODEM_TYPE_GPRS:
@@ -321,7 +338,7 @@ static sys_res modem_InitCmd(p_modem p)
 #if TCPPS_TYPE == TCPPS_T_LWIP
 static void modem_linkStatusCB(void *ctx, int errCode, void *arg)
 {
-	p_modem p = &gsmModem[(int)ctx];
+	p_modem p = &gsmModem;
 	os_tid pThread;
 
 	switch (errCode) {
@@ -484,22 +501,32 @@ void modem_Run()
 			p->ste = MODEM_S_RESET;
 		} else {
 			modem_DbgOut("<Modem> Dial");
-			if (p->type == MODEM_TYPE_CDMA)
-				uart_Send(p->uart, "ATDT#777\r", 9);
-			else
-				uart_Send(p->uart, "ATD*99***1#\r", 12);
-			p->dialed = 1;
+#if MODEM_ME3000_TCP
+			if (p->me3000) {
+				if (modem_SendCmd(p, "AT+ZPPPOPEN\r", "OK\r", 10) == SYS_R_OK)
+					p->ste = MODEM_S_WAITDIAL;
+				else
+					p->ste = MODEM_S_RESET;
+			} else
+#endif
+			{
+				if (p->type == MODEM_TYPE_CDMA)
+					uart_Send(p->uart, "ATDT#777\r", 9);
+				else
+					uart_Send(p->uart, "ATD*99***1#\r", 12);
+				p->dialed = 1;
 #if TCPPS_TYPE == TCPPS_T_LWIP
-			pppSetAuth(PPPAUTHTYPE_ANY, NULL, NULL);
-			pppOpen(p->uart, modem_linkStatusCB, MODEM_PPP_ID);
+				pppSetAuth(PPPAUTHTYPE_ANY, NULL, NULL);
+				pppOpen(p->uart, modem_linkStatusCB, 0);
 #endif
 #if TCPPS_TYPE == TCPPS_T_KEILTCP
-			if (p->type == MODEM_TYPE_CDMA)
-				ppp_connect("ATDT#777\r", "CARD", "CARD");
-			else
-				ppp_connect("ATD*99***1#\r", "", "");
+				if (p->type == MODEM_TYPE_CDMA)
+					ppp_connect("ATDT#777\r", "CARD", "CARD");
+				else
+					ppp_connect("ATD*99***1#\r", "", "");
 #endif
-			p->ste = MODEM_S_WAITDIAL;
+				p->ste = MODEM_S_WAITDIAL;
+			}
 			p->cnt = 0;
 		}
 		break;
@@ -509,7 +536,17 @@ void modem_Run()
 			p->ste = MODEM_S_RESET;
 			break;
 		}
-		if (modem_IsOnline() == SYS_R_OK) {
+#if MODEM_ME3000_TCP
+		if (p->me3000) {
+			if (modem_SendCmd(p, "AT+ZPPPSTATUS\r", "ESTABLISHED\r", 1) == SYS_R_OK) {
+				p->ste = MODEM_S_ONLINE;
+				p->cnt = 0;
+				p->tmo = 0;
+			}
+			break;
+		}
+#endif
+		if (modem_IsOnline()) {
 #if MODEM_DEBUG_ENABLE
 			modem_DbgIpInfo();
 #endif
@@ -521,7 +558,7 @@ void modem_Run()
 	case MODEM_S_ONLINE:
 		if (p->cnt > p->idle) {
 #if TCPPS_TYPE == TCPPS_T_LWIP
-			pppClose(MODEM_PPP_ID);
+			pppClose(0);
 			p->ste = MODEM_S_RESET;
 #endif
 #if TCPPS_TYPE == TCPPS_T_KEILTCP
@@ -550,26 +587,35 @@ void modem_Config(const char *pApn, uint_t nSpan, uint_t nRetry)
 	p->retrytime = nRetry;
 }
 
-sys_res modem_IsOnline()
+int modem_IsOnline()
 {
-#if TCPPS_TYPE == TCPPS_T_LWIP
-	p_modem p = &gsmModem[MODEM_PPP_ID];
+	p_modem p = &gsmModem;
 
-	if ((p->ste == MODEM_S_READY) || (p->ste == MODEM_S_ONLINE)) {
+#if MODEM_DCD_ENABLE
+	uint_t i;
+	for (i = 5; i; i--) {
+		if (modem_Dcd() == 0)
+			break;
+	}
+	if (i = 0)
+		return 0;
+#endif
+ 
+#if MODEM_ME3000_TCP
+	if (p->me3000) {
+		if (p->ste == MODEM_S_ONLINE)
+			return 1;
+	}
+#endif
+#if TCPPS_TYPE == TCPPS_T_LWIP
+	if ((p->ste == MODEM_S_READY) || (p->ste == MODEM_S_ONLINE))
+		return 1;
 #endif
 #if TCPPS_TYPE == TCPPS_T_KEILTCP
-	if (ppp_is_up() == __TRUE) {
+	if (ppp_is_up() == __TRUE)
+		return 1;
 #endif
-#if MODEM_DCD_ENABLE
-		uint_t i;
-		for (i = 5; i; i--)
-			if (modem_Dcd() == 0)
-				break;
-		if (i)
-#endif
-			return SYS_R_OK;
-	}
-	return SYS_R_ERR;
+	return 0;
 }
 
 int modem_GetSignal()
@@ -636,10 +682,141 @@ int modem_GetFlow()
 void modem_Refresh()
 {
 
-	if (modem_IsOnline() == SYS_R_OK)
+	if (modem_IsOnline())
 		gsmModem.cnt = 0;
 }
 
+
+#if MODEM_ME3000_TCP
+int modem_IsMe3000()
+{
+	
+	return gsmModem.me3000;
+}
+
+int me3000_IsTcpCon()
+{
+	
+	return gsmModem.tcpcon;
+}
+
+
+sys_res me3000_TcpConnect(const uint8_t *pIp, uint_t nPort)
+{
+	p_modem p = &gsmModem;
+	char str[64];
+	uint_t i;
+
+	if (modem_IsOnline() == 0)
+		return SYS_R_ERR;
+	sprintf(str, "AT+ZIPSETUP=1,%d.%d.%d.%d,%d\r", pIp[0], pIp[1], pIp[2], pIp[3], nPort);
+	buf_Release(p->rbuf);
+	uart_Send(p->uart, str, strlen(str));
+	os_thd_Sleep(3000);
+	for (i = 5000 / OS_TICK_MS; i; i--) {
+		if (uart_RecData(p->uart, p->rbuf, OS_TICK_MS) != SYS_R_OK)
+			continue;
+		if (modem_FindStr(p, "CONNECTED\r") != NULL)
+			break;
+		if (modem_FindStr(p, "ESTABLISHED\r") != NULL)
+			break;
+	}
+	if (i) {
+		p->tcpcon = 1;
+		buf_Release(p->rbuf);
+		return SYS_R_OK;
+	}
+	return SYS_R_TMO;
+}
+
+sys_res me3000_TcpRecv(buf b)
+{
+	p_modem p = &gsmModem;
+	uint_t i, j, nLen;
+	char *pTemp;
+
+	if (modem_IsOnline() == 0)
+		return SYS_R_ERR;
+	for (i = 200 / OS_TICK_MS; i; i--) {
+		if (uart_RecData(p->uart, p->rbuf, OS_TICK_MS) != SYS_R_OK)
+			continue;
+		pTemp = modem_FindStr(p, "+ZIPRECV:1,");
+		if (pTemp == NULL)
+			continue;
+		buf_Remove(p->rbuf, (uint8_t *)pTemp - p->rbuf->p + 11);
+		nLen = atoi(p->rbuf->p);
+		if (nLen > 1460)
+			nLen = 1460;
+		pTemp = modem_FindStr(p, ",");
+		if (pTemp == NULL)
+			continue;
+		buf_Remove(p->rbuf, (uint8_t *)pTemp - p->rbuf->p + 1);
+		for (j = 2000 / OS_TICK_MS; j; j--) {
+			if (p->rbuf->len >= nLen)
+				break;
+			uart_RecData(p->uart, p->rbuf, OS_TICK_MS);
+		}
+		if (j) {
+			buf_Push(b, p->rbuf->p, nLen);
+			buf_Remove(p->rbuf, nLen);
+#if MODEM_FLOWCTL_ENABLE
+			gsmModem.flow += nLen;
+#endif
+			return SYS_R_OK;
+		} else {
+			buf_Release(p->rbuf);
+		}
+	}
+	return SYS_R_TMO;
+}
+
+sys_res me3000_TcpSend(const void *pData, uint_t nLen)
+{
+	p_modem p = &gsmModem;
+	char str[20];
+	uint_t i;
+
+	if (modem_IsOnline() == 0)
+		return SYS_R_ERR;
+	if (p->tcpcon == 0)
+		return SYS_R_ERR;
+	sprintf(str, "AT+ZIPSEND=1,%d\r", nLen);
+	uart_Send(p->uart, str, strlen(str));
+	os_thd_Sleep(100);
+	for (i = 5000 / OS_TICK_MS; i; i--) {
+		if (uart_RecData(p->uart, p->rbuf, OS_TICK_MS) != SYS_R_OK)
+			continue;
+		if (modem_FindStr(p, ">") == NULL)
+			continue;
+		uart_Send(p->uart, pData, nLen);
+		uart_Send(p->uart, "\r", 1);
+#if MODEM_FLOWCTL_ENABLE
+		gsmModem.flow += nLen;
+#endif
+		return SYS_R_OK;
+	}
+	return SYS_R_TMO;
+}
+
+sys_res me3000_TcpClose()
+{
+	p_modem p = &gsmModem;
+	uint_t i;
+
+	p->tcpcon = 0;
+	uart_Send(p->uart, "AT+ZIPCLOSE=1\r", 14);
+	os_thd_Sleep(100);
+	for (i = 1000 / OS_TICK_MS; i; i--) {
+		if (uart_RecData(p->uart, p->rbuf, OS_TICK_MS) != SYS_R_OK)
+			continue;
+		if (modem_FindStr(p, "OK\r") != NULL)
+			break;
+		if (modem_FindStr(p, "ERROR\r") != NULL)
+			break;
+	}
+	return SYS_R_OK;
+}
+#endif
 
 
 #endif

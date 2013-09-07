@@ -18,7 +18,9 @@ int shutdown(int s, int how);
 int getpeername (int s, struct sockaddr *name, socklen_t *namelen)
 {
 
-	return net_IsConnect(s);
+	if (net_IsConnect(s))
+		return 0;
+	return 1;
 }
 
 int getsockname (int s, struct sockaddr *name, socklen_t *namelen);
@@ -51,7 +53,9 @@ int recv(int s, char *mem, int len, int flags)
 {
 	if (len)
 		return net_Recv(s, mem, len);
-	return net_IsConnect(s);
+	if (net_IsConnect(s))
+		return 0;
+	return 1;
 }
 
 int recvfrom(int s, char *mem, int len, int flags, struct sockaddr *from, socklen_t *fromlen);

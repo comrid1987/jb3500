@@ -21,18 +21,18 @@ static t_dev_uart dev_Uart[BSP_UART_QTY];
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-static sys_res uart_IsRxBufNE(p_dev_uart p)
+static int uart_IsRxBufNE(p_dev_uart p)
 {
 #if IO_BUF_TYPE == BUF_T_BUFFER
 
 	if (p->bufrx->len)
-		return SYS_R_OK;
-	return SYS_R_EMPTY;
+		return 1;
+	return 0;
 #elif IO_BUF_TYPE == BUF_T_DQUEUE
 
 	if (dque_IsNotEmpty(dqueue, p->parent->id | UART_DQUE_RX_CHL))
-		return SYS_R_OK;
-	return SYS_R_EMPTY;
+		return 1;
+	return 0;
 #endif
 }
 
@@ -40,18 +40,18 @@ static sys_res uart_IsRxBufNE(p_dev_uart p)
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-static sys_res uart_IsTxBufNE(p_dev_uart p)
+static int uart_IsTxBufNE(p_dev_uart p)
 {
 #if IO_BUF_TYPE == BUF_T_BUFFER
 	
 		if (p->buftx->len)
-			return SYS_R_OK;
-		return SYS_R_EMPTY;
+			return 1;
+		return 0;
 #elif IO_BUF_TYPE == BUF_T_DQUEUE
 	
 		if (dque_IsNotEmpty(dqueue, p->parent->id | UART_DQUE_TX_CHL))
-			return SYS_R_OK;
-		return SYS_R_EMPTY;
+			return 1;
+		return 0;
 #endif
 }
 
@@ -218,8 +218,9 @@ sys_res uart_Send(p_dev_uart p, const void *pData, uint_t nLen)
 			dque_Push(dqueue, p->parent->id | UART_DQUE_TX_CHL, pData, nLen);
 #endif
 			arch_UartTxIEnable(p->def->id);
-		} else
+		} else {
 			arch_UartSend(p->def->id, pData, nLen);
+		}
 		break;
 	}	
 	return SYS_R_OK;
@@ -344,7 +345,7 @@ void uart_Maintain()
 	p_uart_def pDef;
 	
 	for (p = dev_Uart; p < ARR_ENDADR(dev_Uart); p++) {
-		if (uart_IsTxBufNE(p) == SYS_R_OK) {
+		if (uart_IsTxBufNE(p)) {
 			pDef = p->def;
 			if (pDef->txmode == UART_MODE_IRQ) {
 				switch (pDef->type) {
@@ -361,7 +362,7 @@ void uart_Maintain()
 				}
 			}
 		}
-		if (uart_IsRxBufNE(p) == SYS_R_OK) {
+		if (uart_IsRxBufNE(p)) {
 			p->parent->cnt += 1;
 			if (p->parent->cnt > 100) {
 				p->parent->cnt = 0;
@@ -371,8 +372,9 @@ void uart_Maintain()
 				dque_Clear(dqueue, p->parent->id | UART_DQUE_RX_CHL);
 #endif
 			}
-		} else
+		} else {
 			p->parent->cnt = 0;
+		}
 	}
 }
 

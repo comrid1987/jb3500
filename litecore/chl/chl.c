@@ -72,6 +72,12 @@ sys_res chl_Release(chl p)
 #endif
 #if TCPPS_ENABLE
 	case CHL_T_SOC_TC:
+#if MODEM_ME3000_TCP
+		if (modem_IsMe3000()) {
+			res = me3000_TcpClose();
+			break;
+		}
+#endif
 	case CHL_T_SOC_TS:
 	case CHL_T_SOC_UC:
 	case CHL_T_SOC_US:
@@ -106,6 +112,12 @@ sys_res chl_Send(chl p, const void *pData, uint_t nLen)
 #endif
 #if TCPPS_ENABLE
 	case CHL_T_SOC_TC:
+#if MODEM_ME3000_TCP
+		if (modem_IsMe3000()) {
+			res = me3000_TcpSend(pData, nLen);
+			break;
+		}
+#endif
 	case CHL_T_SOC_TS:
 	case CHL_T_SOC_UC:
 	case CHL_T_SOC_US:
@@ -138,6 +150,12 @@ sys_res chl_RecData(chl p, buf b, uint_t nTmo)
 #endif
 #if TCPPS_ENABLE
 	case CHL_T_SOC_TC:
+#if MODEM_ME3000_TCP
+		if (modem_IsMe3000()) {
+			res = me3000_TcpRecv(b);
+			break;
+		}
+#endif
 	case CHL_T_SOC_TS:
 	case CHL_T_SOC_UC:
 	case CHL_T_SOC_US:

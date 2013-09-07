@@ -23,6 +23,10 @@ enum {
 typedef struct {
 	uint8_t		ste;
 	uint8_t		type;
+#if MODEM_ME3000_TCP
+	uint8_t		me3000;
+	uint8_t		tcpcon;
+#endif
 	uint8_t		dialed;
 	uint8_t		signal;
 	uint8_t		retrytime;
@@ -77,7 +81,7 @@ void modem_Run(void);
 void modem_Reset(void);
 void modem_PowerOff(void);
 void modem_Config(const char *pApn, uint_t nSpan, uint_t nRetry);
-sys_res modem_IsOnline(void);
+int modem_IsOnline(void);
 int modem_GetSignal(void);
 int modem_GetState(void);
 int modem_GetType(void);

@@ -22,7 +22,7 @@
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-static sys_res norf_IsToggleDone(adr_t adr, int nIsErase)
+static sys_res norf_ToggleDone(adr_t adr, int nIsErase)
 {
 	uint_t nTmo;
 	uint16_t nTarget;
@@ -69,7 +69,7 @@ sys_res norf_EraseChip()
 	sysAddress(0x0555) = 0x00AA;
 	sysAddress(0x02AA) = 0x0055;
 	sysAddress(0x0555) = 0x0010;
-	res = norf_IsToggleDone(NORFLASH_BASE_ADR, 1);
+	res = norf_ToggleDone(NORFLASH_BASE_ADR, 1);
 	norf_Unlock();
 	return res;
 }
@@ -86,7 +86,7 @@ sys_res norf_nolockErase(adr_t adr)
 	sysAddress(0x0555) = 0x00AA;
 	sysAddress(0x02AA) = 0x0055;
 	specAddress(adr) = 0x0030;
-	return norf_IsToggleDone(adr, 1);
+	return norf_ToggleDone(adr, 1);
 }
 
 //-------------------------------------------------------------------------
@@ -122,7 +122,7 @@ sys_res norf_nolockProgram_seq(adr_t adr, const void *pBuf, uint_t nLen)
 				continue;
 			specAddress(NORFLASH_BASE_ADR) = 0x00A0;
 			specAddress(adr) = nData;
-			if (norf_IsToggleDone(adr, 0) != SYS_R_OK) {
+			if (norf_ToggleDone(adr, 0) != SYS_R_OK) {
 				//Ê§°Ü, ¸´Î»Flash
 				specAddress(NORFLASH_BASE_ADR) = 0x00F0;
 				return SYS_R_TMO;
@@ -150,7 +150,7 @@ sys_res norf_nolockProgram(adr_t adr, const void *pBuf, uint_t nLen)
 			sysAddress(0x02AA) = 0x0055;
 			sysAddress(0x0555) = 0x00A0;
 			specAddress(adr) = nData;
-			if (norf_IsToggleDone(adr, 0) != SYS_R_OK) {
+			if (norf_ToggleDone(adr, 0) != SYS_R_OK) {
 				//Ê§°Ü, ¸´Î»Flash
 				specAddress(NORFLASH_BASE_ADR) = 0x00F0;
 				return SYS_R_TMO;

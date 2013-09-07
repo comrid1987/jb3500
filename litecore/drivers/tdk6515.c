@@ -29,20 +29,20 @@ void tdk6515_Reset(t_tdk6515 *p)
 	os_thd_Sleep(3000);
 }
 
-sys_res tdk6515_IsJLReady()
+int tdk6515_IsJLReady()
 {
 
 	if (TDK6515_JL)
-		return SYS_R_ERR;
-	return SYS_R_OK;
+		return 0;
+	return 1;
 }
 
-sys_res tdk6515_IsXBReady()
+int tdk6515_IsXBReady()
 {
 
 	if (TDK6515_XB)
-		return SYS_R_ERR;
-	return SYS_R_OK;
+		return 0;
+	return 1;
 }
 
 //===========================================================

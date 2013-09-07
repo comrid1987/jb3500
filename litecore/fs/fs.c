@@ -79,17 +79,17 @@ sys_res fs_usb_Unmount()
 	return SYS_R_OK;
 }
 
-sys_res fs_usb_IsReady()
+int fs_usb_IsReady()
 {
 
 	rt_device_t dev_id;
 
 	dev_id = rt_device_find("usbmsc0");
 	if (dev_id == NULL)
-		return SYS_R_ERR;
+		return 0;
 	if (usbmsc_isready(dev_id) != RT_EOK)
-		return SYS_R_ERR;
-	return SYS_R_OK;
+		return 0;
+	return 1;
 }
 #endif
 

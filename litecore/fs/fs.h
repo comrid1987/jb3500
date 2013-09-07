@@ -24,7 +24,7 @@ extern "C" {
 sys_res fs_init(void);
 sys_res fs_usb_Mount(void);
 sys_res fs_usb_Unmount(void);
-sys_res fs_usb_IsReady(void);
+int fs_usb_IsReady(void);
 
 
 

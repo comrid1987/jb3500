@@ -168,7 +168,8 @@ sys_res dlrcp_Handler(p_dlrcp p)
 		case CHL_T_SOC_TC:
 		case CHL_T_SOC_UC:
 			if (p->cnt == 0) {
-				chl_soc_Connect(p->chl, p->ip, p->chlid);
+				if (chl_soc_Connect(p->chl, p->ip, p->chlid) != SYS_R_OK)
+					p->cnt = 1;
 				dlrcp_DbgOut("[RCP] connect to %d.%d.%d.%d:%d", p->ip[0], p->ip[1], p->ip[2], p->ip[3], p->chlid);
 			} else {
 				if (p->time == (uint8_t)rtc_GetTimet()) {
@@ -177,7 +178,7 @@ sys_res dlrcp_Handler(p_dlrcp p)
 				}
 				p->time = rtc_GetTimet();
 				p->cnt += 1;
-				if (p->cnt > 30)
+				if (p->cnt > 20)
 					p->cnt = 0;
 			}
 			break;
@@ -211,7 +212,7 @@ sys_res dlrcp_Handler(p_dlrcp p)
 #if TCPPS_ENABLE
 		case CHL_T_SOC_TC:
 		case CHL_T_SOC_UC:
-			if (chl_soc_IsConnect(p->chl) == SYS_R_OK) {
+			if (chl_soc_IsConnect(p->chl)) {
 				p->cnt = 0;
 				p->ste = DLRCP_S_CHECK;
 				(p->linkcheck)(p, DLRCP_LINKCHECK_LOGIN);
@@ -223,7 +224,7 @@ sys_res dlrcp_Handler(p_dlrcp p)
 			break;
 		case CHL_T_SOC_TS:
 		case CHL_T_SOC_US:
-			if (chl_soc_IsConnect(p->chl) == SYS_R_OK)
+			if (chl_soc_IsConnect(p->chl))
 				p->cnt = 0;
 			break;
 #endif
@@ -241,7 +242,7 @@ sys_res dlrcp_Handler(p_dlrcp p)
 #if TCPPS_ENABLE
 			case CHL_T_SOC_TC:
 			case CHL_T_SOC_UC:
-				if (chl_soc_IsConnect(p->chl) == SYS_R_OK) {
+				if (chl_soc_IsConnect(p->chl)) {
 					if (p->cnt > p->refresh) {
 						switch (p->ste) {
 						case DLRCP_S_CHECK:
@@ -264,7 +265,7 @@ sys_res dlrcp_Handler(p_dlrcp p)
 				break;
 			case CHL_T_SOC_TS:
 			case CHL_T_SOC_US:
-				if ((p->cnt > p->refresh) || (chl_soc_IsConnect(p->chl) != SYS_R_OK))
+				if ((p->cnt > p->refresh) || (chl_soc_IsConnect(p->chl) == 0))
 					chl_Release(p->chl);
 				break;
 #endif
