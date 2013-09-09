@@ -26,7 +26,7 @@ extern "C" {
 void dlt645_Packet2Buf(buf b, const void *pAdr, uint_t nC, const void *pData, uint_t nLen);
 uint8_t *dlt645_PacketAnalyze(const uint8_t *p, uint_t nLen);
 sys_res dlt645_Meter(chl c, buf b, uint_t nTmo);
-sys_res dlt645Relay_Meter(chl c, buf b, uint_t nTmo);
+sys_res dlt645_Transmit(chl c, buf b, uint_t nTmo);
 
 
 #ifdef __cplusplus

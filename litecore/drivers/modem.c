@@ -324,7 +324,7 @@ static sys_res modem_InitCmd(p_modem p)
 	}
 	if (modem_SendCmd(p, str, "OK\r", 20) != SYS_R_OK)
 		return SYS_R_TMO;
-
+	
 	if (p->type == MODEM_TYPE_CDMA) {
 		os_thd_Sleep(5000);
 	} else {

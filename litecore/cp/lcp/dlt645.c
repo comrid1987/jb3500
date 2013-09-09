@@ -144,42 +144,24 @@ sys_res dlt645_Meter(chl c, buf b, uint_t nTmo)
 
 // 中继转发645帧20130906
 // b - 输入发送645帧与输出接收的645帧
-sys_res dlt645Relay_Meter(chl c, buf b, uint_t nTmo)
+sys_res dlt645_Transmit(chl c, buf b, uint_t nTmo)
 {
-	uint8_t *pH, aAdr[6];
-#if DLT645_DIR_CTRL
-	p_dev_uart pUart;
-#endif
+	uint8_t *pH;
 
-#if DLT645_DIR_CTRL
-	gpio_Set(2, 0);
-	//稳定总线
 	chl_Send(c, dlt645_aFE, 4);
 	chl_Send(c, b->p, b->len);
-	pUart = (p_dev_uart)(c->pIf);
-	if (pUart->para.baud < 2400)
-		sys_Delay(200000);
-	else
-		sys_Delay(100000);
-	gpio_Set(2, 1);
-#else
-	chl_Send(c, dlt645_aFE, 4);
-	chl_Send(c, b->p, b->len);
-#endif
 
 	dlt645_DbgOut(1, b->p, b->len);
 
-	memcpy(aAdr, &b->p[1], 6);
 	buf_Release(b);
-	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) 
-	{
+	for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
 		if (chl_RecData(c, b, OS_TICK_MS) != SYS_R_OK)
 			continue;
 		pH = dlt645_PacketAnalyze(b->p, b->len);
 		if (pH == NULL)
 			continue;
-		else
-			return SYS_R_OK;
+		buf_Remove(b, pH - b->p);
+		return SYS_R_OK;
 	}
 	return SYS_R_ERR;
 }
