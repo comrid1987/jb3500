@@ -28,7 +28,7 @@ extern "C" {
 #define NW12_FUN_CONFIRM			0
 #define NW12_FUN_RESPONSE			8
 #define NW12_FUN_NODATA				9
-#define NW12_FUN_LINKSTATE			11
+#define NW12_FUN_LINKSTATE		11
 
 //无效数据值
 #define NW12_DATA_INVALID			0xFFFFFFFF
