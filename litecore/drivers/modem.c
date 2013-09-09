@@ -744,7 +744,7 @@ sys_res me3000_TcpRecv(buf b)
 		if (pTemp == NULL)
 			continue;
 		buf_Remove(p->rbuf, (uint8_t *)pTemp - p->rbuf->p + 11);
-		nLen = atoi(p->rbuf->p);
+		nLen = atoi((char *)p->rbuf->p);
 		if (nLen > 1460)
 			nLen = 1460;
 		pTemp = modem_FindStr(p, ",");

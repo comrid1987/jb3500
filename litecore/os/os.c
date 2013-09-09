@@ -4,7 +4,11 @@
 #include <os/rtt/ipc.c>
 #include <os/rtt/irq.c>
 #include <os/rtt/kservice.c>
+#if DEBUG_MEMORY_ENABLE
+#include <os/rtt/mem_debug.c>
+#else
 #include <os/rtt/mem.c>
+#endif
 #include <os/rtt/mempool.c>
 #include <os/rtt/object.c>
 #include <os/rtt/scheduler.c>

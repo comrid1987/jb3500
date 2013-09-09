@@ -175,9 +175,15 @@ void rt_mp_free_sethook(void (*hook)(struct rt_mempool* mp, void *block));
  */
 void rt_system_heap_init(void* begin_addr, void* end_addr);
 
+#if DEBUG_MEMORY_ENABLE
+void* _rt_malloc(rt_size_t nbytes);
+void _rt_free (void *ptr);
+void* _rt_realloc(void *ptr, rt_size_t nbytes);
+#else
 void* rt_malloc(rt_size_t nbytes);
 void rt_free (void *ptr);
 void* rt_realloc(void *ptr, rt_size_t nbytes);
+#endif
 void *rt_calloc(rt_size_t count, rt_size_t size);
 
 void rt_memory_info(rt_uint32_t *total, 
