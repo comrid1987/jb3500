@@ -13,6 +13,7 @@ extern "C" {
 #endif
 
 #define USE_STDPERIPH_DRIVER
+
 #include "stm32f2xx.h"
 
 #include <arch/cm3/stm32f20x/adc.h>
