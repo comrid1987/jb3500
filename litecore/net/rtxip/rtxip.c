@@ -291,14 +291,14 @@ int net_IsConnect(int s)
 {
 	int nSte;
 
+	//UDP
 	if (s > TCP_NUMSOCKS)
-		//UDP
-		return 0;
+		return 1;
 	//TCP
 	nSte = tcp_get_state(s);
 	if (nSte == TCP_STATE_CONNECT)
-		return 0;
-	return (nSte + 1);
+		return 1;
+	return 0;
 }
 
 int net_Send(int s, uint8_t *pBuf, uint_t nLen)

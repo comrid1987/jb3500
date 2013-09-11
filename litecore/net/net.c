@@ -10,7 +10,9 @@
 #if DEBUG_NET_ENABLE
 #include <net/rtxip/Retarget.c>
 #endif
+#if TCPPS_ETH_ENABLE
 #include <net/rtxip/rtxip_eth.c>
+#endif
 #include <net/rtxip/rtxip.c>
 #include <net/rtxip/sockets.c>
 
