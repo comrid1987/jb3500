@@ -280,7 +280,7 @@ float att7022_GetPower(p_att7022 p, uint_t nReg, uint_t nPhase)
 	return fResult;
 }
 
-float att7022_GetFlag(p_att7022 p) 
+uint32_t att7022_GetFlag(p_att7022 p) 
 {
 	
 	return (att7022_ReadReg(p,ATT7022_REG_SFlag)); //读取状态寄存器 
@@ -457,24 +457,24 @@ uint32_t att7022_GetPhaseEQ(p_att7022 p, uint_t nQuad, uint_t nDir, uint_t nPhas
 ***************************/
 sys_res att7022_GetHarmonic(p_att7022 p, uint_t Ch, sint16_t *pbuf)
 {
-	uint_t i, nData, nReg = 0x7f;
+	uint_t i, nData, nReg = 0x7F;
 
 	//开启采样功能
-	nData=0xccccc0|Ch;
-	att7022_WriteReg(p, 0xc0, nData);//启动波形数据缓存
+	nData=0xCCCCC0|Ch;
+	att7022_WriteReg(p, 0xC0, nData);//启动波形数据缓存
 	//等待采样数据完成
 #if 0
 	os_thd_Sleep(200);
 #else
 	for (i = 20; i; i--) {   //一般重复3次就行了?
-		if(att7022_ReadReg(p, 0x7e)>=240)//下一个写数据的位置
+		if(att7022_ReadReg(p, 0x7E) >= 240)//下一个写数据的位置
 			break;
 		os_thd_Sleep(20);
 	}
 #endif
 	if (i) {
 		//设置用户读取指针的起始位置
-		att7022_WriteReg(p, 0xc1, 0);
+		att7022_WriteReg(p, 0xC1, 0);
 		for (i = 0; i < 240; i++) {
 			spi_Transce(p->spi, &nReg, 1, &nData, 3);//读取数据
 			reverse(&nData, 3);
