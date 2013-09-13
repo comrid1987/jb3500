@@ -23,8 +23,10 @@ extern "C" {
 #define GW3761_T_CQFK2006			6
 
 
-//南网负控2007通讯规约
-#define GW3761_T_NWFK2007			16
+//南网负控2005通讯规约
+#define GW3761_T_NWFK2005			16
+//南网负控2005通讯规约
+#define GW3761_T_NWFK2008			17
 
 
 
@@ -56,13 +58,6 @@ extern "C" {
 #define GW3761_ECREPORT_ENABLE		0
 #endif
 
-#if GW3761_TYPE == GW3761_T_NWFK2007
-#define GW3761_PROTOCOL_ID			1
-#define GW3761_PW_SIZE				16
-#define GW3761_GROUPADR_QTY			8
-#define GW3761_ECREPORT_ENABLE		0
-#endif
-
 #if GW3761_TYPE == GW3761_T_CQFK2006
 #define GW3761_PROTOCOL_ID			1
 #define GW3761_PW_SIZE				2
@@ -70,6 +65,19 @@ extern "C" {
 #define GW3761_ECREPORT_ENABLE		0
 #endif
 
+#if GW3761_TYPE == GW3761_T_NWFK2005
+#define GW3761_PROTOCOL_ID			1
+#define GW3761_PW_SIZE				2
+#define GW3761_GROUPADR_QTY			8
+#define GW3761_ECREPORT_ENABLE		0
+#endif
+
+#if GW3761_TYPE == GW3761_T_NWFK2008
+#define GW3761_PROTOCOL_ID			1
+#define GW3761_PW_SIZE				16
+#define GW3761_GROUPADR_QTY			8
+#define GW3761_ECREPORT_ENABLE		0
+#endif
 
 
 
