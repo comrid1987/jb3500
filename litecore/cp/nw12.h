@@ -98,8 +98,6 @@ sys_res nw12_Handler(p_nw12 p);
 void nw12_Response(p_nw12 p);
 
 sys_res nw12_TmsgSend(p_nw12 p, uint_t nFun, uint_t nAfn, buf b, uint_t nType);
-sys_res nw12_TmsgConfirm(p_nw12 p);
-sys_res nw12_TmsgReject(p_nw12 p);
 
 uint_t nw12_ConvertDa2DA(uint_t nDa);
 uint_t nw12_ConvertDa2Map(uint_t nDA, void *pData);
