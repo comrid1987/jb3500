@@ -81,7 +81,7 @@ int gd5100_Response01(p_gd5100 p, buf b)
 				aBuf[2] = 31;
 			aBuf[2] /= 2;
 			//µÇÂ¼
-			if (rcp_IsLogin() == SYS_R_OK)
+			if (rcp_IsLogin())
 				SETBIT(aBuf[2], 4);
 			//
 			aBuf[1] = 0x00;

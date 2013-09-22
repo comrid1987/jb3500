@@ -208,7 +208,7 @@ static void disp_Handle (uint_t nSel, uint_t mode)
             ht1621_Write(iConGprs, 0x0F);
     } else
         ht1621_Write(iConGprs, BLANK);
-    if (rcp_IsLogin() == SYS_R_OK)
+    if (rcp_IsLogin())
         ht1621_Write(iConOnline, IconPhone);
     else
         ht1621_Write(iConOnline, BLANK);
@@ -483,10 +483,10 @@ void tsk_Display(void *args)
         if ((nCnt & 7) == 0)
             ht1621_Init();
         disp_Handle(nSel, Dkey);
-        if (fs_usb_IsReady() == SYS_R_OK) {
+        if (fs_usb_IsReady()) {
             ht1621_Write(iUsb, IconUSB);
             if (nMount == 0) {
-                if (sys_IsUsbFormat() == SYS_R_OK) {
+                if (sys_IsUsbFormat()) {
                     que = os_que_Wait(QUE_EVT_KEYBOARD, NULL, 1000);
                     if (que != NULL) {
                         if (que->data->val == 1)

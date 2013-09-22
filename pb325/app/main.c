@@ -27,15 +27,15 @@ os_thd_declare(Acm, 1560);
 os_thd_declare(Idle, 1280);
 
 
-sys_res sys_IsUsbFormat()
+int sys_IsUsbFormat()
 {
 	DIR_POSIX *d;
 
 	d = fs_opendir(FS_USBMSC_PATH);
 	if (d == NULL)
-		return SYS_R_ERR;
+		return 0;
 	fs_closedir(d);
-	return SYS_R_OK;
+	return 1;
 }
 
 

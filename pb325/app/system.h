@@ -24,7 +24,7 @@ extern volatile uint_t g_sys_status;
 
 
 //External Functions
-sys_res sys_IsUsbFormat(void);
+int sys_IsUsbFormat(void);
 
 
 #ifdef __cplusplus

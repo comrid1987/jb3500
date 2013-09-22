@@ -26,12 +26,12 @@ static sys_res upcom_Wait(p_gw3761 p, uint_t nTmo)
 
 
 //External Functions
-sys_res rcp_IsLogin()
+int rcp_IsLogin()
 {
 
     if (rcp_aGw3761[0].parent.ste == DLRCP_S_READY)
-        return SYS_R_OK;
-    return SYS_R_ERR;
+        return 1;
+    return 0;
 }
 
 

@@ -14,7 +14,7 @@ extern "C" {
 void tsk_Upcom1(void *args);
 void tsk_Upcom2(void *args);
 
-sys_res rcp_IsLogin(void);
+int rcp_IsLogin(void);
 
 
 

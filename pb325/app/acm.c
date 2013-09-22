@@ -104,7 +104,7 @@ void acm_JLRead()
     uint_t i, nCRC;
     buf b = {0};
 
-    if (tdk6515_IsJLReady() == SYS_R_OK) {
+    if (tdk6515_IsJLReady()) {
         tdk6515_CmdSend(p, 0, 0x0000, 48);
         uart_RecLength(p->uart, b, 48 * 4 + 2, 2000);
         nCRC = crc16(b->p, 48 * 4);
@@ -163,7 +163,7 @@ void acm_XBRead()
     uint_t i, j, nCRC;
     buf b = {0};
 
-    if (tdk6515_IsXBReady() == SYS_R_OK)      {
+    if (tdk6515_IsXBReady())      {
         tdk6515_CmdSend(p, 0, 0x011C, 24);      //起始地址为0x011C 长度24
         uart_RecLength(p->uart, b, 24 * 4 + 2, 2000);   //获得24*4+2个字节
         nCRC = crc16(b->p, 24 * 4);             //计算24*4个字节crc16值 从0x0011C开始
