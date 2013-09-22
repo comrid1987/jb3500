@@ -92,7 +92,10 @@ int modem_GetCCID(char *pCCID);
 int modem_GetFlow(void);
 #endif
 void modem_Refresh(void);
-
+#if MODEM_ME3000_TCP
+int modem_IsMe3000(void);
+void me3000_Recv(void);
+#endif
 
 #endif
 

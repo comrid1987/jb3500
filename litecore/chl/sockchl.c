@@ -25,6 +25,9 @@ sys_res chl_soc_Bind(chl p, uint_t nType, uint_t nId)
 
 	switch (nType) {
 	case CHL_T_SOC_TC:
+#if MODEM_ME3000_TCP
+		//if (modem_IsMe3000()
+#endif
 		if ((soc = chl_soc_GetNoblock(AF_INET, SOCK_STREAM, 0)) != -1) {
 			p->pIf = (void *)soc;
 			return SYS_R_OK;
@@ -111,8 +114,10 @@ int chl_soc_IsConnect(chl p)
 	if (modem_IsMe3000()) {
 		if (modem_IsOnline() == 0)
 			return 0;
-		if (me3000_IsTcpCon() == 0)
-			return 0;
+		if (p->type == CHL_T_SOC_TC) {
+			if (me3000_IsTcpCon() == 0)
+				return 0;
+		}
 		if (p->ste == CHL_S_CONNECT)
 			p->ste = CHL_S_READY;
 		if (p->ste == CHL_S_READY)

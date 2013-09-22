@@ -178,7 +178,7 @@ sys_res dlrcp_Handler(p_dlrcp p)
 				}
 				p->time = rtc_GetTimet();
 				p->cnt += 1;
-				if (p->cnt > 20)
+				if (p->cnt > (p->refresh >> 3))
 					p->cnt = 0;
 			}
 			break;

@@ -688,6 +688,7 @@ void modem_Refresh()
 
 
 #if MODEM_ME3000_TCP
+
 int modem_IsMe3000()
 {
 	
@@ -700,6 +701,51 @@ int me3000_IsTcpCon()
 	return gsmModem.tcpcon;
 }
 
+sys_res me3000_TcpRecv(buf b)
+{
+	p_modem p = &gsmModem;
+	uint_t i, j, nLen;
+	char *pTemp;
+
+	if (modem_IsOnline() == 0)
+		return SYS_R_ERR;
+	for (i = 200 / OS_TICK_MS; i; i--) {
+		if (uart_RecData(p->uart, p->rbuf, OS_TICK_MS) != SYS_R_OK)
+			continue;
+		pTemp = modem_FindStr(p, "+ZIPRECV:1,");
+		if (pTemp != NULL)
+			break;
+	}
+	if (i == 0)
+		return SYS_R_ERR;
+	buf_Remove(p->rbuf, (uint8_t *)pTemp - p->rbuf->p + 11);
+	nLen = atoi((char *)p->rbuf->p);
+	if (nLen > 1460)
+		nLen = 1460;
+	for (i = 200 / OS_TICK_MS; i; i--) {
+		pTemp = modem_FindStr(p, ",");
+		if (pTemp != NULL)
+			break;
+	}
+	if (i == 0)
+		return SYS_R_ERR;
+	buf_Remove(p->rbuf, (uint8_t *)pTemp - p->rbuf->p + 1);
+	for (j = 2000 / OS_TICK_MS; j; j--) {
+		uart_RecData(p->uart, p->rbuf, OS_TICK_MS);
+		if (p->rbuf->len >= nLen)
+			break;
+	}
+	if (j) {
+		buf_Push(b, p->rbuf->p, nLen);
+		buf_Remove(p->rbuf, nLen);
+#if MODEM_FLOWCTL_ENABLE
+		gsmModem.flow += nLen;
+#endif
+		return SYS_R_OK;
+	}
+	buf_Release(p->rbuf);
+	return SYS_R_ERR;
+}
 
 sys_res me3000_TcpConnect(const uint8_t *pIp, uint_t nPort)
 {
@@ -725,47 +771,6 @@ sys_res me3000_TcpConnect(const uint8_t *pIp, uint_t nPort)
 		p->tcpcon = 1;
 		buf_Release(p->rbuf);
 		return SYS_R_OK;
-	}
-	return SYS_R_TMO;
-}
-
-sys_res me3000_TcpRecv(buf b)
-{
-	p_modem p = &gsmModem;
-	uint_t i, j, nLen;
-	char *pTemp;
-
-	if (modem_IsOnline() == 0)
-		return SYS_R_ERR;
-	for (i = 200 / OS_TICK_MS; i; i--) {
-		if (uart_RecData(p->uart, p->rbuf, OS_TICK_MS) != SYS_R_OK)
-			continue;
-		pTemp = modem_FindStr(p, "+ZIPRECV:1,");
-		if (pTemp == NULL)
-			continue;
-		buf_Remove(p->rbuf, (uint8_t *)pTemp - p->rbuf->p + 11);
-		nLen = atoi((char *)p->rbuf->p);
-		if (nLen > 1460)
-			nLen = 1460;
-		pTemp = modem_FindStr(p, ",");
-		if (pTemp == NULL)
-			continue;
-		buf_Remove(p->rbuf, (uint8_t *)pTemp - p->rbuf->p + 1);
-		for (j = 2000 / OS_TICK_MS; j; j--) {
-			if (p->rbuf->len >= nLen)
-				break;
-			uart_RecData(p->uart, p->rbuf, OS_TICK_MS);
-		}
-		if (j) {
-			buf_Push(b, p->rbuf->p, nLen);
-			buf_Remove(p->rbuf, nLen);
-#if MODEM_FLOWCTL_ENABLE
-			gsmModem.flow += nLen;
-#endif
-			return SYS_R_OK;
-		} else {
-			buf_Release(p->rbuf);
-		}
 	}
 	return SYS_R_TMO;
 }
@@ -816,6 +821,8 @@ sys_res me3000_TcpClose()
 	}
 	return SYS_R_OK;
 }
+
+
 #endif
 
 
