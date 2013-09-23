@@ -233,15 +233,12 @@ void arch_UartTxIEnable(uint_t nId)
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-void arch_UartSend(uint_t nId, const void *pData, uint_t nLen)
+void arch_UartSendChar(uint_t nId, const int nData)
 {
 	USART_TypeDef *pUart = stm32_tblUartId[nId];
-	uint8_t *pBuf = (uint8_t *)pData;
 
-	for (; nLen; nLen--) {
-		while ((pUart->SR & USART_FLAG_TXE) == 0);
-		pUart->DR = *pBuf++;
-	}
+	while ((pUart->SR & USART_FLAG_TXE) == 0);
+	pUart->DR = nData;
 }
 
 //-------------------------------------------------------------------------

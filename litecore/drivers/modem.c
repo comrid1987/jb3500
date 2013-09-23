@@ -68,7 +68,7 @@ BOOL com_putchar(U8 c)
 {
 
 	tx_active = __TRUE;
-	uart_Send(gsmModem.uart, &c, 1);
+	arch_UartSendChar(gsmModem.uart->def->id, c);
 	tx_active = __FALSE;
 #if MODEM_FLOWCTL_ENABLE
 	gsmModem.flow += 1;
@@ -206,16 +206,17 @@ static sys_res modem_InitCmd(p_modem p)
 	uint_t i, nTemp;
 	char *pTemp, str[64];
 
-	uart_Config(p->uart, 115200, UART_PARI_NO, UART_DATA_8D, UART_STOP_1D);
+	uart_Config(p->uart, MODEM_UART_BAUD, UART_PARI_NO, UART_DATA_8D, UART_STOP_1D);
 	
-#if MODEM_AUTOBAUD_ENABLE
+#if MODEM_BAUD_ADJUST
 	if (modem_SendCmd(p, "ATZ0\r", "OK\r", 30) != SYS_R_OK) {
-		uart_Config(p->uart, 57600, UART_PARI_NO, UART_DATA_8D, UART_STOP_1D);
+		uart_Config(p->uart, MODEM_BAUD_ADJUST, UART_PARI_NO, UART_DATA_8D, UART_STOP_1D);
 		if (modem_SendCmd(p, "ATZ0\r", "OK\r", 10) != SYS_R_OK)
 			return SYS_R_TMO;
-		if (modem_SendCmd(p, "AT+IPR=115200\r", "OK\r", 5) != SYS_R_OK)
+		sprintf(str, "AT+IPR=%d\r", MODEM_UART_BAUD);
+		if (modem_SendCmd(p, str, "OK\r", 5) != SYS_R_OK)
 			return SYS_R_TMO;
-		uart_Config(p->uart, 115200, UART_PARI_NO, UART_DATA_8D, UART_STOP_1D);
+		uart_Config(p->uart, MODEM_UART_BAUD, UART_PARI_NO, UART_DATA_8D, UART_STOP_1D);
 	}
 #else
 	if (modem_SendCmd(p, "ATZ0\r", "OK\r", 30) != SYS_R_OK)

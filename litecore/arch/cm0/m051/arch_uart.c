@@ -192,17 +192,14 @@ void arch_UartScReset(uint_t nId, uint_t nHL)
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-void arch_UartSend(uint_t nId, const void *pData, uint_t nLen)
+void arch_UartSendChar(uint_t nId, const int nData)
 {
 	UART_T *pUart = m051_tblUartBase[nId];
-	uint8_t *pBuf = (uint8_t *)pData;
 
-	for (; nLen; nLen--) {
-		/* THRE status, contain valid data */
-		while (pUart->FSR.TE_FLAG == 0);
-		/* write data */
-		pUart->DATA = *pBuf++;
-	}
+	/* THRE status, contain valid data */
+	while (pUart->FSR.TE_FLAG == 0);
+	/* write data */
+	pUart->DATA = nData;
 }
 
 //-------------------------------------------------------------------------

@@ -197,13 +197,10 @@ void arch_UartScReset(uint_t nId, uint_t nHL)
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-void arch_UartSend(uint_t nId, const void *pData, uint_t nLen)
+void arch_UartSendChar(uint_t nId, const int nData)
 {
-	uint_t nBase = lm3s_tblUartBase[nId];
-	uint8_t *pBuf = (uint8_t *)pData;
 
-	for (; nLen; nLen--)
-		MAP_UARTCharPut(nBase, *pBuf++);
+	MAP_UARTCharPut(lm3s_tblUartBase[nId], nData);
 }
 
 //-------------------------------------------------------------------------

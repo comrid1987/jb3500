@@ -26,30 +26,27 @@ void sys_IOHandle(void *args)
 #if DM9000_ENABLE && (ETH_INT_ENABLE == 0)
 	dm9000_Isr(NULL);
 #endif
+	if ((nCnt % (100 / OS_TICK_MS)) == 0) {
 #if OS_QUEUE_QTY
-	os_que_Idle();
+		os_que_Idle();
 #endif
 #if KEY_ENABLE
-	//按键扫描
-	if ((nCnt & 0x07) == 0) {
+		//按键扫描
 		i = key_Read();
 		if (i)
 			os_que_Send(QUE_EVT_KEYBOARD, NULL, &i, sizeof(uint_t), 1000);
-	}
 #endif
 #if PULSE_COL_ENABLE
-	//脉冲采集
-	if ((nCnt & 0x07) == 0) {
+		//脉冲采集
 		i = pulse_Read();
 		if (i)
 			os_que_Send(QUE_EVT_PULSE, NULL, &i, sizeof(uint_t), 200);
-	}
 #endif
 #if UART_ENABLE
-	//串口维护
-	if ((nCnt & 0x03) == 0)
+		//串口维护
 		uart_Maintain();
 #endif
+	}
 #if USB_ENABLE
 	usb_HostHandler();
 #endif

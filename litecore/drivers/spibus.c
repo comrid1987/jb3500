@@ -76,13 +76,15 @@ static void _spibus_Recv(p_dev_spi p, uint8_t *pRec, uint_t nLen)
 		nData = 0;
 		for (i = 8; i; i--) {
 			nData <<= 1;
-			if (p->latchmode == SPI_LATCH_1EDGE)
+			if (p->latchmode == SPI_LATCH_1EDGE) {
 				if (spibus_Miso(p))
 					SETBIT(nData, 0);
+			}
 			spibus_Sck(p, 1);
-			if (p->latchmode == SPI_LATCH_2EDGE)
+			if (p->latchmode == SPI_LATCH_2EDGE) {
 				if (spibus_Miso(p))
 					SETBIT(nData, 0);
+			}
 			spibus_Sck(p, 0);
 		}
 		*pRec++ = nData;
@@ -161,8 +163,9 @@ sys_res spibus_Send(p_dev_spi p, const void *pData, uint_t nLen)
 	uint8_t *pBuf = (uint8_t *)pData;
 
 	spibus_Start(p);
-	for (; nLen; nLen--)
+	for (; nLen; nLen--) {
 		spibus_SendChar(p, *pBuf++);
+	}
 	spibus_End(p);
 	return SYS_R_OK;
 }
@@ -181,8 +184,9 @@ sys_res spibus_Transce(p_dev_spi p, const void *pCmd, uint_t nCmdLen, void *pRec
 	uint8_t *pBuf = (uint8_t *)pCmd;
 
 	spibus_Start(p);
-	for (; nCmdLen; nCmdLen--)
+	for (; nCmdLen; nCmdLen--) {
 		spibus_SendChar(p, *pBuf++);
+	}
 	_spibus_Recv(p, pRec, nRecLen);
 	spibus_End(p);
 	return SYS_R_OK;

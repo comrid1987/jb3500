@@ -17,7 +17,7 @@
 
 /* SECTION: RT_DEBUG */
 /* Thread Debug */
-#if DEBUG_ENABLE
+#if 0//DEBUG_ENABLE
 #define RT_DEBUG
 #define RT_THREAD_DEBUG
 

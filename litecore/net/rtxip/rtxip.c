@@ -154,17 +154,18 @@ void rtxip_Handler(void *args)
 	rtxip_TxBuf();
 #endif
 	//TCP协议栈处理
-#if ETH_INT_ENABLE == 0
+#if TCPPS_ETH_ENABLE && ETH_INT_ENABLE == 0
 	poll_ethernet();
 #endif
 	main_TcpNet();
 	//TCP协议栈时间Tick
-	if ((nCnt % (TICK_INTERVAL / OS_TICK_MS)) == 0)
+	if ((nCnt % (TICK_INTERVAL / OS_TICK_MS)) == 0) {
 		timer_tick();
 #if TCPPS_ETH_ENABLE
-	if ((nCnt % (2000 / OS_TICK_MS)) == 0)
-		icmp_ping(localm[NETIF_ETH].IpAdr, rtxip_ping_cback);
+		if ((nCnt % (2000 / OS_TICK_MS)) == 0)
+			icmp_ping(localm[NETIF_ETH].IpAdr, rtxip_ping_cback);
 #endif
+	}
 	nCnt += 1;
 }
 

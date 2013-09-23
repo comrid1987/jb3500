@@ -184,6 +184,7 @@ sys_res uart_Config(p_dev_uart p, uint_t nBaud, uint_t nPari, uint_t nData, uint
 //-------------------------------------------------------------------------
 sys_res uart_Send(p_dev_uart p, const void *pData, uint_t nLen)
 {
+	const uint8_t *pBuf;
 
 	switch (p->def->type) {
 #if SC16IS7X_ENABLE
@@ -198,16 +199,12 @@ sys_res uart_Send(p_dev_uart p, const void *pData, uint_t nLen)
 #endif
 #if SWUART_ENABLE
 	case UART_T_TIMER:
-#if SWUART_RX_MODE == SWUART_RX_M_EINT
 #if IO_BUF_TYPE == BUF_T_BUFFER
 		buf_Push(p->buftx, pData, nLen);
 #elif IO_BUF_TYPE == BUF_T_DQUEUE
 		dque_Push(dqueue, p->parent->id | UART_DQUE_TX_CHL, pData, nLen);
 #endif
 		swuart_TxStart(p->def->id);
-#else
-		swuart_Send(p->parent->id, pData, nLen);
-#endif
 		break;
 #endif
 	default:
@@ -219,7 +216,10 @@ sys_res uart_Send(p_dev_uart p, const void *pData, uint_t nLen)
 #endif
 			arch_UartTxIEnable(p->def->id);
 		} else {
-			arch_UartSend(p->def->id, pData, nLen);
+			pBuf = (const uint8_t *)pData;
+			for (; nLen; nLen--) {
+				arch_UartSendChar(p->def->id, *pBuf++);
+			}
 		}
 		break;
 	}	
@@ -363,9 +363,9 @@ void uart_Maintain()
 			}
 		}
 		if (uart_IsRxBufNE(p)) {
-			p->parent->cnt += 1;
-			if (p->parent->cnt > 100) {
-				p->parent->cnt = 0;
+			p->parent->idle += 1;
+			if (p->parent->idle > 100) {
+				p->parent->idle = 0;
 #if IO_BUF_TYPE == BUF_T_BUFFER
 				buf_Release(p->bufrx);
 #elif IO_BUF_TYPE == BUF_T_DQUEUE
@@ -373,7 +373,7 @@ void uart_Maintain()
 #endif
 			}
 		} else {
-			p->parent->cnt = 0;
+			p->parent->idle = 0;
 		}
 	}
 }

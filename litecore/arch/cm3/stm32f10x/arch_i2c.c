@@ -65,7 +65,7 @@ sys_res arch_I2cInit(p_dev_i2c p)
 	GPIO_InitTypeDef xGpio;
 	I2C_TypeDef *pI2c;
 
-	pI2c = stm32_tblI2cId[p->parent->id];
+	pI2c = stm32_tblI2cId[p->def->id];
 	//Disable I2C Bus
 #if 0
 	stm32_I2cApbClockCmd(p->parent->id, ENABLE);
