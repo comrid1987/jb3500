@@ -135,7 +135,7 @@ void stm32_FsmcInit()
 	nBank = stm32_Bank(NORFLASH_BASE_ADR);
 
   	/*-- FSMC Configuration ----------------------------------------------------*/
-	xNorReadTiming.FSMC_AddressSetupTime = 1;
+    xNorReadTiming.FSMC_AddressSetupTime = 1;
 	xNorReadTiming.FSMC_AddressHoldTime = 0;
 	xNorReadTiming.FSMC_DataSetupTime = 5;
 	xNorReadTiming.FSMC_BusTurnAroundDuration = 0;
@@ -149,7 +149,6 @@ void stm32_FsmcInit()
 	xNorWriteTiming.FSMC_CLKDivision = 0;
 	xNorWriteTiming.FSMC_DataLatency = 0;
  	xNorWriteTiming.FSMC_AccessMode = FSMC_AccessMode_B;
-
 	xNor.FSMC_DataAddressMux = FSMC_DataAddressMux_Disable;
 	xNor.FSMC_MemoryType = FSMC_MemoryType_NOR;
 	xNor.FSMC_MemoryDataWidth = FSMC_MemoryDataWidth_16b;
