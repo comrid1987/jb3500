@@ -355,10 +355,10 @@ int gui_DrawString_Mixed_Align(int x, int y, const char *pStr, t_color nColor, i
 	nWidth = gui_GetStringWidth(pStr);
 	switch (nAlignType) {
 	case GUI_ALIGN_CENTER:
-		nX = (LCD_X_MAX - x - nWidth) >> 1;
+		nX = (LCD_X_MAX + x - nWidth) >> 1;
 		break;
 	case GUI_ALIGN_RIGHT:
-		nX = LCD_X_MAX - x - nWidth;
+		nX = LCD_X_MAX - nWidth;
 		break;
 	default:
 		nX = x;
