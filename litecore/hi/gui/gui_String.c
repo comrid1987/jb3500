@@ -348,22 +348,25 @@ int gui_DrawString_Mixed(int x, int y, const char *pStr, t_color nColor)
 //===============================================================
 //»ìºÏ×Ö·û´®ÏÔÊ¾£¬°üº¬ºº×ÖºÍASC×Ö·û
 //===============================================================
-int gui_DrawString_Mixed_Align(int x, int y, const char *pStr, t_color nColor, int nAlignType)
+int gui_DrawString_Mixed_Center(int x, int y, const char *pStr, t_color nColor)
 {
 	int nX, nWidth;
 	
 	nWidth = gui_GetStringWidth(pStr);
-	switch (nAlignType) {
-	case GUI_ALIGN_CENTER:
-		nX = (LCD_X_MAX + x - nWidth) >> 1;
-		break;
-	case GUI_ALIGN_RIGHT:
-		nX = LCD_X_MAX - nWidth;
-		break;
-	default:
-		nX = x;
-		break;
-	}
+	nX = (LCD_X_MAX + x - nWidth) >> 1;
+	gui_DrawString_Mixed(nX, y, pStr, nColor);
+	return nX;
+}
+
+//===============================================================
+//»ìºÏ×Ö·û´®ÏÔÊ¾£¬°üº¬ºº×ÖºÍASC×Ö·û
+//===============================================================
+int gui_DrawString_Mixed_Right(int y, const char *pStr, t_color nColor)
+{
+	int nX, nWidth;
+	
+	nWidth = gui_GetStringWidth(pStr);
+	nX = LCD_X_MAX - nWidth;
 	gui_DrawString_Mixed(nX, y, pStr, nColor);
 	return nX;
 }

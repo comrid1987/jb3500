@@ -45,10 +45,10 @@ int gui_Editor_Special(const char *pInfo, t_gui_spec_editor *pTable, uint_t nQty
 {
 
 	//绘制提升信息
-	gui_DrawString_Mixed_Align(0, GUI_EDIT_INFO_Y, pInfo, COLOR_BLACK, GUI_ALIGN_CENTER);
+	gui_DrawString_Mixed_Center(0, GUI_EDIT_INFO_Y, pInfo, COLOR_BLACK);
 
 	nIndex = cycle(nIndex, 0, nQty - 1, nSelect);
-	gui_DrawString_Mixed_Align(0, GUI_EDIT_DATA_Y, (char *)pTable[nIndex].str, COLOR_BLACK, GUI_ALIGN_CENTER);
+	gui_DrawString_Mixed_Center(0, GUI_EDIT_DATA_Y, (char *)pTable[nIndex].str, COLOR_BLACK);
 
 	return nIndex;
 }
@@ -68,7 +68,7 @@ void gui_Editor_IPAddressSet(const char *pInfo, char *pStr, int nIndex, int nSel
 	int x;
 
 	//绘制提升信息
-	gui_DrawString_Mixed_Align(0, GUI_EDIT_INFO_Y, pInfo, COLOR_BLACK, GUI_ALIGN_CENTER);
+	gui_DrawString_Mixed_Center(0, GUI_EDIT_INFO_Y, pInfo, COLOR_BLACK);
 
 	//整形
 	pStr[3] = pStr[7] = pStr[11] = '.';
@@ -93,7 +93,7 @@ void gui_Editor_IPAddressSet(const char *pInfo, char *pStr, int nIndex, int nSel
 	}
 
 	//绘制IP地址及光标
-	x = gui_DrawString_Mixed_Align(0, GUI_EDIT_DATA_Y, pStr, COLOR_BLACK, GUI_ALIGN_CENTER) + ASC_WIDTH * nIndex;
+	x = gui_DrawString_Mixed_Center(0, GUI_EDIT_DATA_Y, pStr, COLOR_BLACK) + ASC_WIDTH * nIndex;
 	gui_DrawHLine(x, GUI_EDIT_DATA_Y + HZ_HEIGHT, x + (ASC_WIDTH - 1), COLOR_BLACK);
 }
 
@@ -128,7 +128,7 @@ void gui_Editor_PercentSet(const char *pInfo, char *pStr, int nIndex, int nSelec
 	int x;
 
 	//绘制提升信息
-	gui_DrawString_Mixed_Align(0, GUI_EDIT_INFO_Y, pInfo, COLOR_BLACK, GUI_ALIGN_CENTER);
+	gui_DrawString_Mixed_Center(0, GUI_EDIT_INFO_Y, pInfo, COLOR_BLACK);
 
 	//整形
 	pStr[3] = '.';
@@ -139,7 +139,7 @@ void gui_Editor_PercentSet(const char *pInfo, char *pStr, int nIndex, int nSelec
 	pStr[nIndex] = gui_EditorCompnet_Number(pStr[nIndex], 1, 10, nSelect);
 
 	//绘制IP地址及光标
-	x = gui_DrawString_Mixed_Align(0, GUI_EDIT_DATA_Y, pStr, COLOR_BLACK, GUI_ALIGN_CENTER) + ASC_WIDTH * nIndex;
+	x = gui_DrawString_Mixed_Center(0, GUI_EDIT_DATA_Y, pStr, COLOR_BLACK) + ASC_WIDTH * nIndex;
 	gui_DrawHLine(x, GUI_EDIT_DATA_Y + HZ_HEIGHT, x + (ASC_WIDTH - 1), COLOR_BLACK);
 }
 
@@ -171,7 +171,7 @@ void gui_Editor_TimeSet(const char *pInfo, char *pStr, int nIndex, int nSelect)
 	int x;
 
 	//绘制提升信息
-	gui_DrawString_Mixed_Align(0, GUI_EDIT_INFO_Y, pInfo, COLOR_BLACK, GUI_ALIGN_CENTER);
+	gui_DrawString_Mixed_Center(0, GUI_EDIT_INFO_Y, pInfo, COLOR_BLACK);
 
 	//整形
 	pStr[4] = pStr[7] = '-';
@@ -213,7 +213,7 @@ void gui_Editor_TimeSet(const char *pInfo, char *pStr, int nIndex, int nSelect)
 	}
 
 	//绘制时间及光标
-	x = gui_DrawString_Mixed_Align(0, GUI_EDIT_DATA_Y, pStr, COLOR_BLACK, GUI_ALIGN_CENTER) + ASC_WIDTH * nIndex;
+	x = gui_DrawString_Mixed_Center(0, GUI_EDIT_DATA_Y, pStr, COLOR_BLACK) + ASC_WIDTH * nIndex;
 	gui_DrawHLine(x, GUI_EDIT_DATA_Y + HZ_HEIGHT, x + (ASC_WIDTH - 1), COLOR_BLACK);
 }
 
@@ -250,7 +250,7 @@ void gui_Editor_DaySet(const char *pInfo, char *pStr, int nIndex, int nSelect)
 	int x;
 
 	//绘制提升信息
-	gui_DrawString_Mixed_Align(0, GUI_EDIT_INFO_Y, pInfo, COLOR_BLACK, GUI_ALIGN_CENTER);
+	gui_DrawString_Mixed_Center(0, GUI_EDIT_INFO_Y, pInfo, COLOR_BLACK);
 
 	if (nIndex > 3)
 		nIndex += 2;
@@ -259,7 +259,7 @@ void gui_Editor_DaySet(const char *pInfo, char *pStr, int nIndex, int nSelect)
 	pStr[nIndex] = gui_EditorCompnet_Number(pStr[nIndex], 1, 10, nSelect);
 
 	//绘制数字及光标
-	x = gui_DrawString_Mixed_Align(0, GUI_EDIT_DATA_Y, pStr, COLOR_BLACK, GUI_ALIGN_CENTER) + ASC_WIDTH * nIndex;
+	x = gui_DrawString_Mixed_Center(0, GUI_EDIT_DATA_Y, pStr, COLOR_BLACK) + ASC_WIDTH * nIndex;
 	gui_DrawHLine(x, GUI_EDIT_DATA_Y + HZ_HEIGHT, x + (ASC_WIDTH - 1), COLOR_BLACK);
 }
 
@@ -305,7 +305,7 @@ void gui_Editor_NumberSet(const char *pInfo, char *pStr, int nIndex, int nSelect
 	int x;
 
 	//绘制提升信息
-	gui_DrawString_Mixed_Align(0, GUI_EDIT_INFO_Y, pInfo, COLOR_BLACK, GUI_ALIGN_CENTER);
+	gui_DrawString_Mixed_Center(0, GUI_EDIT_INFO_Y, pInfo, COLOR_BLACK);
 
 	//数字滚动
 	if ((nIndex == 0) && nSign)
@@ -320,7 +320,7 @@ void gui_Editor_NumberSet(const char *pInfo, char *pStr, int nIndex, int nSelect
 	pStr[nIndex] = gui_EditorCompnet_Number(pStr[nIndex], x, x + nHex, nSelect);
 
 	//绘制数字及光标
-	x = gui_DrawString_Mixed_Align(0, GUI_EDIT_DATA_Y, pStr, COLOR_BLACK, GUI_ALIGN_CENTER) + ASC_WIDTH * nIndex;
+	x = gui_DrawString_Mixed_Center(0, GUI_EDIT_DATA_Y, pStr, COLOR_BLACK) + ASC_WIDTH * nIndex;
 	gui_DrawHLine(x, GUI_EDIT_DATA_Y + HZ_HEIGHT, x + (ASC_WIDTH - 1), COLOR_BLACK);
 }
 
@@ -425,11 +425,11 @@ void gui_Editor_StringDcmSet(const char *pInfo, char *pStr, int nIndex, int nSel
 	int x;
 
 	//绘制提升信息
-	gui_DrawString_Mixed_Align(0, GUI_EDIT_INFO_Y, pInfo, COLOR_BLACK, GUI_ALIGN_CENTER);
+	gui_DrawString_Mixed_Center(0, GUI_EDIT_INFO_Y, pInfo, COLOR_BLACK);
 
 	pStr[nIndex] = gui_EditorCompnetDcm_Char(pStr[nIndex], nSelect, nType);
 	//绘制字串及光标
-	x = gui_DrawString_Mixed_Align(0, GUI_EDIT_DATA_Y, pStr, COLOR_BLACK, GUI_ALIGN_CENTER) + ASC_WIDTH * nIndex;
+	x = gui_DrawString_Mixed_Center(0, GUI_EDIT_DATA_Y, pStr, COLOR_BLACK) + ASC_WIDTH * nIndex;
 	gui_DrawHLine(x, GUI_EDIT_DATA_Y + HZ_HEIGHT, x + (ASC_WIDTH - 1), COLOR_BLACK);
 }
 
@@ -455,11 +455,11 @@ void gui_Editor_StringSet(const char *pInfo, char *pStr, int nIndex, int nSelect
 	int x;
 
 	//绘制提升信息
-	gui_DrawString_Mixed_Align(0, GUI_EDIT_INFO_Y, pInfo, COLOR_BLACK, GUI_ALIGN_CENTER);
+	gui_DrawString_Mixed_Center(0, GUI_EDIT_INFO_Y, pInfo, COLOR_BLACK);
 
 	pStr[nIndex] = gui_EditorCompnet_Char(pStr[nIndex], nSelect, nType);
 	//绘制字串及光标
-	x = gui_DrawString_Mixed_Align(0, GUI_EDIT_DATA_Y, pStr, COLOR_BLACK, GUI_ALIGN_CENTER) + ASC_WIDTH * nIndex;
+	x = gui_DrawString_Mixed_Center(0, GUI_EDIT_DATA_Y, pStr, COLOR_BLACK) + ASC_WIDTH * nIndex;
 	gui_DrawHLine(x, GUI_EDIT_DATA_Y + HZ_HEIGHT, x + (ASC_WIDTH - 1), COLOR_BLACK);
 }
 

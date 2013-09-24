@@ -21,9 +21,6 @@
 #define ASC6x12_SIZE		12  		//字符的大小为6X12点阵，合计12字节
 #define ASC6x16_SIZE		12  		//字符的大小为6X16点阵，合计12字节
 
-#define GUI_ALIGN_LEFT		0x00		//左对齐
-#define GUI_ALIGN_RIGHT		0x10		//右对齐
-#define GUI_ALIGN_CENTER	0x20		//居中对齐
 
 
 //External Functions
@@ -31,7 +28,8 @@ void gui_DrawString_ASC6x8(int x, int y, const char *pStr, t_color nColor);
 void gui_DrawString_ASC6x12(int x, int y, const char *pStr, t_color nColor);
 void gui_DrawString_ASC6x16(int x, int y, const char *pStr, t_color nColor);
 int gui_DrawString_Mixed(int x, int y, const char *pStr, t_color nColor);
-int gui_DrawString_Mixed_Align(int x, int y, const char *pStr, t_color nColor, int nAlignType);
+int gui_DrawString_Mixed_Center(int x, int y, const char *pStr, t_color nColor);
+int gui_DrawString_Mixed_Right(int y, const char *pStr, t_color nColor);
 
 
 #endif
