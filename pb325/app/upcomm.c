@@ -105,10 +105,10 @@ void tsk_Upcom1(void *args)
 void dbg_trace(const char *str)
 {
 
-    if (rcp_aGw3761[2].parent.chl->ste == CHL_S_READY) {
-        chl_Send(rcp_aGw3761[2].parent.chl, dbg_header, sizeof(dbg_header));
-        chl_Send(rcp_aGw3761[2].parent.chl, str, strlen(str));
-    }
+	if (rcp_aGw3761[2].parent.chl->ste == CHL_S_READY) {
+		chl_Send(rcp_aGw3761[2].parent.chl, dbg_header, sizeof(dbg_header));
+		chl_Send(rcp_aGw3761[2].parent.chl, str, strlen(str));
+	}
 }
 
 static t_gd5100 rcp_GD5100;

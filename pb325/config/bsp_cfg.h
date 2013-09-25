@@ -13,6 +13,13 @@
 //Main Control Unit Select
 #define ARCH_TYPE						ARCH_T_LM3S5X
 
+//外部8M Oscillator使能
+#define MCU_HSE_ENABLE					1
+
+//MCU频率
+#define MCU_FREQUENCY					MCU_SPEED_HALF
+
+
 //Operation System Select
 #define OS_TYPE							OS_T_RTTHREAD
 
@@ -61,12 +68,6 @@
 
 
 
-
-//内部8M Oscillator使能
-#define MCU_HSI_ENABLE					0
-
-//MCU频率
-#define MCU_FREQUENCY					MCU_SPEED_HALF
 
 //Internal SRAM End Address
 #define MCU_SRAM_BASE_ADR				0x20000000
