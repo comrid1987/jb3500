@@ -16,7 +16,7 @@ extern "C" {
 #endif
 
 #define USE_STDPERIPH_DRIVER
-#define HSE_VALUE				MCU_HSE_FREQ    	
+#define HSE_VALUE				MCU_HSE_FREQ
 
 #include "stm32f10x.h"
 
