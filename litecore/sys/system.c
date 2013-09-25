@@ -23,9 +23,6 @@ void sys_IOHandle(void *args)
 	if (irq_Wait() == SYS_R_OK)
 		irq_BottomHandler();
 #endif
-#if DM9000_ENABLE && (ETH_INT_ENABLE == 0)
-	dm9000_Isr(NULL);
-#endif
 	if ((nCnt % (100 / OS_TICK_MS)) == 0) {
 #if OS_QUEUE_QTY
 		os_que_Idle();

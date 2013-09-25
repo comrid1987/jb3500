@@ -95,7 +95,7 @@ void poll_ethernet()
 
 	if (eth_inited) {
 #if DM9000_ENABLE
-		dm9000_PacketReceive();
+		dm9000_Isr(NULL);
 #endif
 #if ENC28J60_ENABLE
 		enc28j60_IntHandler();

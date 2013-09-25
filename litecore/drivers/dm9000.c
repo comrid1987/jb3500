@@ -275,7 +275,7 @@ static void dm9000_Isr(void *args)
 
 	/* Received the coming packet */
 	if (nReg & ISR_PRS)
-		dm9000_PacketReceive();
+		while (dm9000_PacketReceive() == SYS_R_OK);
 
 	/* Transmit Interrupt check */
 	if (nReg & ISR_PTS)
@@ -404,8 +404,6 @@ sys_res dm9000_PacketReceive()
 	uint16_t *pData;
 	uint_t nSte, nLen;
 
-	/* lock DM9000 device */
-
 	/* Check packet ready or not */
 	dm9000_RegRead(DM9000_MRCMDX);				/* Dummy read */
 	nSte = __raw_readw(DM9000_ADR_DATA) & 0xFF;		/* Got most updated pData */
@@ -447,16 +445,17 @@ sys_res dm9000_PacketReceive()
 		//copy the packet from the receive buffer
 		pData = (uint16_t *)frame->data;
 		frame->length = nLen;
-		for (nLen = ALIGN2(nLen); nLen; nLen -= 2)
+		for (nLen = ALIGN2(nLen); nLen; nLen -= 2) {
 			*pData++ = __raw_readw(DM9000_ADR_DATA);
+		}
 		put_in_queue(frame);
 	} else {
 		dm9000_DbgOut("dm9000 rx: no pbuf\n");
 		/* no pbuf, discard pData from DM9000 */
-		for (nLen = ALIGN2(nLen); nLen; nLen -= 2)
+		for (nLen = ALIGN2(nLen); nLen; nLen -= 2) {
 			__raw_readw(DM9000_ADR_DATA);
+		}
 	}
-	/* unlock DM9000 device */
 
 	return SYS_R_OK;
 }

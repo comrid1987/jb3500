@@ -1,7 +1,7 @@
 
 
 //Private Defines
-#define SERIAL_USARTX				UART5
+#define SERIAL_USARTX				USART3
 
 
 /*----------------------------------------------------------------------------
