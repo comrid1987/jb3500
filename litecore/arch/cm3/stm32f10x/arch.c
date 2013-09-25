@@ -32,9 +32,9 @@ void SystemInit()
 	if (RCC_WaitForHSEStartUp() == SUCCESS) {
 #endif
 		/* HCLK = 72M Max */
-		RCC_HCLKConfig(RCC_SYSCLK_Div1); 
+		RCC_HCLKConfig(RCC_SYSCLK_Div1);
 		/* PCLK2 72M Max */
-		RCC_PCLK2Config(RCC_HCLK_Div1); 
+		RCC_PCLK2Config(RCC_HCLK_Div1);
 		/* PCLK1 36M Max */
 #if MCU_FREQUENCY == MCU_SPEED_HALF
 		RCC_PCLK1Config(RCC_HCLK_Div1);
