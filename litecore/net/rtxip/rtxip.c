@@ -386,11 +386,12 @@ void net_SetIpETH(const void *pIp, const void *pMask, const void *pGetway)
 	net_SetIpAddr(NETIF_ETH, pIp, pMask, pGetway);
 }
 
+#if TCPPS_ETH_ENABLE
 void net_SetMacETH(const void *pMac)
 {
 
 	memcpy(&own_hw_adr[3], pMac, 3);
 	init_ethernet();
 }
-
+#endif
 
