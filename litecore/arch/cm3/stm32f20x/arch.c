@@ -63,7 +63,7 @@ static void stm32_IrqInit()
 #endif
 }
 
-static void stm32_GpioIdleInit()
+static void stm32_GpioInit()
 {
 	GPIO_InitTypeDef xGpio;
 
@@ -72,7 +72,8 @@ static void stm32_GpioIdleInit()
 	RCC_AHB1PeriphClockCmd(	RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB |
 						   	RCC_AHB1Periph_GPIOC | RCC_AHB1Periph_GPIOD |
 							RCC_AHB1Periph_GPIOE | RCC_AHB1Periph_GPIOF |
-							RCC_AHB1Periph_GPIOG, ENABLE);
+							RCC_AHB1Periph_GPIOG | RCC_AHB1Periph_GPIOH |
+							RCC_AHB1Periph_GPIOI, ENABLE);
 	xGpio.GPIO_Pin = GPIO_Pin_All;
 	xGpio.GPIO_Mode = GPIO_Mode_AIN;
 	xGpio.GPIO_PuPd = GPIO_PuPd_NOPULL;
@@ -83,10 +84,13 @@ static void stm32_GpioIdleInit()
 	GPIO_Init(GPIOE, &xGpio);
 	GPIO_Init(GPIOF, &xGpio);
 	GPIO_Init(GPIOG, &xGpio);
+	GPIO_Init(GPIOH, &xGpio);
+	GPIO_Init(GPIOI, &xGpio);
 	RCC_AHB1PeriphClockCmd(	RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB |
 						   	RCC_AHB1Periph_GPIOC | RCC_AHB1Periph_GPIOD |
 							RCC_AHB1Periph_GPIOE | RCC_AHB1Periph_GPIOF |
-							RCC_AHB1Periph_GPIOG, DISABLE);
+							RCC_AHB1Periph_GPIOG | RCC_AHB1Periph_GPIOH |
+							RCC_AHB1Periph_GPIOI, DISABLE);
 }
 
 
@@ -120,7 +124,7 @@ void arch_Init()
 	//中断初始化
 	stm32_IrqInit();
 	//GPIO初始化
-	//stm32_GpioIdleInit();
+	stm32_GpioInit();
 #if EPI_ENABLE && !EPI_SOFTWARE
 	stm32_FsmcInit();
 #endif

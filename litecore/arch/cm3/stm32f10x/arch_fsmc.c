@@ -134,8 +134,8 @@ void stm32_FsmcInit()
 #if NORFLASH_ENABLE
 	nBank = stm32_Bank(NORFLASH_BASE_ADR);
 
-  	/*-- FSMC Configuration ----------------------------------------------------*/
-    xNorReadTiming.FSMC_AddressSetupTime = 1;
+	/*-- FSMC Configuration ----------------------------------------------------*/
+	xNorReadTiming.FSMC_AddressSetupTime = 1;
 	xNorReadTiming.FSMC_AddressHoldTime = 0;
 	xNorReadTiming.FSMC_DataSetupTime = 5;
 	xNorReadTiming.FSMC_BusTurnAroundDuration = 0;
