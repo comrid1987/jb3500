@@ -15,7 +15,7 @@ static void stm32_OsTickInit()
 
 
 #if ARCH_TYPE == ARCH_T_STM32F10X_HD
-void SystemInit()
+void SystemInit(void)
 {
 
 	//初始化系统时钟
@@ -140,7 +140,7 @@ static void stm32_IrqInit()
 #endif
 }
 
-static void stm32_GpioIdleInit()
+static void stm32_GpioInit()
 {
 	GPIO_InitTypeDef xGpio;
 
@@ -163,6 +163,9 @@ static void stm32_GpioIdleInit()
 						   	RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOD |
 							RCC_APB2Periph_GPIOE | RCC_APB2Periph_GPIOF |
 							RCC_APB2Periph_GPIOG, DISABLE);
+
+	//使能SWD,禁用JTAG
+	GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
 }
 
 
@@ -196,7 +199,7 @@ void arch_Init()
 	//中断初始化
 	stm32_IrqInit();
 	//GPIO初始化
-	stm32_GpioIdleInit();
+	stm32_GpioInit();
 #if EPI_ENABLE && !EPI_SOFTWARE
 	stm32_FsmcInit();
 #endif
