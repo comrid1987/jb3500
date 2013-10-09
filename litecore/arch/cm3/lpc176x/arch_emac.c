@@ -328,10 +328,6 @@ void arch_EmacIsr()
 
 
 
-void ethif_Init(void)
-{
-
-}
 
 
 #endif

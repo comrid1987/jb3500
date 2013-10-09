@@ -253,14 +253,14 @@ void stm32_FsmcInit()
 	/*-- FSMC Configuration ----------------------------------------------------*/
 	xNorReadTiming.FSMC_AddressSetupTime = 0;
 	xNorReadTiming.FSMC_AddressHoldTime = 0;
-	xNorReadTiming.FSMC_DataSetupTime = 1;
+	xNorReadTiming.FSMC_DataSetupTime = 2;
 	xNorReadTiming.FSMC_BusTurnAroundDuration = 0;
 	xNorReadTiming.FSMC_CLKDivision = 0;
 	xNorReadTiming.FSMC_DataLatency = 0;
 	xNorReadTiming.FSMC_AccessMode = FSMC_AccessMode_A;
 	xNorWriteTiming.FSMC_AddressSetupTime = 0;
 	xNorWriteTiming.FSMC_AddressHoldTime = 0;
-	xNorWriteTiming.FSMC_DataSetupTime = 1;
+	xNorWriteTiming.FSMC_DataSetupTime = 2;
 	xNorWriteTiming.FSMC_BusTurnAroundDuration = 0;
 	xNorWriteTiming.FSMC_CLKDivision = 0;
 	xNorWriteTiming.FSMC_DataLatency = 0;

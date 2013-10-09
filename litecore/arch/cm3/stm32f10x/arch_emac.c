@@ -470,9 +470,6 @@ static uint16_t read_PHY(uint32_t PhyReg)
 }
 
 
-void ethif_Init()
-{
-}
 
 
 #endif

@@ -441,9 +441,6 @@ static uint16_t read_PHY(uint32_t PhyReg)
   return (ETH->MACMIIDR & MMDR_MD);
 }
 
-void ethif_Init()
-{
-}
 
 
 #endif

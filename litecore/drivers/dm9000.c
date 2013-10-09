@@ -14,7 +14,7 @@
 
 #define MAX_ADDR_LEN 		6
 
-#define DM9000_ID			0x90000A46  /* DM9000 ID */
+#define DM9000_ID			0x90000A46  /* DM9000AEP ID */
 #define DM9000_PKT_MAX		1536	    /* Received packet max size */
 #define DM9000_PKT_RDY		0x01	    /* Packet ready to receive */
 
@@ -292,9 +292,9 @@ sys_res dm9000_Reset(const uint8_t *pMacAddr)
 
 	/* Hardware Reset */
 	dm9000_Rst(0);
-	sys_Delay(2000);
+	os_thd_Slp1Tick();
 	dm9000_Rst(1);
-	sys_Delay(5000);
+	os_thd_Sleep(10);
 	/* DEBUG: Make all GPIO pins outputs */
 	dm9000_RegWrite(DM9000_GPCR, 0x0F);
 	/* Step 1: Power internal PHY by writing 0 to GPIO0 pin */
@@ -304,6 +304,8 @@ sys_res dm9000_Reset(const uint8_t *pMacAddr)
 
 	while (dm9000_RegRead(DM9000_NCR) & NCR_RST)
 		sys_Delay(100);		/* delay 10us */
+
+	os_thd_Sleep(100);
 
 	/* identify DM9000 */
 	value  = dm9000_RegRead(DM9000_VIDL);
