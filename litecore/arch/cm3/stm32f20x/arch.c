@@ -69,15 +69,12 @@ static void stm32_GpioInit()
 
 	//将所有没有使用的IO置为模拟输入
 	//可以降低功耗和改善EMC/EMI性能
-	RCC_AHB1PeriphClockCmd(	RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB |
-						   	RCC_AHB1Periph_GPIOC | RCC_AHB1Periph_GPIOD |
-							RCC_AHB1Periph_GPIOE | RCC_AHB1Periph_GPIOF |
-							RCC_AHB1Periph_GPIOG | RCC_AHB1Periph_GPIOH |
-							RCC_AHB1Periph_GPIOI, ENABLE);
+	RCC_AHB1PeriphClockCmd(	RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOC | RCC_AHB1Periph_GPIOD |
+							RCC_AHB1Periph_GPIOE | RCC_AHB1Periph_GPIOF | RCC_AHB1Periph_GPIOG | 
+							RCC_AHB1Periph_GPIOH | RCC_AHB1Periph_GPIOI, ENABLE);
 	xGpio.GPIO_Pin = GPIO_Pin_All;
 	xGpio.GPIO_Mode = GPIO_Mode_AIN;
 	xGpio.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	GPIO_Init(GPIOA, &xGpio);
 	GPIO_Init(GPIOB, &xGpio);
 	GPIO_Init(GPIOC, &xGpio);
 	GPIO_Init(GPIOD, &xGpio);
@@ -86,11 +83,9 @@ static void stm32_GpioInit()
 	GPIO_Init(GPIOG, &xGpio);
 	GPIO_Init(GPIOH, &xGpio);
 	GPIO_Init(GPIOI, &xGpio);
-	RCC_AHB1PeriphClockCmd(	RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB |
-						   	RCC_AHB1Periph_GPIOC | RCC_AHB1Periph_GPIOD |
-							RCC_AHB1Periph_GPIOE | RCC_AHB1Periph_GPIOF |
-							RCC_AHB1Periph_GPIOG | RCC_AHB1Periph_GPIOH |
-							RCC_AHB1Periph_GPIOI, DISABLE);
+	RCC_AHB1PeriphClockCmd(	RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOC | RCC_AHB1Periph_GPIOD |
+							RCC_AHB1Periph_GPIOE | RCC_AHB1Periph_GPIOF | RCC_AHB1Periph_GPIOG | 
+							RCC_AHB1Periph_GPIOH | RCC_AHB1Periph_GPIOI, DISABLE);
 }
 
 
