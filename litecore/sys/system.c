@@ -11,7 +11,7 @@ extern void app_Entry(void);
 extern void app_Daemon(uint_t nCnt);
 
 
-
+#if OS_TYPE
 void sys_IOHandle(void *args)
 {
 	static uint_t nCnt = 0;
@@ -52,8 +52,6 @@ void sys_IOHandle(void *args)
 #endif
 }
 
-
-#if OS_TYPE
 #if SYS_TIMER_ENABLE
 struct rt_timer timer_IOHandle;
 #else

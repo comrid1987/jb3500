@@ -199,12 +199,16 @@ sys_res uart_Send(p_dev_uart p, const void *pData, uint_t nLen)
 #endif
 #if SWUART_ENABLE
 	case UART_T_TIMER:
+#if SWUART_RX_MODE == SWUART_RX_M_EINT
 #if IO_BUF_TYPE == BUF_T_BUFFER
 		buf_Push(p->buftx, pData, nLen);
 #elif IO_BUF_TYPE == BUF_T_DQUEUE
 		dque_Push(dqueue, p->parent->id | UART_DQUE_TX_CHL, pData, nLen);
 #endif
 		swuart_TxStart(p->def->id);
+#else
+		swuart_Send(p->def->id, pData, nLen);
+#endif
 		break;
 #endif
 	default:

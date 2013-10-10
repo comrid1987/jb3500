@@ -76,7 +76,6 @@ typedef __packed struct {
 }t_gw3762_ru;
 
 
-//GDW3761½ÓÊÕÖ¡
 typedef struct {
 	uint8_t		ste;
 	uint8_t		tmo;
