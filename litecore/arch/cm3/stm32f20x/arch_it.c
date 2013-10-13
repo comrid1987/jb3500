@@ -1,8 +1,22 @@
 
 
+void arch_ExtIrqRxConf(uint_t nPort, uint_t nPin)
+{
+	
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+	switch (nPort) {
+	case 0:
+		SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, nPin );
+		break;
+	case 1:
+		SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, nPin );			
+		break;
+	}
+}
+
 int arch_ExtIrqRegister(uint_t nPort, uint_t nPin, uint_t nTriggerMode)
 {
-	EXTI_InitTypeDef xEXTI;
+	EXTI_InitTypeDef	xEXTI;
 	uint_t nPortSource;
 
 	switch (nPort) {
@@ -34,45 +48,49 @@ int arch_ExtIrqRegister(uint_t nPort, uint_t nPin, uint_t nTriggerMode)
 	xEXTI.EXTI_Line = BITMASK(nPin);
 	xEXTI.EXTI_Mode = EXTI_Mode_Interrupt;
 	switch (nTriggerMode) {
-	default:
+	case IRQ_TRIGGER_FALLING:
 		xEXTI.EXTI_Trigger = EXTI_Trigger_Falling;
 		break;
 	case IRQ_TRIGGER_RISING:
 		xEXTI.EXTI_Trigger = EXTI_Trigger_Rising;
 		break;
+	default:
+		return -1;
 	}
 	xEXTI.EXTI_LineCmd = ENABLE;
 	EXTI_Init(&xEXTI);
 	return nPin;
 }
 
-
 void arch_ExtIrqEnable(uint_t nPort, uint_t nPin, uint_t nMode)
 { 
-	EXTI_InitTypeDef xEXTI;
+	EXTI_InitTypeDef   xEXTI;
 
 	xEXTI.EXTI_Line = BITMASK(nPin);
 	xEXTI.EXTI_Mode = EXTI_Mode_Interrupt;
 	switch (nMode) {
-	default:
+	case IRQ_TRIGGER_FALLING:
 		xEXTI.EXTI_Trigger = EXTI_Trigger_Falling;
 		break;
 	case IRQ_TRIGGER_RISING:
 		xEXTI.EXTI_Trigger = EXTI_Trigger_Rising;
 		break;
+	default:
+		xEXTI.EXTI_Trigger = EXTI_Trigger_Falling;
+		break;
 	} 
 	xEXTI.EXTI_LineCmd = ENABLE;
 	EXTI_Init(&xEXTI);
 }
-
 void arch_ExtIrqDisable(uint_t nPort, uint_t nPin)
 {
-	EXTI_InitTypeDef xEXTI;
+	EXTI_InitTypeDef   xEXTI;
 
 	xEXTI.EXTI_Line = BITMASK(nPin);
 	xEXTI.EXTI_LineCmd = DISABLE;
 	EXTI_Init(&xEXTI);
 }
+
 
 /*******************************************************************************
 * Function Name  : NMIException
