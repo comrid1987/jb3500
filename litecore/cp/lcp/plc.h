@@ -10,8 +10,9 @@ extern "C" {
 #define PLC_S_INIT				0
 #define PLC_S_SYNC				1
 #define PLC_S_IDLE				2
-#define PLC_S_SLAVE				3
-#define PLC_S_WAIT				4
+#define PLC_S_WAIT				3
+#define PLC_S_SLAVE				4
+#define PLC_S_PROBE				5
 
 //Modem Type Defines
 #define PLC_T_XC_GW				0

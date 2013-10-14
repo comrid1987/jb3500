@@ -486,7 +486,7 @@ void modem_Run()
 #endif
 		if (p->cnt == 9)
 			modem_Act(pDef, 0);
-		if (p->cnt == 11)
+		if (p->cnt == 12)
 			modem_Act(pDef, 1);
 		if (p->cnt > 16) {
 			p->ste = MODEM_S_INIT;
