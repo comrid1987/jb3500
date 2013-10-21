@@ -87,7 +87,6 @@ sys_res dlrcp_SetChl(p_dlrcp p, uint_t nType, uint_t nId, uint_t nPar1, uint_t n
 		break;
 #endif
 	case CHL_T_RS232:
-	case CHL_T_RS485:
 	case CHL_T_IRDA:
 		if (p->uart.baud != nPar1) {
 			p->uart.baud = nPar1;
@@ -190,7 +189,6 @@ sys_res dlrcp_Handler(p_dlrcp p)
 #endif
 #if UART_ENABLE
 		case CHL_T_RS232:
-		case CHL_T_RS485:
 		case CHL_T_IRDA:
 			chl_rs232_Config(p->chl, p->uart.baud, p->uart.pari, p->uart.data, p->uart.stop);
 			break;
@@ -269,7 +267,6 @@ sys_res dlrcp_Handler(p_dlrcp p)
 #endif
 #if UART_ENABLE
 			case CHL_T_RS232:
-			case CHL_T_RS485:
 			case CHL_T_IRDA:
 				if (p->cnt > 900) {
 					p->cnt = 0;

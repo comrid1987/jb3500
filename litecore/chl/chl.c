@@ -29,7 +29,6 @@ sys_res chl_Bind(chl p, uint_t nType, uint_t nId, int nTmo)
 	switch (nType) {
 #if UART_ENABLE
 	case CHL_T_RS232:
-	case CHL_T_RS485:
 	case CHL_T_IRDA:
 		if ((p->pIf = uart_Get(nId, nTmo)) != NULL)
 			res = SYS_R_OK;
@@ -60,7 +59,6 @@ sys_res chl_Release(chl p)
 	switch (p->type) {
 #if UART_ENABLE
 	case CHL_T_RS232:
-	case CHL_T_RS485:
 	case CHL_T_IRDA:
 		if (p->pIf != NULL)
 			res = uart_Release(p->pIf);
@@ -98,7 +96,6 @@ sys_res chl_Send(chl p, const void *pData, uint_t nLen)
 		return SYS_R_ERR;
 	switch (p->type) {
 #if UART_ENABLE
-	case CHL_T_RS485:
 	case CHL_T_IRDA:
 #if CHL_PRECODE_ENABLE
 		uart_Send(p->pIf, (void *)tbl_chlHeaderCodes, sizeof(tbl_chlHeaderCodes));
@@ -141,7 +138,6 @@ sys_res chl_RecData(chl p, buf b, uint_t nTmo)
 	switch (p->type) {
 #if UART_ENABLE
 	case CHL_T_RS232:
-	case CHL_T_RS485:
 	case CHL_T_IRDA:
 		res = uart_RecData(p->pIf, b, nTmo);
 		break;
