@@ -1,6 +1,6 @@
 
 //Private Defines
-#define CHL_PRECODE_ENABLE				0
+#define CHL_PRECODE_ENABLE				1
 
 
 //Private const variables
@@ -29,15 +29,10 @@ sys_res chl_Bind(chl p, uint_t nType, uint_t nId, int nTmo)
 	switch (nType) {
 #if UART_ENABLE
 	case CHL_T_RS232:
+	case CHL_T_RS485:
+	case CHL_T_IRDA:
 		if ((p->pIf = uart_Get(nId, nTmo)) != NULL)
 			res = SYS_R_OK;
-		break;
-#endif
-#if RS485_ENABLE
-	case CHL_T_RS485:
-		if (nId < BSP_RS485_QTY)
-			if ((p->pIf = uart_Get(tbl_bspRs485Id[nId], nTmo)) != NULL)
-				res = SYS_R_OK;
 		break;
 #endif
 #if TCPPS_ENABLE
@@ -66,6 +61,7 @@ sys_res chl_Release(chl p)
 #if UART_ENABLE
 	case CHL_T_RS232:
 	case CHL_T_RS485:
+	case CHL_T_IRDA:
 		if (p->pIf != NULL)
 			res = uart_Release(p->pIf);
 		break;
@@ -103,6 +99,7 @@ sys_res chl_Send(chl p, const void *pData, uint_t nLen)
 	switch (p->type) {
 #if UART_ENABLE
 	case CHL_T_RS485:
+	case CHL_T_IRDA:
 #if CHL_PRECODE_ENABLE
 		uart_Send(p->pIf, (void *)tbl_chlHeaderCodes, sizeof(tbl_chlHeaderCodes));
 #endif
@@ -145,6 +142,7 @@ sys_res chl_RecData(chl p, buf b, uint_t nTmo)
 #if UART_ENABLE
 	case CHL_T_RS232:
 	case CHL_T_RS485:
+	case CHL_T_IRDA:
 		res = uart_RecData(p->pIf, b, nTmo);
 		break;
 #endif

@@ -11,8 +11,7 @@
 //通道类型
 #define CHL_T_RS232				0
 #define CHL_T_RS485				1
-
-#define CHL_T_PLC				(BITMASK(3) | 0)
+#define CHL_T_IRDA				2
 
 #define CHL_T_SOC_TC			(BITMASK(4) | 0)
 #define CHL_T_SOC_TS			(BITMASK(4) | 1)
