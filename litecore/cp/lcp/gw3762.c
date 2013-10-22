@@ -514,9 +514,35 @@ sys_res gw3762_ModeSet(t_plc *p, uint_t nMode)
 	uint8_t aBuf[3];
 
 	aBuf[0] = nMode;
-	aBuf[1] = 0xF4;
+	aBuf[1] = 0x4A;
 	aBuf[2] = 0x01;
 	gw3762_Transmit2Module(p, GW3762_AFN_ROUTE_SET, 0x0008, aBuf, 3);
+	for (nTmo = 3000 / OS_TICK_MS; nTmo; nTmo--) {
+		if (gw3762_Analyze(p) == SYS_R_OK)
+			break;
+	}
+	if (nTmo == 0)
+		return SYS_R_TMO;
+	if (p->afn != GW3762_AFN_CONFIRM)
+		return SYS_R_ERR;
+	if (p->fn != 0x0001)
+		return SYS_R_ERR;
+	return SYS_R_OK;
+}
+
+//-------------------------------------------------------------------------------------
+// Æô¶¯ËÑ±í
+//-------------------------------------------------------------------------------------
+sys_res gw3762_MeterProbe(t_plc *p, uint_t nTime)
+{
+	uint_t nTmo;
+	uint8_t aBuf[10];
+
+	timet2array(rtc_GetTimet(), aBuf, 1);
+	memcpy(&aBuf[6], &nTime, 2);
+	aBuf[8] = 1;	
+	aBuf[9] = 1;
+	gw3762_Transmit2Module(p, GW3762_AFN_ROUTE_SET, 0x0010, aBuf, 10);
 	for (nTmo = 3000 / OS_TICK_MS; nTmo; nTmo--) {
 		if (gw3762_Analyze(p) == SYS_R_OK)
 			break;

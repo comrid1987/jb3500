@@ -50,6 +50,7 @@ sys_res gw3762_StateGet(t_plc *p);
 sys_res gw3762_SubAdrAdd(t_plc *p, uint_t nSn, const void *pAdr, uint_t nPrtl);
 sys_res gw3762_SubAdrDelete(t_plc *p, const void *pAdr);
 sys_res gw3762_ModeSet(t_plc *p, uint_t nMode);
+sys_res gw3762_MeterProbe(t_plc *p, uint_t nTime);
 sys_res gw3762_RtCtrl(t_plc *p, uint_t nDT);
 sys_res gw3762_RequestAnswer(t_plc *p, uint_t nPhase, const void *pAdr, uint_t nIsRead, const void *pData, uint_t nLen);
 

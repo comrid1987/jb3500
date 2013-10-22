@@ -274,6 +274,22 @@ static sys_res plc_Slave(t_plc *p, buf b, uint8_t *pAdr)
 	return SYS_R_TMO;
 }
 
+static sys_res plc_MeterReport(t_plc *p, uint8_t *pAdr)
+{
+
+	if (gw3762_Analyze(p) != SYS_R_OK)
+		return SYS_R_TMO;
+	//自动上报表号
+	if (p->afn == GW3762_AFN_REPORT) {
+		if (p->fn == 0x0001) {
+			gw3762_Confirm(p, 0xFFFF, 0);
+			memcpy(pAdr, &p->data->p[1], 6);
+			return SYS_R_OK;
+		}
+	}
+	return SYS_R_TMO;
+}
+
 
 
 
@@ -467,6 +483,7 @@ void plc_Broadcast(t_plc *p)
 #endif
 }
 
+
 sys_res plc_Handler(t_plc *p, buf b, uint8_t *pAdr)
 {
 	sys_res res;
@@ -486,7 +503,28 @@ sys_res plc_Handler(t_plc *p, buf b, uint8_t *pAdr)
 			dbg_trace("<PLC> Sync failed...");
 		p->ste = PLC_S_IDLE;
 		p->tmo = 3;
+#if PLC_PROBE_ENABLE
+		if (p->type != PLC_T_XC_GD) {
+			//允许主动注册
+			if (gw3762_ModeSet(p, 0x02) == SYS_R_OK) {
+				if (gw3762_MeterProbe(p, 4) == SYS_R_OK) {
+					p->ste = PLC_S_PROBE;
+					p->tmo = 4 * 60;
+				}
+			}
+		}					
+#endif
 		break;
+#if PLC_PROBE_ENABLE
+	case PLC_S_PROBE:
+		if (plc_MeterReport(p, pAdr) == SYS_R_OK)
+			plc_NewMeter(pAdr);
+		if (p->tmo == 0) {
+			p->ste = PLC_S_IDLE;
+			p->tmo = 3;
+		}
+		break;
+#endif
 	case PLC_S_IDLE:
 		if (plc_IsInTime() == 0)
 			break;

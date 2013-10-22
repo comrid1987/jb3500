@@ -117,6 +117,7 @@ void plc_GetInfo(t_plc *p, char *pInfo);
 //User Functions
 int plc_MeterRead(uint_t nSn, void *pAdr);
 uint32_t plc_Request(const void *pAdr, uint_t *pIs97);
+void plc_NewMeter(const uint8_t *pAdr);
 int plc_IsInTime(void);
 
 
