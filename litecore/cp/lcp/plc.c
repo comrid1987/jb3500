@@ -507,9 +507,9 @@ sys_res plc_Handler(t_plc *p, buf b, uint8_t *pAdr)
 		if (p->type != PLC_T_XC_GD) {
 			//ÔÊÐíÖ÷¶¯×¢²á
 			if (gw3762_ModeSet(p, 0x02) == SYS_R_OK) {
-				if (gw3762_MeterProbe(p, 4) == SYS_R_OK) {
+				if (gw3762_MeterProbe(p, 8) == SYS_R_OK) {
 					p->ste = PLC_S_PROBE;
-					p->tmo = 4 * 60;
+					p->tmo = 8 * 60;
 				}
 			}
 		}					

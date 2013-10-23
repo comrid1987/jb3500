@@ -79,10 +79,10 @@ typedef __packed struct {
 
 typedef struct {
 	uint8_t		ste;
-	uint8_t		tmo;
 	uint8_t		type;
 	uint8_t		mode;
 	uint8_t		time;
+	uint16_t	tmo;
 	uint8_t		adr[6];
 	uint8_t		info[8];
 	chl			chl;
