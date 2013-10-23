@@ -607,7 +607,7 @@ uint32_t att7022_PgainCalibration(p_att7022 p, uint8_t nPhase)
 	//转换成工程量
 	pvalue = (pvalue / 256.0f) * eck;		
 	//误差计算
-	err = (pvalue - (float)PCALI_CONST) / (float)PCALI_CONST;					
+	err = (pvalue - (float)PCALI_CONST) / (float)PCALI_CONST;
 	if (err )
 	{
 		err = -err / (1 + err);

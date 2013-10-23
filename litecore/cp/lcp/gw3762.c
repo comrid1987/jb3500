@@ -539,8 +539,10 @@ sys_res gw3762_MeterProbe(t_plc *p, uint_t nTime)
 	uint8_t aBuf[10];
 
 	timet2array(rtc_GetTimet(), aBuf, 1);
+	if (p->type == PLC_T_ES_RT)
+		nTime = 0x18;
 	memcpy(&aBuf[6], &nTime, 2);
-	aBuf[8] = 1;	
+	aBuf[8] = 1;
 	aBuf[9] = 1;
 	gw3762_Transmit2Module(p, GW3762_AFN_ROUTE_SET, 0x0010, aBuf, 10);
 	for (nTmo = 3000 / OS_TICK_MS; nTmo; nTmo--) {
