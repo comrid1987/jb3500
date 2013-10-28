@@ -17,6 +17,7 @@
 #define DLRCP_TCP_CONNECT_TMO		16
 
 
+#if DLRCP_SEND_BUFFER
 //-------------------------------------------------------------------------
 //申请新的发送报文缓冲
 //-------------------------------------------------------------------------
@@ -39,7 +40,7 @@ static void dlrcp_TmsgRelease(p_dlrcp p, p_dlrcp_tmsg pMsg)
 	buf_Release(pMsg->data);
 	buf_Cut(p->tmsg, (uint8_t *)pMsg - p->tmsg->p, sizeof(t_dlrcp_tmsg));
 }
-
+#endif
 
 
 
@@ -64,6 +65,7 @@ sys_res dlrcp_SetChl(p_dlrcp p, uint_t nType, uint_t nId, uint_t nPar1, uint_t n
 	}
 	switch (nType) {
 #if TCPPS_ENABLE
+	case CHL_T_SOC_TC_RECON:
 	case CHL_T_SOC_TC:
 	case CHL_T_SOC_TS:
 	case CHL_T_SOC_UC:
@@ -117,10 +119,12 @@ sys_res dlrcp_SetChl(p_dlrcp p, uint_t nType, uint_t nId, uint_t nPar1, uint_t n
 //-------------------------------------------------------------------------
 //发送报文
 //-------------------------------------------------------------------------
-sys_res dlrcp_TmsgSend(p_dlrcp p, void *pHeader, uint_t nHeaderLen, void *pData, uint_t nDataLen)
+#if DLRCP_SEND_BUFFER
+sys_res dlrcp_TmsgSend(p_dlrcp p, void *pHeader, uint_t nHeaderLen, void *pData, uint_t nDataLen, uint_t nType)
 {
 	sys_res res = SYS_R_ERR;
 	p_dlrcp_tmsg pMsg;
+	uint_t nTmo;
 
 	pMsg = dlrcp_TmsgNew(p);
 	if (pMsg != NULL) {
@@ -140,13 +144,56 @@ sys_res dlrcp_TmsgSend(p_dlrcp p, void *pHeader, uint_t nHeaderLen, void *pData,
 		//if (DLRCP_TMSG_NEED_ACK) {
 		//	pMsg->retry = p->retry;
 		//	return SYS_R_OK;
-		//} else
+		//} else {
+			if ((nType == DLRCP_TMSG_REPORT) && (p->chl->type == CHL_T_SOC_TC_RECON)) {
+				chl_Release(p->chl);
+				chl_Bind(p->chl, p->chl->type, p->chlid, OS_TICK_MS);
+				chl_soc_Connect(p->chl, p->ip, p->chlid);
+				for (nTmo = 5000 / OS_TICK_MS ; nTmo; nTmo--) {
+					if (chl_soc_IsConnect(p->chl))
+						break;
+					os_thd_Slp1Tick();
+				}
+			}
 			res = chl_Send(p->chl, pMsg->data->p, pMsg->data->len);
+		//}
 		dlrcp_TmsgRelease(p, pMsg);
 	}
 	return res;
 }
+#else
+sys_res dlrcp_TmsgSend(p_dlrcp p, void *pHeader, uint_t nHeaderLen, void *pData, uint_t nDataLen, uint_t nType)
+{
+	sys_res res = SYS_R_ERR;
+	uint_t nTmo;
+	buf b = {0};
 
+	buf_Push(b, pHeader, nHeaderLen);
+	buf_Push(b, pData, nDataLen);
+#if DLRCP_ZIP_ENABLE
+	if (p->zip) {
+		int nLen;
+		nLen = EnData(b->p, b->len, EXE_COMPRESS_NEW);
+		buf_Release(b);
+		if (nLen > 0)
+			buf_Push(b, SendBuf, nLen);
+	}
+#endif
+	if ((nType == DLRCP_TMSG_REPORT) && (p->chl->type == CHL_T_SOC_TC_RECON)) {
+		chl_Release(p->chl);
+		chl_Bind(p->chl, p->chl->type, p->chlid, OS_TICK_MS);
+		chl_soc_Connect(p->chl, p->ip, p->chlid);
+		for (nTmo = 5000 / OS_TICK_MS ; nTmo; nTmo--) {
+			if (chl_soc_IsConnect(p->chl))
+				break;
+			os_thd_Slp1Tick();
+		}
+	}
+	res = chl_Send(p->chl, b->p, b->len);
+	buf_Release(b);
+	return res;
+}
+#endif
 
 //-------------------------------------------------------------------------
 //通讯处理
@@ -154,8 +201,10 @@ sys_res dlrcp_TmsgSend(p_dlrcp p, void *pHeader, uint_t nHeaderLen, void *pData,
 sys_res dlrcp_Handler(p_dlrcp p)
 {
 	sys_res res = SYS_R_ERR;
+#if DLRCP_SEND_BUFFER
 	p_dlrcp_tmsg pMsg;
-
+#endif
+	
 	switch (p->chl->ste) {
 	default:
 		p->ste = DLRCP_S_IDLE;
@@ -165,6 +214,7 @@ sys_res dlrcp_Handler(p_dlrcp p)
 	case CHL_S_STANDBY:
 		switch (p->chl->type) {
 #if TCPPS_ENABLE
+		case CHL_T_SOC_TC_RECON:
 		case CHL_T_SOC_TC:
 		case CHL_T_SOC_UC:
 			if (p->cnt == 0) {
@@ -206,6 +256,7 @@ sys_res dlrcp_Handler(p_dlrcp p)
 		p->cnt += 1;
 		switch (p->chl->type) {
 #if TCPPS_ENABLE
+		case CHL_T_SOC_TC_RECON:
 		case CHL_T_SOC_TC:
 		case CHL_T_SOC_UC:
 			if (chl_soc_IsConnect(p->chl)) {
@@ -236,6 +287,7 @@ sys_res dlrcp_Handler(p_dlrcp p)
 			//链路检测
 			switch (p->chl->type) {
 #if TCPPS_ENABLE
+			case CHL_T_SOC_TC_RECON:
 			case CHL_T_SOC_TC:
 			case CHL_T_SOC_UC:
 				if (chl_soc_IsConnect(p->chl)) {
@@ -277,6 +329,7 @@ sys_res dlrcp_Handler(p_dlrcp p)
 			default:
 				break;
 			}
+#if DLRCP_SEND_BUFFER
 			//发送处理
 			pMsg = (p_dlrcp_tmsg)p->tmsg->p;
 			for (; (uint8_t *)pMsg < (p->tmsg->p + p->tmsg->len); pMsg++) {
@@ -294,6 +347,7 @@ sys_res dlrcp_Handler(p_dlrcp p)
 					}
 				}
 			}
+#endif
 		}
 		res = (p->analyze)(p);
 		if (res == SYS_R_OK) {
@@ -301,6 +355,7 @@ sys_res dlrcp_Handler(p_dlrcp p)
 			p->cnt = 0;
 			switch (p->chl->type) {
 #if TCPPS_ENABLE
+			case CHL_T_SOC_TC_RECON:
 			case CHL_T_SOC_TC:
 			case CHL_T_SOC_UC:
 				p->ste = DLRCP_S_READY;

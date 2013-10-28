@@ -162,7 +162,7 @@ sys_res gdvms_TmsgSend(p_gdvms p, uint_t nCode, buf b, uint_t nType)
 	nCS = cs8(&xH, sizeof(t_gdvms_header));
 	nCS += cs8(b->p, b->len);
 	buf_PushData(b, 0x1600 | (nCS & 0xFF), 2);
-	return dlrcp_TmsgSend(&p->parent, &xH, sizeof(t_gdvms_header), b->p, b->len);
+	return dlrcp_TmsgSend(&p->parent, &xH, sizeof(t_gdvms_header), b->p, b->len, nType);
 }
 
 
@@ -182,7 +182,7 @@ sys_res gdvms_TmsgError(p_gdvms p, uint_t nCode, uint_t nErr)
 	aBuf[0] = nErr;
 	aBuf[1] = cs8(&xH, sizeof(t_gdvms_header)) + nErr;
 	aBuf[2] = 0x16;
-	return dlrcp_TmsgSend(&p->parent, &xH, sizeof(t_gdvms_header), aBuf, 3);
+	return dlrcp_TmsgSend(&p->parent, &xH, sizeof(t_gdvms_header), aBuf, 3, DLRCP_TMSG_RESPOND);
 }
 
 
@@ -209,7 +209,7 @@ sys_res gdvms_Transmit(p_gdvms p, p_gdvms pD)
 	nCS = cs8(&xH, sizeof(t_gdvms_header));
 	nCS += cs8(b->p, b->len);
 	buf_PushData(b, 0x1600 | (nCS & 0xFF), 2);
-	res = dlrcp_TmsgSend(&pD->parent, &xH, sizeof(t_gdvms_header), b->p, b->len);
+	res = dlrcp_TmsgSend(&pD->parent, &xH, sizeof(t_gdvms_header), b->p, b->len, DLRCP_TMSG_RESPOND);
 	buf_Release(b);
 	return res;
 }

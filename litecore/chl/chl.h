@@ -16,6 +16,7 @@
 #define CHL_T_SOC_TS			(BITMASK(4) | 1)
 #define CHL_T_SOC_UC			(BITMASK(4) | 2)
 #define CHL_T_SOC_US			(BITMASK(4) | 3)
+#define CHL_T_SOC_TC_RECON		(BITMASK(4) | 4)
 
 
 typedef struct {

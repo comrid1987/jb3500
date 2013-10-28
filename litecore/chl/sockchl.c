@@ -24,6 +24,7 @@ sys_res chl_soc_Bind(chl p, uint_t nType, uint_t nId)
 	struct sockaddr_in addr_in = {0};
 
 	switch (nType) {
+	case CHL_T_SOC_TC_RECON:
 	case CHL_T_SOC_TC:
 #if MODEM_ME3000_TCP
 		//if (modem_IsMe3000()
@@ -72,6 +73,7 @@ sys_res chl_soc_Connect(chl p, const void *pIp, uint_t nPort)
 	struct sockaddr_in adr;
 
 	switch (p->type) {
+	case CHL_T_SOC_TC_RECON:
 	case CHL_T_SOC_TC:
 #if MODEM_ME3000_TCP
 		if (modem_IsMe3000()) {

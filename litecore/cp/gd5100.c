@@ -193,7 +193,7 @@ sys_res gd5100_TmsgSend(p_gd5100 p, uint_t nCode, buf b, uint_t nType)
 	nCS = cs8(&xH, sizeof(t_gd5100_header));
 	nCS += cs8(b->p, b->len);
 	buf_PushData(b, 0x1600 | (nCS & 0xFF), 2);
-	return dlrcp_TmsgSend(&p->parent, &xH, sizeof(t_gd5100_header), b->p, b->len);
+	return dlrcp_TmsgSend(&p->parent, &xH, sizeof(t_gd5100_header), b->p, b->len, nType);
 }
 
 
@@ -214,7 +214,7 @@ sys_res gd5100_TmsgError(p_gd5100 p, uint_t nCode, uint_t nErr)
 	aBuf[0] = nErr;
 	aBuf[1] = cs8(&xH, sizeof(t_gd5100_header)) + nErr;
 	aBuf[2] = 0x16;
-	return dlrcp_TmsgSend(&p->parent, &xH, sizeof(t_gd5100_header), aBuf, 3);
+	return dlrcp_TmsgSend(&p->parent, &xH, sizeof(t_gd5100_header), aBuf, 3, DLRCP_TMSG_RESPOND);
 }
 
 
@@ -243,7 +243,7 @@ sys_res gd5100_Transmit(p_gd5100 p, p_gd5100 pD)
 	nCS = cs8(&xH, sizeof(t_gd5100_header));
 	nCS += cs8(b->p, b->len);
 	buf_PushData(b, 0x1600 | (nCS & 0xFF), 2);
-	res = dlrcp_TmsgSend(&pD->parent, &xH, sizeof(t_gd5100_header), b->p, b->len);
+	res = dlrcp_TmsgSend(&pD->parent, &xH, sizeof(t_gd5100_header), b->p, b->len, DLRCP_TMSG_RESPOND);
 	buf_Release(b);
 	return res;
 }

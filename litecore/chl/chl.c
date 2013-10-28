@@ -35,6 +35,7 @@ sys_res chl_Bind(chl p, uint_t nType, uint_t nId, int nTmo)
 		break;
 #endif
 #if TCPPS_ENABLE
+	case CHL_T_SOC_TC_RECON:
 	case CHL_T_SOC_TC:
 	case CHL_T_SOC_TS:
 	case CHL_T_SOC_UC:
@@ -65,6 +66,7 @@ sys_res chl_Release(chl p)
 		break;
 #endif
 #if TCPPS_ENABLE
+	case CHL_T_SOC_TC_RECON:
 	case CHL_T_SOC_TC:
 #if MODEM_ME3000_TCP
 		if (modem_IsMe3000()) {
@@ -105,6 +107,7 @@ sys_res chl_Send(chl p, const void *pData, uint_t nLen)
 		break;
 #endif
 #if TCPPS_ENABLE
+	case CHL_T_SOC_TC_RECON:
 	case CHL_T_SOC_TC:
 #if MODEM_ME3000_TCP
 		if (modem_IsMe3000()) {
@@ -143,6 +146,7 @@ sys_res chl_RecData(chl p, buf b, uint_t nTmo)
 		break;
 #endif
 #if TCPPS_ENABLE
+	case CHL_T_SOC_TC_RECON:
 	case CHL_T_SOC_TC:
 #if MODEM_ME3000_TCP
 		if (modem_IsMe3000()) {

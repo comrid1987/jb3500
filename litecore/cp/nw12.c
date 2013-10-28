@@ -252,7 +252,7 @@ sys_res nw12_TmsgSend(p_nw12 p, uint_t nFun, uint_t nAfn, buf b, uint_t nType)
 #if NW12_DEBUG_ENABLE
 	nw12_DbgTx(&xH, b->p, b->len);
 #endif
-	return dlrcp_TmsgSend(&p->parent, &xH, sizeof(t_nw12_header), b->p, b->len);
+	return dlrcp_TmsgSend(&p->parent, &xH, sizeof(t_nw12_header), b->p, b->len, nType);
 }
 
 
