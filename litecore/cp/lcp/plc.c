@@ -517,23 +517,12 @@ sys_res plc_Handler(t_plc *p, buf b, uint8_t *pAdr)
 		break;
 #if PLC_PROBE_ENABLE
 	case PLC_S_PROBE:
-		if (plc_MeterReport(p, pAdr) == SYS_R_OK){
-				plc_NewMeter(pAdr);
-			}
-		if ((p->tmo == 0)||(plc_NewMeterAlr())) {
+		if (plc_MeterReport(p, pAdr) == SYS_R_OK)
+			plc_NewMeter(pAdr);
+		if ((p->tmo == 0) || plc_NewMeterAlr()) {
 			p->ste = PLC_S_IDLE;
 			p->tmo = 3;
 		}
-		
-//		if(p->tmo <= 360)
-//		{
-//			plc_NewMeterAlr();
-//		}
-//		
-//		if (p->tmo == 0) {
-//			p->ste = PLC_S_IDLE;
-//			p->tmo = 3;
-//		}
 		break;
 #endif
 	case PLC_S_IDLE:
