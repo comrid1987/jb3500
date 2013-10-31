@@ -145,6 +145,7 @@ sys_res dlrcp_TmsgSend(p_dlrcp p, void *pHeader, uint_t nHeaderLen, void *pData,
 		//	pMsg->retry = p->retry;
 		//	return SYS_R_OK;
 		//} else {
+#if TCPPS_ETH_ENABLE
 			if ((nType == DLRCP_TMSG_REPORT) && (p->chl->type == CHL_T_SOC_TC_RECON)) {
 				chl_Release(p->chl);
 				chl_Bind(p->chl, p->chl->type, p->chlid, OS_TICK_MS);
@@ -155,6 +156,7 @@ sys_res dlrcp_TmsgSend(p_dlrcp p, void *pHeader, uint_t nHeaderLen, void *pData,
 					os_thd_Slp1Tick();
 				}
 			}
+#endif
 			res = chl_Send(p->chl, pMsg->data->p, pMsg->data->len);
 		//}
 		dlrcp_TmsgRelease(p, pMsg);
@@ -179,6 +181,7 @@ sys_res dlrcp_TmsgSend(p_dlrcp p, void *pHeader, uint_t nHeaderLen, void *pData,
 			buf_Push(b, SendBuf, nLen);
 	}
 #endif
+#if TCPPS_ETH_ENABLE
 	if ((nType == DLRCP_TMSG_REPORT) && (p->chl->type == CHL_T_SOC_TC_RECON)) {
 		chl_Release(p->chl);
 		chl_Bind(p->chl, p->chl->type, p->chlid, OS_TICK_MS);
@@ -189,6 +192,7 @@ sys_res dlrcp_TmsgSend(p_dlrcp p, void *pHeader, uint_t nHeaderLen, void *pData,
 			os_thd_Slp1Tick();
 		}
 	}
+#endif
 	res = chl_Send(p->chl, b->p, b->len);
 	buf_Release(b);
 	return res;

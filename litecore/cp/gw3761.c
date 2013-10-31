@@ -266,7 +266,7 @@ sys_res gw3761_TmsgSend(p_gw3761 p, uint_t nFun, uint_t nAfn, buf b, uint_t nTyp
 	nCS = cs8((uint8_t *)&xH + GW3761_FIXHEADER_SIZE, (sizeof(t_gw3761_header) - GW3761_FIXHEADER_SIZE));
 	nCS += cs8(b->p, b->len);
 	buf_PushData(b, 0x1600 | (nCS & 0xFF), 2);
-	return dlrcp_TmsgSend(&p->parent, &xH, sizeof(t_gw3761_header), b->p, b->len);
+	return dlrcp_TmsgSend(&p->parent, &xH, sizeof(t_gw3761_header), b->p, b->len, nType);
 }
 
 
@@ -324,7 +324,7 @@ sys_res gw3761_Transmit(p_gw3761 p, p_gw3761 pD)
 	nCS = cs8((uint8_t *)&xH + GW3761_FIXHEADER_SIZE, (sizeof(t_gw3761_header) - GW3761_FIXHEADER_SIZE));
 	nCS += cs8(b->p, b->len);
 	buf_PushData(b, 0x1600 | (nCS & 0xFF), 2);
-	res = dlrcp_TmsgSend(&pD->parent, &xH, sizeof(t_gw3761_header), b->p, b->len);
+	res = dlrcp_TmsgSend(&pD->parent, &xH, sizeof(t_gw3761_header), b->p, b->len, DLRCP_TMSG_RESPOND);
 	buf_Release(b);
 	return res;
 }

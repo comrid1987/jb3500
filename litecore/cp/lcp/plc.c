@@ -512,7 +512,7 @@ sys_res plc_Handler(t_plc *p, buf b, uint8_t *pAdr)
 					p->tmo = 8 * 60;
 				}
 			}
-		}					
+		}
 #endif
 		break;
 #if PLC_PROBE_ENABLE

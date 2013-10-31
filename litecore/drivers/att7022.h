@@ -327,9 +327,6 @@ sys_res att7022_GetHarmonic(p_att7022 p, uint_t Ch, sint16_t* pbuf);
 void att7022_UIP_gainCalibration(p_att7022 p, p_att7022_cali pCali);
 void att7022_Phase_GainCalibration(p_att7022 p, p_att7022_cali pCali);
 uint32_t att7022_GetFlag(p_att7022 p);
-uint32_t att7022_Status(p_att7022 p);
-uint32_t att7022_CheckSum1(p_att7022 p);
-uint32_t att7022_CheckSum2(p_att7022 p);
 
 sys_res att7022_WriteReg(p_att7022 p, uint_t nReg, uint32_t nData);
 uint32_t att7022_ReadReg(p_att7022 p, uint_t nReg);
@@ -337,46 +334,6 @@ uint32_t att7022_UgainCalibration(p_att7022 p, uint8_t nPhase );
 uint32_t att7022_PhaseCalibration(p_att7022 p,uint8_t nPhase, uint8_t cali_point);
 float att7022_FPhaseCaliData(p_att7022 p,uint8_t nPhase, uint8_t cali_point);
 
-#if 0
-int att7022_ADC_ChannelSelect(uint32_t nChl);
-float att7022_GetSV(uint8_t nPhase);
-float att7022_GetPFV(uint8_t nPhase);
-float att7022_GetPAG(uint8_t nPhase);
-float att7022_GetPVAG(uint8_t nPhase);
-float att7022_GetVoltage(uint8_t nPhase);
-float att7022_GetPower(uint8_t nPhase, uint32_t nType);
-void att7022_GetPosEP(uint8_t nPhase);
-void att7022_GetNegEP(uint8_t nPhase);
-void att7022_GetPhaseEQ(uint8_t nQuad, uint8_t nDir, uint8_t nPhase);
-void att7022_GetEQ(uint8_t nQuad);
-float att7022_GetCurrent(uint8_t nPhase);
-float att7022_GetTemp(uint8_t cali);
-uint8_t att7022_GetPowerDir(void);
-float att7022_IBlanceCalc(void);
-float att7022_VBlanceCalc(void);
-void att7022_IstartupSet(void);
-uint32_t att7022_PhaseCalibration(uint8_t nPhase, uint8_t cali_point);
-float att7022_FPhaseCaliData(uint8_t nPhase, uint8_t cali_point);
-uint8_t att7022_IregionSet(float current_value, uint8_t field_num);
-uint32_t att7022_PgainCalibration(uint8_t nPhase);
-uint32_t att7022_IgainCalibration(uint8_t nPhase);
-uint32_t att7022_UgainCalibration(uint8_t nPhase);
-void att7022_PhaseCali1Seg(float fCali);
-void att7022_PhaseCali2Seg(uint8_t nPhase);
-uint32_t att7022_PhaseCaliData(float err);
-void att7022_UIP_GainCalibration(void);
-void att7022_PhaseABC_Calibration(void);
-void att7022_GainAD7(uint8_t channel);
-S16 att7022_Getadc7(void);
-uint16_t att7022_GetQuanrant(uint8_t Phase);
-#endif
-
-//暂时未使用的函数
-/*
-float att7022_GetAD7(uint32 fat);
-float att7022_IronlossCalc(void);
-float att7022_CopperlossCalc(void);
-*/
 
 
 #ifdef __cplusplus
