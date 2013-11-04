@@ -478,7 +478,7 @@ __weak void ADC1_2_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-__weak void USB_HP_CAN1_TX_IRQHandler(void)
+__weak void CAN1_TX_IRQHandler(void)
 {
 }
 
@@ -490,7 +490,7 @@ __weak void USB_HP_CAN1_TX_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-__weak void USB_LP_CAN1_RX0_IRQHandler(void)
+__weak void CAN1_RX0_IRQHandler(void)
 {
 }
 
@@ -861,7 +861,7 @@ __weak void RTCAlarm_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-__weak void USBWakeUp_IRQHandler(void)
+__weak void OTG_FS_WKUP_IRQHandler(void)
 {
 }
 
@@ -1094,10 +1094,13 @@ __weak void DMA2_Channel3_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-__weak void DMA2_Channel4_5_IRQHandler(void)
+__weak void DMA2_Channel4_IRQHandler(void)
 {
 }
 
+__weak void DMA2_Channel5_IRQHandler(void)
+{
+}
 
 __weak void ETH_IRQHandler(void)
 {
