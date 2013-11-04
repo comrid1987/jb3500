@@ -522,7 +522,7 @@ void modem_Run()
 #endif
 #if TCPPS_TYPE == TCPPS_T_KEILTCP
 				if (p->type == MODEM_TYPE_CDMA)
-					ppp_connect("ATDT#777\r", "CARD", "CARD");
+					ppp_connect("ATDT#777\r", p->user, p->pwd);
 				else
 					ppp_connect("ATD*99***1#\r", "", "");
 #endif
@@ -576,13 +576,17 @@ void modem_Run()
 }
 
 
-void modem_Config(const char *pApn, uint_t nSpan, uint_t nRetry)
+void modem_Config(const char *pApn, const char *pUser, const char *pPwd, uint_t nSpan, uint_t nRetry)
 {
 	p_modem p = &gsmModem;
 	int nLen;
 
 	nLen = MIN(sizeof(p->apn) - 1, strlen(pApn));
 	memcpy(p->apn, pApn, nLen);
+	nLen = MIN(sizeof(p->user) - 1, strlen(pUser));
+	memcpy(p->user, pUser, nLen);
+	nLen = MIN(sizeof(p->pwd) - 1, strlen(pPwd));
+	memcpy(p->pwd, pPwd, nLen);
 	p->apn[nLen] = '\0';
 	p->idle = nSpan * 3;
 	p->retrytime = nRetry;

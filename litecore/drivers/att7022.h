@@ -310,29 +310,22 @@ typedef struct {
 //External Functions
 void att7022_Init(void);
 sys_res att7022_Reset(p_att7022 p, p_att7022_cali pCali);
+uint32_t att7022_Read(p_att7022 p, uint_t nReg);
 float att7022_GetFreq(p_att7022 p);
-uint32_t att7022_GetPosEP(p_att7022 p, uint_t nPhase);
-uint32_t att7022_GetNegEP(p_att7022 p, uint_t nPhase);
-uint32_t att7022_GetPhaseEQ(p_att7022 p, uint_t nQuad, uint_t nDir, uint_t nPhase);
 float att7022_GetVoltage(p_att7022 p, uint_t nPhase);
 float att7022_GetCurrent(p_att7022 p, uint_t nPhase);
 float att7022_GetPower(p_att7022 p, uint_t nPhase, uint_t nType);
-uint32_t att7022_GetPowerDir(p_att7022 p);
+uint_t att7022_GetFlag(p_att7022 p);
+uint_t att7022_GetPowerDir(p_att7022 p);
 float att7022_GetSV(p_att7022 p, uint_t nPhase);
 float att7022_GetPFV(p_att7022 p, uint_t nPhase);
 float att7022_GetPAG(p_att7022 p, uint_t nPhase);
 float att7022_GetPVAG(p_att7022 p, uint_t nPhase);
-uint16_t att7022_GetQuanrant(p_att7022 p, uint_t nPhase);
+uint_t att7022_GetQuanrant(p_att7022 p, uint_t nPhase);
 sys_res att7022_GetHarmonic(p_att7022 p, uint_t Ch, sint16_t* pbuf);
-void att7022_UIP_gainCalibration(p_att7022 p, p_att7022_cali pCali);
-void att7022_Phase_GainCalibration(p_att7022 p, p_att7022_cali pCali);
-uint32_t att7022_GetFlag(p_att7022 p);
 
-sys_res att7022_WriteReg(p_att7022 p, uint_t nReg, uint32_t nData);
-uint32_t att7022_ReadReg(p_att7022 p, uint_t nReg);
-uint32_t att7022_UgainCalibration(p_att7022 p, uint8_t nPhase );
-uint32_t att7022_PhaseCalibration(p_att7022 p,uint8_t nPhase, uint8_t cali_point);
-float att7022_FPhaseCaliData(p_att7022 p,uint8_t nPhase, uint8_t cali_point);
+void att7022_CaliUIP(p_att7022 p, p_att7022_cali pCali);
+void att7022_CaliPhase(p_att7022 p, p_att7022_cali pCali);
 
 
 
