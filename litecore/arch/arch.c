@@ -46,7 +46,11 @@
 #include <arch/cm3/stm32f10x/arch_fsmc.c>
 #include <arch/cm3/stm32f10x/arch_gpio.c>
 #include <arch/cm3/stm32f10x/arch_i2c.c>
+#if ARCH_TYPE == ARCH_T_STM32F10X_CL
+#include <arch/cm3/stm32f10x/arch_it_cl.c>
+#else
 #include <arch/cm3/stm32f10x/arch_it.c>
+#endif
 #include <arch/cm3/stm32f10x/arch_iwdg.c>
 #include <arch/cm3/stm32f10x/arch_nand.c>
 #include <arch/cm3/stm32f10x/arch_rtc.c>
