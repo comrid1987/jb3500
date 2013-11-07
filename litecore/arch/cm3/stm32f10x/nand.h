@@ -21,11 +21,11 @@ extern "C" {
 //A17 = ALE high
 
 #if NAND_DATA_WIDTH == 16
-#define __raw_nand_cmd(v)		__raw_writew(v, NAND_BASE_ADR | BITMASK(16))
-#define __raw_nand_addr(v)		__raw_writew(v, NAND_BASE_ADR | BITMASK(17))
+#define __raw_nand_cmd(v)		__raw_writew(v, NAND_CLE_ADR)
+#define __raw_nand_addr(v)		__raw_writew(v, NAND_ALE_ADR)
 #else
-#define __raw_nand_cmd(v)		__raw_writeb(v, NAND_BASE_ADR | BITMASK(16))
-#define __raw_nand_addr(v)		__raw_writeb(v, NAND_BASE_ADR | BITMASK(17))
+#define __raw_nand_cmd(v)		__raw_writeb(v, NAND_CLE_ADR)
+#define __raw_nand_addr(v)		__raw_writeb(v, NAND_ALE_ADR)
 #endif
 
 

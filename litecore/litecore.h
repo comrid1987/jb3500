@@ -17,6 +17,7 @@ extern "C" {
 
 #include <mtd/flash.h>
 
+#include <fs/bkp/bkp.h>
 #if OS_TYPE
 #include <fs/fs.h>
 

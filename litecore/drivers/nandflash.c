@@ -19,8 +19,8 @@
 
 
 //FSMC NAND memory command
-#define	NAND_CMD_AREA_A				0x00
-#define	NAND_CMD_AREA_B				0x01
+#define NAND_CMD_AREA_A				0x00
+#define NAND_CMD_AREA_B				0x01
 #define NAND_CMD_AREA_C				0x50
 #define NAND_CMD_AREA_TRUE1			0x30
 
@@ -89,8 +89,9 @@ sys_res nand_Identify()
 	__raw_nand_cmd(NAND_CMD_READID);
 	__raw_nand_addr(0x00);
 
-	for (i = 4 / (NAND_DATA_WIDTH / 8); i; i--)
+	for (i = 4 / (NAND_DATA_WIDTH / 8); i; i--) {
 		*p++ = __raw_nand_read;
+	}
 	if ((xId.byte[1] & 0x3F) != NAND_DEVICEID)
 		return SYS_R_ERR;
 	return SYS_R_OK;
@@ -120,13 +121,15 @@ sys_res nand_ReadPage(u_byte4 *pPage, void *pBuf, uint32_t *pDataEcc)
 #if NAND_BUSY_SOFT
 	sys_Delay(100);//Threshold 80
 #endif
-	for (p = pBuf, i = NAND_PAGE_DATA / (NAND_DATA_WIDTH / 8); i; i--)
+	for (p = pBuf, i = NAND_PAGE_DATA / (NAND_DATA_WIDTH / 8); i; i--) {
 		*p++ = __raw_nand_read;
+	}
 #if !NAND_ECC_SOFT
 	*pDataEcc = arch_NandGetEcc();
 #endif
-	for (i = NAND_PAGE_SPARE / (NAND_DATA_WIDTH / 8); i; i--)
+	for (i = NAND_PAGE_SPARE / (NAND_DATA_WIDTH / 8); i; i--) {
 		*p++ = __raw_nand_read;
+	}
 	return SYS_R_OK;
 }
 
@@ -152,8 +155,9 @@ sys_res nand_ProgData(u_byte4 *pPage, const void *pBuf, uint32_t *pDataEcc)
 #if !NAND_ECC_SOFT
 	arch_NandEccStart();
 #endif	
-	for (p = pBuf, i = NAND_PAGE_DATA / (NAND_DATA_WIDTH / 8); i; i--)
+	for (p = pBuf, i = NAND_PAGE_DATA / (NAND_DATA_WIDTH / 8); i; i--) {
 		__raw_nand_read = *p++;
+	}
 #if !NAND_ECC_SOFT
 	*pDataEcc = arch_NandGetEcc();
 #endif
@@ -190,10 +194,12 @@ sys_res nand_ProgHalfDouble(u_byte4 *pPage, const void *pBuf0, const void *pBuf1
 #if !NAND_ECC_SOFT
 	arch_NandEccStart();
 #endif
-	for (p = pBuf0, i = NAND_PAGE_DATA / 2 / (NAND_DATA_WIDTH / 8); i; i--)
+	for (p = pBuf0, i = NAND_PAGE_DATA / 2 / (NAND_DATA_WIDTH / 8); i; i--) {
 		__raw_nand_read = *p++;
-	for (p = pBuf1, i = NAND_PAGE_DATA / 2 / (NAND_DATA_WIDTH / 8); i; i--)
+	}
+	for (p = pBuf1, i = NAND_PAGE_DATA / 2 / (NAND_DATA_WIDTH / 8); i; i--) {
 		__raw_nand_read = *p++;
+	}
 #if !NAND_ECC_SOFT
 	*pDataEcc = arch_NandGetEcc();
 #endif
@@ -227,8 +233,9 @@ sys_res nand_ProgSpare(u_byte4 *pPage, const void *pBuf)
 	__raw_nand_addr(pPage->byte[0]);
 	__raw_nand_addr(pPage->byte[1]);
 	__raw_nand_addr(pPage->byte[2]);
-	for (p = pBuf, i = NAND_PAGE_SPARE / (NAND_DATA_WIDTH / 8); i; i--)
+	for (p = pBuf, i = NAND_PAGE_SPARE / (NAND_DATA_WIDTH / 8); i; i--) {
 		__raw_nand_read = *p++;
+	}
 	__raw_nand_cmd(NAND_CMD_WRITE_TRUE1);
 
 #if NAND_BUSY_SOFT
