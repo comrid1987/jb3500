@@ -520,6 +520,8 @@ sys_res plc_Handler(t_plc *p, buf b, uint8_t *pAdr)
 		if (plc_MeterReport(p, pAdr) == SYS_R_OK)
 			plc_NewMeter(pAdr);
 		if ((p->tmo == 0) || plc_NewMeterAlr()) {
+			if (plc_Sync(p) != SYS_R_OK)
+				dbg_trace("<PLC> Sync failed...");
 			p->ste = PLC_S_IDLE;
 			p->tmo = 3;
 		}
