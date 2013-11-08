@@ -566,18 +566,18 @@ sys_res gw3762_RtCtrl(t_plc *p, uint_t nDT)
 	uint_t nTmo;
 
 	gw3762_Transmit2Module(p, GW3762_AFN_ROUTE_CTRL, nDT, NULL, 0);
-#if 0
-	for (nTmo = 3000 / OS_TICK_MS; nTmo; nTmo--) {
-		if (gw3762_Analyze(p) == SYS_R_OK)
-			break;
+	if (nDT == 0x0002) {
+		for (nTmo = 3000 / OS_TICK_MS; nTmo; nTmo--) {
+			if (gw3762_Analyze(p) == SYS_R_OK)
+				break;
+		}
+		if (nTmo == 0)
+			return SYS_R_TMO;
+		if (p->afn != GW3762_AFN_CONFIRM)
+			return SYS_R_ERR;
+		if (p->fn != 0x0001)
+			return SYS_R_ERR;
 	}
-	if (nTmo == 0)
-		return SYS_R_TMO;
-	if (p->afn != GW3762_AFN_CONFIRM)
-		return SYS_R_ERR;
-	if (p->fn != 0x0001)
-		return SYS_R_ERR;
-#endif
 	return SYS_R_OK;
 }
 
