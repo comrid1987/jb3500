@@ -89,7 +89,7 @@ static sys_res att7022_WriteReg(p_att7022 p, uint_t nReg, uint32_t nData)
 	return SYS_R_OK;
 }
 
-static uint32_t att7022_UgainCalibration(p_att7022 p, uint8_t nPhase )
+static uint32_t att7022_UgainCalibration(p_att7022 p, uint_t nPhase)
 {
 	float urms, k, gain = 0;
 
@@ -107,7 +107,7 @@ static uint32_t att7022_UgainCalibration(p_att7022 p, uint8_t nPhase )
 	return (uint32_t)(gain + 0.5f);
 } 
 
-static uint32_t att7022_IgainCalibration(p_att7022 p, uint32_t nPhase)
+static uint32_t att7022_IgainCalibration(p_att7022 p, uint_t nPhase)
 {
 	float irms, k, gain = 0;
 
@@ -124,14 +124,14 @@ static uint32_t att7022_IgainCalibration(p_att7022 p, uint32_t nPhase)
 	return (uint32_t)(gain + 0.5f);
 }
 
-static uint32_t att7022_PgainCalibration(p_att7022 p, uint8_t nPhase)
+static uint32_t att7022_PgainCalibration(p_att7022 p, uint_t nPhase)
 {
 	float pvalue, err, pgain = 0;
 
 	//读出测量到的功率
 	pvalue = att7022_Read(p, ATT7022_REG_PA + nPhase);	
-	if (pvalue > MAX_VALUE1 )
-		pvalue = pvalue - MAX_VALUE2;
+	if (pvalue > MAX_VALUE1)
+		pvalue -= MAX_VALUE2;
 	//转换成工程量
 	pvalue = (pvalue / 256.0f) * (3200.0f / (float)ATT7022_CONST_EC);		
 	//误差计算
@@ -558,6 +558,12 @@ void att7022_CaliPhase(p_att7022 p, p_att7022_cali pCali)
 		os_thd_Sleep(250);
 	}
 	phv /= 8;
+#if 1
+	phv *= 9;
+	phv /= 8;
+#endif
+	if (phv < 0x18000)
+		phv = 0x18000;
 	for (i = 0; i < 5; i++) {
 		pCali->PhsregA[i] = phv;   
 	}
@@ -567,6 +573,12 @@ void att7022_CaliPhase(p_att7022 p, p_att7022_cali pCali)
 		os_thd_Sleep(250);
 	}
 	phv /= 8;
+#if 0
+	phv *= 9;
+	phv /= 8;
+#endif
+	if (phv < 0x18000)
+		phv = 0x18000;
 	for (i = 0; i < 5; i++) {
 		pCali->PhsregB[i] = phv;  
 	}
@@ -576,6 +588,12 @@ void att7022_CaliPhase(p_att7022 p, p_att7022_cali pCali)
 		os_thd_Sleep(250);
 	}
 	phv /= 8;
+#if 1
+	phv *= 9;
+	phv /= 8;
+#endif
+	if (phv < 0x18000)
+		phv = 0x18000;
 	for (i = 0; i < 5; i++) {
 		pCali->PhsregC[i] = phv;  
 	}

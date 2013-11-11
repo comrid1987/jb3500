@@ -15,18 +15,21 @@ extern "C" {
 #define GW3761_T_GWJC2009			0
 //PB325配电通讯规约
 #define GW3761_T_PB325				1
+
+//南网负控2005通讯规约
+#define GW3761_T_NWFK2005			4
+//南网负控2005通讯规约
+#define GW3761_T_NWFK2008			5
+
+
 //国网负控2004通讯规约
-#define GW3761_T_GWFK2004			4
+#define GW3761_T_GWFK2004			8
 //国网负控2005通讯规约
-#define GW3761_T_GWFK2005			5
+#define GW3761_T_GWFK2005			9
 //重庆负控2006通讯规约
-#define GW3761_T_CQFK2006			6
+#define GW3761_T_CQFK2006			10
 
 
-//南网负控2005通讯规约
-#define GW3761_T_NWFK2005			16
-//南网负控2005通讯规约
-#define GW3761_T_NWFK2008			17
 
 
 
