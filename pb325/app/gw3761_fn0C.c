@@ -259,11 +259,11 @@ static void gw3761_Afn0C_F3(buf b)
     uint8_t aBuf[31] = {0};
     uint_t i;
 
-    setbit(aBuf, 9, 1);
-    setbit(aBuf, 24, 1);
+    setbit(aBuf, 9);
+    setbit(aBuf, 24);
     for (i = 0; i < 83; i++) {
         if (icp_ParaRead(4, i + 1, TERMINAL, NULL, 0) >= 0)
-            setbit(aBuf, i, 1);
+            setbit(aBuf, i);
     }
     buf_Push(b, aBuf, sizeof(aBuf));
 }
