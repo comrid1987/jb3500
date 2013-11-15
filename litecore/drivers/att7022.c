@@ -589,8 +589,8 @@ void att7022_CaliPhase(p_att7022 p, p_att7022_cali pCali)
 	}
 	phv /= 8;
 #if 1
-	phv *= 9;
-	phv /= 8;
+	phv *= 10;
+	phv /= 9;
 #endif
 	if (phv < 0x18000)
 		phv = 0x18000;

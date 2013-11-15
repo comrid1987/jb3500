@@ -33,8 +33,8 @@ typedef struct {
 	uint8_t		retryed;
 	uint8_t		hour;
 	char		apn[20];
-	char		user[20];
-	char		pwd[20];
+	char		user[32];
+	char		pwd[32];
 	char		info[20];
 	char		ver[20];
 	char		ccid[20];
