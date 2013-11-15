@@ -60,7 +60,8 @@ uint32_t int_getbits(uint32_t nData, uint_t nStartBit, uint_t nBits);
 uint32_t int_setbits(uint32_t nData, uint_t nStartBit, uint_t nBits);
 
 uint_t getbit(void *pData, uint_t i);
-void setbit(void *pData, uint_t i, uint_t nValue);
+void setbit(void *pData, uint_t i);
+void clrbit(void *pData, uint_t i);
 uint_t bits1(uint_t i);
 uint_t invert_bits(uint_t nData, uint_t nBits);
 void reverse(void *pData, uint_t nLen);

@@ -137,7 +137,7 @@ static sys_res plc_Sync(t_plc *p)
 					if (isnotbcd(aMadr, 6))
 						continue;
 					if (memcmp(aBuf, aMadr, 6) == 0) {
-						setbit(aMeter, j - 1, 1);
+						setbit(aMeter, j - 1);
 						break;
 					}
 				}
