@@ -583,11 +583,13 @@ void modem_Config(const char *pApn, const char *pUser, const char *pPwd, uint_t 
 
 	nLen = MIN(sizeof(p->apn) - 1, strlen(pApn));
 	memcpy(p->apn, pApn, nLen);
+	p->apn[nLen] = '\0';
 	nLen = MIN(sizeof(p->user) - 1, strlen(pUser));
 	memcpy(p->user, pUser, nLen);
+	p->user[nLen] = '\0';
 	nLen = MIN(sizeof(p->pwd) - 1, strlen(pPwd));
 	memcpy(p->pwd, pPwd, nLen);
-	p->apn[nLen] = '\0';
+	p->pwd[nLen] = '\0';
 	p->idle = nSpan * 3;
 	p->retrytime = nRetry;
 }

@@ -559,11 +559,11 @@ void att7022_CaliPhase(p_att7022 p, p_att7022_cali pCali)
 	}
 	phv /= 8;
 #if 1
-	phv *= 9;
-	phv /= 8;
+	phv *= 6;
+	phv /= 5;
 #endif
-	if (phv < 0x18000)
-		phv = 0x18000;
+	if (phv < 0x16000)
+		phv = 0x16000;
 	for (i = 0; i < 5; i++) {
 		pCali->PhsregA[i] = phv;   
 	}
@@ -577,8 +577,8 @@ void att7022_CaliPhase(p_att7022 p, p_att7022_cali pCali)
 	phv *= 9;
 	phv /= 8;
 #endif
-	if (phv < 0x18000)
-		phv = 0x18000;
+	if (phv < 0x16000)
+		phv = 0x16000;
 	for (i = 0; i < 5; i++) {
 		pCali->PhsregB[i] = phv;  
 	}
@@ -592,8 +592,8 @@ void att7022_CaliPhase(p_att7022 p, p_att7022_cali pCali)
 	phv *= 10;
 	phv /= 9;
 #endif
-	if (phv < 0x18000)
-		phv = 0x18000;
+	if (phv < 0x15000)
+		phv = 0x15000;
 	for (i = 0; i < 5; i++) {
 		pCali->PhsregC[i] = phv;  
 	}

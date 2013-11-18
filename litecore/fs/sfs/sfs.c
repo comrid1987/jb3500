@@ -151,7 +151,7 @@ static sys_res _sfs_Write(sfs_dev p, uint32_t nRecord, const void *pData, uint_t
 			return res;
 		//置第一块Block为激活状态
 		xBlk.ste = SFS_BLK_ACTIVE;
- 		if ((res = flash_nolockProgram(p->dev, nAct, (uint8_t *)&xBlk, sizeof(t_sfs_ste)))!= SYS_R_OK)
+ 		if ((res = flash_nolockProgram(p->dev, nAct, (uint8_t *)&xBlk, sizeof(t_sfs_ste))) != SYS_R_OK)
 			return res;
 	}
 	//查找空间
@@ -169,12 +169,12 @@ static sys_res _sfs_Write(sfs_dev p, uint32_t nRecord, const void *pData, uint_t
 		memcpy(&xBlk, (uint8_t *)nBEnd, sizeof(t_sfs_ste));
 		if (xBlk.ste != SFS_BLK_IDLE) {
 			//擦除NextBlk
- 			if ((res = flash_nolockErase(p->dev, nBEnd))!= SYS_R_OK)
+ 			if ((res = flash_nolockErase(p->dev, nBEnd)) != SYS_R_OK)
 				return res;
 		}
 		//置NextBlk为新Act
 		xBlk.ste = SFS_BLK_ACTIVE;
- 		if ((res = flash_nolockProgram(p->dev, nBEnd, (uint8_t *)&xBlk, sizeof(t_sfs_ste)))!= SYS_R_OK)
+ 		if ((res = flash_nolockProgram(p->dev, nBEnd, (uint8_t *)&xBlk, sizeof(t_sfs_ste))) != SYS_R_OK)
 			return res;
 		//拷贝原有的有效记录
 		memcpy(&xBlk, (uint8_t *)nBlk, sizeof(t_sfs_ste));
@@ -187,7 +187,7 @@ static sys_res _sfs_Write(sfs_dev p, uint32_t nRecord, const void *pData, uint_t
 				if (xIdx.ste == SFS_S_VALID) {
 					//找到有效记录
 					if (nAdrOld != nIdx) {
- 						if ((res = flash_nolockProgram(p->dev, nIdxNext, (uint8_t *)nIdx, sizeof(t_sfs_idx) + xIdx.len))!= SYS_R_OK)
+ 						if ((res = flash_nolockProgram(p->dev, nIdxNext, (uint8_t *)nIdx, sizeof(t_sfs_idx) + xIdx.len)) != SYS_R_OK)
 							return res;
 						nIdxNext += ALIGN4(sizeof(t_sfs_idx) + xIdx.len);
 					} else
@@ -197,10 +197,10 @@ static sys_res _sfs_Write(sfs_dev p, uint32_t nRecord, const void *pData, uint_t
 		}
 		//置原ActBlk为Full
 		xBlk.ste = SFS_BLK_FULL;
- 		if ((res = flash_nolockProgram(p->dev, nAct, (uint8_t *)&xBlk, sizeof(t_sfs_ste)))!= SYS_R_OK)
+ 		if ((res = flash_nolockProgram(p->dev, nAct, (uint8_t *)&xBlk, sizeof(t_sfs_ste))) != SYS_R_OK)
 			return res;
 		//擦除OldBlk
- 		if ((res = flash_nolockErase(p->dev, nBlk))!= SYS_R_OK)
+ 		if ((res = flash_nolockErase(p->dev, nBlk)) != SYS_R_OK)
 			return res;
 		if (_sfs_Free(nBEnd, nSize, &nIdx) >= nLen)
 			//空间足,写入数据
@@ -216,15 +216,15 @@ static sys_res _sfs_Write(sfs_dev p, uint32_t nRecord, const void *pData, uint_t
 	xIdx.ste = SFS_S_VALID;
 	xIdx.id = nRecord;
 	xIdx.len = nLen;
-	if ((res = flash_nolockProgram(p->dev, nIdx, (uint8_t *)&xIdx, sizeof(t_sfs_idx)))!= SYS_R_OK)
+	if ((res = flash_nolockProgram(p->dev, nIdx, (uint8_t *)&xIdx, sizeof(t_sfs_idx))) != SYS_R_OK)
 		return res;
-	if ((res = flash_nolockProgram(p->dev, nIdx + sizeof(t_sfs_idx), (uint8_t *)pData, nLen))!= SYS_R_OK)
+	if ((res = flash_nolockProgram(p->dev, nIdx + sizeof(t_sfs_idx), (uint8_t *)pData, nLen)) != SYS_R_OK)
 		return res;
 	//删除原记录
 	if (nAdrOld) {
 		memcpy(&xIdx, (uint8_t *)nAdrOld, sizeof(t_sfs_idx));
 		xIdx.ste = SFS_S_INVALID;
- 		if ((res = flash_nolockProgram(p->dev, nAdrOld, (uint8_t *)&xIdx, sizeof(t_sfs_idx)))!= SYS_R_OK)
+ 		if ((res = flash_nolockProgram(p->dev, nAdrOld, (uint8_t *)&xIdx, sizeof(t_sfs_idx))) != SYS_R_OK)
 			return res;
 	}
 	return SYS_R_OK;
