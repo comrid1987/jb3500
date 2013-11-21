@@ -246,7 +246,7 @@ static sys_res modem_InitCmd(p_modem p)
 	if (modem_SendCmd(p, "AT+CPIN?\r", "OK\r", 30) != SYS_R_OK)
 		return SYS_R_TMO;
 	//注册网络
-	for (i = 0; i < 30; i++) {
+	for (i = 0; i < 40; i++) {
  		if (modem_SendCmd(p, "AT+CREG?\r", "OK\r", 1) != SYS_R_OK)
 			continue;
 		if ((pTemp = modem_FindStr(p, ",")) == NULL)
@@ -256,7 +256,7 @@ static sys_res modem_InitCmd(p_modem p)
 			break;
 		os_thd_Sleep(1000);
 	}
-	if (i >= 20)
+	if (i >= 40)
 		return SYS_R_TMO;
 	//获得信号强度
 	for (i = 0; i < 20; i++) {
@@ -301,12 +301,12 @@ static sys_res modem_InitCmd(p_modem p)
 		}
 	}
 
-#if MODEM_ME3000_TCP
-	if (modem_SendCmd(p, "AT+ZVERS\r", "OK\r", 3) == SYS_R_OK) {
-		if ((pTemp = modem_FindStr(p, "ME3000_E")) != NULL) {
-			sprintf(str, "AT+ZPNUM=\"%s\"\r", p->apn);
+#if MODEM_ZTE_TCP
+	if (p->type == MODEM_TYPE_CDMA) {
+		if (modem_SendCmd(p, "AT+ZPNUM=#777\r", "OK\r", 10) == SYS_R_OK) {
+			sprintf(str, "AT+ZPIDPWD=%s,%s\r", p->user, p->pwd);
 			if (modem_SendCmd(p, str, "OK\r", 10) == SYS_R_OK) {
-				p->me3000 = 1;
+				p->ztetcp = 1;
 				return SYS_R_OK;
 			}
 		}
@@ -344,12 +344,12 @@ static void modem_linkStatusCB(void *ctx, int errCode, void *arg)
 
 	switch (errCode) {
 	case PPPERR_NONE:
-		p->ste = MODEM_S_READY;
+		p->ste = MODEM_S_ONLINE;
 		sifdefaultroute((int)ctx, 0, 0);
+		p->cnt = 0;
+		p->tmo = 0;
 		break;
 	case PPPERR_CONNECT:
-		p->ste = MODEM_S_CLOSE;
-		break;
 	default:
 		p->ste = MODEM_S_RESET;
 //Unfinished		netif_set_default(dm9000_device.parent.netif);
@@ -364,15 +364,7 @@ static void modem_linkStatusCB(void *ctx, int errCode, void *arg)
 }
 #endif
 
-#if MODEM_DEBUG_ENABLE
-static void modem_DbgIpInfo()
-{
-	uint8_t aIp[4], aMask[4], aGateway[4];
 
-	net_GetIpPPP(aIp, aMask, aGateway);
-	dbg_printf("<Modem> Online IP:%d.%d.%d.%d", aIp[0], aIp[1], aIp[2], aIp[3]);
-}
-#endif
 
 static int modem_IsPowerOnEnable()
 {
@@ -437,6 +429,7 @@ void modem_Run()
 	p_modem p = &gsmModem;
 	t_modem_def *pDef = tbl_bspModem[0];
 	sys_res res;
+	char *pTemp;
 
 	p->cnt += 1;
 	switch (p->ste) {
@@ -502,8 +495,8 @@ void modem_Run()
 			p->ste = MODEM_S_RESET;
 		} else {
 			modem_DbgOut("<Modem> Dial");
-#if MODEM_ME3000_TCP
-			if (p->me3000) {
+#if MODEM_ZTE_TCP
+			if (p->ztetcp) {
 				if (modem_SendCmd(p, "AT+ZPPPOPEN\r", "OK\r", 10) == SYS_R_OK)
 					p->ste = MODEM_S_WAITDIAL;
 				else
@@ -517,7 +510,7 @@ void modem_Run()
 					uart_Send(p->uart, "ATD*99***1#\r", 12);
 				p->dialed = 1;
 #if TCPPS_TYPE == TCPPS_T_LWIP
-				pppSetAuth(PPPAUTHTYPE_ANY, NULL, NULL);
+				pppSetAuth(PPPAUTHTYPE_ANY, p->user, p->pwd);
 				pppOpen(p->uart, modem_linkStatusCB, 0);
 #endif
 #if TCPPS_TYPE == TCPPS_T_KEILTCP
@@ -537,9 +530,16 @@ void modem_Run()
 			p->ste = MODEM_S_RESET;
 			break;
 		}
-#if MODEM_ME3000_TCP
-		if (p->me3000) {
-			if (modem_SendCmd(p, "AT+ZPPPSTATUS\r", "ESTABLISHED\r", 1) == SYS_R_OK) {
+#if MODEM_ZTE_TCP
+		if (p->ztetcp) {
+			if (modem_SendCmd(p, "AT+ZPPPSTATUS\r", "OPENED\r", 1) == SYS_R_OK) {
+				if (modem_SendCmd(p, "AT+ZIPGETIP\r", "OK\r", 5) == SYS_R_OK) {
+					if ((pTemp = modem_FindStr(p, ":")) != NULL)
+						buf_Remove(p->rbuf, (uint8_t *)pTemp - p->rbuf->p + 1);
+					if ((pTemp = modem_FindStr(p, "\r\n")) != NULL)
+						pTemp[0] = '\0';
+					memcpy(p->ver, p->rbuf->p, 20);
+				}
 				p->ste = MODEM_S_ONLINE;
 				p->cnt = 0;
 				p->tmo = 0;
@@ -547,14 +547,13 @@ void modem_Run()
 			break;
 		}
 #endif
+#if TCPPS_TYPE == TCPPS_T_KEILTCP
 		if (modem_IsOnline()) {
-#if MODEM_DEBUG_ENABLE
-			modem_DbgIpInfo();
-#endif
 			p->ste = MODEM_S_ONLINE;
 			p->cnt = 0;
 			p->tmo = 0;
 		}
+#endif
 		break;
 	case MODEM_S_ONLINE:
 		if (p->cnt > p->idle) {
@@ -608,14 +607,14 @@ int modem_IsOnline()
 		return 0;
 #endif
  
-#if MODEM_ME3000_TCP
-	if (p->me3000) {
+#if MODEM_ZTE_TCP
+	if (p->ztetcp) {
 		if (p->ste == MODEM_S_ONLINE)
 			return 1;
 	}
 #endif
 #if TCPPS_TYPE == TCPPS_T_LWIP
-	if ((p->ste == MODEM_S_READY) || (p->ste == MODEM_S_ONLINE))
+	if (p->ste == MODEM_S_ONLINE)
 		return 1;
 #endif
 #if TCPPS_TYPE == TCPPS_T_KEILTCP
@@ -694,38 +693,65 @@ void modem_Refresh()
 }
 
 
-#if MODEM_ME3000_TCP
+#if MODEM_ZTE_TCP
+static buf zte_Buf[2] = {0};
 
-int modem_IsMe3000()
+int modem_IsZteTcp()
 {
 	
-	return gsmModem.me3000;
+	return gsmModem.ztetcp;
 }
 
-int me3000_IsTcpCon()
+int zte_IsTcpCon()
 {
 	
-	return gsmModem.tcpcon;
+	return gsmModem.ztecon;
 }
 
-sys_res me3000_TcpRecv(buf b)
+void zte_ListenPort(uint_t nPort)
+{
+
+	gsmModem.zteport = nPort;
+}
+
+sys_res zte_TcpRead(uint_t nType, buf b)
+{
+	uint_t nSoc = 0;
+
+	if (nType == CHL_T_SOC_TS)
+		nSoc = 1;
+	if (zte_Buf[nSoc]->len) {
+		buf_Push(b, zte_Buf[nSoc]->p, zte_Buf[nSoc]->len);
+		buf_Release(zte_Buf[nSoc]);
+		return SYS_R_OK;
+	}
+	return SYS_R_EMPTY;
+}
+
+sys_res zte_TcpRecv()
 {
 	p_modem p = &gsmModem;
-	uint_t i, j, nLen;
+	uint_t i, j, nSoc, nLen;
 	char *pTemp;
 
 	if (modem_IsOnline() == 0)
 		return SYS_R_ERR;
 	for (i = 200 / OS_TICK_MS; i; i--) {
-		if (uart_RecData(p->uart, p->rbuf, OS_TICK_MS) != SYS_R_OK)
-			continue;
-		pTemp = modem_FindStr(p, "+ZIPRECV:1,");
-		if (pTemp != NULL)
+		uart_RecData(p->uart, p->rbuf, OS_TICK_MS);
+		pTemp = modem_FindStr(p, "RECV:0,");
+		if (pTemp != NULL) {
+			nSoc = 0;
 			break;
+		}
+		pTemp = modem_FindStr(p, "RECV:6,");
+		if (pTemp != NULL) {
+			nSoc = 1;
+			break;
+		}
 	}
 	if (i == 0)
 		return SYS_R_ERR;
-	buf_Remove(p->rbuf, (uint8_t *)pTemp - p->rbuf->p + 11);
+	buf_Remove(p->rbuf, (uint8_t *)pTemp - p->rbuf->p + 7);
 	nLen = atoi((char *)p->rbuf->p);
 	if (nLen > 1460)
 		nLen = 1460;
@@ -737,13 +763,13 @@ sys_res me3000_TcpRecv(buf b)
 	if (i == 0)
 		return SYS_R_ERR;
 	buf_Remove(p->rbuf, (uint8_t *)pTemp - p->rbuf->p + 1);
-	for (j = 2000 / OS_TICK_MS; j; j--) {
+	for (j = 10000 / OS_TICK_MS; j; j--) {
 		uart_RecData(p->uart, p->rbuf, OS_TICK_MS);
 		if (p->rbuf->len >= nLen)
 			break;
 	}
 	if (j) {
-		buf_Push(b, p->rbuf->p, nLen);
+		buf_Push(zte_Buf[nSoc], p->rbuf->p, nLen);
 		buf_Remove(p->rbuf, nLen);
 #if MODEM_FLOWCTL_ENABLE
 		gsmModem.flow += nLen;
@@ -754,55 +780,49 @@ sys_res me3000_TcpRecv(buf b)
 	return SYS_R_ERR;
 }
 
-sys_res me3000_TcpConnect(const uint8_t *pIp, uint_t nPort)
+sys_res zte_TcpConnect(const uint8_t *pIp, uint_t nPort)
 {
 	p_modem p = &gsmModem;
 	char str[64];
-	uint_t i;
 
 	if (modem_IsOnline() == 0)
 		return SYS_R_ERR;
-	sprintf(str, "AT+ZIPSETUP=1,%d.%d.%d.%d,%d\r", pIp[0], pIp[1], pIp[2], pIp[3], nPort);
+	sprintf(str, "AT+ZIPSETUP=0,%d.%d.%d.%d,%d\r", pIp[0], pIp[1], pIp[2], pIp[3], nPort);
+	if (modem_SendCmd(p, str, "OK\r", 10) != SYS_R_OK)
+		return SYS_R_ERR;
+	os_thd_Sleep(2000);
+	if (modem_SendCmd(p, "AT+ZIPSTATUS=0\r", "ESTABLISHED\r", 10) != SYS_R_OK)
+		return SYS_R_ERR;
+	p->ztecon = 1;
 	buf_Release(p->rbuf);
-	uart_Send(p->uart, str, strlen(str));
-	os_thd_Sleep(3000);
-	for (i = 5000 / OS_TICK_MS; i; i--) {
-		if (uart_RecData(p->uart, p->rbuf, OS_TICK_MS) != SYS_R_OK)
-			continue;
-		if (modem_FindStr(p, "CONNECTED\r") != NULL)
-			break;
-		if (modem_FindStr(p, "ESTABLISHED\r") != NULL)
-			break;
-	}
-	if (i) {
-		p->tcpcon = 1;
-		buf_Release(p->rbuf);
-		return SYS_R_OK;
-	}
-	return SYS_R_TMO;
+	return SYS_R_OK;
 }
 
-sys_res me3000_TcpSend(const void *pData, uint_t nLen)
+sys_res zte_TcpSend(uint_t nType, const void *pData, uint_t nLen)
 {
 	p_modem p = &gsmModem;
 	char str[20];
-	uint_t i;
+	uint_t i, nSoc;
 
 	if (modem_IsOnline() == 0)
 		return SYS_R_ERR;
-	if (p->tcpcon == 0)
-		return SYS_R_ERR;
-	sprintf(str, "AT+ZIPSEND=1,%d\r", nLen);
+	if (nType == CHL_T_SOC_TC) {
+		if (p->ztecon == 0)
+			return SYS_R_ERR;
+		nSoc = 0;
+	} else {
+		nSoc = 6;
+	}
+	sprintf(str, "AT+ZIPSEND=%d,%d\r", nSoc, nLen);
 	uart_Send(p->uart, str, strlen(str));
+	uart_Send(p->uart, pData, nLen);
 	os_thd_Sleep(100);
 	for (i = 5000 / OS_TICK_MS; i; i--) {
 		if (uart_RecData(p->uart, p->rbuf, OS_TICK_MS) != SYS_R_OK)
 			continue;
-		if (modem_FindStr(p, ">") == NULL)
+		if (modem_FindStr(p, "OK\r") == NULL)
 			continue;
-		uart_Send(p->uart, pData, nLen);
-		uart_Send(p->uart, "\r", 1);
-#if MODEM_FLOWCTL_ENABLE
+ #if MODEM_FLOWCTL_ENABLE
 		gsmModem.flow += nLen;
 #endif
 		return SYS_R_OK;
@@ -810,13 +830,13 @@ sys_res me3000_TcpSend(const void *pData, uint_t nLen)
 	return SYS_R_TMO;
 }
 
-sys_res me3000_TcpClose()
+sys_res zte_TcpClose()
 {
 	p_modem p = &gsmModem;
 	uint_t i;
 
-	p->tcpcon = 0;
-	uart_Send(p->uart, "AT+ZIPCLOSE=1\r", 14);
+	p->ztecon = 0;
+	uart_Send(p->uart, "AT+ZIPCLOSE=0\r", 14);
 	os_thd_Sleep(100);
 	for (i = 1000 / OS_TICK_MS; i; i--) {
 		if (uart_RecData(p->uart, p->rbuf, OS_TICK_MS) != SYS_R_OK)
@@ -829,6 +849,25 @@ sys_res me3000_TcpClose()
 	return SYS_R_OK;
 }
 
+sys_res zte_TcpListen()
+{
+	p_modem p = &gsmModem;
+	char str[64];
+
+	sprintf(str, "AT+ZIPPORT=6,%d\r", p->zteport);
+	modem_SendCmd(p, str, "OK\r", 1);
+	modem_SendCmd(p, "AT+ZIPSERVER\r", "OK\r", 1);
+	return SYS_R_OK;
+}
+
+sys_res zte_TcpSerClose()
+{
+	p_modem p = &gsmModem;
+
+	modem_SendCmd(p, "AT+ZIPCLOSE=6\r", "OK\r", 1);
+	modem_SendCmd(p, "AT+ZIPCLOSESERVER\r", "OK\r", 1);
+	return SYS_R_OK;
+}
 
 #endif
 

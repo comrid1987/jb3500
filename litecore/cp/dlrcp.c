@@ -238,7 +238,7 @@ sys_res dlrcp_Handler(p_dlrcp p)
 			break;
 		case CHL_T_SOC_TS:
 		case CHL_T_SOC_US:
-			chl_soc_Listen(p->chl);
+  			chl_soc_Listen(p->chl);
 			break;
 #endif
 #if UART_ENABLE

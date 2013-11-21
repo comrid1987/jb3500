@@ -204,6 +204,7 @@ void nw12_Init(p_nw12 p)
 {
 
 	memset(p, 0, sizeof(t_nw12));
+	chl_Init(p->parent.chl);
 	p->parent.linkcheck = nw12_TmsgLinkcheck;
 	p->parent.analyze = nw12_RmsgAnalyze;
 }

@@ -162,6 +162,7 @@ void gd5100_Init(p_gd5100 p)
 {
 
 	memset(p, 0, sizeof(t_gd5100));
+	chl_Init(p->parent.chl);
 	p->parent.linkcheck = gd5100_TmsgLinkcheck;
 	p->parent.analyze = gd5100_RmsgAnalyze;
 }

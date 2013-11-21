@@ -116,19 +116,6 @@
 #endif
 
 
-#if TCPPS_DEBUG_ENABLE
-void ppp_trace(int level, const char *format,...)
-{
-	va_list args;
-
-	if (level < 5) {
-		va_start(args, format);
-		rt_kprintf(format, args);
-		va_end(args);
-	}
-}
-#endif
-
 
 void net_Init()
 {
@@ -141,17 +128,9 @@ void net_Init()
 
 #if TCPPS_ETH_ENABLE
 	eth_system_device_init();
-#if REGISTER_ENABLE
-	///////////////Unfinished////////////////
-	reg_Get(TERMINAL, 0x0161, &ipaddr);
-	reg_Get(TERMINAL, 0x0162, &netmask);
-	reg_Get(TERMINAL, 0x0163, &gw);
-	///////////////////////////////////////
-#else
 	IP4_ADDR(&ipaddr, 192, 168, 18, 177);
 	IP4_ADDR(&netmask, 255, 255, 255, 0);
 	IP4_ADDR(&gw, 192, 168, 18, 1);
-#endif
 	netif_set_addr(netif_default, &ipaddr, &netmask, &gw);
 	netif_set_up(netif_default);
 #endif
@@ -189,6 +168,14 @@ void net_Init()
     finsh_syscall_append("lwip_info", (syscall_func)stats_display);
 #endif
 }
+
+void net_GetIpPPP(void *pIp, void *pMask, void *pGetway)
+{
+
+	memcpy(pIp, &(netif_default->ip_addr), 4);
+}
+
+
 
 #endif
 

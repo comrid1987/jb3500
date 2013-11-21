@@ -218,6 +218,7 @@ void gw3761_Init(p_gw3761 p)
 {
 
 	memset(p, 0, sizeof(t_gw3761));
+	chl_Init(p->parent.chl);
 	p->parent.linkcheck = gw3761_TmsgLinkcheck;
 	p->parent.analyze = gw3761_RmsgAnalyze;
 }

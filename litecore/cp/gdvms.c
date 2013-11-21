@@ -135,6 +135,7 @@ void gdvms_Init(p_gdvms p)
 {
 
 	memset(p, 0, sizeof(t_gdvms));
+	chl_Init(p->parent.chl);
 	p->parent.linkcheck = gdvms_TmsgLinkcheck;
 	p->parent.analyze = gdvms_RmsgAnalyze;
 }

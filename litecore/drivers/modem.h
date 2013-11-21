@@ -23,9 +23,10 @@ enum {
 typedef struct {
 	uint8_t		ste;
 	uint8_t		type;
-#if MODEM_ME3000_TCP
-	uint8_t		me3000;
-	uint8_t		tcpcon;
+#if MODEM_ZTE_TCP
+	uint8_t		ztetcp;
+	uint8_t		ztecon;
+	uint16_t	zteport;
 #endif
 	uint8_t		dialed;
 	uint8_t		signal;
@@ -94,9 +95,16 @@ int modem_GetCCID(char *pCCID);
 int modem_GetFlow(void);
 #endif
 void modem_Refresh(void);
-#if MODEM_ME3000_TCP
-int modem_IsMe3000(void);
-void me3000_Recv(void);
+#if MODEM_ZTE_TCP
+int modem_IsZteTcp(void);
+void zte_ListenPort(uint_t nPort);
+sys_res zte_TcpRead(uint_t nType, buf b);
+sys_res zte_TcpRecv(void);
+sys_res zte_TcpConnect(const uint8_t *pIp, uint_t nPort);
+sys_res zte_TcpSend(uint_t nType, const void *pData, uint_t nLen);
+sys_res zte_TcpClose(void);
+sys_res zte_TcpListen(void);
+sys_res zte_TcpSerClose(void);
 #endif
 
 #endif

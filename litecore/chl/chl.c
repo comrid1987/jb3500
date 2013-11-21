@@ -18,6 +18,7 @@ void chl_Init(chl p)
 {
 
 	memset(p, 0, sizeof(chl));
+	(int)p->pIf = -1;
 }
 
 sys_res chl_Bind(chl p, uint_t nType, uint_t nId, int nTmo)
@@ -68,17 +69,25 @@ sys_res chl_Release(chl p)
 #if TCPPS_ENABLE
 	case CHL_T_SOC_TC_RECON:
 	case CHL_T_SOC_TC:
-#if MODEM_ME3000_TCP
-		if (modem_IsMe3000()) {
-			res = me3000_TcpClose();
+#if MODEM_ZTE_TCP
+		if (modem_IsZteTcp()) {
+			res = zte_TcpClose();
 			break;
 		}
 #endif
 	case CHL_T_SOC_TS:
+#if MODEM_ZTE_TCP
+		if (modem_IsZteTcp()) {
+			res = zte_TcpSerClose();
+			break;
+		}
+#endif
 	case CHL_T_SOC_UC:
 	case CHL_T_SOC_US:
-		if (closesocket((int)p->pIf) == 0)
-			res = SYS_R_OK;
+		if ((int)p->pIf != -1) {
+			if (closesocket((int)p->pIf) == 0)
+				res = SYS_R_OK;
+		}
 		break;
 #endif
 	default:
@@ -109,13 +118,13 @@ sys_res chl_Send(chl p, const void *pData, uint_t nLen)
 #if TCPPS_ENABLE
 	case CHL_T_SOC_TC_RECON:
 	case CHL_T_SOC_TC:
-#if MODEM_ME3000_TCP
-		if (modem_IsMe3000()) {
-			res = me3000_TcpSend(pData, nLen);
+	case CHL_T_SOC_TS:
+#if MODEM_ZTE_TCP
+		if (modem_IsZteTcp()) {
+			res = zte_TcpSend(p->type, pData, nLen);
 			break;
 		}
 #endif
-	case CHL_T_SOC_TS:
 	case CHL_T_SOC_UC:
 	case CHL_T_SOC_US:
 		if (send((int)p->pIf, pData, nLen, MSG_DONTWAIT) == nLen)
@@ -148,13 +157,17 @@ sys_res chl_RecData(chl p, buf b, uint_t nTmo)
 #if TCPPS_ENABLE
 	case CHL_T_SOC_TC_RECON:
 	case CHL_T_SOC_TC:
-#if MODEM_ME3000_TCP
-		if (modem_IsMe3000()) {
-			res = me3000_TcpRecv(b);
+#if MODEM_ZTE_TCP
+		if (modem_IsZteTcp())
+			zte_TcpRecv();
+#endif
+	case CHL_T_SOC_TS:
+#if MODEM_ZTE_TCP
+		if (modem_IsZteTcp()) {
+			res = zte_TcpRead(p->type, b);
 			break;
 		}
 #endif
-	case CHL_T_SOC_TS:
 	case CHL_T_SOC_UC:
 	case CHL_T_SOC_US:
 		for (nTmo /= OS_TICK_MS; nTmo; nTmo--) {
