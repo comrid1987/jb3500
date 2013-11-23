@@ -31,7 +31,8 @@ sys_res chl_Bind(chl p, uint_t nType, uint_t nId, int nTmo)
 #if UART_ENABLE
 	case CHL_T_RS232:
 	case CHL_T_IRDA:
-		if ((p->pIf = uart_Get(nId, nTmo)) != NULL)
+		p->pIf = uart_Get(nId, nTmo);
+		if (p->pIf != NULL)
 			res = SYS_R_OK;
 		break;
 #endif
@@ -62,7 +63,7 @@ sys_res chl_Release(chl p)
 #if UART_ENABLE
 	case CHL_T_RS232:
 	case CHL_T_IRDA:
-		if (p->pIf != NULL)
+		if (((int)p->pIf != -1) && (p->pIf != NULL))
 			res = uart_Release(p->pIf);
 		break;
 #endif

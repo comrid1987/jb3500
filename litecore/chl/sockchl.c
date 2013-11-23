@@ -9,11 +9,12 @@ static int chl_soc_GetNoblock(int domain, int type, int protocol)
 	int mode = 1;
 #endif
 
-	if ((soc = socket(domain, type, protocol)) != -1)
+	if ((soc = socket(domain, type, protocol)) != -1) {
 #if TCPPS_TYPE == TCPPS_T_LWIP
 		if (ioctlsocket(soc, FIONBIO, &mode) == 0)
 #endif
 			return soc;
+	}
 	return -1;
 }
 
