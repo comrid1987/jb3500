@@ -118,6 +118,9 @@ dque	dqueue = {ARR_SIZE(__dqueue), __dqueue};
 #if ATT7022_ENABLE
 #include <drivers/att7022.c>
 #endif
+#if NRSEC3000_ENABLE
+#include <drivers/nrsec3000.c>
+#endif
 #if VOICE_ENABLE
 #include <drivers/wtv.c>
 #endif
