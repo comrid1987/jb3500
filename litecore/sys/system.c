@@ -186,6 +186,9 @@ void sys_Init()
 #if ATT7022_ENABLE
 	att7022_Init();
 #endif
+#if NRSEC3000_ENABLE
+	nrsec3000_Init();
+#endif
 #if VOICE_ENABLE
 	wtv_Init();
 #endif
