@@ -532,11 +532,13 @@ sys_res plc_Handler(t_plc *p, buf b, uint8_t *pAdr)
 			break;
 		switch (p->type) {
 		case PLC_T_TOPCOM:
+		case PLC_T_LEAGUERME:
 		case PLC_T_ES_RT:
 			if (p->tmo == 0) {
 				p->tmo = 0xFF;
-				if (gw3762_RtCtrl(p, 0x0001) == SYS_R_OK)
+				if (gw3762_RtCtrl(p, 0x0001) == SYS_R_OK){
 					p->ste = PLC_S_SLAVE;
+				}
 			}
 			break;
 		default:
