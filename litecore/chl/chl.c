@@ -18,7 +18,7 @@ void chl_Init(chl p)
 {
 
 	memset(p, 0, sizeof(chl));
-	(int)p->pIf = -1;
+	(int)p->pIf = (-1);
 }
 
 sys_res chl_Bind(chl p, uint_t nType, uint_t nId, int nTmo)
