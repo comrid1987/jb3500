@@ -510,7 +510,7 @@ sys_res plc_Handler(t_plc *p, buf b, uint8_t *pAdr)
 			if (gw3762_ModeSet(p, 0x02) == SYS_R_OK) {
 				if (gw3762_MeterProbe(p, 8) == SYS_R_OK) {
 					p->ste = PLC_S_PROBE;
- 					p->tmo = 8 * 60;
+					p->tmo = 8 * 60;
 				}
 			}
 		}
@@ -537,9 +537,8 @@ sys_res plc_Handler(t_plc *p, buf b, uint8_t *pAdr)
 		case PLC_T_ES_RT:
 			if (p->tmo == 0) {
 				p->tmo = 0xFF;
-				if (gw3762_RtCtrl(p, 0x0001) == SYS_R_OK){
+				if (gw3762_RtCtrl(p, 0x0001) == SYS_R_OK)
 					p->ste = PLC_S_SLAVE;
-				}
 			}
 			break;
 		default:
