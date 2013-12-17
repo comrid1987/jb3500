@@ -97,6 +97,7 @@ static sys_res plc_Sync(t_plc *p)
 		gw3762_Es_ModeSet(p, p->mode);
 
 	gw3762_RtCtrl(p, 0x0002);
+	os_thd_Sleep(5000);
 
 	for (nSn = 1; nSn < LCP_SN_MAX; nSn++) {
 		if (plc_MeterRead(nSn, aMadr) == 0)
@@ -509,7 +510,7 @@ sys_res plc_Handler(t_plc *p, buf b, uint8_t *pAdr)
 			if (gw3762_ModeSet(p, 0x02) == SYS_R_OK) {
 				if (gw3762_MeterProbe(p, 8) == SYS_R_OK) {
 					p->ste = PLC_S_PROBE;
-					p->tmo = 8 * 60;
+ 					p->tmo = 8 * 60;
 				}
 			}
 		}
