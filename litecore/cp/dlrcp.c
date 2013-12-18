@@ -1,5 +1,7 @@
 #if DLRCP_ENABLE
+#if DLRCP_ZIP_ENABLE
 #include <lib/zip/cceman.h>
+#endif
 
 //Private Defines
 #if DLRCP_DEBUG_ENABLE
