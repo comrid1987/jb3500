@@ -43,16 +43,16 @@
  */
 
 #include "netif/slipif.h"
-#include <net/lwip/opt.h"
+#include <net/lwip/opt.h>
 
 #if LWIP_HAVE_SLIPIF
 
-#include <net/lwip/def.h"
-#include <net/lwip/pbuf.h"
-#include <net/lwip/sys.h"
-#include <net/lwip/stats.h"
-#include <net/lwip/snmp.h"
-#include <net/lwip/sio.h"
+#include <net/lwip/def.h>
+#include <net/lwip/pbuf.h>
+#include <net/lwip/sys.h>
+#include <net/lwip/stats.h>
+#include <net/lwip/snmp.h>
+#include <net/lwip/sio.h>
 
 #define SLIP_BLOCK     1
 #define SLIP_DONTBLOCK 0

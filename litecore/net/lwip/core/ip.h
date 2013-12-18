@@ -110,7 +110,7 @@ struct ip_pcb {
 
 
 #ifdef PACK_STRUCT_USE_INCLUDES
-#  include <net/lwip/arch/bpstruct.h>
+#  include "arch/bpstruct.h"
 #endif
 PACK_STRUCT_BEGIN
 struct ip_hdr {
@@ -138,7 +138,7 @@ struct ip_hdr {
 } PACK_STRUCT_STRUCT;
 PACK_STRUCT_END
 #ifdef PACK_STRUCT_USE_INCLUDES
-#  include <net/lwip/arch/epstruct.h>
+#  include "arch/epstruct.h"
 #endif
 
 #define IPH_V(hdr)  (ntohs((hdr)->_v_hl_tos) >> 12)

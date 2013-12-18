@@ -1,10 +1,14 @@
 #ifndef __LWIPOPTS_H__
 #define __LWIPOPTS_H__
 
+#include <os/rtt/rtconfig.h>
 
 #if defined(RT_USING_NEWLIB) || defined(RT_USING_MINILIBC)
-#define ERRNO						1
+#define ERRNO                       1
 #endif
+
+//#define LWIP_ERROR(...)
+#define LWIP_NOASSERT
 
 #define NO_SYS                      0
 #define LWIP_SOCKET                 1
@@ -18,19 +22,16 @@
 
 #define LWIP_DNS                    TCPPS_DNS_ENABLE
 
-#define DNS_TABLE_SIZE				TCPPS_DNS_TABLE_NUM
-
-#define DNS_MAX_NAME_LENGTH			TCPPS_DNS_NAME_SIZE
-
 #define LWIP_HAVE_LOOPIF            TCPPS_LOOPIF_ENABLE
 
 #define LWIP_PLATFORM_BYTESWAP      0
 #define BYTE_ORDER                  LITTLE_ENDIAN
 
 /* Enable SO_RCVTIMEO processing.   */
-#define LWIP_SO_RCVTIMEO 			1
+#define LWIP_SO_RCVTIMEO            1
 
 /* #define RT_LWIP_DEBUG */
+
 #if TCPPS_DEBUG_ENABLE
 #define LWIP_DEBUG
 #endif
@@ -38,8 +39,8 @@
 /* ---------- Debug options ---------- */
 #ifdef LWIP_DEBUG
 #define SYS_DEBUG                   LWIP_DBG_OFF
-#define ETHARP_DEBUG				LWIP_DBG_OFF
-#define PPP_DEBUG                   LWIP_DBG_ON
+#define ETHARP_DEBUG                LWIP_DBG_OFF
+#define PPP_DEBUG                   LWIP_DBG_OFF
 #define MEM_DEBUG                   LWIP_DBG_OFF
 #define MEMP_DEBUG                  LWIP_DBG_OFF
 #define PBUF_DEBUG                  LWIP_DBG_OFF
@@ -79,7 +80,6 @@
 #define mem_calloc                  rt_calloc
 #endif
 
-
 /* ---------- Memory Pools options ---------- */
 #define MEMP_MEM_MALLOC				TCPPS_MEMP_MALLOC
 
@@ -100,16 +100,12 @@
 /* the number of simultaneously queued TCP */
 #define MEMP_NUM_TCP_SEG            TCPPS_TCP_SEG_NUM
 
-/* MEMP_NUM_SYS_TIMEOUT: the number of simulateously active
-   timeouts. */
-#define MEMP_NUM_SYS_TIMEOUT        8
-
 /* The following four are used only with the sequential API and can be
    set to 0 if the application only will use the raw API. */
 /* MEMP_NUM_NETBUF: the number of struct netbufs. */
 #define MEMP_NUM_NETBUF             2
 /* MEMP_NUM_NETCONN: the number of struct netconns. */
-#define MEMP_NUM_NETCONN            10
+#define MEMP_NUM_NETCONN            8
 /* MEMP_NUM_TCPIP_MSG_*: the number of struct tcpip_msg, which is used
    for sequential API communication and incoming packets. Used in
    src/api/tcpip.c. */
@@ -121,13 +117,13 @@
 #define PBUF_POOL_SIZE              TCPPS_PBUF_NUM
 
 /* PBUF_POOL_BUFSIZE: the size of each pbuf in the pbuf pool. */
-#define PBUF_POOL_BUFSIZE           1500
+#define PBUF_POOL_BUFSIZE			1500
 
 /* PBUF_LINK_HLEN: the number of bytes that should be allocated for a
    link level header. */
 #define PBUF_LINK_HLEN              16
 
-#define ETH_PAD_SIZE				TCPPS_ETH_PAD_SIZE
+#define ETH_PAD_SIZE                TCPPS_ETH_PAD_SIZE
 
 /** SYS_LIGHTWEIGHT_PROT
  * define SYS_LIGHTWEIGHT_PROT in lwipopts.h if you want inter-task protection
@@ -200,11 +196,11 @@
 /* ---------- DHCP options ---------- */
 /* Define LWIP_DHCP to 1 if you want DHCP configuration of
    interfaces. */
-#define LWIP_DHCP                   TCPPS_DHCP_ENABLE
+#define LWIP_UDP                    TCPPS_UDP_ENABLE
 
 /* 1 if you want to do an ARP check on the offered address
    (recommended). */
-#define DHCP_DOES_ARP_CHECK         0
+#define DHCP_DOES_ARP_CHECK         (LWIP_DHCP)
 
 /* ---------- AUTOIP options ------- */
 #define LWIP_AUTOIP                 0
@@ -225,6 +221,8 @@
 #define LWIP_STATS                  TCPPS_STATS_ENABLE
 
 #if LWIP_STATS
+#define LWIP_STATS_DISPLAY          1
+
 #define LINK_STATS                  1
 #define IP_STATS                    1
 #define ICMP_STATS                  1
@@ -267,7 +265,14 @@
 #endif /* PPP_SUPPORT */
 
 /* no read/write/close for socket */
-#define LWIP_POSIX_SOCKETS_IO_NAMES	0
+#define LWIP_POSIX_SOCKETS_IO_NAMES 0
+#define LWIP_NETIF_API  1
+
+/* MEMP_NUM_SYS_TIMEOUT: the number of simulateously active timeouts. */
+#define MEMP_NUM_SYS_TIMEOUT       (LWIP_TCP + IP_REASSEMBLY + LWIP_ARP + (2*LWIP_DHCP) + LWIP_AUTOIP + LWIP_IGMP + LWIP_DNS + PPP_SUPPORT)
+#ifdef LWIP_IGMP
+#include <stdlib.h>
+#define LWIP_RAND                  rand
+#endif
 
 #endif /* __LWIPOPTS_H__ */
-

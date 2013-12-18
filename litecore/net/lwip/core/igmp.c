@@ -81,14 +81,14 @@ Steve Reynolds
 
 #if LWIP_IGMP /* don't build if not configured for use in lwipopts.h */
 
-#include <net/lwip/igmp.h>
+#include <net/lwip/core/igmp.h>
 #include <net/lwip/debug.h>
 #include <net/lwip/def.h>
 #include <net/lwip/mem.h>
 #include <net/lwip/core/ip.h>
-#include <net/lwip/inet_chksum.h>
+#include <net/lwip/core/inet_chksum.h>
 #include <net/lwip/netif.h>
-#include <net/lwip/icmp.h>
+#include <net/lwip/core/icmp.h>
 #include <net/lwip/udp.h>
 #include <net/lwip/tcp.h>
 #include <net/lwip/stats.h>
@@ -120,7 +120,7 @@ Steve Reynolds
  * IGMP packet format.
  */
 #ifdef PACK_STRUCT_USE_INCLUDES
-#  include <net/lwip/arch/bpstruct.h>
+#  include "arch/bpstruct.h"
 #endif
 PACK_STRUCT_BEGIN
 struct igmp_msg {
@@ -131,7 +131,7 @@ struct igmp_msg {
 } PACK_STRUCT_STRUCT;
 PACK_STRUCT_END
 #ifdef PACK_STRUCT_USE_INCLUDES
-#  include <net/lwip/arch/epstruct.h>
+#  include "arch/epstruct.h"
 #endif
 
 

@@ -68,7 +68,7 @@ enum icmp_te_type {
 };
 
 #ifdef PACK_STRUCT_USE_INCLUDES
-#  include <net/lwip/arch/bpstruct.h>
+#  include "arch/bpstruct.h"
 #endif
 /** This is the standard ICMP header only that the u32_t data
  *  is splitted to two u16_t like ICMP echo needs it.
@@ -85,7 +85,7 @@ struct icmp_echo_hdr {
 } PACK_STRUCT_STRUCT;
 PACK_STRUCT_END
 #ifdef PACK_STRUCT_USE_INCLUDES
-#  include <net/lwip/arch/epstruct.h>
+#  include "arch/epstruct.h"
 #endif
 
 #define ICMPH_TYPE(hdr) ((hdr)->type)

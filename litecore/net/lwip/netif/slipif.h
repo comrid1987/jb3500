@@ -34,7 +34,7 @@
 #ifndef __NETIF_SLIPIF_H__
 #define __NETIF_SLIPIF_H__
 
-#include <net/lwip/netif.h"
+#include <net/lwip/netif.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -1276,7 +1276,7 @@
  * DEFAULT_THREAD_NAME: The name assigned to any other lwIP thread.
  */
 #ifndef DEFAULT_THREAD_NAME
-#define DEFAULT_THREAD_NAME            "lwIP"
+#define DEFAULT_THREAD_NAME            "lwip"
 #endif
 
 /**

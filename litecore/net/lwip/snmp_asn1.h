@@ -35,10 +35,10 @@
 #ifndef __LWIP_SNMP_ASN1_H__
 #define __LWIP_SNMP_ASN1_H__
 
-#include <net/lwip/opt.h"
-#include <net/lwip/err.h"
-#include <net/lwip/pbuf.h"
-#include <net/lwip/snmp.h"
+#include <net/lwip/opt.h>
+#include <net/lwip/err.h>
+#include <net/lwip/pbuf.h>
+#include <net/lwip/snmp.h>
 
 #if LWIP_SNMP
 

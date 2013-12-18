@@ -57,7 +57,7 @@
 #include <net/lwip/netif/etharp.h>
 
 #if PPPOE_SUPPORT
-#include "netif/ppp_oe.h"
+#include <net/lwip/netif/ppp_oe.h>
 #endif /* PPPOE_SUPPORT */
 
 #include <string.h>

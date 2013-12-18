@@ -38,7 +38,7 @@
 
 #if LWIP_SNMP /* don't build if not configured for use in lwipopts.h */
 
-#include <net/lwip/snmp_asn1.h>
+#include "lwip/snmp_asn1.h"
 
 /**
  * Returns octet count for length.

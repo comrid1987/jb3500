@@ -67,7 +67,7 @@
 #include <string.h>
 
 #if PPPOE_SUPPORT
-#include "netif/ppp_oe.h"
+#include <net/lwip/netif/ppp_oe.h>
 #else
 #define PPPOE_MAXMTU PPP_MAXMRU
 #endif

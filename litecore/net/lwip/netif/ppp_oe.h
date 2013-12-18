@@ -74,10 +74,10 @@
 
 #if PPPOE_SUPPORT > 0
 
-#include "netif/etharp.h"
+#include <net/lwip/netif/etharp.h>
 
 #ifdef PACK_STRUCT_USE_INCLUDES
-#  include <net/lwip/arch/bpstruct.h>
+#  include "arch/bpstruct.h"
 #endif
 PACK_STRUCT_BEGIN
 struct pppoehdr {
@@ -88,11 +88,11 @@ struct pppoehdr {
 } PACK_STRUCT_STRUCT;
 PACK_STRUCT_END
 #ifdef PACK_STRUCT_USE_INCLUDES
-#  include <net/lwip/arch/epstruct.h>
+#  include "arch/epstruct.h"
 #endif
 
 #ifdef PACK_STRUCT_USE_INCLUDES
-#  include <net/lwip/arch/bpstruct.h>
+#  include "arch/bpstruct.h"
 #endif
 PACK_STRUCT_BEGIN
 struct pppoetag {
@@ -101,7 +101,7 @@ struct pppoetag {
 } PACK_STRUCT_STRUCT;
 PACK_STRUCT_END
 #ifdef PACK_STRUCT_USE_INCLUDES
-#  include <net/lwip/arch/epstruct.h>
+#  include "arch/epstruct.h"
 #endif
 
 

@@ -123,7 +123,7 @@
 #define DNS_STATE_DONE            3
 
 #ifdef PACK_STRUCT_USE_INCLUDES
-#  include <net/lwip/arch/bpstruct.h>
+#  include "arch/bpstruct.h"
 #endif
 PACK_STRUCT_BEGIN
 /** DNS message header */
@@ -138,7 +138,7 @@ struct dns_hdr {
 } PACK_STRUCT_STRUCT;
 PACK_STRUCT_END
 #ifdef PACK_STRUCT_USE_INCLUDES
-#  include <net/lwip/arch/epstruct.h>
+#  include "arch/epstruct.h"
 #endif
 #define SIZEOF_DNS_HDR 12
 

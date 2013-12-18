@@ -49,7 +49,7 @@ extern "C" {
 
 /* Fields are (of course) in network byte order. */
 #ifdef PACK_STRUCT_USE_INCLUDES
-#  include <net/lwip/arch/bpstruct.h>
+#  include "arch/bpstruct.h"
 #endif
 PACK_STRUCT_BEGIN
 struct udp_hdr {
@@ -60,7 +60,7 @@ struct udp_hdr {
 } PACK_STRUCT_STRUCT;
 PACK_STRUCT_END
 #ifdef PACK_STRUCT_USE_INCLUDES
-#  include <net/lwip/arch/epstruct.h>
+#  include "arch/epstruct.h"
 #endif
 
 #define UDP_FLAGS_NOCHKSUM       0x01U

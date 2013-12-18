@@ -49,7 +49,7 @@
 #if LWIP_AUTOIP /* don't build if not configured for use in lwipopts.h */
 
 #include <net/lwip/netif.h>
-#include <net/lwip/udp.h>
+#include "lwip/udp.h"
 #include <net/lwip/netif/etharp.h>
 
 #ifdef __cplusplus

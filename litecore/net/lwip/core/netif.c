@@ -54,7 +54,7 @@
 #endif /* ENABLE_LOOPBACK */
 
 #if LWIP_AUTOIP
-#include <net/lwip/autoip.h>
+#include <net/lwip/core/autoip.h>
 #endif /* LWIP_AUTOIP */
 #if LWIP_DHCP
 #include <net/lwip/dhcp.h>

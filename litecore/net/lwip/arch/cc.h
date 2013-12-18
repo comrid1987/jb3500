@@ -61,6 +61,9 @@ typedef rt_uint32_t	mem_ptr_t;
 			180 here because the number "108" which is used
 			in arch.h has been assigned to another error code. */
 #define ESHUTDOWN 180
+#elif RT_USING_MINILIBC
+#include <errno.h>
+#define  EADDRNOTAVAIL  99  /* Cannot assign requested address */
 #else
 #define LWIP_PROVIDE_ERRNO
 #endif
@@ -84,6 +87,11 @@ typedef rt_uint32_t	mem_ptr_t;
 #elif defined(__GNUC__)     /* GNU GCC Compiler */
 #define PACK_STRUCT_FIELD(x) x
 #define PACK_STRUCT_STRUCT __attribute__((packed))
+#define PACK_STRUCT_BEGIN
+#define PACK_STRUCT_END
+#elif defined(_MSC_VER)
+#define PACK_STRUCT_FIELD(x) x
+#define PACK_STRUCT_STRUCT
 #define PACK_STRUCT_BEGIN
 #define PACK_STRUCT_END
 #endif

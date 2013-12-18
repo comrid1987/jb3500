@@ -152,7 +152,7 @@ u32_t            tcp_update_rcv_ann_wnd(struct tcp_pcb *pcb);
  * Some fields are converted to host byte order in tcp_input().
  */
 #ifdef PACK_STRUCT_USE_INCLUDES
-#  include "arch/bpstruct.h>
+#  include "arch/bpstruct.h"
 #endif
 PACK_STRUCT_BEGIN
 struct tcp_hdr {
@@ -167,7 +167,7 @@ struct tcp_hdr {
 } PACK_STRUCT_STRUCT;
 PACK_STRUCT_END
 #ifdef PACK_STRUCT_USE_INCLUDES
-#  include "arch/epstruct.h>
+#  include "arch/epstruct.h"
 #endif
 
 #define TCPH_OFFSET(phdr) (ntohs((phdr)->_hdrlen_rsvd_flags) >> 8)

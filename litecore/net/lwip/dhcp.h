@@ -67,7 +67,7 @@ struct dhcp
 
 /* MUST be compiled with "pack structs" or equivalent! */
 #ifdef PACK_STRUCT_USE_INCLUDES
-#  include <net/lwip/arch/bpstruct.h>
+#  include "arch/bpstruct.h"
 #endif
 PACK_STRUCT_BEGIN
 /** minimum set of fields of any DHCP message */
@@ -102,7 +102,7 @@ struct dhcp_msg
 } PACK_STRUCT_STRUCT;
 PACK_STRUCT_END
 #ifdef PACK_STRUCT_USE_INCLUDES
-#  include <net/lwip/arch/epstruct.h>
+#  include "arch/epstruct.h"
 #endif
 
 void dhcp_set_struct(struct netif *netif, struct dhcp *dhcp);
