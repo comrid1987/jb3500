@@ -7,7 +7,7 @@
 #define ERRNO                       1
 #endif
 
-//#define LWIP_ERROR(...)
+#define LWIP_ERROR(...)
 #define LWIP_NOASSERT
 
 #define NO_SYS                      0
