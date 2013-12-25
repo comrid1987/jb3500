@@ -6,6 +6,9 @@
 #define ERRNO						1
 #endif
 
+#define LWIP_ERROR(...)
+#define LWIP_NOASSERT
+
 #define NO_SYS                      0
 #define LWIP_SOCKET                 1
 #define LWIP_NETCONN                1
