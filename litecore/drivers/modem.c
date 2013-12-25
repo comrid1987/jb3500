@@ -510,7 +510,10 @@ void modem_Run()
 					uart_Send(p->uart, "ATD*99***1#\r", 12);
 				p->dialed = 1;
 #if TCPPS_TYPE == TCPPS_T_LWIP
-				pppSetAuth(PPPAUTHTYPE_ANY, p->user, p->pwd);
+				if (p->type == MODEM_TYPE_CDMA)
+					pppSetAuth(PPPAUTHTYPE_ANY, p->user, p->pwd);
+				else
+					pppSetAuth(PPPAUTHTYPE_ANY, "", "");
 				pppOpen(p->uart, modem_linkStatusCB, 0);
 #endif
 #if TCPPS_TYPE == TCPPS_T_KEILTCP
