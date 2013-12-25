@@ -120,6 +120,7 @@ sys_res chl_soc_Listen(chl p)
 int chl_soc_IsConnect(chl p)
 {
 #if TCPPS_TYPE == TCPPS_T_LWIP
+	int newsoc;
 	socklen_t len;
 	struct sockaddr_in adr;
 #endif
@@ -140,12 +141,27 @@ int chl_soc_IsConnect(chl p)
 	}
 #endif
 #if TCPPS_TYPE == TCPPS_T_LWIP
-	len = sizeof(adr);
-	p->err = getpeername((int)p->pIf, (struct sockaddr *)&adr, &len);
-	if (p->err != 0)
-		return 0;
-	if (adr.sin_port == 0)
-		return 0;
+	switch (p->type) {
+	case CHL_T_SOC_TS:
+		len = sizeof(adr);
+		p->err = getpeername((int)p->pIf, (struct sockaddr *)&adr, &len);
+		if ((p->err == 0) && (adr.sin_port != 0))
+			break;
+		newsoc = accept((int)p->pIf, NULL, NULL);
+		if (newsoc == -1)
+			return 0;
+		closesocket((int)p->pIf);
+		p->pIf = (void *)newsoc;
+		break;
+	default:
+		len = sizeof(adr);
+		p->err = getpeername((int)p->pIf, (struct sockaddr *)&adr, &len);
+		if (p->err != 0)
+			return 0;
+		if (adr.sin_port == 0)
+			return 0;
+		break;
+	}
 #endif
 #if TCPPS_TYPE == TCPPS_T_KEILTCP
 	p->err = recv((int)p->pIf, NULL, 0, MSG_DONTWAIT);
