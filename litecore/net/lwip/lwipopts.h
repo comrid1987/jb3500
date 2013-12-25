@@ -10,6 +10,8 @@
 #define LWIP_ERROR(...)
 #define LWIP_NOASSERT
 
+#define SO_REUSE					1
+
 #define NO_SYS                      0
 #define LWIP_SOCKET                 1
 #define LWIP_NETCONN                1
@@ -48,7 +50,7 @@
 #define API_MSG_DEBUG               LWIP_DBG_OFF
 #define TCPIP_DEBUG                 LWIP_DBG_OFF
 #define NETIF_DEBUG                 LWIP_DBG_OFF
-#define SOCKETS_DEBUG               LWIP_DBG_OFF
+#define SOCKETS_DEBUG               LWIP_DBG_ON
 #define DNS_DEBUG                   LWIP_DBG_OFF
 #define AUTOIP_DEBUG                LWIP_DBG_OFF
 #define DHCP_DEBUG                  LWIP_DBG_OFF
@@ -255,12 +257,12 @@
 #define PPPOS_SUPPORT               1
 
 #define PAP_SUPPORT                 1      /* Set > 0 for PAP. */
-#define CHAP_SUPPORT                1      /* Set > 0 for CHAP. */
+#define CHAP_SUPPORT                0      /* Set > 0 for CHAP. */
 #define MSCHAP_SUPPORT              0      /* Set > 0 for MSCHAP (NOT FUNCTIONAL!) */
 #define CBCP_SUPPORT                0      /* Set > 0 for CBCP (NOT FUNCTIONAL!) */
 #define CCP_SUPPORT                 0      /* Set > 0 for CCP (NOT FUNCTIONAL!) */
-#define VJ_SUPPORT                  1      /* Set > 0 for VJ header compression. */
-#define MD5_SUPPORT                 1      /* Set > 0 for MD5 (see also CHAP) */
+#define VJ_SUPPORT                  0      /* Set > 0 for VJ header compression. */
+#define MD5_SUPPORT                 0      /* Set > 0 for MD5 (see also CHAP) */
 
 #endif /* PPP_SUPPORT */
 
