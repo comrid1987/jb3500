@@ -1,3 +1,5 @@
+#if OS_TYPE == OS_T_RTTHREAD
+
 #include <os/rtt/clock.c>
 #include <os/rtt/device.c>
 #include <os/rtt/idle.c>
@@ -145,8 +147,7 @@ void os_Start()
 
 }
 
-
-
+#endif
 
 
 
