@@ -100,6 +100,9 @@ sys_res chl_soc_Connect(chl p, const void *pIp, uint_t nPort)
 
 sys_res chl_soc_Listen(chl p)
 {
+#if TCPPS_TYPE == TCPPS_T_LWIP
+	int mode = 0, newsoc;
+#endif
 
 #if MODEM_ZTE_TCP
 	if (modem_IsZteTcp()) {
@@ -111,8 +114,18 @@ sys_res chl_soc_Listen(chl p)
 		return SYS_R_OK;
 	}
 #endif
+#if TCPPS_TYPE == TCPPS_T_LWIP
+	ioctlsocket((int)p->pIf, FIONBIO, &mode);
+#endif
 	if (listen((int)p->pIf, 0) != 0)
 		return SYS_R_ERR;
+#if TCPPS_TYPE == TCPPS_T_LWIP
+	newsoc = accept((int)p->pIf, NULL, NULL);
+	if (newsoc == -1)
+		return SYS_R_ERR;
+	closesocket((int)p->pIf);
+	p->pIf = (void *)newsoc;
+#endif
 	p->ste = CHL_S_CONNECT;
 	return SYS_R_OK;
 }
@@ -147,11 +160,13 @@ int chl_soc_IsConnect(chl p)
 		p->err = getpeername((int)p->pIf, (struct sockaddr *)&adr, &len);
 		if ((p->err == 0) && (adr.sin_port != 0))
 			break;
-		newsoc = accept((int)p->pIf, NULL, NULL);
-		if (newsoc == -1)
+		else
 			return 0;
-		closesocket((int)p->pIf);
-		p->pIf = (void *)newsoc;
+//		newsoc = accept((int)p->pIf, NULL, NULL);
+//		if (newsoc == -1)
+//			return 0;
+//		closesocket((int)p->pIf);
+//		p->pIf = (void *)newsoc;
 		break;
 	default:
 		len = sizeof(adr);
