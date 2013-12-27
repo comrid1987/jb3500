@@ -97,9 +97,20 @@ typedef void *OS_ID;
 typedef U32 OS_RESULT;
 
 
+
 /*----------------------------------------------------------------------------
  *                        Flash File System API
  *---------------------------------------------------------------------------*/
+
+/* File System Type */
+typedef enum _FS_TYPE {
+  FS_TYPE_NONE = 0,                     /* No file system (volume unformatted)*/
+  FS_TYPE_UNKNOWN,                      /* File system type is unknown       */
+  FS_TYPE_FAT12,                        /* File system type is FAT12         */
+  FS_TYPE_FAT16,                        /* File system type is FAT16         */
+  FS_TYPE_FAT32,                        /* File system type is FAT32         */
+  FS_TYPE_EFS                           /* File system type is EFS           */
+} FS_TYPE;
 
 typedef struct {                        /* RL Time format (FFS, TCPnet)      */
   U8  hr;                               /* Hours    [0..23]                  */
@@ -110,6 +121,36 @@ typedef struct {                        /* RL Time format (FFS, TCPnet)      */
   U16 year;                             /* Year     [1980..2107]             */
 } RL_TIME;
 
+typedef struct {                        /* Search info record                */
+  S8  name[256];                        /* Name                              */
+  U32 size;                             /* File size in bytes                */
+  U16 fileID;                           /* System Identification             */
+  U8  attrib;                           /* Attributes                        */
+  RL_TIME time;                         /* Create/Modify Time                */
+} FINFO;
+
+/* Drive information */
+typedef struct {
+  FS_TYPE fs_type;                      /* Drives file system type           */
+  U64     capacity;                     /* Drives capacity in bytes          */
+} Drive_INFO;
+
+extern int finit (const char *drive);
+extern int funinit (const char *drive);
+extern int fdelete (const char *filename);
+extern int frename (const char *oldname, const char *newname);
+extern int ffind (const char *pattern, FINFO *info);
+extern U64 ffree (const char *drive);
+extern int fformat (const char *drive);
+extern int fanalyse (const char *drive);
+extern int fcheck (const char *drive);
+extern int fdefrag (const char *drive);
+extern int fattrib (const char *par, const char *path);
+extern int fvol    (const char *drive, char *buf);
+extern int finfo   (const char *drive, Drive_INFO *info);
+
+/* The following macros provide for common functions */
+#define unlink(fn)      fdelete(fn);
 
 
 /*----------------------------------------------------------------------------
