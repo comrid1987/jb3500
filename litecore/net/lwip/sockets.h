@@ -72,11 +72,11 @@ struct sockaddr {
 #define SOCK_RAW        3
 
 /*
- * Option flags per-socket. These must match the SOF_ flags in ip.h (checked in init.c)
+ * Option flags per-socket. These must match the SOF_ flags in ip.h!
  */
 #define  SO_DEBUG       0x0001 /* Unimplemented: turn on debugging info recording */
 #define  SO_ACCEPTCONN  0x0002 /* socket has had listen() */
-#define  SO_REUSEADDR   0x0004 /* Allow local address reuse */
+#define  SO_REUSEADDR   0x0004 /* Unimplemented: allow local address reuse */
 #define  SO_KEEPALIVE   0x0008 /* keep connections alive */
 #define  SO_DONTROUTE   0x0010 /* Unimplemented: just use interface addresses */
 #define  SO_BROADCAST   0x0020 /* permit to send and to receive broadcast messages (see IP_SOF_BROADCAST option) */
@@ -262,27 +262,9 @@ typedef struct ip_mreq {
 #define SIOCATMARK  _IOR('s',  7, unsigned long)  /* at oob mark? */
 #endif
 
-/* commands for fnctl */
-#ifndef F_GETFL
-#define F_GETFL 3
-#endif
-#ifndef F_SETFL
-#define F_SETFL 4
-#endif
-
-/* File status flags and file access modes for fnctl,
-   these are bits in an int. */
+/* Socket flags: */
 #ifndef O_NONBLOCK
-#define O_NONBLOCK  1 /* nonblocking I/O */
-#endif
-#ifndef O_NDELAY
-#define O_NDELAY    1 /* same as O_NONBLOCK, for compatibility */
-#endif
-
-#ifndef SHUT_RD
-  #define SHUT_RD   0
-  #define SHUT_WR   1
-  #define SHUT_RDWR 2
+#define O_NONBLOCK    04000U
 #endif
 
 /* FD_SET used for lwip_select */
@@ -293,7 +275,7 @@ typedef struct ip_mreq {
   #define FD_SET(n, p)  ((p)->fd_bits[(n)/8] |=  (1 << ((n) & 7)))
   #define FD_CLR(n, p)  ((p)->fd_bits[(n)/8] &= ~(1 << ((n) & 7)))
   #define FD_ISSET(n,p) ((p)->fd_bits[(n)/8] &   (1 << ((n) & 7)))
-  #define FD_ZERO(p)    memset((void*)(p),0,sizeof(*(p)))
+  #define FD_ZERO(p)    rt_memset((void*)(p),0,sizeof(*(p)))
 
   typedef struct fd_set {
           unsigned char fd_bits [(FD_SETSIZE+7)/8];
@@ -338,7 +320,6 @@ int lwip_write(int s, const void *dataptr, size_t size);
 int lwip_select(int maxfdp1, fd_set *readset, fd_set *writeset, fd_set *exceptset,
                 struct timeval *timeout);
 int lwip_ioctl(int s, long cmd, void *argp);
-int lwip_fcntl(int s, int cmd, int val);
 
 #if LWIP_COMPAT_SOCKETS
 #define accept(a,b,c)         lwip_accept(a,b,c)
