@@ -52,7 +52,7 @@
 #include <net/lwip/core/tcp.c>
 #include <net/lwip/core/tcp_in.c>
 #include <net/lwip/core/tcp_out.c>
-#include <net/lwip/core/timers.c>
+
 #include <net/lwip/core/udp.c>
 
 #include <net/lwip/core/init.c>
