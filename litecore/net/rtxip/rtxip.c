@@ -209,6 +209,9 @@ void sys_error(ERROR_CODE code)
 //External Functions
 void net_Init()
 {
+#if DM9000_ENABLE
+	dm9000_Init();
+#endif
 
 	bzero(rtxip_aLocPort, sizeof(rtxip_aLocPort));
 	bzero(rtxip_xBuf, sizeof(rtxip_xBuf));

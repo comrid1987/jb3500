@@ -139,8 +139,7 @@ void net_Init()
 	pppInit();
 #endif
 
-//#if LWIP_DHCP
-#if 0
+#if LWIP_DHCP
 	/* use DHCP client */
 	dhcp_start(netif_default);
 
