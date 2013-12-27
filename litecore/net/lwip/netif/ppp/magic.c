@@ -53,11 +53,13 @@
 
 #if PPP_SUPPORT
 
-#include "ppp.h"
-#include "randm.h"
-#include "magic.h"
+#include <net/lwip/netif/ppp/ppp.h>
+#include <net/lwip/netif/ppp/randm.h>
+#include <net/lwip/netif/ppp/magic.h>
 
-
+/***********************************/
+/*** PUBLIC FUNCTION DEFINITIONS ***/
+/***********************************/
 /*
  * magicInit - Initialize the magic number generator.
  *

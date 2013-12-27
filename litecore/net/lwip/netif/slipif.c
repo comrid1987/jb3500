@@ -42,7 +42,7 @@
  * provided by another file. They are sio_open, sio_read/sio_tryread and sio_send
  */
 
-#include "netif/slipif.h"
+#include <net/lwip/netif/slipif.h>
 #include <net/lwip/opt.h>
 
 #if LWIP_HAVE_SLIPIF
@@ -88,7 +88,7 @@ struct slipif_priv {
  * @return always returns ERR_OK since the serial layer does not provide return values
  */
 err_t
-slipif_output(struct netif *netif, struct pbuf *p, ip_addr_t *ipaddr)
+slipif_output(struct netif *netif, struct pbuf *p, struct ip_addr *ipaddr)
 {
   struct slipif_priv *priv;
   struct pbuf *q;

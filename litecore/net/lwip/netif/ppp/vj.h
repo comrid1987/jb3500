@@ -1,7 +1,7 @@
 /*
  * Definitions for tcp compression routines.
  *
- * $Id: vj.h,v 1.7 2010/02/22 17:52:09 goldsimon Exp $
+ * $Id: vj.h,v 1.5 2007/12/19 20:47:23 fbernon Exp $
  *
  * Copyright (c) 1989 Regents of the University of California.
  * All rights reserved.
@@ -25,8 +25,7 @@
 #ifndef VJ_H
 #define VJ_H
 
-#include <net/lwip/core/ip.h>
-#include <net/lwip/tcp_impl.h>
+#include <net/lwip/netif/ppp/vjbsdhdr.h>
 
 #define MAX_SLOTS 16 /* must be > 2 and < 256 */
 #define MAX_HDR   128
@@ -109,7 +108,7 @@ struct cstate {
   u_char cs_filler;
   union {
     char csu_hdr[MAX_HDR];
-    struct ip_hdr csu_ip;     /* ip/tcp hdr from most recent packet */
+    struct ip csu_ip;     /* ip/tcp hdr from most recent packet */
   } vjcs_u;
 };
 #define cs_ip vjcs_u.csu_ip

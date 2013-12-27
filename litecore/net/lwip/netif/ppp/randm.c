@@ -35,11 +35,11 @@
 
 #if PPP_SUPPORT /* don't build if not configured for use in lwipopts.h */
 
-#include "md5.h"
-#include "randm.h"
+#include <net/lwip/netif/ppp/md5.h>
+#include <net/lwip/netif/ppp/randm.h>
 
-#include "ppp.h"
-#include "pppdebug.h"
+#include <net/lwip/netif/ppp/ppp.h>
+#include <net/lwip/netif/ppp/pppdebug.h>
 
 #include <string.h>
 
@@ -85,7 +85,7 @@ avChurnRand(char *randData, u32_t randLen)
 {
   MD5_CTX md5;
 
-  /* LWIP_DEBUGF(LOG_INFO, ("churnRand: %u@%P\n", randLen, randData)); */
+  /* ppp_trace(LOG_INFO, "churnRand: %u@%P\n", randLen, randData); */
   MD5Init(&md5);
   MD5Update(&md5, (u_char *)randPool, sizeof(randPool));
   if (randData) {
@@ -100,7 +100,7 @@ avChurnRand(char *randData, u32_t randLen)
     MD5Update(&md5, (u_char *)&sysData, sizeof(sysData));
   }
   MD5Final((u_char *)randPool, &md5);
-/*  LWIP_DEBUGF(LOG_INFO, ("churnRand: -> 0\n")); */
+/*  ppp_trace(LOG_INFO, "churnRand: -> 0\n"); */
 }
 
 /*
