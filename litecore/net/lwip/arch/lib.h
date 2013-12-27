@@ -30,56 +30,12 @@
  *
  * Author: Adam Dunkels <adam@sics.se>
  *
- * $Id: cc.h,v 1.1.1.1 2004/12/16 14:17:13 bear Exp $
+ * $Id: lib.h,v 1.1.1.1 2004/12/16 14:17:14 bear Exp $
  */
-#ifndef __ARCH_CC_H__
-#define __ARCH_CC_H__
+#ifndef __ARCH_LIB_H__
+#define __ARCH_LIB_H__
 
+#define bcopy(s, d, l)	rt_memcpy(s, d, l)
+#define bzero(d, n) 	rt_memset(d, 0, n)
 
-typedef uint8_t		u8_t;
-typedef sint8_t		s8_t;
-typedef uint16_t	u16_t;
-typedef sint16_t	s16_t;
-typedef uint32_t	u32_t;
-typedef sint32_t	s32_t;
-typedef uint32_t	mem_ptr_t;
-
-#define U16_F "hu"
-#define S16_F "hd"
-#define X16_F "hx"
-#define U32_F "lu"
-#define S32_F "ld"
-#define X32_F "lx"
-
-#define LWIP_PROVIDE_ERRNO
-
-#if defined(__CC_ARM)   /* ARMCC compiler */
-#define PACK_STRUCT_FIELD(x) x
-#define PACK_STRUCT_STRUCT __attribute__ ((__packed__))
-#define PACK_STRUCT_BEGIN
-#define PACK_STRUCT_END
-#elif defined(__ICCARM__)   /* IAR Compiler */
-#define PACK_STRUCT_BEGIN
-#define PACK_STRUCT_STRUCT
-#define PACK_STRUCT_END
-#define PACK_STRUCT_FIELD(x) x
-#define PACK_STRUCT_USE_INCLUDES
-#elif defined(__GNUC__)     /* GNU GCC Compiler */
-#define PACK_STRUCT_FIELD(x) x
-#define PACK_STRUCT_STRUCT __attribute__((packed))
-#define PACK_STRUCT_BEGIN
-#define PACK_STRUCT_END
-#endif
-
-void sys_arch_assert(const char* file, int line);
-#define LWIP_PLATFORM_DIAG(x)	do {rt_kprintf x;} while(0)
-#define LWIP_PLATFORM_ASSERT(x) { rt_kprintf(x); sys_arch_assert(__FILE__, __LINE__); }
-
-#define SYS_ARCH_DECL_PROTECT(x)
-#define SYS_ARCH_PROTECT(x)
-#define SYS_ARCH_UNPROTECT(x)
-
-#include <string.h>
-
-#endif /* __ARCH_CC_H__ */
-
+#endif /* __ARCH_LIB_H__ */
