@@ -278,6 +278,10 @@ sys_res dlrcp_Handler(p_dlrcp p)
 			break;
 		case CHL_T_SOC_TS:
 		case CHL_T_SOC_US:
+			if (p->cnt > 900) {
+				p->cnt = 0;
+				chl_Release(p->chl);
+			}
 			if (chl_soc_IsConnect(p->chl))
 				p->cnt = 0;
 			break;
