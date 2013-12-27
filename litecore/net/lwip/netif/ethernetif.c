@@ -48,7 +48,7 @@
  *
  */
 
-#include <rtthread.h>
+#include <os/rtt/rtthread.h>
 
 #include <net/lwip/opt.h>
 #include <net/lwip/debug.h>
@@ -61,7 +61,7 @@
 #include <net/lwip/tcpip.h>
 
 #include <net/lwip/netif/etharp.h>
-#include "netif/ethernetif.h"
+#include <net/lwip/netif/ethernetif.h>
 
 #define netifapi_netif_set_link_up(n)      netifapi_netif_common(n, netif_set_link_up, NULL)
 #define netifapi_netif_set_link_down(n)    netifapi_netif_common(n, netif_set_link_down, NULL)
@@ -208,9 +208,9 @@ rt_err_t eth_device_init_with_flag(struct eth_device *dev, char *name, rt_uint8_
 		struct ip_addr ipaddr, netmask, gw;
 
 #if !LWIP_DHCP
-		IP4_ADDR(&ipaddr, RT_LWIP_IPADDR0, RT_LWIP_IPADDR1, RT_LWIP_IPADDR2, RT_LWIP_IPADDR3);
-		IP4_ADDR(&gw, RT_LWIP_GWADDR0, RT_LWIP_GWADDR1, RT_LWIP_GWADDR2, RT_LWIP_GWADDR3);
-		IP4_ADDR(&netmask, RT_LWIP_MSKADDR0, RT_LWIP_MSKADDR1, RT_LWIP_MSKADDR2, RT_LWIP_MSKADDR3);
+		IP4_ADDR(&ipaddr, 192, 168, 0, 250);
+		IP4_ADDR(&gw, 192, 198, 0, 2);
+		IP4_ADDR(&netmask, 255, 255, 255, 0);
 #else
 		IP4_ADDR(&ipaddr, 0, 0, 0, 0);
 		IP4_ADDR(&gw, 0, 0, 0, 0);
@@ -362,7 +362,7 @@ void eth_system_device_init()
 
 	result = rt_thread_init(&eth_rx_thread, "erx", eth_rx_thread_entry, RT_NULL,
 		&eth_rx_thread_stack[0], sizeof(eth_rx_thread_stack),
-		RT_LWIP_ETHTHREAD_PRIORITY, 16);
+		TCPPS_ETH_PRIORITY, 16);
 	RT_ASSERT(result == RT_EOK);
 	result = rt_thread_startup(&eth_rx_thread);
 	RT_ASSERT(result == RT_EOK);
@@ -376,7 +376,7 @@ void eth_system_device_init()
 
 	result = rt_thread_init(&eth_tx_thread, "etx", eth_tx_thread_entry, RT_NULL,
 		&eth_tx_thread_stack[0], sizeof(eth_tx_thread_stack),
-		RT_ETHERNETIF_THREAD_PREORITY, 16);
+		TCPPS_ETH_PRIORITY, 16);
 	RT_ASSERT(result == RT_EOK);
 
 	result = rt_thread_startup(&eth_tx_thread);
