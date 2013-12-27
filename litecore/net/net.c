@@ -128,9 +128,9 @@ void net_Init()
 
 #if TCPPS_ETH_ENABLE
 	eth_system_device_init();
-	IP4_ADDR(&ipaddr, 192, 168, 18, 177);
+	IP4_ADDR(&ipaddr, 192, 168, 0, 250);
 	IP4_ADDR(&netmask, 255, 255, 255, 0);
-	IP4_ADDR(&gw, 192, 168, 18, 1);
+	IP4_ADDR(&gw, 192, 168, 0, 2);
 	netif_set_addr(netif_default, &ipaddr, &netmask, &gw);
 	netif_set_up(netif_default);
 #endif
