@@ -79,8 +79,14 @@ sys_res chl_soc_Connect(chl p, const void *pIp, uint_t nPort)
 	case CHL_T_SOC_TC:
 #if MODEM_ZTE_TCP
 		if (modem_IsZteTcp()) {
-			if (zte_TcpConnect(pIp, nPort) != SYS_R_OK)
-				return SYS_R_TMO;
+			if(modem_IsMe3000()){
+				if (me3000_TcpConnect(pIp, nPort) != SYS_R_OK)
+					return SYS_R_TMO;
+			}
+			else{
+				if (zte_TcpConnect(pIp, nPort) != SYS_R_OK)
+					return SYS_R_TMO;
+			}
 			p->ste = CHL_S_CONNECT;
 			break;
 		}
@@ -104,6 +110,8 @@ sys_res chl_soc_Listen(chl p)
 #if MODEM_ZTE_TCP
 	if (modem_IsZteTcp()) {
 		if (modem_IsOnline() == 0)
+			return SYS_R_ERR;
+		if(modem_IsMe3000())
 			return SYS_R_ERR;
 		if (zte_TcpListen() != SYS_R_OK)
 			return SYS_R_ERR;

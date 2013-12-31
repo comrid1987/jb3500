@@ -27,6 +27,7 @@ typedef struct {
 	uint8_t		ztetcp;
 	uint8_t		ztecon;
 	uint16_t	zteport;
+	uint16_t	me3000;
 #endif
 	uint8_t		dialed;
 	uint8_t		signal;
@@ -43,6 +44,7 @@ typedef struct {
 	uint16_t	tmo;
 	uint16_t	span;
 	uint16_t	idle;
+	uint16_t	flag;//内部协议标识
 #if MODEM_FLOWCTL_ENABLE
 	uint_t		flow;
 #endif
@@ -83,7 +85,7 @@ void modem_Init(void);
 void modem_Run(void);
 void modem_Reset(void);
 void modem_PowerOff(void);
-void modem_Config(const char *pApn, const char *pUser, const char *pPwd, uint_t nSpan, uint_t nRetry);
+void modem_Config(const char *pApn, const char *pUser, const char *pPwd, uint_t nSpan, uint_t nRetry, uint_t nFlag);
 int modem_IsOnline(void);
 int modem_GetSignal(void);
 int modem_GetState(void);
@@ -97,6 +99,7 @@ int modem_GetFlow(void);
 void modem_Refresh(void);
 #if MODEM_ZTE_TCP
 int modem_IsZteTcp(void);
+int modem_IsModemTcp(void);
 void zte_ListenPort(uint_t nPort);
 sys_res zte_TcpRead(uint_t nType, buf b);
 sys_res zte_TcpRecv(void);
@@ -105,6 +108,11 @@ sys_res zte_TcpSend(uint_t nType, const void *pData, uint_t nLen);
 sys_res zte_TcpClose(void);
 sys_res zte_TcpListen(void);
 sys_res zte_TcpSerClose(void);
+int modem_IsMe3000(void);
+sys_res me3000_TcpRecv(buf b);
+sys_res me3000_TcpConnect(const uint8_t *pIp, uint_t nPort);
+sys_res me3000_TcpSend(const void *pData, uint_t nLen);
+sys_res me3000_TcpClose(void);
 #endif
 
 #endif
