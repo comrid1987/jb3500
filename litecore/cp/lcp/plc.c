@@ -510,7 +510,10 @@ sys_res plc_Handler(t_plc *p, buf b, uint8_t *pAdr)
 			if (gw3762_ModeSet(p, 0x02) == SYS_R_OK) {
 				if (gw3762_MeterProbe(p, 8) == SYS_R_OK) {
 					p->ste = PLC_S_PROBE;
-					p->tmo = 8 * 60;
+					if (p->type == PLC_T_ES_RT)//东软模块延长搜表时间为20分钟
+						p->tmo = 20 * 60;
+					else
+						p->tmo = 8 * 60;
 				}
 			}
 		}
