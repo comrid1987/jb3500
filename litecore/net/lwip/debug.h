@@ -33,6 +33,7 @@
 #define __LWIP_DEBUG_H__
 
 #include <net/lwip/arch.h>
+#include <net/lwip/opt.h>
 
 /** lower two bits indicate debug level
  * - 0 all

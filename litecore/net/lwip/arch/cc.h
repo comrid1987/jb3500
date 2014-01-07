@@ -35,14 +35,16 @@
 #ifndef __ARCH_CC_H__
 #define __ARCH_CC_H__
 
+#include <os/rtt/rthw.h>
+#include <os/rtt/rtthread.h>
 
-typedef uint8_t		u8_t;
-typedef sint8_t		s8_t;
-typedef uint16_t	u16_t;
-typedef sint16_t	s16_t;
-typedef uint32_t	u32_t;
-typedef sint32_t	s32_t;
-typedef uint32_t	mem_ptr_t;
+typedef rt_uint8_t	u8_t;
+typedef rt_int8_t	s8_t;
+typedef rt_uint16_t	u16_t;
+typedef rt_int16_t	s16_t;
+typedef rt_uint32_t	u32_t;
+typedef rt_int32_t	s32_t;
+typedef rt_uint32_t	mem_ptr_t;
 
 #define U16_F "hu"
 #define S16_F "hd"
@@ -51,14 +53,32 @@ typedef uint32_t	mem_ptr_t;
 #define S32_F "ld"
 #define X32_F "lx"
 
+#ifdef RT_USING_NEWLIB
+#include <errno.h>
+/* some errno not defined in newlib */
+#define ENSRNOTFOUND 163  /* Domain name not found */
+/* WARNING: ESHUTDOWN also not defined in newlib. We chose
+			180 here because the number "108" which is used
+			in arch.h has been assigned to another error code. */
+#define ESHUTDOWN 180
+#elif RT_USING_MINILIBC
+#include <errno.h>
+#define  EADDRNOTAVAIL  99  /* Cannot assign requested address */
+#else
 #define LWIP_PROVIDE_ERRNO
+#endif
+
+#ifdef RT_USING_MINILIBC
+#include <time.h>
+#define LWIP_TIMEVAL_PRIVATE 0
+#endif
 
 #if defined(__CC_ARM)   /* ARMCC compiler */
 #define PACK_STRUCT_FIELD(x) x
 #define PACK_STRUCT_STRUCT __attribute__ ((__packed__))
 #define PACK_STRUCT_BEGIN
 #define PACK_STRUCT_END
-#elif defined(__ICCARM__)   /* IAR Compiler */
+#elif defined(__IAR_SYSTEMS_ICC__)   /* IAR Compiler */
 #define PACK_STRUCT_BEGIN
 #define PACK_STRUCT_STRUCT
 #define PACK_STRUCT_END
@@ -69,17 +89,19 @@ typedef uint32_t	mem_ptr_t;
 #define PACK_STRUCT_STRUCT __attribute__((packed))
 #define PACK_STRUCT_BEGIN
 #define PACK_STRUCT_END
+#elif defined(_MSC_VER)
+#define PACK_STRUCT_FIELD(x) x
+#define PACK_STRUCT_STRUCT
+#define PACK_STRUCT_BEGIN
+#define PACK_STRUCT_END
 #endif
 
 void sys_arch_assert(const char* file, int line);
-#define LWIP_PLATFORM_DIAG(x)	do {rt_kprintf x;} while(0)
-#define LWIP_PLATFORM_ASSERT(x) { rt_kprintf(x); sys_arch_assert(__FILE__, __LINE__); }
+#define LWIP_PLATFORM_DIAG(x)	do {dbg_printf x;} while(0)
+#define LWIP_PLATFORM_ASSERT(x) do {dbg_printf(x); sys_arch_assert(__FILE__, __LINE__);}while(0)
 
-#define SYS_ARCH_DECL_PROTECT(x)
-#define SYS_ARCH_PROTECT(x)
-#define SYS_ARCH_UNPROTECT(x)
 
-#include <string.h>
+#include "string.h"
 
 #endif /* __ARCH_CC_H__ */
 

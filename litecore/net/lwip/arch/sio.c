@@ -81,7 +81,7 @@ u32_t sio_read(sio_fd_t fd, u8_t *data, u32_t len)
 		if (c < 0) {
 			if (i)
 				break;
-			os_thd_Slp1Tick();
+			os_thd_Sleep(100);
 			continue;
 		}
 		data[i++] = c;
