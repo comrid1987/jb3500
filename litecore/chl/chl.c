@@ -138,6 +138,9 @@ sys_res chl_Send(chl p, const void *pData, uint_t nLen)
 #endif
 	case CHL_T_SOC_UC:
 	case CHL_T_SOC_US:
+#if TCPPS_TYPE == TCPPS_T_LWIP
+		os_thd_Sleep(3000);
+#endif
 		if (send((int)p->pIf, pData, nLen, MSG_DONTWAIT) == nLen)
 			res = SYS_R_OK;
 		break;

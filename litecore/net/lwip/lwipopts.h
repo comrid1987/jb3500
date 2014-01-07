@@ -30,7 +30,7 @@
 #define BYTE_ORDER                  LITTLE_ENDIAN
 
 /* Enable SO_RCVTIMEO processing.   */
-#define LWIP_SO_RCVTIMEO            1
+#define LWIP_SO_RCVTIMEO            0
 
 /* #define RT_LWIP_DEBUG */
 

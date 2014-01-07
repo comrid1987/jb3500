@@ -168,7 +168,7 @@ int chl_soc_IsConnect(chl p)
 		break;
 	default:
 		len = sizeof(adr);
-		p->err = getpeername((int)p->pIf, (struct sockaddr *)&adr, &len);
+		p->err = getsockname((int)p->pIf, (struct sockaddr *)&adr, &len);
 		if (p->err != 0)
 			return 0;
 		if (adr.sin_port == 0)
