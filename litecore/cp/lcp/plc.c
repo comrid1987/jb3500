@@ -36,10 +36,13 @@ static void plc_Reset(t_plc *p)
 	os_thd_Sleep(10000);
 	chl_rs232_Config(p->chl, 9600, UART_PARI_EVEN, UART_DATA_8D, UART_STOP_1D);
 	if (gw3762_InfoGet(p) != SYS_R_OK) {
-		//晓程广东
-		p->type = PLC_T_XC_GD;
-		memcpy(p->info, "CXDG", 4);
-		return;
+		os_thd_Sleep(2000);
+		if (gw3762_InfoGet(p) != SYS_R_OK) {
+			//晓程广东
+			p->type = PLC_T_XC_GD;
+			memcpy(p->info, "CXDG", 4);
+			return;
+		}
 	}
 	memcpy(p->info, p->data->p, 8);
 	if (memcmp(p->info, "GB", 2) == 0) {
