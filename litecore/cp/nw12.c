@@ -111,8 +111,6 @@ static sys_res nw12_RmsgAnalyze(void *args)
 					continue;
 				if (pH->len1 != pH->len2)
 					continue;
-				if (pH->c.dir == NW12_DIR_SEND)
-					continue;
 				break;
 			}
 		}
@@ -130,11 +128,12 @@ static sys_res nw12_RmsgAnalyze(void *args)
 		nw12_DbgRx(p->parent.rbuf->p, NW12_FIXHEADER_SIZE + 2 + pH->len1);
 #endif
 		//接收到报文
-		//----Unfinished ----判断地址转级联
 		p->msa = pH->msa;		
 		p->c = pH->c;
 		p->afn = pH->afn;
 		p->seq = pH->seq;
+		memcpy(p->rcv_rtua,pH->a1,3);
+		memcpy(p->rcv_terid,pH->a2,3);
 		if (pH->seq.tpv) {
 			//有时间标志
 			pTemp -= sizeof(p->tp);
@@ -293,6 +292,47 @@ uint_t nw12_ConvertDa2Map(uint_t nDA, void *pData)
 	return nQty;
 }
 
+
+//-------------------------------------------------------------------------
+//
+//-------------------------------------------------------------------------
+sys_res nw12_Transmit(p_nw12 p, p_nw12 pD)
+{
+	sys_res res;
+	t_nw12_header xH;
+	uint_t nCS;
+	buf b={0};
+
+	xH.sc1 = 0x68;
+	xH.len1 = xH.len2 = p->data->len + (sizeof(t_nw12_header) - NW12_FIXHEADER_SIZE);
+	xH.sc2 = 0x68;
+	xH.c = p->c;
+	memcpy(xH.a1,p->rcv_rtua,3);
+	memcpy(xH.a2,p->rcv_terid,3);
+	xH.msa = p->msa;
+	xH.afn = p->afn;
+	xH.seq = p->seq;
+	buf_Push( b,p->data->p, p->data->len);
+	nCS = cs8((uint8_t *)&xH + NW12_FIXHEADER_SIZE, (sizeof(t_nw12_header) - NW12_FIXHEADER_SIZE));
+	nCS = (nCS + cs8(b->p, b->len)) & 0xFF;
+	buf_PushData(b, 0x1600 | nCS, 2);
+	res = dlrcp_TmsgSend(&pD->parent, &xH, sizeof(t_nw12_header), b->p, b->len, DLRCP_TMSG_RESPOND);
+	buf_Release(b);
+	return res;
+}
+//-------------------------------------------------------------------------
+//
+//-------------------------------------------------------------------------
+int nw12_RecvCheck(p_nw12 p)
+{
+	if ((memtest(p->rcv_rtua, 0xFF, 3) != 0)||(memtest(p->rcv_terid, 0xFF, 3) != 0))
+	{
+		if((memcmp(p->rtua,p->rcv_rtua,3)!=0)||(memcmp(p->terid,p->rcv_terid,3)!=0))
+// 		if ((p->rtua != p->rcv_rtua) || (p->terid != p->rcv_terid))
+			return 0;
+	}
+	return 1;
+}
 
 
 //-------------------------------------------------------------------------

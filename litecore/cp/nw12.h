@@ -85,6 +85,8 @@ typedef struct {
 	t_nw12_tp	tp;
 	uint8_t		pw[16];	
 	buf			data;
+	uint8_t		rcv_rtua[3];
+	uint8_t		rcv_terid[3];
 }t_nw12, *p_nw12;
 
 
@@ -101,9 +103,8 @@ sys_res nw12_TmsgSend(p_nw12 p, uint_t nFun, uint_t nAfn, buf b, uint_t nType);
 
 uint_t nw12_ConvertDa2DA(uint_t nDa);
 uint_t nw12_ConvertDa2Map(uint_t nDA, void *pData);
-
-
-
+sys_res nw12_Transmit(p_nw12 p, p_nw12 pD);
+int nw12_RecvCheck(p_nw12 p);
 
 
 #ifdef __cplusplus
