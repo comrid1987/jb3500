@@ -586,6 +586,7 @@ void modem_Run()
 	case MODEM_S_ONLINE:
 		if (p->cnt > p->idle) {
 #if TCPPS_TYPE == TCPPS_T_LWIP
+			pppSigHUP(0);
 			pppClose(0);
 			p->ste = MODEM_S_RESET;
 #endif
