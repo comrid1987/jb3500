@@ -297,7 +297,7 @@ static sys_res modem_InitCmd(p_modem p)
 		}
 	}
 #if MODEM_ZTE_TCP
-	if(p->flag){
+	if (p->flag) {
 		if (p->type == MODEM_TYPE_CDMA) {
 			if (modem_SendCmd(p, "AT+ZPNUM=#777\r", "OK\r", 10) == SYS_R_OK) {
 				sprintf(str, "AT+ZPIDPWD=%s,%s\r", p->user, p->pwd);
@@ -306,13 +306,11 @@ static sys_res modem_InitCmd(p_modem p)
 					return SYS_R_OK;
 				}
 			}
-		}
-		else {
+		} else {
 			if (modem_SendCmd(p, "AT+ZVERS\r", "OK\r", 3) == SYS_R_OK) {
 				if ((pTemp = modem_FindStr(p, "ME3000_E")) != NULL) {
 					sprintf(str, "AT+ZPNUM=\"%s\"\r", p->apn);
 					if (modem_SendCmd(p, str, "OK\r", 10) == SYS_R_OK) {
-						
 						p->ztetcp = 1;
 						p->me3000= 1;
 						return SYS_R_OK;
@@ -620,7 +618,7 @@ void modem_Config(const char *pApn, const char *pUser, const char *pPwd, uint_t 
 	p->pwd[nLen] = '\0';
 	p->idle = nSpan * 3;
 	p->retrytime = nRetry;
-	p->flag = nFlag;
+//	p->flag = nFlag;
 }
 
 int modem_IsOnline()

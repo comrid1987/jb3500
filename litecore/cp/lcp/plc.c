@@ -438,8 +438,9 @@ void plc_Broadcast(t_plc *p)
 		timet2array(rtc_GetTimet(), aTime, 1);
 		xcn12_Broadcast(p, aBuf, aTime, 6);
 		os_thd_Sleep(3000);
-	} else {
+	} else
 #endif
+	{
 		chl_rs232_Config(p->chl, 9600, UART_PARI_EVEN, UART_DATA_8D, UART_STOP_1D);
 		timet2array(rtc_GetTimet(), aTime, 1);
 		dlt645_Packet2Buf(b, aBuf, DLT645_CODE_BROADCAST, aTime, 6);
@@ -482,9 +483,7 @@ void plc_Broadcast(t_plc *p)
 				}
 			}
 		}
-#if XCN6N12_ENABLE
 	}
-#endif
 }
 
 

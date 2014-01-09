@@ -34,6 +34,7 @@ typedef struct {
 	uint8_t		retrytime;
 	uint8_t		retryed;
 	uint8_t		hour;
+//	uint8_t		flag;	//强制使用内部协议栈标识
 	char		apn[20];
 	char		user[32];
 	char		pwd[32];
@@ -44,7 +45,6 @@ typedef struct {
 	uint16_t	tmo;
 	uint16_t	span;
 	uint16_t	idle;
-	uint16_t	flag;//内部协议标识
 #if MODEM_FLOWCTL_ENABLE
 	uint_t		flow;
 #endif

@@ -325,10 +325,8 @@ sys_res nw12_Transmit(p_nw12 p, p_nw12 pD)
 //-------------------------------------------------------------------------
 int nw12_RecvCheck(p_nw12 p)
 {
-	if ((memtest(p->rcv_rtua, 0xFF, 3) != 0)||(memtest(p->rcv_terid, 0xFF, 3) != 0))
-	{
-		if((memcmp(p->rtua,p->rcv_rtua,3)!=0)||(memcmp(p->terid,p->rcv_terid,3)!=0))
-// 		if ((p->rtua != p->rcv_rtua) || (p->terid != p->rcv_terid))
+	if ((memtest(p->rcv_rtua, 0xFF, 3) != 0) || (memtest(p->rcv_terid, 0xFF, 3) != 0)) {
+		if ((memcmp(p->rtua, p->rcv_rtua, 3) != 0) || (memcmp(p->terid, p->rcv_terid, 3) != 0))
 			return 0;
 	}
 	return 1;

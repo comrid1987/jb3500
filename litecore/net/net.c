@@ -120,7 +120,9 @@
 
 void net_Init()
 {
+#if TCPPS_ETH_ENABLE
 	struct ip_addr ipaddr, netmask, gw;
+#endif
 #if LWIP_DHCP
  	rt_uint32_t mscnt = 0;
 #endif
