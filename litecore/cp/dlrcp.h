@@ -39,6 +39,7 @@ typedef struct {
 	uint16_t	refresh;
 	uint16_t	cnt;
 	uint16_t	chlid;
+	uint16_t	rcvtime;
 	chl 		chl;
 	buf			rbuf;
 #if DLRCP_SEND_BUFFER

@@ -106,6 +106,9 @@ sys_res chl_Release(chl p)
 	return res;
 }
 
+#if TCPPS_TYPE == TCPPS_T_LWIP
+static int lwip_nIsSendBusy = 0;
+#endif
 sys_res chl_Send(chl p, const void *pData, uint_t nLen)
 {
 	sys_res res = SYS_R_ERR;
@@ -139,7 +142,10 @@ sys_res chl_Send(chl p, const void *pData, uint_t nLen)
 	case CHL_T_SOC_UC:
 	case CHL_T_SOC_US:
 #if TCPPS_TYPE == TCPPS_T_LWIP
-		os_thd_Sleep(3000);
+		for (; lwip_nIsSendBusy; os_thd_Slp1Tick());
+		lwip_nIsSendBusy = 1;
+		os_thd_Sleep(500);
+		lwip_nIsSendBusy = 0;
 #endif
 		if (send((int)p->pIf, pData, nLen, MSG_DONTWAIT) == nLen)
 			res = SYS_R_OK;
