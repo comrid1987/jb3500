@@ -264,11 +264,14 @@
 #define VJ_SUPPORT                  1      /* Set > 0 for VJ header compression. */
 #define MD5_SUPPORT                 1      /* Set > 0 for MD5 (see also CHAP) */
 
+#define MAXNAMELEN                  32     /* max length of hostname or name for auth */
+#define MAXSECRETLEN                32     /* max length of password or secret */
+
 #endif /* PPP_SUPPORT */
 
 /* no read/write/close for socket */
-#define LWIP_POSIX_SOCKETS_IO_NAMES 0
-#define LWIP_NETIF_API  1
+#define LWIP_POSIX_SOCKETS_IO_NAMES	0
+#define LWIP_NETIF_API				0
 
 /* MEMP_NUM_SYS_TIMEOUT: the number of simulateously active timeouts. */
 #define MEMP_NUM_SYS_TIMEOUT       (LWIP_TCP + IP_REASSEMBLY + LWIP_ARP + (2*LWIP_DHCP) + LWIP_AUTOIP + LWIP_IGMP + LWIP_DNS + PPP_SUPPORT)

@@ -267,6 +267,9 @@
 #define VJ_SUPPORT                  0      /* Set > 0 for VJ header compression. */
 #define MD5_SUPPORT                 1      /* Set > 0 for MD5 (see also CHAP) */
 
+#define MAXNAMELEN                  32     /* max length of hostname or name for auth */
+#define MAXSECRETLEN                32     /* max length of password or secret */
+
 #endif /* PPP_SUPPORT */
 
 /* no read/write/close for socket */
