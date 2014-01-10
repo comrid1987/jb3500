@@ -365,7 +365,6 @@ static void modem_linkStatusCB(void *ctx, int errCode, void *arg)
 			pThread = os_thd_IdSelf();
 			if (pThread->user_data != NULL)
 				rt_free((void *)pThread->user_data);
-			p->dialed = 0;
 		}
 		break;
 	}
@@ -454,6 +453,12 @@ void modem_Run()
 #endif
 		p->ste = MODEM_S_POWEROFF;
 		p->signal = 0;
+#if TCPPS_TYPE == TCPPS_T_LWIP
+		if (p->dialed) {
+			pppSigHUP(0);
+			pppClose(0);
+		}
+#endif
 		p->dialed = 0;
 		p->tmo = (1 + p->tmo) * 4;
 		if (p->tmo > 3600)
@@ -583,20 +588,13 @@ void modem_Run()
 		break;
 	case MODEM_S_ONLINE:
 		if (p->cnt > p->idle) {
-#if TCPPS_TYPE == TCPPS_T_LWIP
-			pppSigHUP(0);
-			pppClose(0);
 			p->ste = MODEM_S_RESET;
-#endif
-#if TCPPS_TYPE == TCPPS_T_KEILTCP
-			p->ste = MODEM_S_RESET;
-#endif
 			modem_DbgOut("<Modem> Idle %d tmo %d", p->idle, p->cnt);
 		}
 		break;
 	default:
-		modem_DbgOut("<Modem> Unknow ste ", p->ste);
 		p->ste = MODEM_S_RESET;
+		modem_DbgOut("<Modem> Unknow ste ", p->ste);
 		break;
 	}
 }
@@ -618,7 +616,7 @@ void modem_Config(const char *pApn, const char *pUser, const char *pPwd, uint_t 
 	p->pwd[nLen] = '\0';
 	p->idle = nSpan * 3;
 	p->retrytime = nRetry;
-//	p->flag = nFlag;
+	p->flag = nFlag;
 }
 
 int modem_IsOnline()
