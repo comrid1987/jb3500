@@ -133,8 +133,9 @@ sys_res spi_Send(p_dev_spi p, const void *pData, uint_t nLen)
 	sys_res res;
 
 #if OS_TYPE
-	while (p->ste != SPI_S_IDLE)
+	while (p->ste != SPI_S_IDLE) {
 		os_thd_Slp1Tick();
+	}
 #endif
 	p->ste = SPI_S_BUSY;
 #if SPI_SOFTWARE
@@ -159,8 +160,9 @@ sys_res spi_Recv(p_dev_spi p, void *pRec, uint_t nLen)
  	sys_res res;
 
 #if OS_TYPE
-	while (p->ste != SPI_S_IDLE)
+	while (p->ste != SPI_S_IDLE) {
 		os_thd_Slp1Tick();
+	}
 #endif
 	p->ste = SPI_S_BUSY;
 #if SPI_SOFTWARE
@@ -185,14 +187,41 @@ sys_res spi_Transce(p_dev_spi p, const void *pCmd, uint_t nCmdLen, void *pRec, u
  	sys_res res;
 
 #if OS_TYPE
-	while (p->ste != SPI_S_IDLE)
+	while (p->ste != SPI_S_IDLE) {
 		os_thd_Slp1Tick();
+	}
 #endif
 	p->ste = SPI_S_BUSY;
 #if SPI_SOFTWARE
 	res = spibus_Transce(p, pCmd, nCmdLen, pRec, nRecLen);
 #else
 	res = arch_SpiTransce(p, pCmd, nCmdLen, pRec, nRecLen);
+#endif
+	p->ste = SPI_S_IDLE;
+	return res;
+}
+
+//-------------------------------------------------------------------------
+//Function Name  : 
+//Description    : 
+//Input          : - GPIOx:
+//                - GPIO_InitStruct: 
+//Output         : None
+//Return         : None
+//-------------------------------------------------------------------------
+sys_res spi_TranChar(p_dev_spi p, uint_t nSend, void *pRec)
+{
+ 	sys_res res;
+
+#if OS_TYPE
+	while (p->ste != SPI_S_IDLE) {
+		os_thd_Slp1Tick();
+	}
+#endif
+	p->ste = SPI_S_BUSY;
+#if SPI_SOFTWARE
+	res = spibus_TranChar(p, nSend, pRec);
+#else
 #endif
 	p->ste = SPI_S_IDLE;
 	return res;

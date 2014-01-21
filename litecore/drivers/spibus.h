@@ -23,6 +23,7 @@ void spibus_End(p_dev_spi p);
 sys_res spibus_Send(p_dev_spi p, const void *pData, uint_t nLen);
 sys_res spibus_Recv(p_dev_spi p, void *pRec, uint_t nLen);
 sys_res spibus_Transce(p_dev_spi p, const void *pCmd, uint_t nCmdLen, void *pRec, uint_t nRecLen);
+sys_res spibus_TranChar(p_dev_spi p, uint_t nSend, void *pRec);
 
 
 #ifdef __cplusplus

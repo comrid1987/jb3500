@@ -268,6 +268,9 @@ sys_res dlrcp_Handler(p_dlrcp p)
 			if (chl_soc_IsConnect(p->chl)) {
 				p->cnt = 0;
 				p->ste = DLRCP_S_CHECK;
+#if TCPPS_TYPE == TCPPS_T_LWIP
+				os_thd_Sleep(2000);
+#endif
 				(p->linkcheck)(p, DLRCP_LINKCHECK_LOGIN);
 				dlrcp_DbgOut("[RCP] login %d.%d.%d.%d:%d", p->ip[0], p->ip[1], p->ip[2], p->ip[3], p->chlid);
 			} else {

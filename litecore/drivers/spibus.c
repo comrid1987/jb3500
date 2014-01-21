@@ -192,6 +192,32 @@ sys_res spibus_Transce(p_dev_spi p, const void *pCmd, uint_t nCmdLen, void *pRec
 	return SYS_R_OK;
 }
 
+sys_res spibus_TranChar(p_dev_spi p, uint_t nSend, void *pRec)
+{
+	uint8_t *pBuf = (uint8_t *)pRec;
+	uint_t i, nData = 0;
+
+	spibus_Start(p);
+	for (i = 8; i; i--, nSend <<= 1) {
+		nData <<= 1;
+		if (p->latchmode == SPI_LATCH_1EDGE) {
+			spibus_Mosi(p, nSend & 0x80);
+			if (spibus_Miso(p))
+				SETBIT(nData, 0);
+		}
+		spibus_Sck(p, 1);
+		if (p->latchmode == SPI_LATCH_2EDGE) {
+			spibus_Mosi(p, nSend & 0x80);
+			if (spibus_Miso(p))
+				SETBIT(nData, 0);
+		}
+		spibus_Sck(p, 0);
+	}
+	*pBuf = nData;
+	spibus_End(p);
+	return SYS_R_OK;
+}
+
 
 
 

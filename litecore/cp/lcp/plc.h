@@ -82,6 +82,9 @@ typedef struct {
 	uint8_t		type;
 	uint8_t		mode;
 	uint8_t		time;
+#if PLC_PROBE_ENABLE
+	uint8_t		probe;
+#endif
 	uint16_t	tmo;
 	uint8_t		adr[6];
 	uint8_t		info[8];
@@ -112,6 +115,8 @@ int plc_GetWait(t_plc *p, uint_t nRelay);
 int plc_IsNeedRt(t_plc *p);
 int plc_IsNotSync(t_plc *p);
 void plc_GetInfo(t_plc *p, char *pInfo);
+void plc_ProbeStart(t_plc *p, uint_t nMin);
+void plc_ProbeEnd(t_plc *p);
 
 
 //User Functions

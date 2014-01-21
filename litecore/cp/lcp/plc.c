@@ -509,13 +509,12 @@ sys_res plc_Handler(t_plc *p, buf b, uint8_t *pAdr)
 #if PLC_PROBE_ENABLE
 		if (p->type != PLC_T_XC_GD) {
 			//允许主动注册
-			if (gw3762_ModeSet(p, 0x02) == SYS_R_OK) {
-				if (gw3762_MeterProbe(p, 8) == SYS_R_OK) {
-					p->ste = PLC_S_PROBE;
-					if (p->type == PLC_T_ES_RT)//东软模块延长搜表时间为20分钟
-						p->tmo = 20 * 60;
-					else
-						p->tmo = 8 * 60;
+			if (p->probe) {
+				if (gw3762_ModeSet(p, 0x02) == SYS_R_OK) {
+					if (gw3762_MeterProbe(p, p->probe) == SYS_R_OK) {
+						p->ste = PLC_S_PROBE;
+						p->tmo = p->probe * 60;
+					}
 				}
 			}
 		}
@@ -525,11 +524,12 @@ sys_res plc_Handler(t_plc *p, buf b, uint8_t *pAdr)
 	case PLC_S_PROBE:
 		if (plc_MeterReport(p, pAdr) == SYS_R_OK)
 			plc_NewMeter(pAdr);
-		if ((p->tmo == 0) || plc_NewMeterAlr()) {
+		if ((p->tmo == 0) || (p->probe == 0)) {
 			if (plc_Sync(p) != SYS_R_OK)
 				dbg_trace("<PLC> Sync failed...");
 			p->ste = PLC_S_IDLE;
 			p->tmo = 3;
+			p->probe = 0;
 		}
 		break;
 #endif
@@ -576,7 +576,7 @@ sys_res plc_Handler(t_plc *p, buf b, uint8_t *pAdr)
 			}
 		}
 		//抄表时段完
-		if (plc_IsInTime() == 0) {
+		if ((plc_IsInTime() == 0) || p->probe) {
 			gw3762_RtCtrl(p, 0x0002);
 			p->ste = PLC_S_SYNC;
 		}
@@ -606,6 +606,18 @@ void plc_GetInfo(t_plc *p, char *pInfo)
 	}
 }
 
+#if PLC_PROBE_ENABLE
+void plc_ProbeStart(t_plc *p, uint_t nMin)
+{
 
+	p->probe = nMin;
+}
+
+void plc_ProbeEnd(t_plc *p)
+{
+
+	p->probe = 0;
+}
+#endif
 
 

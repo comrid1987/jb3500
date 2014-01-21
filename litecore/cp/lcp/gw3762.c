@@ -539,8 +539,6 @@ sys_res gw3762_MeterProbe(t_plc *p, uint_t nTime)
 	uint8_t aBuf[10];
 
 	timet2array(rtc_GetTimet(), aBuf, 1);
-	if (p->type == PLC_T_ES_RT)//东软模块延长搜表时间20分钟
-		nTime = 0x18;
 	memcpy(&aBuf[6], &nTime, 2);
 	aBuf[8] = 1;
 	aBuf[9] = 1;
