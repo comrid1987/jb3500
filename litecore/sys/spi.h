@@ -64,6 +64,7 @@ sys_res spi_End(p_dev_spi p);
 sys_res spi_Send(p_dev_spi p, const void *pData, uint_t nLen);
 sys_res spi_Recv(p_dev_spi p, void *pRec, uint_t nLen);
 sys_res spi_Transce(p_dev_spi p, const void *pCmd, uint_t nCmdLen, void *pRec, uint_t nRecLen);
+sys_res spi_TranChar(p_dev_spi p, uint_t nSend, void *pRec);
 
 
 #ifdef __cplusplus
