@@ -576,7 +576,11 @@ sys_res plc_Handler(t_plc *p, buf b, uint8_t *pAdr)
 			}
 		}
 		//³­±íÊ±¶ÎÍê
+#if PLC_PROBE_ENABLE
 		if ((plc_IsInTime() == 0) || p->probe) {
+#else
+		if (plc_IsInTime() == 0) {
+#endif
 			gw3762_RtCtrl(p, 0x0002);
 			p->ste = PLC_S_SYNC;
 		}
