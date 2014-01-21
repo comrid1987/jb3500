@@ -551,8 +551,8 @@ void modem_Run()
 			if (p->me3000) {
 				if (modem_SendCmd(p, "AT+ZPPPSTATUS\r", "ESTABLISHED\r", 1) == SYS_R_OK) {
 					if (modem_SendCmd(p, "AT+ZIPGETIP\r", "OK\r", 5) == SYS_R_OK) {
-						if ((pTemp = modem_FindStr(p, ":")) != NULL)
-							buf_Remove(p->rbuf, (uint8_t *)pTemp - p->rbuf->p + 1);
+						if ((pTemp = modem_FindStr(p, "GETIP:")) != NULL)
+							buf_Remove(p->rbuf, (uint8_t *)pTemp - p->rbuf->p + 6);
 						if ((pTemp = modem_FindStr(p, "\r\n")) != NULL)
 							pTemp[0] = '\0';
 						memcpy(p->ver, p->rbuf->p, 20);
@@ -560,20 +560,20 @@ void modem_Run()
 					p->ste = MODEM_S_ONLINE;
 					p->cnt = 0;
 					p->tmo = 0;
-					}
-					break;
-			}
-			if (modem_SendCmd(p, "AT+ZPPPSTATUS\r", "OPENED\r", 1) == SYS_R_OK) {
-				if (modem_SendCmd(p, "AT+ZIPGETIP\r", "OK\r", 5) == SYS_R_OK) {
-					if ((pTemp = modem_FindStr(p, ":")) != NULL)
-						buf_Remove(p->rbuf, (uint8_t *)pTemp - p->rbuf->p + 1);
-					if ((pTemp = modem_FindStr(p, "\r\n")) != NULL)
-						pTemp[0] = '\0';
-					memcpy(p->ver, p->rbuf->p, 20);
 				}
-				p->ste = MODEM_S_ONLINE;
-				p->cnt = 0;
-				p->tmo = 0;
+			} else {
+				if (modem_SendCmd(p, "AT+ZPPPSTATUS\r", "OPENED\r", 1) == SYS_R_OK) {
+					if (modem_SendCmd(p, "AT+ZIPGETIP\r", "OK\r", 5) == SYS_R_OK) {
+						if ((pTemp = modem_FindStr(p, "GETIP:")) != NULL)
+							buf_Remove(p->rbuf, (uint8_t *)pTemp - p->rbuf->p + 6);
+						if ((pTemp = modem_FindStr(p, "\r\n")) != NULL)
+							pTemp[0] = '\0';
+						memcpy(p->ver, p->rbuf->p, 20);
+					}
+					p->ste = MODEM_S_ONLINE;
+					p->cnt = 0;
+					p->tmo = 0;
+				}
 			}
 			break;
 		}
