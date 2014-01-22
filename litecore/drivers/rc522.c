@@ -211,8 +211,9 @@ static sys_res rc522_PcdCom(p_dev_spi p, uint_t cmd, uint8_t *pIn, uint_t nInLen
 	if (cmd == PCD_TRANSCEIVE)
 		rc522_SetRegBit(p, BitFramingReg, 0x80);
 	//600根据时钟频率调整，操作M1卡最大等待时间25ms
-	for (i = 600; i && ((n & 1) == 0) && ((n & waitFor) == 0); i--)
+	for (i = 600; i && ((n & 1) == 0) && ((n & waitFor) == 0); i--) {
 		n = rc522_RegRead(p, ComIrqReg);
+	}
 	rc522_ClrRegBit(p, BitFramingReg, 0x80);
 	nErr = rc522_RegRead(p, ErrorReg);
 	if (i && ((nErr & 0x1B) == 0)) {
@@ -230,8 +231,9 @@ static sys_res rc522_PcdCom(p_dev_spi p, uint_t cmd, uint8_t *pIn, uint_t nInLen
 				n = 1;
 			else if (n > RC522_RX_SIZE)
 				n = RC522_RX_SIZE;
-			for (i = 0; i < n; i++)
+			for (i = 0; i < n; i++) {
 				pOut[i] = rc522_RegRead(p, FIFODataReg);
+			}
 		}
 	}
 	rc522_SetRegBit(p, ControlReg, 0x80);           //stop timer now
@@ -296,8 +298,9 @@ void mf_InitGpio()
 {
 	uint_t i;
 
-	for (i = 0; i < tbl_bspMifare.qty; i++)
+	for (i = 0; i < tbl_bspMifare.qty; i++) {
 		sys_GpioConf(&tbl_bspMifare.tbl[i]);
+	}
 }
 
 //--------------------------------------------------------------------
@@ -438,8 +441,9 @@ sys_res mf_SelectCard(mifare mf)
 	res = rc522_PcdCom(mf->p, PCD_TRANSCEIVE, aBuf, 2, aBuf, &nLen);
 	if (res == SYS_R_OK) {
 		memcpy(&mf->cid, aBuf, 4);
-		for (i = 0; i < 4; i++)
+		for (i = 0; i < 4; i++) {
 			snr_check ^= aBuf[i];
+		}
 		if (snr_check != aBuf[4])
 			res = SYS_R_ERR;
 	}
@@ -449,8 +453,9 @@ sys_res mf_SelectCard(mifare mf)
 		aBuf[1] = 0x70;
 		aBuf[6] = 0;
 		memcpy(&aBuf[2], &mf->cid, 4);
-		for (i = 0; i < 4; i++)
+		for (i = 0; i < 4; i++) {
 			aBuf[6] ^= aBuf[i + 2];
+		}
 		rc522_CRC16(mf->p, aBuf, 7, &aBuf[7]);
 		rc522_ClrRegBit(mf->p, Status2Reg, 0x08);
 		res = rc522_PcdCom(mf->p, PCD_TRANSCEIVE, aBuf, 9, aBuf, &nLen);
@@ -505,17 +510,20 @@ sys_res mf_Send(mifare mf, uint_t nIns, uint_t nP1, uint_t nP2, void *pBuf, uint
 	if (nIn) {
 		aBuf[5] = nIn;
 		memcpy(&aBuf[6], pBuf, nIn);
-	} else
+	} else {
 		aBuf[5] = nOut;
-	if (mf_Transce(mf, aBuf, 6 + nIn, &nIn) == SYS_R_OK)
+	}
+	if (mf_Transce(mf, aBuf, 6 + nIn, &nIn) == SYS_R_OK) {
 		if (nOut == 0) {
 			if ((aBuf[nIn - 4] == 0x90) && (aBuf[nIn - 3] == 0x00))
 				res = SYS_R_OK;
-		} else if (nIn == (5 + nOut))
+		} else if (nIn == (5 + nOut)) {
 			if ((aBuf[1 + nOut] == 0x90) && (aBuf[2 + nOut] == 0x00)) {
 				memcpy(pBuf, &aBuf[1], nOut);
 				res = SYS_R_OK;
 			}
+		}
+	}
 	return res;
 }
 

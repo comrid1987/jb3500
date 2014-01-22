@@ -27,10 +27,12 @@ static uint_t sc_DecodeATR(uint8_t *pData, sc_atr atr)
 	atr->Hlength = atr->T0 & (uint8_t)0x0F;
 	if ((atr->T0 & (uint8_t)0x80) == 0x80)
 		flag = 1;
-	for (atr->Tlength = 0, i = 0; i < 4; i++)
+	for (atr->Tlength = 0, i = 0; i < 4; i++) {
 		atr->Tlength += (((atr->T0 & (uint8_t)0xF0) >> (4 + i)) & (uint8_t)0x1);
-	for (i = 0; i < atr->Tlength; i++)
+	}
+	for (i = 0; i < atr->Tlength; i++) {
 		atr->T[i] = pData[i + 2];
+	}
 	protocol = atr->T[atr->Tlength - 1] & (uint8_t)0x0F;
 	while (flag) {
 		if ((atr->T[atr->Tlength - 1] & (uint8_t)0x80) == 0x80)
@@ -39,14 +41,17 @@ static uint_t sc_DecodeATR(uint8_t *pData, sc_atr atr)
 			flag = 0;
 		buf = atr->Tlength;
 		atr->Tlength = 0;
-		for (i = 0; i < 4; i++)
+		for (i = 0; i < 4; i++) {
 			atr->Tlength = (((atr->T[buf - 1] & (uint8_t)0xF0) >> (4 + i)) & (uint8_t)0x1);
-		for (i = 0; i < atr->Tlength; i++)
+		}
+		for (i = 0; i < atr->Tlength; i++) {
 			atr->T[buf + i] = pData[i + 2 + buf];
+		}
 		atr->Tlength += (uint8_t)buf;
 	}
-	for (i = 0; i < atr->Hlength; i++)
+	for (i = 0; i < atr->Hlength; i++) {
 		atr->H[i] = pData[i + 2 + atr->Tlength];
+	}
 	return protocol;
 }
 
@@ -196,8 +201,9 @@ sys_res sc_EsamIntAuthority(smartcard sc, uint_t nP1, uint_t nP2, void *pBuf)
 				else
 					res = SYS_R_ERR;
 			}
-		} else
+		} else {
 			res = SYS_R_ERR;
+		}
 	}
 	sc->ste = SC_S_ACTIVE;
 	return res;

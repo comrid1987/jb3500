@@ -298,23 +298,12 @@ static sys_res modem_InitCmd(p_modem p)
 	}
 #if MODEM_ZTE_TCP
 	if (p->flag) {
-		if (p->type == MODEM_TYPE_CDMA) {
-			if (modem_SendCmd(p, "AT+ZPNUM=#777\r", "OK\r", 10) == SYS_R_OK) {
-				sprintf(str, "AT+ZPIDPWD=%s,%s\r", p->user, p->pwd);
+		if (modem_SendCmd(p, "AT+ZVERS\r", "OK\r", 3) == SYS_R_OK) {
+			if ((pTemp = modem_FindStr(p, "ME3000_E")) != NULL) {
+				sprintf(str, "AT+ZPNUM=\"%s\"\r", p->apn);
 				if (modem_SendCmd(p, str, "OK\r", 10) == SYS_R_OK) {
 					p->ztetcp = 1;
 					return SYS_R_OK;
-				}
-			}
-		} else {
-			if (modem_SendCmd(p, "AT+ZVERS\r", "OK\r", 3) == SYS_R_OK) {
-				if ((pTemp = modem_FindStr(p, "ME3000_E")) != NULL) {
-					sprintf(str, "AT+ZPNUM=\"%s\"\r", p->apn);
-					if (modem_SendCmd(p, str, "OK\r", 10) == SYS_R_OK) {
-						p->ztetcp = 1;
-						p->me3000= 1;
-						return SYS_R_OK;
-					}
 				}
 			}
 		}
@@ -548,32 +537,17 @@ void modem_Run()
 		}
 #if MODEM_ZTE_TCP
 		if (p->ztetcp) {
-			if (p->me3000) {
-				if (modem_SendCmd(p, "AT+ZPPPSTATUS\r", "ESTABLISHED\r", 1) == SYS_R_OK) {
-					if (modem_SendCmd(p, "AT+ZIPGETIP\r", "OK\r", 5) == SYS_R_OK) {
-						if ((pTemp = modem_FindStr(p, "GETIP:")) != NULL)
-							buf_Remove(p->rbuf, (uint8_t *)pTemp - p->rbuf->p + 6);
-						if ((pTemp = modem_FindStr(p, "\r\n")) != NULL)
-							pTemp[0] = '\0';
-						memcpy(p->ver, p->rbuf->p, 20);
-					}
-					p->ste = MODEM_S_ONLINE;
-					p->cnt = 0;
-					p->tmo = 0;
+			if (modem_SendCmd(p, "AT+ZPPPSTATUS\r", "ESTABLISHED\r", 1) == SYS_R_OK) {
+				if (modem_SendCmd(p, "AT+ZIPGETIP\r", "GETIP:", 5) == SYS_R_OK) {
+					pTemp = modem_FindStr(p, "GETIP:");
+					buf_Remove(p->rbuf, (uint8_t *)pTemp - p->rbuf->p + 6);
+					if ((pTemp = modem_FindStr(p, "\r\n")) != NULL)
+						pTemp[0] = '\0';
+					memcpy(p->ver, p->rbuf->p, 20);
 				}
-			} else {
-				if (modem_SendCmd(p, "AT+ZPPPSTATUS\r", "OPENED\r", 1) == SYS_R_OK) {
-					if (modem_SendCmd(p, "AT+ZIPGETIP\r", "OK\r", 5) == SYS_R_OK) {
-						if ((pTemp = modem_FindStr(p, "GETIP:")) != NULL)
-							buf_Remove(p->rbuf, (uint8_t *)pTemp - p->rbuf->p + 6);
-						if ((pTemp = modem_FindStr(p, "\r\n")) != NULL)
-							pTemp[0] = '\0';
-						memcpy(p->ver, p->rbuf->p, 20);
-					}
-					p->ste = MODEM_S_ONLINE;
-					p->cnt = 0;
-					p->tmo = 0;
-				}
+				p->ste = MODEM_S_ONLINE;
+				p->cnt = 0;
+				p->tmo = 0;
 			}
 			break;
 		}
@@ -720,187 +694,16 @@ void modem_Refresh()
 
 
 #if MODEM_ZTE_TCP
-static buf zte_Buf[2] = {0};
-
 int modem_IsZteTcp()
 {
 	
 	return gsmModem.ztetcp;
 }
+
 int zte_IsTcpCon()
 {
 	
 	return gsmModem.ztecon;
-}
-
-void zte_ListenPort(uint_t nPort)
-{
-
-	gsmModem.zteport = nPort;
-}
-
-sys_res zte_TcpRead(uint_t nType, buf b)
-{
-	uint_t nSoc = 0;
-
-	if (nType == CHL_T_SOC_TS)
-		nSoc = 1;
-	if (zte_Buf[nSoc]->len) {
-		buf_Push(b, zte_Buf[nSoc]->p, zte_Buf[nSoc]->len);
-		buf_Release(zte_Buf[nSoc]);
-		return SYS_R_OK;
-	}
-	return SYS_R_EMPTY;
-}
-
-sys_res zte_TcpRecv()
-{
-	p_modem p = &gsmModem;
-	uint_t i, j, nSoc, nLen;
-	char *pTemp;
-
-	if (modem_IsOnline() == 0)
-		return SYS_R_ERR;
-	for (i = 200 / OS_TICK_MS; i; i--) {
-		uart_RecData(p->uart, p->rbuf, OS_TICK_MS);
-		pTemp = modem_FindStr(p, "RECV:0,");
-		if (pTemp != NULL) {
-			nSoc = 0;
-			break;
-		}
-		pTemp = modem_FindStr(p, "RECV:6,");
-		if (pTemp != NULL) {
-			nSoc = 1;
-			break;
-		}
-		
-	}
-	if (i == 0)
-		return SYS_R_ERR;
-	buf_Remove(p->rbuf, (uint8_t *)pTemp - p->rbuf->p + 7);
-	nLen = atoi((char *)p->rbuf->p);
-	if (nLen > 1460)
-		nLen = 1460;
-	for (i = 200 / OS_TICK_MS; i; i--) {
-		pTemp = modem_FindStr(p, ",");
-		if (pTemp != NULL)
-			break;
-	}
-	if (i == 0)
-		return SYS_R_ERR;
-	buf_Remove(p->rbuf, (uint8_t *)pTemp - p->rbuf->p + 1);
-	for (j = 10000 / OS_TICK_MS; j; j--) {
-		uart_RecData(p->uart, p->rbuf, OS_TICK_MS);
-		if (p->rbuf->len >= nLen)
-			break;
-	}
-	if (j) {
-		buf_Push(zte_Buf[nSoc], p->rbuf->p, nLen);
-		buf_Remove(p->rbuf, nLen);
-#if MODEM_FLOWCTL_ENABLE
-		gsmModem.flow += nLen;
-#endif
-		return SYS_R_OK;
-	}
-	buf_Release(p->rbuf);
-	return SYS_R_ERR;
-}
-
-sys_res zte_TcpConnect(const uint8_t *pIp, uint_t nPort)
-{
-	p_modem p = &gsmModem;
-	char str[64];
-	uint_t i;
-
-	if (modem_IsOnline() == 0)
-		return SYS_R_ERR;
-	
-	sprintf(str, "AT+ZIPSETUP=0,%d.%d.%d.%d,%d\r", pIp[0], pIp[1], pIp[2], pIp[3], nPort);
-	if (modem_SendCmd(p, str, "OK\r", 10) != SYS_R_OK)
-		return SYS_R_ERR;
-	os_thd_Sleep(2000);
-	if (modem_SendCmd(p, "AT+ZIPSTATUS=0\r", "ESTABLISHED\r", 10) != SYS_R_OK)
-		return SYS_R_ERR;
-	
-	p->ztecon = 1;
-	buf_Release(p->rbuf);
-	return SYS_R_OK;
-}
-
-sys_res zte_TcpSend(uint_t nType, const void *pData, uint_t nLen)
-{
-	p_modem p = &gsmModem;
-	char str[20];
-	uint_t i, nSoc;
-
-	if (modem_IsOnline() == 0)
-		return SYS_R_ERR;
-	if (nType == CHL_T_SOC_TC) {
-		if (p->ztecon == 0)
-			return SYS_R_ERR;
-		nSoc = 0;
-	} else {
-		nSoc = 6;
-	}
-	sprintf(str, "AT+ZIPSEND=%d,%d\r", nSoc, nLen);
-	uart_Send(p->uart, str, strlen(str));
-	uart_Send(p->uart, pData, nLen);
-	os_thd_Sleep(100);
-	for (i = 5000 / OS_TICK_MS; i; i--) {
-		if (uart_RecData(p->uart, p->rbuf, OS_TICK_MS) != SYS_R_OK)
-			continue;
-		if (modem_FindStr(p, "OK\r") == NULL)
-			continue;
-#if MODEM_FLOWCTL_ENABLE
-		gsmModem.flow += nLen;
-#endif
-		return SYS_R_OK;
-	}
-	return SYS_R_TMO;
-}
-
-sys_res zte_TcpClose()
-{
-	p_modem p = &gsmModem;
-	uint_t i;
-
-	p->ztecon = 0;
-	uart_Send(p->uart, "AT+ZIPCLOSE=0\r", 14);
-	os_thd_Sleep(100);
-	for (i = 1000 / OS_TICK_MS; i; i--) {
-		if (uart_RecData(p->uart, p->rbuf, OS_TICK_MS) != SYS_R_OK)
-			continue;
-		if (modem_FindStr(p, "OK\r") != NULL)
-			break;
-		if (modem_FindStr(p, "ERROR\r") != NULL)
-			break;
-	}
-	return SYS_R_OK;
-}
-
-sys_res zte_TcpListen()
-{
-	p_modem p = &gsmModem;
-	char str[64];
-	
-	sprintf(str, "AT+ZIPPORT=6,%d\r", p->zteport);
-	modem_SendCmd(p, str, "OK\r", 1);
-	modem_SendCmd(p, "AT+ZIPSERVER\r", "OK\r", 1);
-	return SYS_R_OK;
-}
-
-sys_res zte_TcpSerClose()
-{
-	p_modem p = &gsmModem;
-
-	modem_SendCmd(p, "AT+ZIPCLOSE=6\r", "OK\r", 1);
-	modem_SendCmd(p, "AT+ZIPCLOSESERVER\r", "OK\r", 1);
-	return SYS_R_OK;
-}
-int modem_IsMe3000()
-{
-	
-	return gsmModem.me3000;
 }
 
 sys_res me3000_TcpRecv(buf b)
