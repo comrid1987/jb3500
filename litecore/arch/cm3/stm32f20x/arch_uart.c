@@ -103,8 +103,9 @@ void arch_UartInit(p_dev_uart p)
 		xGpio.GPIO_Mode = GPIO_Mode_AF;
 		xGpio.GPIO_PuPd = GPIO_PuPd_UP;
 		xGpio.GPIO_OType = GPIO_OType_OD;
-	} else {
+	} else
 #endif
+	{
 		if (pDef->pinmode == DEV_PIN_OD){
 			xGpio.GPIO_Mode = GPIO_Mode_AF;
 			xGpio.GPIO_PuPd = GPIO_PuPd_UP;
@@ -115,9 +116,7 @@ void arch_UartInit(p_dev_uart p)
 			xGpio.GPIO_PuPd = GPIO_PuPd_UP;
 			xGpio.GPIO_OType = GPIO_OType_PP;
 		}
-#if SMARTCARD_ENABLE
 	}
-#endif
 	stm32_GpioClockEnable(pDef->txport);
 	GPIO_Init(arch_GpioPortBase(pDef->txport), &xGpio);
 	//Rx
@@ -132,8 +131,9 @@ void arch_UartInit(p_dev_uart p)
 			xGpio.GPIO_Mode = GPIO_Mode_IN;
 			xGpio.GPIO_OType = GPIO_OType_PP;
 		}
-	} else {
+	} else
 #endif
+	{
 		if (pDef->pinmode == DEV_PIN_OD){
 			xGpio.GPIO_Mode = GPIO_Mode_AF;
 			xGpio.GPIO_PuPd = GPIO_PuPd_UP;
@@ -144,9 +144,7 @@ void arch_UartInit(p_dev_uart p)
 			xGpio.GPIO_PuPd = GPIO_PuPd_UP;
 			xGpio.GPIO_OType = GPIO_OType_PP;
 		}
-#if SMARTCARD_ENABLE
 	}
-#endif
 	stm32_GpioClockEnable(pDef->rxport);
 	GPIO_Init(arch_GpioPortBase(pDef->rxport), &xGpio);
 	//Clock
@@ -220,7 +218,6 @@ sys_res arch_UartOpen(uint_t nId, p_uart_para pPara)
 	case UART_STOP_2D:
 		xUartPara.USART_StopBits = USART_StopBits_2;
 		break;
-	case UART_STOP_1D:
 	default:
 		xUartPara.USART_StopBits = USART_StopBits_1;
 		break;
@@ -232,7 +229,6 @@ sys_res arch_UartOpen(uint_t nId, p_uart_para pPara)
 	case UART_PARI_ODD:
 		xUartPara.USART_Parity = USART_Parity_Odd;
 		break;
-	case UART_PARI_NO:
 	default:
 		xUartPara.USART_Parity = USART_Parity_No;
 		break;
@@ -241,7 +237,6 @@ sys_res arch_UartOpen(uint_t nId, p_uart_para pPara)
 	case UART_DATA_7D:
 		xUartPara.USART_WordLength = USART_WordLength_8b;
 		break;
-	case UART_DATA_8D:
 	default:
 		if (pPara->pari == UART_PARI_NO)
 			xUartPara.USART_WordLength = USART_WordLength_8b;

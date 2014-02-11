@@ -714,26 +714,23 @@ sys_res me3000_TcpRecv(buf b)
 
 	if (modem_IsOnline() == 0)
 		return SYS_R_ERR;
-	for (i = 200 / OS_TICK_MS; i; i--) {
-		if (uart_RecData(p->uart, p->rbuf, OS_TICK_MS) != SYS_R_OK)
-			continue;
-		pTemp = modem_FindStr(p, "+ZIPRECV:1,");
-		if (pTemp != NULL)
-			break;
-	}
-	if (i == 0)
+	if (uart_RecData(p->uart, p->rbuf, OS_TICK_MS) != SYS_R_OK)
+		return SYS_R_ERR;
+	pTemp = modem_FindStr(p, "+ZIPRECV:1,");
+	if (pTemp == NULL)
 		return SYS_R_ERR;
 	buf_Remove(p->rbuf, (uint8_t *)pTemp - p->rbuf->p + 11);
-	nLen = atoi((char *)p->rbuf->p);
-	if (nLen > 1460)
-		nLen = 1460;
 	for (i = 200 / OS_TICK_MS; i; i--) {
 		pTemp = modem_FindStr(p, ",");
 		if (pTemp != NULL)
 			break;
+		uart_RecData(p->uart, p->rbuf, OS_TICK_MS);
 	}
 	if (i == 0)
 		return SYS_R_ERR;
+	nLen = atoi((char *)p->rbuf->p);
+	if (nLen > 1460)
+		nLen = 1460;
 	buf_Remove(p->rbuf, (uint8_t *)pTemp - p->rbuf->p + 1);
 	for (j = 2000 / OS_TICK_MS; j; j--) {
 		uart_RecData(p->uart, p->rbuf, OS_TICK_MS);

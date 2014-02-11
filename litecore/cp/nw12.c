@@ -128,12 +128,12 @@ static sys_res nw12_RmsgAnalyze(void *args)
 		nw12_DbgRx(p->parent.rbuf->p, NW12_FIXHEADER_SIZE + 2 + pH->len1);
 #endif
 		//接收到报文
-		p->msa = pH->msa;		
+		p->msa = pH->msa;
 		p->c = pH->c;
 		p->afn = pH->afn;
 		p->seq = pH->seq;
-		memcpy(p->rcv_rtua,pH->a1,3);
-		memcpy(p->rcv_terid,pH->a2,3);
+		memcpy(p->rcv_rtua, pH->a1, 3);
+		memcpy(p->rcv_terid, pH->a2, 3);
 		if (pH->seq.tpv) {
 			//有时间标志
 			pTemp -= sizeof(p->tp);

@@ -68,7 +68,6 @@ typedef __packed struct {
 
 // ±º‰±Í«©”Ú
 typedef __packed struct {
-	uint8_t	pfc;
 	uint8_t	tp[4];
 	uint8_t	dly;
 }t_nw12_tp;
