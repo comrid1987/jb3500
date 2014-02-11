@@ -301,7 +301,7 @@ sys_res sfs_Write(sfs_dev p, t_sfs_id nRecord, const void *pData, uint_t nLen)
 //
 //Return: 成功读取的数据长度, errno otherwise
 //-------------------------------------------------------------------------
-sys_res sfs_Read(sfs_dev p, t_sfs_id nRecord, void *pData)
+sys_res sfs_Read(sfs_dev p, t_sfs_id nRecord, void *pData, uint_t nLen)
 {
 	sys_res res = SYS_R_ERR;
 	adr_t nIdx;
@@ -310,7 +310,7 @@ sys_res sfs_Read(sfs_dev p, t_sfs_id nRecord, void *pData)
 	sfs_Lock();
 	if ((nIdx = _sfs_Find(p, SFS_RECORD_MASK, nRecord, &xIdx)) != 0) {
 		//找到记录,读取
-		memcpy(pData, (uint8_t *)(nIdx + sizeof(t_sfs_idx)), xIdx.len);
+		memcpy(pData, (uint8_t *)(nIdx + sizeof(t_sfs_idx)), MIN(nLen, xIdx.len));
 		res = SYS_R_OK;
 	}
 	sfs_Unlock();

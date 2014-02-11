@@ -95,37 +95,43 @@ static void nw12_DbgRx(const void *pBuf, uint_t nLen)
 static sys_res nw12_RmsgAnalyze(void *args)
 {
 	p_nw12 p = (p_nw12)args;
+	p_dlrcp pRcp = &p->parent;
 	p_nw12_header pH;
 	uint8_t *pTemp;
 	int nLen;
 
-	chl_RecData(p->parent.chl, p->parent.rbuf, OS_TICK_MS);
-	for (; ; buf_Remove(p->parent.rbuf, 1)) {
-		for (; ; buf_Remove(p->parent.rbuf, 1)) {
+	chl_RecData(pRcp->chl, pRcp->rbuf, OS_TICK_MS);
+	for (; ; buf_Remove(pRcp->rbuf, 1)) {
+		for (; ; buf_Remove(pRcp->rbuf, 1)) {
 			//不足报文头长度
-			if (p->parent.rbuf->len < sizeof(t_nw12_header))
+			if (pRcp->rbuf->len < sizeof(t_nw12_header))
 				return SYS_R_ERR;
-			pH = (p_nw12_header)p->parent.rbuf->p;
+			pH = (p_nw12_header)pRcp->rbuf->p;
 			if ((pH->sc1 == 0x68) && (pH->sc2 == 0x68)) {
 				if (pH->len1 > NW12_DATA_SIZE)
 					continue;
 				if (pH->len1 != pH->len2)
 					continue;
+				//收到报文头
+				pRcp->rcvtime = rtc_GetTimet();
 				break;
 			}
 		}
 		//不足长度
-		if (p->parent.rbuf->len < (NW12_FIXHEADER_SIZE + 2 + pH->len1))
-			return SYS_R_ERR;
-		pTemp = p->parent.rbuf->p + NW12_FIXHEADER_SIZE + pH->len1;
+		if (pRcp->rbuf->len < (NW12_FIXHEADER_SIZE + 2 + pH->len1)) {
+			if (((uint16_t)rtc_GetTimet() - pRcp->rcvtime) < 10)
+				return SYS_R_ERR;
+			continue;
+		}
+		pTemp = pRcp->rbuf->p + NW12_FIXHEADER_SIZE + pH->len1;
 		//CS
-		if (cs8(p->parent.rbuf->p + NW12_FIXHEADER_SIZE, pH->len1) != *pTemp)
+		if (cs8(pRcp->rbuf->p + NW12_FIXHEADER_SIZE, pH->len1) != *pTemp)
 			continue;
 		//结束符
 		if (*(pTemp + 1) != 0x16)
 			continue;
 #if NW12_DEBUG_ENABLE
-		nw12_DbgRx(p->parent.rbuf->p, NW12_FIXHEADER_SIZE + 2 + pH->len1);
+		nw12_DbgRx(pRcp->rbuf->p, NW12_FIXHEADER_SIZE + 2 + pH->len1);
 #endif
 		//接收到报文
 		p->msa = pH->msa;
@@ -144,10 +150,10 @@ static sys_res nw12_RmsgAnalyze(void *args)
 			memcpy(&p->pw, pTemp, sizeof(p->pw));
 		}
 		buf_Release(p->data);
-		nLen = pTemp - p->parent.rbuf->p - sizeof(t_nw12_header);
+		nLen = pTemp - pRcp->rbuf->p - sizeof(t_nw12_header);
 		if (nLen > 0)
-			buf_Push(p->data, p->parent.rbuf->p + sizeof(t_nw12_header), nLen);
-		buf_Remove(p->parent.rbuf, pH->len1 + NW12_FIXHEADER_SIZE + 2);
+			buf_Push(p->data, pRcp->rbuf->p + sizeof(t_nw12_header), nLen);
+		buf_Remove(pRcp->rbuf, pH->len1 + NW12_FIXHEADER_SIZE + 2);
 		return SYS_R_OK;
 	}
 }

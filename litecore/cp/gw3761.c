@@ -85,66 +85,72 @@ static int gw3761_IsEC(uint_t nAfn)
 //-------------------------------------------------------------------------
 static sys_res gw3761_RmsgAnalyze(void *args)
 {
-    p_gw3761 p = (p_gw3761)args;
-    p_gw3761_header pH;
-    uint8_t *pTemp;
-    int nLen;
+	p_gw3761 p = (p_gw3761)args;
+	p_dlrcp pRcp = &p->parent;
+	p_gw3761_header pH;
+	uint8_t *pTemp;
+	int nLen;
 
-    chl_RecData(p->parent.chl, p->parent.rbuf, OS_TICK_MS);
-    for (; ; buf_Remove(p->parent.rbuf, 1)) {
-        for (; ; buf_Remove(p->parent.rbuf, 1)) {
-            //不足报文头长度
-            if (p->parent.rbuf->len < sizeof(t_gw3761_header))
-                return SYS_R_ERR;
-            pH = (p_gw3761_header)p->parent.rbuf->p;
-            if ((pH->sc1 == 0x68) && (pH->sc2 == 0x68)) {
+	chl_RecData(pRcp->chl, pRcp->rbuf, OS_TICK_MS);
+	for (; ; buf_Remove(pRcp->rbuf, 1)) {
+		for (; ; buf_Remove(pRcp->rbuf, 1)) {
+			//不足报文头长度
+			if (pRcp->rbuf->len < sizeof(t_gw3761_header))
+				return SYS_R_ERR;
+			pH = (p_gw3761_header)pRcp->rbuf->p;
+			if ((pH->sc1 == 0x68) && (pH->sc2 == 0x68)) {
 #if GW3761_IDCHECK_ENABLE
-                if (pH->prtc1 != GW3761_PROTOCOL_ID)
-                    continue;
-                if (pH->prtc2 != GW3761_PROTOCOL_ID)
-                    continue;
+				if (pH->prtc1 != GW3761_PROTOCOL_ID)
+					continue;
+				if (pH->prtc2 != GW3761_PROTOCOL_ID)
+					continue;
 #endif
-                if (pH->len1 > GW3761_DATA_SIZE)
-                    continue;
-                if (pH->len1 != pH->len2)
-                    continue;
-                break;
-            }
-        }
-        //不足长度
-        if (p->parent.rbuf->len < (GW3761_FIXHEADER_SIZE + 2 + pH->len1))
-            return SYS_R_ERR;
-        pTemp = p->parent.rbuf->p + GW3761_FIXHEADER_SIZE + pH->len1;
-        //CS
-        if (cs8(p->parent.rbuf->p + GW3761_FIXHEADER_SIZE, pH->len1) != *pTemp)
-            continue;
-        //结束符
-        if (*(pTemp + 1) != 0x16)
-            continue;
-        //接收到报文
-        p->rmsg.c = pH->c;
-        p->rmsg.a1 = pH->a1;
-        p->rmsg.a2 = pH->a2;
-        p->rmsg.group = pH->group;
-        p->rmsg.msa = pH->msa;
-        p->rmsg.afn = pH->afn;
-        p->rmsg.seq = pH->seq;
-        if (pH->seq.tpv) {
-            //有时间标志
-            pTemp -= sizeof(p->rmsg.tp);
-            memcpy(&p->rmsg.tp, pTemp, sizeof(p->rmsg.tp));
-        }
-        if (gw3761_IsPW(pH->afn)) {
-            pTemp -= sizeof(p->rmsg.pw);
-            memcpy(&p->rmsg.pw, pTemp, sizeof(p->rmsg.pw));
-        }
-        buf_Release(p->rmsg.data);
-        nLen = pTemp - p->parent.rbuf->p - sizeof(t_gw3761_header);
-        if (nLen > 0)
-            buf_Push(p->rmsg.data, p->parent.rbuf->p + sizeof(t_gw3761_header), nLen);
-        buf_Remove(p->parent.rbuf, pH->len1 + GW3761_FIXHEADER_SIZE + 2);
-        return SYS_R_OK;
-    }
+				if (pH->len1 > GW3761_DATA_SIZE)
+					continue;
+				if (pH->len1 != pH->len2)
+					continue;
+				//收到报文头
+				pRcp->rcvtime = rtc_GetTimet();
+				break;
+			}
+		}
+		//不足长度
+		if (pRcp->rbuf->len < (GW3761_FIXHEADER_SIZE + 2 + pH->len1)) {
+			if (((uint16_t)rtc_GetTimet() - pRcp->rcvtime) < 10)
+				return SYS_R_ERR;
+			continue;
+		}
+		pTemp = pRcp->rbuf->p + GW3761_FIXHEADER_SIZE + pH->len1;
+	    //CS
+		if (cs8(pRcp->rbuf->p + GW3761_FIXHEADER_SIZE, pH->len1) != *pTemp)
+			continue;
+	    //结束符
+		if (*(pTemp + 1) != 0x16)
+			continue;
+	    //接收到报文
+		p->rmsg.c = pH->c;
+		p->rmsg.a1 = pH->a1;
+		p->rmsg.a2 = pH->a2;
+		p->rmsg.group = pH->group;
+		p->rmsg.msa = pH->msa;
+		p->rmsg.afn = pH->afn;
+		p->rmsg.seq = pH->seq;
+		if (pH->seq.tpv) {
+			//有时间标志
+			pTemp -= sizeof(p->rmsg.tp);
+			memcpy(&p->rmsg.tp, pTemp, sizeof(p->rmsg.tp));
+	    }
+		if (gw3761_IsPW(pH->afn)) {
+			pTemp -= sizeof(p->rmsg.pw);
+			memcpy(&p->rmsg.pw, pTemp, sizeof(p->rmsg.pw));
+		}
+		buf_Release(p->rmsg.data);
+		nLen = pTemp - pRcp->rbuf->p - sizeof(t_gw3761_header);
+		if (nLen > 0)
+			buf_Push(p->rmsg.data, pRcp->rbuf->p + sizeof(t_gw3761_header), nLen);
+		buf_Remove(pRcp->rbuf, pH->len1 + GW3761_FIXHEADER_SIZE + 2);
+		return SYS_R_OK;
+	}
 }
 
 

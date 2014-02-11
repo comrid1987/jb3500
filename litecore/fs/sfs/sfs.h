@@ -31,7 +31,7 @@ typedef struct {
 //Externel Functions
 sys_res sfs_Init(sfs_dev p);
 sys_res sfs_Write(sfs_dev p, t_sfs_id nRecord, const void *pData, uint_t nLen);
-sys_res sfs_Read(sfs_dev p, t_sfs_id nRecord, void *pData);
+sys_res sfs_Read(sfs_dev p, t_sfs_id nRecord, void *pData, uint_t nLen);
 sys_res sfs_ReadRandom(sfs_dev p, t_sfs_id nRecord, void *pData, uint_t nOffset, uint_t nLen);
 sys_res sfs_Read2Buf(sfs_dev p, t_sfs_id nRecord, buf b);
 sys_res sfs_Find(sfs_dev p, t_sfs_id nRecord, buf b, uint_t nLen);
