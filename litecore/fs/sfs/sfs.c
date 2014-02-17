@@ -109,7 +109,7 @@ static sys_res _sfs_Write(sfs_dev p, uint32_t nRecord, const void *pData, uint_t
 	adr_t nAdrOld = 0, nIdx, nEnd, nIdxNext, nBlk, nBEnd, nAct = NULL;
 	t_sfs_ste xBlk;
 	t_sfs_idx xIdx;
-	uint_t i, nSize, nIsFull = 1;
+	uint_t i, nSize, nQty, nIsFull = 1;
 
 	nSize = flash_BlkSize(p->dev);
 	//恢复拷贝原有有效数据时意外中断
@@ -160,7 +160,7 @@ static sys_res _sfs_Write(sfs_dev p, uint32_t nRecord, const void *pData, uint_t
 		nIsFull = 0;
 	//当前块ID
 	i = (nAct - p->start) / nSize;
-	while (nIsFull) {
+	for (nQty = p->blk - 1; nIsFull && nQty; nQty--) {
 		//该块空间不足,需要分配新块
 		nAct = p->start + nSize * i;
 		i = cycle(i, 0, p->blk - 1, 1);
@@ -206,6 +206,8 @@ static sys_res _sfs_Write(sfs_dev p, uint32_t nRecord, const void *pData, uint_t
 			//空间足,写入数据
 			nIsFull = 0;
 	}
+	if (nQty == 0)
+		return SYS_R_FULL;
 	//置原纪录为待删除状态
 	//if (nAdrOld) {
 	//	_sfs_Read(p, nAdrOld, (uint8 *)&xIdx, sizeof(t_sfs_idx));
