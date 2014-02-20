@@ -88,7 +88,7 @@ static sys_res plc_Sync(t_plc *p)
 {
 	uint_t i, j, nSn, nPrtl, nFrom0, nValid = 0;
 	uint16_t nQty;
-	uint8_t aBuf[6], aMadr[6], aMadr2[6], aMeter[(LCP_SN_MAX + 7) / 8];
+	uint8_t aBuf[6], aMadr[6], aMeter[(LCP_SN_MAX + 7) / 8];
 
 	if (p->type != PLC_T_XC_GD)
 		gw3762_ModAdrSet(p);
@@ -106,14 +106,6 @@ static sys_res plc_Sync(t_plc *p)
 		if (plc_MeterRead(nSn, aMadr) == 0)
 			continue;
 		if (isnotbcd(aMadr, 6))
-			continue;
-		for (j = 1; j < nSn; j++) {
-			if (plc_MeterRead(j, aMadr2)) {
-				if (memcmp(aMadr2, aMadr, 6) == 0)
-					break;
-			}
-		}
-		if (j < nSn)
 			continue;
 		nValid += 1;
 	}
@@ -156,14 +148,6 @@ static sys_res plc_Sync(t_plc *p)
 			if (nPrtl == 0)
 				continue;
 			if (isnotbcd(aMadr, 6))
-				continue;
-			for (j = 1; j < nSn; j++) {
-				if (plc_MeterRead(j, aMadr2)) {
-					if (memcmp(aMadr2, aMadr, 6) == 0)
-						break;
-				}
-			}
-			if (j < nSn)
 				continue;
 			gw3762_SubAdrAdd(p, nSn - nFrom0, aMadr, nPrtl);
 		}
