@@ -231,7 +231,7 @@ static sys_res plc_Slave(t_plc *p, buf b, uint8_t *pAdr)
 				buf_Release(b);
 			} else {
 				nDI = 0x00000001;
-				gw3762_RequestAnswer(p, p->data->p[0], &p->data->p[1], 0, &nDI, 3);
+				gw3762_RequestAnswer(p, p->data->p[0], &p->data->p[1], 0, &nDI, 2);
 			}
 			return SYS_R_BUSY;
 		}
@@ -391,7 +391,7 @@ sys_res plc_RealRead(t_plc *p, buf b, const uint8_t *pAdr, uint_t nCode, const v
 				return res;
 			os_thd_Sleep(1000);
 			p->ste = PLC_S_WAIT;
-			p->tmo = 20;
+			p->tmo = 100;
 		}
 		chl_rs232_Config(p->chl, 9600, UART_PARI_EVEN, UART_DATA_8D, UART_STOP_1D);
 		dlt645_Packet2Buf(b, pAdr, nCode, pData, nLen);
@@ -526,8 +526,13 @@ sys_res plc_Handler(t_plc *p, buf b, uint8_t *pAdr)
 		case PLC_T_ES_RT:
 			if (p->tmo == 0) {
 				p->tmo = 0xFF;
-				if (gw3762_RtCtrl(p, 0x0001) == SYS_R_OK)
-					p->ste = PLC_S_SLAVE;
+				p->ste = PLC_S_SLAVE;
+				if (gw3762_RtCtrl(p, 0x0001) != SYS_R_OK) {
+					if (gw3762_RtCtrl(p, 0x0001) != SYS_R_OK) {
+						if (gw3762_RtCtrl(p, 0x0001) != SYS_R_OK)
+							p->ste = PLC_S_INIT;
+					}
+				}
 			}
 			break;
 		default:
@@ -551,12 +556,11 @@ sys_res plc_Handler(t_plc *p, buf b, uint8_t *pAdr)
 		//长时间无交互
 		if (p->tmo == 0) {
 			p->tmo = 0xFF;
-			if (gw3762_StateGet(p) == SYS_R_OK) {
-				if (memtest(&p->data->p[13], 0x08, 3) == 0)
-					p->ste = PLC_S_INIT;
-			} else {
-				if (gw3762_StateGet(p) != SYS_R_OK)
-					p->ste = PLC_S_INIT;
+			if (gw3762_StateGet(p) != SYS_R_OK) {
+				if (gw3762_StateGet(p) != SYS_R_OK) {
+					if (gw3762_StateGet(p) != SYS_R_OK)
+						p->ste = PLC_S_INIT;
+				}
 			}
 		}
 		//抄表时段完

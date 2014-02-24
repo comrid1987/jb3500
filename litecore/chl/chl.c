@@ -39,6 +39,12 @@ sys_res chl_Bind(chl p, uint_t nType, uint_t nId, int nTmo)
 #if TCPPS_ENABLE
 	case CHL_T_SOC_TC_RECON:
 	case CHL_T_SOC_TC:
+#if MODEM_ZTE_TCP
+		if (modem_IsZteTcp()) {
+			res = SYS_R_OK;
+			break;
+		}
+#endif
 	case CHL_T_SOC_TS:
 	case CHL_T_SOC_UC:
 	case CHL_T_SOC_US:
@@ -120,6 +126,8 @@ sys_res chl_Send(chl p, const void *pData, uint_t nLen)
 #if MODEM_ZTE_TCP
 		if (modem_IsZteTcp()) {
 			res = me3000_TcpSend(pData, nLen);
+			if (res != SYS_R_OK)
+				res = me3000_TcpSend(pData, nLen);
 			break;
 		}
 #endif

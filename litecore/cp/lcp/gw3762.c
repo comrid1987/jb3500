@@ -278,6 +278,7 @@ sys_res gw3762_Confirm(t_plc *p, uint_t nFlag, uint_t nTmo)
 	t_gw3762_rdown xR = {0};
 	
 	xR.route = GW3762_RZONE_R_TRANS;
+	xR.chlid = p->rup.chlid;
 
 	buf_PushData(bTx, 0x01000068, 4);
 	buf_Push(bTx, &xR, sizeof(xR));
@@ -565,7 +566,7 @@ sys_res gw3762_RtCtrl(t_plc *p, uint_t nDT)
 
 	gw3762_Transmit2Module(p, GW3762_AFN_ROUTE_CTRL, nDT, NULL, 0);
 	if (nDT == 0x0002) {
-		for (nTmo = 3000 / OS_TICK_MS; nTmo; nTmo--) {
+		for (nTmo = 5000 / OS_TICK_MS; nTmo; nTmo--) {
 			if (gw3762_Analyze(p) == SYS_R_OK)
 				break;
 		}
@@ -611,7 +612,7 @@ sys_res gw3762_RequestAnswer(t_plc *p, uint_t nPhase, const void *pAdr, uint_t n
 
 	chl_Send(p->chl, bTx->p, bTx->len);
 	buf_Release(bTx);
-	
+
 	return SYS_R_OK;
 }
 

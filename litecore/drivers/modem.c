@@ -790,9 +790,8 @@ sys_res me3000_TcpSend(const void *pData, uint_t nLen)
 	sprintf(str, "AT+ZIPSEND=1,%d\r", nLen);
 	uart_Send(p->uart, str, strlen(str));
 	os_thd_Sleep(100);
-	for (i = 5000 / OS_TICK_MS; i; i--) {
-		if (uart_RecData(p->uart, p->rbuf, OS_TICK_MS) != SYS_R_OK)
-			continue;
+	for (i = 8000 / OS_TICK_MS; i; i--) {
+		uart_RecData(p->uart, p->rbuf, OS_TICK_MS);
 		if (modem_FindStr(p, ">") == NULL)
 			continue;
 		uart_Send(p->uart, pData, nLen);
