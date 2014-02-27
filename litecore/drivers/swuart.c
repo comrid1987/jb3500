@@ -91,13 +91,12 @@ static void swuart_TxOut(p_uart_def pDef, uint_t nValue)
 	if (pDef->fun == UART_FUN_SC) {
 		nPort = pDef->rxport;
 		nPin = pDef->rxpin;
-	} else {
+	} else
 #endif
+	{
 		nPort = pDef->txport;
 		nPin = pDef->txpin;
-#if SMARTCARD_ENABLE
 	}
-#endif
 #if IRDA_ENABLE
 	if (pDef->fun == UART_FUN_IRDA) {
 #if IRDA_MODE == IRDA_MODE_TIM
@@ -233,8 +232,9 @@ static void swuart_RxTx(void *args)
 			if (p->txdata & BITMASK(6)) {
 				swuart_TxOut(pDef, 1);
 				p->txpari ^= 1;
-			} else
+			} else {
 				swuart_TxOut(pDef, 0);
+			}
 			if (pUart->para.data == UART_DATA_7D) {
 				if (pUart->para.pari == UART_PARI_NO) {
 					p->txste = SWUART_STOP_1;
@@ -259,8 +259,9 @@ static void swuart_RxTx(void *args)
 			if (p->txdata & BITMASK(7)) {
 				swuart_TxOut(pDef, 1);
 				p->txpari ^= 1;
-			} else
+			} else {
 				swuart_TxOut(pDef, 0);
+			}
 			if (pUart->para.pari == UART_PARI_NO) {
 				p->txste = SWUART_STOP_1;
 				break;
@@ -298,8 +299,9 @@ static void swuart_RxTx(void *args)
 			if (p->txdata & BITMASK(p->txste - SWUART_DATA_1)) {
 				swuart_TxOut(pDef, 1);
 				p->txpari ^= 1;
-			} else
+			} else {
 				swuart_TxOut(pDef, 0);
+			}
 			p->txste += 1;
 			break;
 		}
@@ -351,9 +353,9 @@ void swuart_Init(p_dev_uart p)
 
 	//Rx Pin Init
 #if SMARTCARD_ENABLE
-	if (pDef->fun == UART_FUN_SC)
+	if (pDef->fun == UART_FUN_SC) {
 		arch_GpioConf(pDef->rxport, pDef->rxpin, GPIO_M_OUT_OD, GPIO_INIT_HIGH);
-	else
+	} else
 #endif
 	{
 		arch_GpioConf(pDef->rxport, pDef->rxpin, nRxMode, GPIO_INIT_NULL);
