@@ -113,7 +113,8 @@ static sys_res nw12_RmsgAnalyze(void *args)
 				if (pH->len1 != pH->len2)
 					continue;
 				//收到报文头
-				pRcp->rcvtime = rtc_GetTimet();
+				if (pRcp->rcvtime == 0)
+					pRcp->rcvtime = rtc_GetTimet();
 				break;
 			}
 		}
@@ -121,8 +122,10 @@ static sys_res nw12_RmsgAnalyze(void *args)
 		if (pRcp->rbuf->len < (NW12_FIXHEADER_SIZE + 2 + pH->len1)) {
 			if (((uint16_t)rtc_GetTimet() - pRcp->rcvtime) < 10)
 				return SYS_R_ERR;
+			pRcp->rcvtime = 0;
 			continue;
 		}
+		pRcp->rcvtime = 0;
 		pTemp = pRcp->rbuf->p + NW12_FIXHEADER_SIZE + pH->len1;
 		//CS
 		if (cs8(pRcp->rbuf->p + NW12_FIXHEADER_SIZE, pH->len1) != *pTemp)

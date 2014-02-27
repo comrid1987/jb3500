@@ -110,7 +110,8 @@ static sys_res gw3761_RmsgAnalyze(void *args)
 				if (pH->len1 != pH->len2)
 					continue;
 				//收到报文头
-				pRcp->rcvtime = rtc_GetTimet();
+				if (pRcp->rcvtime == 0)
+					pRcp->rcvtime = rtc_GetTimet();
 				break;
 			}
 		}
@@ -118,16 +119,18 @@ static sys_res gw3761_RmsgAnalyze(void *args)
 		if (pRcp->rbuf->len < (GW3761_FIXHEADER_SIZE + 2 + pH->len1)) {
 			if (((uint16_t)rtc_GetTimet() - pRcp->rcvtime) < 10)
 				return SYS_R_ERR;
+			pRcp->rcvtime = 0;
 			continue;
 		}
+		pRcp->rcvtime = 0;
 		pTemp = pRcp->rbuf->p + GW3761_FIXHEADER_SIZE + pH->len1;
-	    //CS
+		//CS
 		if (cs8(pRcp->rbuf->p + GW3761_FIXHEADER_SIZE, pH->len1) != *pTemp)
 			continue;
-	    //结束符
+		//结束符
 		if (*(pTemp + 1) != 0x16)
 			continue;
-	    //接收到报文
+		//接收到报文
 		p->rmsg.c = pH->c;
 		p->rmsg.a1 = pH->a1;
 		p->rmsg.a2 = pH->a2;

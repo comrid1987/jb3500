@@ -75,7 +75,8 @@ static sys_res gd5100_RmsgAnalyze(void *args)
 				if (pH->len > GD5100_DATA_SIZE)
 					continue;
 				//收到报文头
-				pRcp->rcvtime = rtc_GetTimet();
+				if (pRcp->rcvtime == 0)
+					pRcp->rcvtime = rtc_GetTimet();
 				break;
 			}
 		}
@@ -83,8 +84,10 @@ static sys_res gd5100_RmsgAnalyze(void *args)
 		if (pRcp->rbuf->len < (sizeof(t_gd5100_header) + pH->len + 2)) {
 			if (((uint16_t)rtc_GetTimet() - pRcp->rcvtime) < 10)
 				return SYS_R_ERR;
+			pRcp->rcvtime = 0;
 			continue;
 		}
+		pRcp->rcvtime = 0;
 		pTemp = pRcp->rbuf->p + sizeof(t_gd5100_header) + pH->len;
 		//CS
 		if (cs8(pRcp->rbuf->p, sizeof(t_gd5100_header) + pH->len) != *pTemp++)
