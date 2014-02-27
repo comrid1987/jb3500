@@ -230,6 +230,9 @@ dque	dqueue = {ARR_SIZE(__dqueue), __dqueue};
 #if GDVMS_ENABLE
 #include <cp/gdvms.c>
 #endif
+#if GWVMS_ENABLE
+#include <cp/gwvms.c>
+#endif
 #if GDFTS_ENABLE
 #include <cp/gdfts.c>
 #endif
