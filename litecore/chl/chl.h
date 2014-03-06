@@ -11,6 +11,7 @@
 //通道类型
 #define CHL_T_RS232				0
 #define CHL_T_IRDA				1
+#define CHL_T_USB2UART			2
 
 #define CHL_T_SOC_TC			(BITMASK(4) | 0)
 #define CHL_T_SOC_TS			(BITMASK(4) | 1)

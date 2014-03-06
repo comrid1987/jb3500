@@ -90,6 +90,7 @@ sys_res dlrcp_SetChl(p_dlrcp p, uint_t nType, uint_t nId, uint_t nPar1, uint_t n
 		}
 		break;
 #endif
+#if UART_ENABLE
 	case CHL_T_RS232:
 	case CHL_T_IRDA:
 		if (p->uart.baud != nPar1) {
@@ -109,6 +110,11 @@ sys_res dlrcp_SetChl(p_dlrcp p, uint_t nType, uint_t nId, uint_t nPar1, uint_t n
 			nChanged = 1;
 		}
 		break;
+#endif
+#if USBD_CDC_ENABLE
+	case CHL_T_USB2UART:
+		break;
+#endif
 	default:
 		return SYS_R_ERR;
 	}
@@ -247,6 +253,11 @@ sys_res dlrcp_Handler(p_dlrcp p)
 		case CHL_T_RS232:
 		case CHL_T_IRDA:
 			chl_rs232_Config(p->chl, p->uart.baud, p->uart.pari, p->uart.data, p->uart.stop);
+			break;
+#endif
+#if USBD_CDC_ENABLE
+		case CHL_T_USB2UART:
+			p->chl->ste = CHL_S_READY;
 			break;
 #endif
 		default:

@@ -36,6 +36,11 @@ sys_res chl_Bind(chl p, uint_t nType, uint_t nId, int nTmo)
 			res = SYS_R_OK;
 		break;
 #endif
+#if USBD_CDC_ENABLE
+	case CHL_T_USB2UART:
+		res = SYS_R_OK;
+		break;
+#endif
 #if TCPPS_ENABLE
 	case CHL_T_SOC_TC_RECON:
 	case CHL_T_SOC_TC:
@@ -71,6 +76,11 @@ sys_res chl_Release(chl p)
 	case CHL_T_IRDA:
 		if (((int)p->pIf != -1) && (p->pIf != NULL))
 			res = uart_Release(p->pIf);
+		break;
+#endif
+#if USBD_CDC_ENABLE
+	case CHL_T_USB2UART:
+		res = SYS_R_OK;
 		break;
 #endif
 #if TCPPS_ENABLE
@@ -119,6 +129,11 @@ sys_res chl_Send(chl p, const void *pData, uint_t nLen)
 		res = uart_Send(p->pIf, pData, nLen);
 		break;
 #endif
+#if USBD_CDC_ENABLE
+	case CHL_T_USB2UART:
+		res = usb2uart_Send(pData, nLen);
+		break;
+#endif
 #if TCPPS_ENABLE
 	case CHL_T_SOC_TC_RECON:
 	case CHL_T_SOC_TC:
@@ -164,6 +179,11 @@ sys_res chl_RecData(chl p, buf b, uint_t nTmo)
 	case CHL_T_RS232:
 	case CHL_T_IRDA:
 		res = uart_RecData(p->pIf, b, nTmo);
+		break;
+#endif
+#if USBD_CDC_ENABLE
+	case CHL_T_USB2UART:
+		res = usb2uart_RecData(b);
 		break;
 #endif
 #if TCPPS_ENABLE
