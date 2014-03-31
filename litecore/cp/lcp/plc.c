@@ -407,6 +407,64 @@ sys_res plc_RealRead(t_plc *p, buf b, const uint8_t *pAdr, uint_t nCode, const v
 	return res;
 }
 
+
+sys_res plc_Transmit(t_plc *p, buf b, const void *pData, uint_t nLen)
+{
+	sys_res res = SYS_R_ERR;
+	uint8_t mAdr[6];
+	uint_t nTmo ;
+	uint8_t *pTemp;
+
+	nTmo = plc_GetWait(p, 0);
+
+	if (p->ste == PLC_S_SLAVE) {
+		if (gw3762_RtCtrl(p, 0x0002) != SYS_R_OK)
+			return res;
+		os_thd_Sleep(1000);
+		p->ste = PLC_S_WAIT;
+		p->tmo = 100;
+	}
+	chl_rs232_Config(p->chl, 9600, UART_PARI_EVEN, UART_DATA_8D, UART_STOP_1D);
+
+	memcpy(&mAdr,&b->p[1],6);
+	
+	gw3762_MeterRT(p, mAdr, b->p, b->len);
+	buf_Release(b);
+	for (nTmo *= (1000 / OS_TICK_MS); nTmo; nTmo--) {
+		if (gw3762_Analyze(p) != SYS_R_OK)
+			continue;
+		switch (p->afn) {
+		case GW3762_AFN_CONFIRM:
+			//否认
+			if (p->fn == 0x0002)
+				return SYS_R_ERR;
+			break;
+		case GW3762_AFN_TRANSMIT:
+		case GW3762_AFN_ROUTE_TRANSMIT:
+			if (p->fn == 0x0001) {
+				buf_Remove(p->data, 2);
+				//645包解析
+				pTemp = dlt645_PacketAnalyze(p->data->p, p->data->len);
+				if (pTemp != NULL) {
+					//校验表地址
+					if (p->rup.module) {
+						if (memcmp(p->madr, &pTemp[1], 6))
+							break;
+					}
+					if (memcmp(&pTemp[1], p->madr, 6) == 0) {
+						buf_Push(b, pTemp, pTemp[DLT645_HEADER_SIZE - 1] + DLT645_HEADER_SIZE+2);
+						return SYS_R_OK;
+					}
+				}
+			}
+			break;
+		default:
+			break;
+		}
+	}
+	return res;
+}
+
 void plc_Broadcast(t_plc *p)
 {
 	buf b = {0};

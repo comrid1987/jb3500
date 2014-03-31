@@ -107,6 +107,7 @@ typedef struct {
 void plc_Init(t_plc *p);
 
 sys_res plc_RealRead(t_plc *p, buf b, const uint8_t *pAdr, uint_t nCode, const void *pData, uint_t nLen, uint_t nRelay, const uint8_t *pRtAdr);
+sys_res plc_Transmit(t_plc *p, buf b, const void *pData, uint_t nLen);
 void plc_Broadcast(t_plc *p);
 sys_res plc_Handler(t_plc *p, buf b, uint8_t *pAdr);
 
