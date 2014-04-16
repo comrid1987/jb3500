@@ -94,9 +94,9 @@ sys_res nrsec3000_SendCmd(p_nrsec3000 p,const void  *cmd,uint8_t cmdLen)
 	return res;
 }
 //RcvINS
-sys_res nrsec3000_RcvINS(p_nrsec3000 p, uint8_t *rbuf, uint8_t ins)
+sys_res nrsec3000_RcvINS(p_nrsec3000 p, uint8_t *rbuf, uint8_t ins,int cnt)
 {
-	int cnt = 1000;
+//	int cnt = 1000;
 	/* receive ins */
 	for(;cnt>0;cnt--){
 		spi_TranChar(p->spi, TR_INS, rbuf);
@@ -142,9 +142,9 @@ sys_res nrsec3000_RcvData(p_nrsec3000 p,uint8_t *rbuf,uint8_t rbufLen)
 }
 
 //RcvSW
-sys_res nrsec3000_RcvSW(p_nrsec3000 p,uint8_t *rbuf)
+sys_res nrsec3000_RcvSW(p_nrsec3000 p,uint8_t *rbuf,int cnt)
 {
-	int cnt = 1000;
+//	int cnt = 1000;
 	
 	/* receive state word */
 	for(;cnt>0;cnt--){
@@ -174,18 +174,18 @@ sys_res nrsec3000_SM1ImportKey(p_nrsec3000 p,uint8_t *key)
 	memset(rbuf, 0, sizeof(rbuf));
 
 	nrsec3000_SendCmd(p,sm1Imkey,5);
-	res = nrsec3000_RcvINS(p,rbuf,sm1Imkey->ins);
+	res = nrsec3000_RcvINS(p,rbuf,sm1Imkey->ins,200);
 	if(res==SYS_R_OK){
 		tbuf[0] = 0x55;
 		nrsec3000_SendCmd(p,tbuf,1);
 		nCRC = get_crc7(key,sm1Imkey->p3);
 		nrsec3000_SendCmd(p,key,sm1Imkey->p3);
 		nrsec3000_SendCmd(p,&nCRC,1);
-		res = nrsec3000_RcvSW(p,rbuf);
+		res = nrsec3000_RcvSW(p,rbuf,1000);
 		if(res==SYS_R_OK){
 			sm1Imkey->p1 = 0x02;
 			nrsec3000_SendCmd(p,sm1Imkey,5);
-			nrsec3000_RcvINS(p,rbuf,sm1Imkey->ins);
+			nrsec3000_RcvINS(p,rbuf,sm1Imkey->ins,200);
 			tbuf[0] = 0x55;
 			nrsec3000_SendCmd(p,tbuf,1);
 			memset(tbuf, 0, sizeof(tbuf));
@@ -194,7 +194,7 @@ sys_res nrsec3000_SM1ImportKey(p_nrsec3000 p,uint8_t *key)
 			nrsec3000_SendCmd(p,&nCRC,1);
 			tbuf[0] = 0xaa;
 			nrsec3000_SendCmd(p,tbuf,1);
-			res = nrsec3000_RcvSW(p,rbuf);
+			res = nrsec3000_RcvSW(p,rbuf,1000);
 		}
 		
 	}
@@ -216,7 +216,7 @@ sys_res nrsec3000_SM1ImportIV(p_nrsec3000 p,uint8_t *IV)
 
 	nrsec3000_SendCmd(p,sm1ImIV,5);
 	tbuf[0] = 0xaa;
-	res = nrsec3000_RcvINS(p,rbuf,0xd4);
+	res = nrsec3000_RcvINS(p,rbuf,0xd4,200);
 	if(res==SYS_R_OK){
 		tbuf[0] = 0x55;
 		nrsec3000_SendCmd(p,tbuf,1);//数据起始
@@ -225,7 +225,7 @@ sys_res nrsec3000_SM1ImportIV(p_nrsec3000 p,uint8_t *IV)
 		nrsec3000_SendCmd(p,&nCRC,1);
 		tbuf[0] = 0xaa;
 		nrsec3000_SendCmd(p,tbuf,1);//数据结束
-		res = nrsec3000_RcvSW(p,rbuf);
+		res = nrsec3000_RcvSW(p,rbuf,1000);
 	}
 	spi_Release(p->spi);
 	return res;
@@ -248,7 +248,7 @@ sys_res nrsec3000_SM1Encrypt(p_nrsec3000 p,uint8_t *buf,uint16_t bufLen,uint8_t 
 	sm1Endata->p3 = bufLen&0xff;
 
 	nrsec3000_SendCmd(p,sm1Endata,5);
-	res = nrsec3000_RcvINS(p,rbuf,sm1Endata->ins);
+	res = nrsec3000_RcvINS(p,rbuf,sm1Endata->ins,200);
 	if(res==SYS_R_OK){
 		tbuf[0] = 0x55;
 		nrsec3000_SendCmd(p,tbuf,1);
@@ -257,14 +257,14 @@ sys_res nrsec3000_SM1Encrypt(p_nrsec3000 p,uint8_t *buf,uint16_t bufLen,uint8_t 
 		nrsec3000_SendCmd(p,&nCRC,1);
 		tbuf[0] = 0xaa;
 		nrsec3000_SendCmd(p,tbuf,1);
-		res = nrsec3000_RcvINS(p,rbuf,sm1Endata->ins);
+		res = nrsec3000_RcvINS(p,rbuf,sm1Endata->ins,10000);
 		if(res==SYS_R_OK){
 			nLen = nrsec3000_RcvLEN(p,2,rbuf);
 			nrsec3000_RcvData(p,Enbuf,nLen-1);
 			nrsec3000_RcvData(p,rbuf,1);
 			nCRC = get_crc7(Enbuf,nLen-1);
 			if(nCRC == rbuf[0] )
-				res = nrsec3000_RcvSW(p,rbuf);
+				res = nrsec3000_RcvSW(p,rbuf,1000);
 			else
 				res = SYS_R_ERR;
 		}
@@ -290,7 +290,7 @@ sys_res nrsec3000_SM1Decrypt(p_nrsec3000 p,uint8_t *buf,uint16_t bufLen,uint8_t 
 	sm1Dedata->p3 = bufLen&0xff;
 
 	nrsec3000_SendCmd(p,sm1Dedata,5);
-	res = nrsec3000_RcvINS(p,rbuf,sm1Dedata->ins);
+	res = nrsec3000_RcvINS(p,rbuf,sm1Dedata->ins,200);
 	if(res==SYS_R_OK){
 		tbuf[0] = 0x55;
 		nrsec3000_SendCmd(p,tbuf,1);
@@ -298,15 +298,14 @@ sys_res nrsec3000_SM1Decrypt(p_nrsec3000 p,uint8_t *buf,uint16_t bufLen,uint8_t 
 		nrsec3000_SendCmd(p,buf,bufLen);
 		nrsec3000_SendCmd(p,&nCRC,1);
 		tbuf[0] = 0xaa;
-		nrsec3000_SendCmd(p,tbuf,1);
-		res = nrsec3000_RcvINS(p,rbuf,sm1Dedata->ins);
+		res = nrsec3000_RcvINS(p,rbuf,sm1Dedata->ins,10000);
 		if(res==SYS_R_OK){
 			nLen = nrsec3000_RcvLEN(p,2,rbuf);
 			nrsec3000_RcvData(p,Debuf,nLen-1);
 			nrsec3000_RcvData(p,rbuf,1);
 			nCRC = get_crc7(Debuf,nLen-1);
 			if(nCRC == rbuf[0] )
-				res = nrsec3000_RcvSW(p,rbuf);
+				res = nrsec3000_RcvSW(p,rbuf,1000);
 			else
 				res = SYS_R_ERR;
 		}
@@ -327,8 +326,7 @@ sys_res nrsec3000_SM2NewKey(p_nrsec3000 p,uint8_t keyNo)
 	sm2Newkey->p2 = keyNo;//p2密钥索引号
 
 	nrsec3000_SendCmd(p,sm2Newkey,5);
-	os_thd_Sleep(2000);//等待运算结束
-	res = nrsec3000_RcvSW(p,rbuf);
+	res = nrsec3000_RcvSW(p,rbuf,10000);
 	spi_Release(p->spi);
 	return res;
 }
@@ -345,14 +343,14 @@ sys_res nrsec3000_SM2ExPubKey(p_nrsec3000 p,uint8_t *key,uint8_t keyNo)
 	memset(rbuf, 0, sizeof(rbuf));
 
 	nrsec3000_SendCmd(p,cmd_sm2ExPubKey,5);
-	res = nrsec3000_RcvINS(p,rbuf,cmd_sm2ExPubKey->ins);
+	res = nrsec3000_RcvINS(p,rbuf,cmd_sm2ExPubKey->ins,200);
 	if(res==SYS_R_OK){
 		nLen = nrsec3000_RcvLEN(p,1,rbuf);
 		nrsec3000_RcvData(p,key,nLen-1);
 		nrsec3000_RcvData(p,rbuf,1);
 		nCRC = get_crc7(key,nLen-1);
 		if(nCRC == rbuf[0] )
-			res = nrsec3000_RcvSW(p,rbuf);
+			res = nrsec3000_RcvSW(p,rbuf,1000);
 		else
 			res = SYS_R_ERR;
 	}
@@ -372,14 +370,14 @@ sys_res nrsec3000_SM2ExPrvKey(p_nrsec3000 p,uint8_t *key,uint8_t keyNo)
 	memset(rbuf, 0, sizeof(rbuf));
 
 	nrsec3000_SendCmd(p,cmd_sm2ExPrvKey,5);
-	res = nrsec3000_RcvINS(p,rbuf,cmd_sm2ExPrvKey->ins);
+	res = nrsec3000_RcvINS(p,rbuf,cmd_sm2ExPrvKey->ins,200);
 	if(res==SYS_R_OK){
 		nLen = nrsec3000_RcvLEN(p,1,rbuf);
 		nrsec3000_RcvData(p,key,nLen-1);
 		nrsec3000_RcvData(p,rbuf,1);
 		nCRC = get_crc7(key,nLen-1);
 		if(nCRC == rbuf[0] )
-			res = nrsec3000_RcvSW(p,rbuf);
+			res = nrsec3000_RcvSW(p,rbuf,1000);
 		else
 			res = SYS_R_ERR;
 	}
@@ -401,7 +399,7 @@ sys_res nrsec3000_SM2ImPubKey(p_nrsec3000 p,uint8_t *key,uint8_t keyNo)
 	memset(rbuf, 0, sizeof(rbuf));
 
 	nrsec3000_SendCmd(p,cmd_sm2ImPubKey,5);
-	res = nrsec3000_RcvINS(p,rbuf,cmd_sm2ImPubKey->ins);
+	res = nrsec3000_RcvINS(p,rbuf,cmd_sm2ImPubKey->ins,200);
 	if(res==SYS_R_OK){
 		tbuf[0] = 0x55;//数据发送起始
 		nrsec3000_SendCmd(p,tbuf,1);
@@ -410,7 +408,7 @@ sys_res nrsec3000_SM2ImPubKey(p_nrsec3000 p,uint8_t *key,uint8_t keyNo)
 		nrsec3000_SendCmd(p,&nCRC,1);
 		tbuf[0] = 0xaa;//数据发送结束
 		nrsec3000_SendCmd(p,tbuf,1);
-		res = nrsec3000_RcvSW(p,rbuf);
+		res = nrsec3000_RcvSW(p,rbuf,1000);
 	}
 	spi_Release(p->spi);
 	return res;
@@ -431,7 +429,7 @@ sys_res nrsec3000_SM2ImPrvKey(p_nrsec3000 p,uint8_t *key,uint8_t keyNo)
 	memset(rbuf, 0, sizeof(rbuf));
 
 	nrsec3000_SendCmd(p,cmd_sm2ImPrvKey,5);
-	res = nrsec3000_RcvINS(p,rbuf,cmd_sm2ImPrvKey->ins);
+	res = nrsec3000_RcvINS(p,rbuf,cmd_sm2ImPrvKey->ins,200);
 	if(res==SYS_R_OK){
 		tbuf[0] = 0x55;//数据发送起始
 		nrsec3000_SendCmd(p,tbuf,1);
@@ -440,7 +438,7 @@ sys_res nrsec3000_SM2ImPrvKey(p_nrsec3000 p,uint8_t *key,uint8_t keyNo)
 		nrsec3000_SendCmd(p,&nCRC,1);
 		tbuf[0] = 0xaa;//数据发送结束
 		nrsec3000_SendCmd(p,tbuf,1);
-		res = nrsec3000_RcvSW(p,rbuf);
+		res = nrsec3000_RcvSW(p,rbuf,1000);
 	}
 	spi_Release(p->spi);
 	return res;
@@ -463,7 +461,7 @@ sys_res nrsec3000_Hash(p_nrsec3000 p,uint8_t *buf,uint16_t bufLen,uint8_t *hash)
 
 	nrsec3000_SendCmd(p,sm3Hash,5);
 	tbuf[0] = 0xaa;
-	res = nrsec3000_RcvINS(p,rbuf,sm3Hash->ins);
+	res = nrsec3000_RcvINS(p,rbuf,sm3Hash->ins,200);
 	if(res==SYS_R_OK){
 		tbuf[0] = 0x55;//起始标识
 		nrsec3000_SendCmd(p,tbuf,1);
@@ -472,14 +470,14 @@ sys_res nrsec3000_Hash(p_nrsec3000 p,uint8_t *buf,uint16_t bufLen,uint8_t *hash)
 		nrsec3000_SendCmd(p,&nCRC,1);
 		tbuf[0] = 0xaa;//结束标识
 		nrsec3000_SendCmd(p,tbuf,1);
-		res = nrsec3000_RcvINS(p,rbuf,sm3Hash->ins);
+		res = nrsec3000_RcvINS(p,rbuf,sm3Hash->ins,200);
 		if(res==SYS_R_OK){
 			nLen = nrsec3000_RcvLEN(p,1,rbuf);
 			nrsec3000_RcvData(p,hash,nLen-1);
 			nrsec3000_RcvData(p,rbuf,1);
 			nCRC = get_crc7(hash,nLen-1);
 			if(nCRC == rbuf[0] )
-				res = nrsec3000_RcvSW(p,rbuf);
+				res = nrsec3000_RcvSW(p,rbuf,1000);
 			else
 				res = SYS_R_ERR;
 		}
@@ -546,7 +544,7 @@ sys_res nrsec3000_SM2Sign(p_nrsec3000 p,uint8_t *buf,uint8_t keyNo,uint8_t *sign
 
 	nrsec3000_SendCmd(p,sm2Sign,5);
 	tbuf[0] = 0xaa;
-	res = nrsec3000_RcvINS(p,rbuf,sm2Sign->ins);
+	res = nrsec3000_RcvINS(p,rbuf,sm2Sign->ins,200);
 	if(res==SYS_R_OK){
 		tbuf[0] = 0x55;//起始标识
 		nrsec3000_SendCmd(p,tbuf,1);
@@ -555,15 +553,14 @@ sys_res nrsec3000_SM2Sign(p_nrsec3000 p,uint8_t *buf,uint8_t keyNo,uint8_t *sign
 		nrsec3000_SendCmd(p,&nCRC,1);
 		tbuf[0] = 0xaa;//结束标识
 		nrsec3000_SendCmd(p,tbuf,1);
-		os_thd_Sleep(2500);//等待运算结束
-		res = nrsec3000_RcvINS(p,rbuf,sm2Sign->ins);
+		res = nrsec3000_RcvINS(p,rbuf,sm2Sign->ins,10000);
 		if(res==SYS_R_OK){
 			nLen = nrsec3000_RcvLEN(p,1,rbuf);
 			nrsec3000_RcvData(p,sign,nLen-1);
 			nrsec3000_RcvData(p,rbuf,1);
 			nCRC = get_crc7(sign,nLen-1);
 			if(nCRC == rbuf[0] )
-				res = nrsec3000_RcvSW(p,rbuf);
+				res = nrsec3000_RcvSW(p,rbuf,1000);
 			else
 				res = SYS_R_ERR;
 		}
@@ -573,9 +570,9 @@ sys_res nrsec3000_SM2Sign(p_nrsec3000 p,uint8_t *buf,uint8_t keyNo,uint8_t *sign
 }
 
 //SM2验签 SM2 CheckSign
-sys_res nrsec3000_SM2CheckSign(p_nrsec3000 p,uint8_t *buf,uint8_t keyNo)
+sys_res nrsec3000_SM2CheckSign(p_nrsec3000 p,uint8_t *hash,uint8_t *sign,uint8_t keyNo)
 {
-	uint8_t tbuf[32];
+	uint8_t tbuf[96];
 	uint8_t rbuf[32];
 	uint8_t nCRC;
 	sys_res res;
@@ -588,17 +585,20 @@ sys_res nrsec3000_SM2CheckSign(p_nrsec3000 p,uint8_t *buf,uint8_t keyNo)
 
 	nrsec3000_SendCmd(p,sm2CheckSign,5);
 	tbuf[0] = 0xaa;
-	res = nrsec3000_RcvINS(p,rbuf,sm2CheckSign->ins);
+	res = nrsec3000_RcvINS(p,rbuf,sm2CheckSign->ins,200);
 	if(res==SYS_R_OK){
 		tbuf[0] = 0x55;//起始标识
 		nrsec3000_SendCmd(p,tbuf,1);
-		nCRC = get_crc7(buf,sm2CheckSign->p3);
-		nrsec3000_SendCmd(p,buf,sm2CheckSign->p3);
+		memcpy(tbuf,hash,32);
+		memcpy(tbuf,sign,64);
+		nCRC = get_crc7(tbuf,sm2CheckSign->p3);
+		nrsec3000_SendCmd(p,hash,0x20);
+		nrsec3000_SendCmd(p,sign,0x40);
 		nrsec3000_SendCmd(p,&nCRC,1);
 		tbuf[0] = 0xaa;//结束标识
 		nrsec3000_SendCmd(p,tbuf,1);
-		os_thd_Sleep(5000);//等待运算结束
-		res = nrsec3000_RcvSW(p,rbuf);
+		os_thd_Sleep(2000);
+		res = nrsec3000_RcvSW(p,rbuf,20000);
 	}
 	spi_Release(p->spi);
 	return res;
@@ -620,7 +620,7 @@ sys_res nrsec3000_SM2Encrypt(p_nrsec3000 p,uint8_t *buf,uint8_t keyNo,uint8_t *E
 	sm2Endata->p2 = keyNo;
 	nrsec3000_SendCmd(p,sm2Endata,5);
 	tbuf[0] = 0xaa;
-	res = nrsec3000_RcvINS(p,tbuf,sm2Endata->ins);
+	res = nrsec3000_RcvINS(p,tbuf,sm2Endata->ins,200);
 	if(res==SYS_R_OK){
 		tbuf[0] = 0x55;
 		nrsec3000_SendCmd(p,tbuf,1);
@@ -629,15 +629,15 @@ sys_res nrsec3000_SM2Encrypt(p_nrsec3000 p,uint8_t *buf,uint8_t keyNo,uint8_t *E
 		nrsec3000_SendCmd(p,&nCRC,1);
 		tbuf[0] = 0xaa;
 		nrsec3000_SendCmd(p,tbuf,1);
-		os_thd_Sleep(2000);//等待运算结束
-		res = nrsec3000_RcvINS(p,rbuf,sm2Endata->ins);
+		os_thd_Sleep(2000);
+		res = nrsec3000_RcvINS(p,rbuf,sm2Endata->ins,20000);
 		if(res==SYS_R_OK){
 			nLen = nrsec3000_RcvLEN(p,1,rbuf);
 			nrsec3000_RcvData(p,Enbuf,nLen-1);
 			nrsec3000_RcvData(p,rbuf,1);
 			nCRC = get_crc7(Enbuf,nLen-1);
 			if(nCRC == rbuf[0] )
-				res = nrsec3000_RcvSW(p,rbuf);
+				res = nrsec3000_RcvSW(p,rbuf,1000);
 			else
 				res = SYS_R_ERR;
 		}
@@ -661,7 +661,7 @@ sys_res nrsec3000_SM2Decrypt(p_nrsec3000 p,uint8_t *buf,uint8_t keyNo,uint8_t *D
 
 	sm2Dedata->p2 = keyNo;
 	nrsec3000_SendCmd(p,sm2Dedata,5);
-	res = nrsec3000_RcvINS(p,rbuf,sm2Dedata->ins);
+	res = nrsec3000_RcvINS(p,rbuf,sm2Dedata->ins,200);
 	if(res==SYS_R_OK){
 		tbuf[0] = 0x55;
 		nrsec3000_SendCmd(p,tbuf,1);
@@ -670,15 +670,15 @@ sys_res nrsec3000_SM2Decrypt(p_nrsec3000 p,uint8_t *buf,uint8_t keyNo,uint8_t *D
 		nrsec3000_SendCmd(p,&nCRC,1);
 		tbuf[0] = 0xaa;
 		nrsec3000_SendCmd(p,tbuf,1);
-		os_thd_Sleep(2000);//等待运算结束
-		res = nrsec3000_RcvINS(p,rbuf,sm2Dedata->ins);
+		os_thd_Sleep(2000);
+		res = nrsec3000_RcvINS(p,rbuf,sm2Dedata->ins,20000);
 		if(res==SYS_R_OK){
 			nLen = nrsec3000_RcvLEN(p,1,rbuf);
 			nrsec3000_RcvData(p,Debuf,nLen-1);
 			nrsec3000_RcvData(p,rbuf,1);
 			nCRC = get_crc7(Debuf,nLen-1);
 			if(nCRC == rbuf[0] )
-				res = nrsec3000_RcvSW(p,rbuf);
+				res = nrsec3000_RcvSW(p,rbuf,1000);
 			else
 				res = SYS_R_ERR;
 		}
@@ -702,8 +702,9 @@ sys_res nrsec3000_SM2Credentials(p_nrsec3000 p,uint8_t type,uint8_t keyNo,uint8_
 	sm2Credentials->p1 = type;
 	sm2Credentials->p2 = keyNo;
 	sm2Credentials->p3 = bufLen;
+
 	nrsec3000_SendCmd(p,sm2Credentials,5);
-	res = nrsec3000_RcvINS(p,rbuf,sm2Credentials->ins);
+	res = nrsec3000_RcvINS(p,rbuf,sm2Credentials->ins,200);
 	if(res==SYS_R_OK){
 		tbuf[0] = 0x55;
 		nrsec3000_SendCmd(p,tbuf,1);
@@ -712,15 +713,15 @@ sys_res nrsec3000_SM2Credentials(p_nrsec3000 p,uint8_t type,uint8_t keyNo,uint8_
 		nrsec3000_SendCmd(p,&nCRC,1);
 		tbuf[0] = 0xaa;
 		nrsec3000_SendCmd(p,tbuf,1);
-		os_thd_Sleep(2000);//等待运算结束
-		res = nrsec3000_RcvINS(p,rbuf,sm2Credentials->ins);
+		os_thd_Sleep(5000);//等待运算结束
+		res = nrsec3000_RcvINS(p,rbuf,sm2Credentials->ins,20000);
 		if(res==SYS_R_OK){
 			nLen = nrsec3000_RcvLEN(p,2,rbuf);
 			nrsec3000_RcvData(p,Crebuf,nLen-1);
 			nrsec3000_RcvData(p,rbuf,1);
 			nCRC = get_crc7(Crebuf,nLen-1);
 			if(nCRC == rbuf[0] )
-				res = nrsec3000_RcvSW(p,rbuf);
+				res = nrsec3000_RcvSW(p,rbuf,1000);
 			else
 				res = SYS_R_ERR;
 		}
@@ -741,14 +742,14 @@ sys_res nrsec3000_GetVer(p_nrsec3000 p,uint8_t *ver)
 	memset(rbuf, 0, sizeof(rbuf));
 
 	nrsec3000_SendCmd(p,cmd_getVer,5);
-	res = nrsec3000_RcvINS(p,rbuf,cmd_getVer->ins);
+	res = nrsec3000_RcvINS(p,rbuf,cmd_getVer->ins,200);
 	if(res==SYS_R_OK){
 		nLen = nrsec3000_RcvLEN(p,1,rbuf);
 		nrsec3000_RcvData(p,ver,nLen-1);
 		nrsec3000_RcvData(p,rbuf,1);
 		nCRC = get_crc7(ver,nLen-1);
 		if(nCRC == rbuf[0] )
-			res = nrsec3000_RcvSW(p,rbuf);
+			res = nrsec3000_RcvSW(p,rbuf,1000);
 		else
 			res = SYS_R_ERR;
 	}
@@ -767,16 +768,16 @@ sys_res nrsec3000_GetRandom(p_nrsec3000 p,uint8_t *random,uint8_t len)
 	cmd_getRandom->p3 = len;
 	p->spi = nrsec3000_SpiGet();
 	memset(rbuf, 0, sizeof(rbuf));
-	
+
 	nrsec3000_SendCmd(p,cmd_getRandom,5);
-	res = nrsec3000_RcvINS(p,rbuf,cmd_getRandom->ins);
+	res = nrsec3000_RcvINS(p,rbuf,cmd_getRandom->ins,200);
 	if(res==SYS_R_OK){
 		nLen = nrsec3000_RcvLEN(p,1,rbuf);
 		nrsec3000_RcvData(p,random,nLen-1);
 		nrsec3000_RcvData(p,rbuf,1);
 		nCRC = get_crc7(random,nLen-1);
 		if(nCRC == rbuf[0] )
-			res = nrsec3000_RcvSW(p,rbuf);
+			res = nrsec3000_RcvSW(p,rbuf,1000);
 		else
 			res = SYS_R_ERR;
 	}
@@ -799,7 +800,7 @@ sys_res nrsec3000_SafetyCre(p_nrsec3000 p,uint8_t *buf,uint8_t *safetybuf)
 
 	nrsec3000_SendCmd(p,safetyCre,5);
 	tbuf[0] = 0xaa;
-	res = nrsec3000_RcvINS(p,tbuf,safetyCre->ins);
+	res = nrsec3000_RcvINS(p,tbuf,safetyCre->ins,200);
 	if(res==SYS_R_OK){
 		tbuf[0] = 0x55;
 		nrsec3000_SendCmd(p,tbuf,1);
@@ -808,14 +809,15 @@ sys_res nrsec3000_SafetyCre(p_nrsec3000 p,uint8_t *buf,uint8_t *safetybuf)
 		nrsec3000_SendCmd(p,&nCRC,1);
 		tbuf[0] = 0xaa;
 		nrsec3000_SendCmd(p,tbuf,1);
-		res = nrsec3000_RcvINS(p,rbuf,safetyCre->ins);
+		os_thd_Sleep(2000);//等待运算结束
+		res = nrsec3000_RcvINS(p,rbuf,safetyCre->ins,20000);
 		if(res==SYS_R_OK){
 			nLen = nrsec3000_RcvLEN(p,1,rbuf);
 			nrsec3000_RcvData(p,safetybuf,nLen-1);
 			nrsec3000_RcvData(p,rbuf,1);
 			nCRC = get_crc7(safetybuf,nLen-1);
 			if(nCRC == rbuf[0] )
-				res = nrsec3000_RcvSW(p,rbuf);
+				res = nrsec3000_RcvSW(p,rbuf,1000);
 			else
 				res = SYS_R_ERR;
 		}

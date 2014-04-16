@@ -58,7 +58,7 @@ int com_getchar()
 		/* Serial receive buffer is empty. */
 		return -1;
 #if MODEM_FLOWCTL_ENABLE
-	gsmModem.flow += 1;
+	gsmModem.flow_r += 1;
 #endif
 	return c;
 }
@@ -71,7 +71,7 @@ BOOL com_putchar(U8 c)
 	arch_UartSendChar(gsmModem.uart->def->id, c);
 	tx_active = __FALSE;
 #if MODEM_FLOWCTL_ENABLE
-	gsmModem.flow += 1;
+	gsmModem.flow_t += 1;
 #endif
 	return __TRUE;
 }
@@ -277,7 +277,7 @@ static sys_res modem_InitCmd(p_modem p)
 		p->type = MODEM_TYPE_CDMA;
 	else
 		p->type = MODEM_TYPE_GPRS;
-
+#if 1
 	//SIM¿¨´®ºÅ
 	p->ccid[0] = 0;
 	if (p->type == MODEM_TYPE_GPRS) {
@@ -296,6 +296,20 @@ static sys_res modem_InitCmd(p_modem p)
 			}
 		}
 	}
+#else
+	//IMEIºÅ
+	p->ccid[0] = 0;
+	if (p->type == MODEM_TYPE_GPRS) {
+		for (i = 0; i < 3; i++) {
+			if (modem_SendCmd(p, "AT+GSN\r", "OK\r", 1) != SYS_R_OK) {
+		 		if (modem_SendCmd(p, "AT+CGSN\r", "OK\r", 1) != SYS_R_OK)
+					continue;
+			}
+			memcpy(p->ccid, pTemp, 15);
+			break;
+		}
+	}
+#endif
 #if MODEM_ZTE_TCP
 	if (p->flag) {
 		if (modem_SendCmd(p, "AT+ZVERS\r", "OK\r", 3) == SYS_R_OK) {
@@ -679,9 +693,26 @@ int modem_GetFlow()
 {
 	int nFlow;
 
-	nFlow = gsmModem.flow;
-	gsmModem.flow = 0;
+	nFlow = gsmModem.flow_r + gsmModem.flow_t;
+	gsmModem.flow_r = 0;
+	gsmModem.flow_t = 0;
 	return nFlow;
+}
+int modem_GetRcvFlow()
+{
+	int nRcvFlow;
+
+	nRcvFlow = gsmModem.flow_r;
+	gsmModem.flow_r = 0;
+	return nRcvFlow;
+}
+int modem_GetSendFlow()
+{
+	int nSendFlow;
+
+	nSendFlow = gsmModem.flow_t;
+	gsmModem.flow_t = 0;
+	return nSendFlow;
 }
 #endif
 
@@ -742,6 +773,7 @@ sys_res me3000_TcpRecv(buf b)
 		buf_Remove(p->rbuf, nLen);
 #if MODEM_FLOWCTL_ENABLE
 		gsmModem.flow += nLen;
+		gsmModem.flow_r += nLen;
 #endif
 		return SYS_R_OK;
 	}
@@ -798,6 +830,7 @@ sys_res me3000_TcpSend(const void *pData, uint_t nLen)
 		uart_Send(p->uart, "\r", 1);
 #if MODEM_FLOWCTL_ENABLE
 		gsmModem.flow += nLen;
+		gsmModem.flow_t += nLen;
 #endif
 		return SYS_R_OK;
 	}

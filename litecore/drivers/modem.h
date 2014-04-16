@@ -44,7 +44,8 @@ typedef struct {
 	uint16_t	span;
 	uint16_t	idle;
 #if MODEM_FLOWCTL_ENABLE
-	uint_t		flow;
+	uint_t		flow_r;
+	uint_t		flow_t;
 #endif
 	p_dev_uart	uart;
 	buf			rbuf;
@@ -93,6 +94,8 @@ int modem_GetVersion(char *pVersion);
 int modem_GetCCID(char *pCCID);
 #if MODEM_FLOWCTL_ENABLE
 int modem_GetFlow(void);
+int modem_GetRcvFlow(void);
+int modem_GetSendFlow(void);
 #endif
 void modem_Refresh(void);
 #if MODEM_ZTE_TCP
