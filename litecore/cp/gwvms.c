@@ -50,7 +50,7 @@
 
 //Private Typedef
 typedef __packed struct {
-	uint16_t	sc1;			//0x5AA5
+	uint16_t	sc;			//0x5AA5
 //	uint8_t		sc2;			//
 	uint16_t	len;			//数据长度
 	uint8_t		adr[GWVMS_ADR_SIZE];
@@ -82,7 +82,7 @@ static sys_res gwvms_RmsgAnalyze(void *args)
 			if (pRcp->rbuf->len < sizeof(t_gwvms_header))
 				return SYS_R_ERR;
 			pH = (p_gwvms_header)pRcp->rbuf->p;
-			if (pH->sc1 == 0x5AA5){
+			if (pH->sc == 0x5AA5){
 				if (pH->len > GWVMS_DATA_SIZE)
 					continue;
 				break;
@@ -118,22 +118,20 @@ static sys_res gwvms_RmsgAnalyze(void *args)
 //-------------------------------------------------------------------------
 static void gwvms_TmsgHeaderInit(p_gwvms p, p_gwvms_header pH)
 {
-
-	pH->sc1 = 0x5AA5;
-//	pH->sc2 = 0xA5;
-	memcpy(pH->adr, p->adr, GWVMS_ADR_SIZE);
+	pH->sc = 0x5AA5;
+ 	memcpy(pH->adr, p->adr, GWVMS_ADR_SIZE);
 }
 
 
 //-------------------------------------------------------------------------
-//登录
+//登录、心跳
 //-------------------------------------------------------------------------
  static sys_res gwvms_TmsgLinkcheck (void *p, uint_t nCmd)
  {
  	sys_res res;
  	buf b = {0};
 
- 	res = gwvms_TmsgSend(p, 0x02,0x01, b, DLRCP_TMSG_REPORT);
+ 	res = gwvms_TmsgSend(p, 0x01,0x01, b, DLRCP_TMSG_REPORT);//心跳
  	buf_Release(b);
  	return res;
  }
@@ -150,7 +148,6 @@ static void gwvms_TmsgHeaderInit(p_gwvms p, p_gwvms_header pH)
 //-------------------------------------------------------------------------
 void gwvms_Init(p_gwvms p)
 {
-
 	memset(p, 0, sizeof(t_gwvms));
 	chl_Init(p->parent.chl);
  	p->parent.linkcheck = gwvms_TmsgLinkcheck;
@@ -180,7 +177,7 @@ sys_res gwvms_TmsgSend(p_gwvms p, uint_t nFType,uint_t nPType, buf b, uint_t nTy
 	xH.len = b->len;
 	buf_Push(bBuf,&xH,sizeof(t_gwvms_header));
 	buf_Push(bBuf,b->p,b->len);
- 	nCRC = crc16(bBuf->p, bBuf->len);
+ 	nCRC = crc16(bBuf->p+2, bBuf->len-2);
 	buf_Release(bBuf);
 	buf_PushData(b, nCRC, 2);
 	buf_PushData(b, 0x96, 1);
