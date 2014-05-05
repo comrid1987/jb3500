@@ -772,7 +772,6 @@ sys_res me3000_TcpRecv(buf b)
 		buf_Push(b, p->rbuf->p, nLen);
 		buf_Remove(p->rbuf, nLen);
 #if MODEM_FLOWCTL_ENABLE
-		gsmModem.flow += nLen;
 		gsmModem.flow_r += nLen;
 #endif
 		return SYS_R_OK;
@@ -829,7 +828,6 @@ sys_res me3000_TcpSend(const void *pData, uint_t nLen)
 		uart_Send(p->uart, pData, nLen);
 		uart_Send(p->uart, "\r", 1);
 #if MODEM_FLOWCTL_ENABLE
-		gsmModem.flow += nLen;
 		gsmModem.flow_t += nLen;
 #endif
 		return SYS_R_OK;
