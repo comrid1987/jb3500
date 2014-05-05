@@ -295,9 +295,6 @@ typedef struct {
 #define PHY_AUTO_NEG        0x3000      /* Select Auto Negotiation           */
 
 #define PHY_DEF_ADDR		0x00        /* Default PHY device address        */
-#define PHY_ID_DP83848C		0x20005C90  /* PHY Identifier                    */
-#define PHY_ID_DM9161A		0x0181B8A0
-#define PHY_ID_DM9161B		0x0181B8B0
 
 
 
