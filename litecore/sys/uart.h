@@ -97,6 +97,7 @@ sys_res uart_RecLength(p_dev_uart p, buf b, uint_t nLen, int nTmo);
 int uart_GetRxData(p_dev_uart p, buf b);
 int uart_GetRxChar(p_dev_uart p);
 sys_res uart_ScReset(p_dev_uart p, uint_t nHL);
+int uart_IsTxBufNE(p_dev_uart p);
 void uart_Maintain(void);
 void uart_Reopen(void);
 

@@ -37,26 +37,6 @@ static int uart_IsRxBufNE(p_dev_uart p)
 }
 
 
-//-------------------------------------------------------------------------
-//
-//-------------------------------------------------------------------------
-static int uart_IsTxBufNE(p_dev_uart p)
-{
-#if IO_BUF_TYPE == BUF_T_BUFFER
-	
-		if (p->buftx->len)
-			return 1;
-		return 0;
-#elif IO_BUF_TYPE == BUF_T_DQUEUE
-	
-		if (dque_IsNotEmpty(dqueue, p->parent->id | UART_DQUE_TX_CHL))
-			return 1;
-		return 0;
-#endif
-}
-
-
-
 
 //-------------------------------------------------------------------------
 //External Functions
@@ -339,6 +319,26 @@ sys_res uart_ScReset(p_dev_uart p, uint_t nHL)
 	return SYS_R_OK;
 }
 #endif
+
+
+//-------------------------------------------------------------------------
+//
+//-------------------------------------------------------------------------
+int uart_IsTxBufNE(p_dev_uart p)
+{
+#if IO_BUF_TYPE == BUF_T_BUFFER
+	
+		if (p->buftx->len)
+			return 1;
+		return 0;
+#elif IO_BUF_TYPE == BUF_T_DQUEUE
+	
+		if (dque_IsNotEmpty(dqueue, p->parent->id | UART_DQUE_TX_CHL))
+			return 1;
+		return 0;
+#endif
+}
+
 
 //-------------------------------------------------------------------------
 //
