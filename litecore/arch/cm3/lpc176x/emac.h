@@ -292,7 +292,7 @@ extern "C" {
 #define PHY_AUTO_NEG        0x3000      /* Select Auto Negotiation           */
 
 #define PHY_DEF_ADDR		0x0100      /* Default PHY device address        */
-#define DP83848C_ID         0x20005C90  /* PHY Identifier                    */
+
 
 
 
