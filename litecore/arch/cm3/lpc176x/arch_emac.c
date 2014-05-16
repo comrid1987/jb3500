@@ -157,7 +157,7 @@ int arch_EmacInit()
 	id1 = read_PHY (PHY_REG_IDR1);
 	id2 = read_PHY (PHY_REG_IDR2);
 
-	if (((id1 << 16) | (id2 & 0xFFF0)) != DP83848C_ID)
+	if (((id1 << 16) | (id2 & 0xFFF0)) != PHY_ID_DP83848C)
 		return (-1);
 
 	/* Configure the PHY device */

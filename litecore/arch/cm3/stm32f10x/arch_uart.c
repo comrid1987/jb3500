@@ -1,7 +1,7 @@
 #if UART_ENABLE
 
 
-
+#define STM32_UART_CTS		0
 
 
 //In litecore.c
@@ -107,6 +107,12 @@ void arch_UartInit(p_dev_uart p)
 	}
 	stm32_GpioClockEnable(pDef->rxport);
 	GPIO_Init(arch_GpioPortBase(pDef->rxport), &xGpio);
+#if STM32_UART_CTS
+	//CTS
+	xGpio.GPIO_Pin = BITMASK(13);
+	xGpio.GPIO_Mode = GPIO_Mode_IPU;
+	GPIO_Init(GPIOB, &xGpio);
+#endif
 	//Clock
 #if SMARTCARD_ENABLE
 	if (pDef->fun == UART_FUN_SC)
@@ -140,7 +146,7 @@ void arch_UartInit(p_dev_uart p)
 	case UART_FUN_SC:
 		//SmartCard时钟372倍波特率,1为PCLK2分频,2为4分频......
 #if MCU_FREQUENCY == MCU_SPEED_LOW
-		while (1);					//PCLK=8M,不能分频出SmartCard时钟
+		#error PCLK Error!!!!		//PCLK=8M,不能分频出SmartCard时钟
 #elif MCU_FREQUENCY == MCU_SPEED_HALF
 		USART_SetPrescaler(pUart, 5);//PCLK=36M
 #else
@@ -204,7 +210,11 @@ sys_res arch_UartOpen(uint_t nId, p_uart_para pPara)
 			xUartPara.USART_WordLength = USART_WordLength_9b;
 		break;
 	}
+#if STM32_UART_CTS
+	xUartPara.USART_HardwareFlowControl = USART_HardwareFlowControl_CTS;
+#else
 	xUartPara.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+#endif
 	xUartPara.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;
 	xUartPara.USART_BaudRate = pPara->baud;
 	USART_Init(pUart, &xUartPara);
