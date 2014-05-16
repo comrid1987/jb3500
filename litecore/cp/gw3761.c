@@ -45,15 +45,6 @@ static int gw3761_IsPW(uint_t nAfn)
 static int gw3761_IsEC(uint_t nAfn)
 {
 
-#if 0
-	//阆中博高主站心跳需EC
-	switch (nAfn) {
-	case GW3761_AFN_LINKCHECK:
-		return 1;
-	default:
-		return 0;
-	}
-#else
 	switch (nAfn) {
 	case GW3761_AFN_CONFIRM:
 	case 0x08:
@@ -68,7 +59,6 @@ static int gw3761_IsEC(uint_t nAfn)
 	default:
 		return 0;
 	}
-#endif
 }
 
 
