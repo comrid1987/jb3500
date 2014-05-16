@@ -149,9 +149,6 @@ extern int fattrib (const char *par, const char *path);
 extern int fvol    (const char *drive, char *buf);
 extern int finfo   (const char *drive, Drive_INFO *info);
 
-/* The following macros provide for common functions */
-//#define unlink(fn)      fdelete(fn);
-
 
 /*----------------------------------------------------------------------------
  *                             TCPnet API
