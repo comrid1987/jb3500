@@ -48,6 +48,7 @@ int arch_EmacInit()
 	//
 	MAP_EthernetEnable(ETH_BASE);
 
+#if ETH_INT_ENABLE
 	//
 	// Enable the Ethernet Interrupt handler.
 	//
@@ -57,6 +58,7 @@ int arch_EmacInit()
 	// Enable Ethernet TX and RX Packet Interrupts.
 	//
 	MAP_EthernetIntEnable(ETH_BASE, ETH_INT_RX | ETH_INT_TX);
+#endif
 
 	return 0;
 }

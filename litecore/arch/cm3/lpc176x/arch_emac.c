@@ -222,18 +222,20 @@ void arch_EmacAddr(uint8_t *pAdr)
 	/* Receive Broadcast and Perfect Match Packets */
 	LPC_EMAC->RxFilterCtrl = RFC_BCAST_EN | RFC_PERFECT_EN;
 
+	/* Enable receive and transmit mode of MAC Ethernet core */
+	LPC_EMAC->Command  |= (CR_RX_EN | CR_TX_EN);
+	LPC_EMAC->MAC1	   |= MAC1_REC_EN;
+	
+#if ETH_INT_ENABLE
 	/* Reset all interrupts */
 	LPC_EMAC->IntClear	= 0xFFFF;
 
 	/* Enable EMAC interrupts. */
 	LPC_EMAC->IntEnable = INT_RX_DONE;
 
-	/* Enable receive and transmit mode of MAC Ethernet core */
-	LPC_EMAC->Command  |= (CR_RX_EN | CR_TX_EN);
-	LPC_EMAC->MAC1	   |= MAC1_REC_EN;
-
 	/* Enable the ENET Interrupt */
 	NVIC_EnableIRQ(ENET_IRQn);
+#endif
 }
 
 void arch_EmacIntEnable()

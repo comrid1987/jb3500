@@ -197,7 +197,7 @@ void ENET_IRQHandler()
 {
 	extern void arch_EmacIsr(void);
 
-#if LPC176X_ETH_ENABLE
+#if ETH_INT_ENABLE
 	os_irq_Enter();
 
 	arch_EmacIsr();

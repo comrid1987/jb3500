@@ -42,7 +42,7 @@ void gui_DrawRLine(int x0, int y0, int y1, t_color color);
 void gui_DrawRect_Hol(int x1, int y1, int x2, int y2, t_color color);			//画空心矩形
 void gui_DrawRect_Fill(int x1, int y1, int x2, int y2, t_color color);			//画实心矩形
 void gui_DrawIcon_Mono(int x1, int y1, int x2, int y2, const uint8_t *p);
-void gui_DrawBMP_Mono(uint8_t *p);
+void gui_DrawBMP_Mono(const uint8_t *p, uint_t nIsBMP);
 
 #ifdef __cplusplus
 }

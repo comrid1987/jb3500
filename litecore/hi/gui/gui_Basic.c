@@ -135,11 +135,12 @@ void gui_DrawIcon_Mono(int x1, int y1, int x2, int y2, const uint8_t *p)
 
 //»­ºÚ°×bmpÎÄ¼þ
 #define GUI_BMP_OFFSET			0x3E
-void gui_DrawBMP_Mono(uint8_t *p)
+void gui_DrawBMP_Mono(const uint8_t *p, uint_t nIsBMP)
 {
 	int i, j, k;
 
-	p += GUI_BMP_OFFSET;
+	if (nIsBMP)
+		p += GUI_BMP_OFFSET;
 	for (i = 0; i < LCD_Y_MAX; i++) {
 		for (j = 0; j < (LCD_X_MAX / 8); j++, p++) {
 			for (k = 0; k < 8; k++) {

@@ -412,7 +412,7 @@ void lm3s_isr_eth()
 {
 	extern void arch_EmacIsr(void);
 
-#if LM3S_ETH_ENABLE
+#if ETH_INT_ENABLE
 	os_irq_Enter();
 
 	arch_EmacIsr();
