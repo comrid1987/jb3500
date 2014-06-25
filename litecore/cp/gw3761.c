@@ -189,12 +189,12 @@ static sys_res gw3761_TmsgLinkcheck(void *p, uint_t nCmd)
 		nCmd = 2;
 		break;
 	default:
-		nCmd = 3;
+		nCmd = 1;	// 3
 		break;
 	}
 	buf_PushData(b, gw3761_ConvertDa2DA(0), 2);
 	buf_PushData(b, gw3761_ConvertFn2DT(nCmd), 2);
-	gw3761_TmsgSend(p, GW3761_FUN_LINKCHECK, GW3761_AFN_LINKCHECK, b, DLRCP_TMSG_PULSEON);
+	gw3761_TmsgSend(p, GW3761_FUN_LINKCHECK, GW3761_AFN_LINKCHECK, b, DLRCP_TMSG_REPORT);
 	buf_Release(b);
 #if GW3761_ECREPORT_ENABLE
 	buf_PushData(b, gw3761_ConvertDa2DA(0), 2);
@@ -231,21 +231,13 @@ sys_res gw3761_TmsgSend(p_gw3761 p, uint_t nFun, uint_t nAfn, buf b, uint_t nTyp
 	uint_t nCS;
 
 	gw3761_TmsgHeaderInit(p, &xH);
-	switch (nType) {
-	case DLRCP_TMSG_REPORT:
-		xH.c.prm = 1;
-		xH.seq.seq = p->parent.pfc++;
-		xH.seq.con = 0;
-		break;
-	case DLRCP_TMSG_PULSEON:
+	if (nType == DLRCP_TMSG_REPORT) {
 		xH.c.prm = 1;
 		xH.seq.seq = p->parent.pfc++;
 		xH.seq.con = 1;
-		break;
-	default:
+	} else {
 		xH.msa = p->rmsg.msa;
 		xH.seq.seq = p->rmsg.seq.seq;
-		break;
 	}
 	xH.c.dir = GW3761_DIR_SEND;
 	xH.c.fun = nFun;

@@ -86,6 +86,7 @@ void int_disable_eth()
 #if STM32_ETH_ENABLE || LM3S_ETH_ENABLE || LPC176X_ETH_ENABLE
 		arch_EmacIntDisable();
 #endif
+	}
 }
 
 #else

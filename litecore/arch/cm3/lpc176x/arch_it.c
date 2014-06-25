@@ -204,7 +204,6 @@ void ENET_IRQHandler()
 
 	os_irq_Leave();
 #endif
-	
 }
 
 

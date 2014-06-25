@@ -159,8 +159,9 @@ sys_res gdvms_TmsgSend(p_gdvms p, uint_t nCode, buf b, uint_t nType)
 		else
 			p->parent.pfc += 1;
 		xH.fseq = p->parent.pfc;
-	} else
+	} else {
 		xH.fseq = p->fseq;
+	}
 	xH.code = nCode;
 	xH.abn = GDVMS_CABN_NORMAL;
 	xH.len = b->len;

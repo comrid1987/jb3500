@@ -196,7 +196,7 @@ static sys_res nw12_TmsgLinkcheck(void *p, uint_t nCmd)
 		buf_PushData(b, 0xE0001001, 4);
 		break;
 	}
-	nw12_TmsgSend(p, NW12_FUN_LINKCHECK, NW12_AFN_LINKCHECK, b, DLRCP_TMSG_PULSEON);
+	nw12_TmsgSend(p, NW12_FUN_LINKCHECK, NW12_AFN_LINKCHECK, b, DLRCP_TMSG_REPORT);
 	buf_Release(b);
 	return SYS_R_OK;
 }
@@ -227,21 +227,13 @@ sys_res nw12_TmsgSend(p_nw12 p, uint_t nFun, uint_t nAfn, buf b, uint_t nType)
 	uint_t nCS;
 
 	nw12_TmsgHeaderInit(p, &xH);
-	switch (nType) {
-	case DLRCP_TMSG_REPORT:
-		xH.c.prm = 1;
-		xH.seq.seq = p->parent.pfc++;
-		xH.seq.con = 0;
-		break;
-	case DLRCP_TMSG_PULSEON:
+	if (nType == DLRCP_TMSG_REPORT) {
 		xH.c.prm = 1;
 		xH.seq.seq = p->parent.pfc++;
 		xH.seq.con = 1;
-		break;
-	default:
+	} else {
 		xH.msa = p->msa;
 		xH.seq.seq = p->seq.seq;
-		break;
 	}
 	xH.c.dir = NW12_DIR_SEND;
 	xH.c.fun = nFun;

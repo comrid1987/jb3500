@@ -222,17 +222,17 @@ void arch_EmacAddr(uint8_t *pAdr)
 	/* Receive Broadcast and Perfect Match Packets */
 	LPC_EMAC->RxFilterCtrl = RFC_BCAST_EN | RFC_PERFECT_EN;
 
-	/* Enable receive and transmit mode of MAC Ethernet core */
-	LPC_EMAC->Command  |= (CR_RX_EN | CR_TX_EN);
-	LPC_EMAC->MAC1	   |= MAC1_REC_EN;
-	
-#if ETH_INT_ENABLE
 	/* Reset all interrupts */
 	LPC_EMAC->IntClear	= 0xFFFF;
 
 	/* Enable EMAC interrupts. */
 	LPC_EMAC->IntEnable = INT_RX_DONE;
 
+	/* Enable receive and transmit mode of MAC Ethernet core */
+	LPC_EMAC->Command  |= (CR_RX_EN | CR_TX_EN);
+	LPC_EMAC->MAC1	   |= MAC1_REC_EN;
+
+#if ETH_INT_ENABLE
 	/* Enable the ENET Interrupt */
 	NVIC_EnableIRQ(ENET_IRQn);
 #endif
@@ -286,45 +286,48 @@ void arch_EmacIsr()
 	uint32_t status, size, Index;
 	OS_FRAME *frame;
 
-	status = LPC_EMAC->IntStatus & LPC_EMAC->IntEnable;
-
-	/* Clear the interrupt. */ 
-	LPC_EMAC->IntClear = status; 
- 
-	if (status & INT_RX_DONE)
+	while (status = LPC_EMAC->IntStatus & LPC_EMAC->IntEnable)
 	{
 
-		/* Disable EMAC RxDone interrupts. */
-		LPC_EMAC->IntEnable = 0;
-
-		/* a frame has been received */
-		Index = LPC_EMAC->RxConsumeIndex;
-		if (Index != LPC_EMAC->RxProduceIndex)
+		/* Clear the interrupt. */ 
+		LPC_EMAC->IntClear = status; 
+	 
+		if (status & INT_RX_DONE)
 		{
-			size = (RX_STAT_INFO(Index) & 0x7ff) + 1;
-			if (size > ETH_FRAG_SIZE) size = ETH_FRAG_SIZE;
 
-			/* Receive packet */
-			/* Flag 0x80000000 to skip sys_error() call when out of memory. */
-			frame = alloc_mem(ALIGN4(size) | 0x80000000);
-			/* if 'alloc_mem()' has failed, ignore this packet. */
-			if (frame != NULL) {
-				/* copy the packet from the receive buffer */
-				memcpy(frame->data, (void *)RX_BUF(Index), size);
-				frame->length = size;
-				put_in_queue(frame);
+			/* Disable EMAC RxDone interrupts. */
+			LPC_EMAC->IntEnable = 0;
+
+			/* a frame has been received */
+			Index = LPC_EMAC->RxConsumeIndex;
+			if (Index != LPC_EMAC->RxProduceIndex)
+			{
+				size = (RX_STAT_INFO(Index) & 0x7ff) + 1;
+				if (size > ETH_FRAG_SIZE) size = ETH_FRAG_SIZE;
+
+				/* Receive packet */
+				/* Flag 0x80000000 to skip sys_error() call when out of memory. */
+				frame = alloc_mem(ALIGN4(size) | 0x80000000);
+				/* if 'alloc_mem()' has failed, ignore this packet. */
+				if (frame != NULL)
+				{
+					/* copy the packet from the receive buffer */
+					memcpy(frame->data, (void *)RX_BUF(Index), size);
+					frame->length = size;
+					put_in_queue(frame);
+				}
+				
+				/* move Index to the next */
+				if(++Index > LPC_EMAC->RxDescriptorNumber)
+					Index = 0;
+
+				/* set consume index */
+				LPC_EMAC->RxConsumeIndex = Index;
 			}
-			
-			/* move Index to the next */
-			if(++Index > LPC_EMAC->RxDescriptorNumber)
-				Index = 0;
 
-			/* set consume index */
-			LPC_EMAC->RxConsumeIndex = Index;
+			/* Enable RxDone interrupt */
+			LPC_EMAC->IntEnable = INT_RX_DONE;
 		}
-
-		/* Enable RxDone interrupt */
-		LPC_EMAC->IntEnable = INT_RX_DONE;
 	}
 }
 

@@ -17,10 +17,9 @@ extern "C" {
 #define DLRCP_S_READY					2
 
 //发送报文处理策略
-#define DLRCP_TMSG_PULSEON				0
-#define DLRCP_TMSG_RESPOND				1
-#define DLRCP_TMSG_REPORT				2
-#define DLRCP_TMSG_CASCADE				3
+#define DLRCP_TMSG_RESPOND				0
+#define DLRCP_TMSG_REPORT				1
+#define DLRCP_TMSG_CASCADE				2
 
 
 
